@@ -19,7 +19,9 @@ private val DarkColorScheme = darkColorScheme(
     onSecondary = Color.White,
     tertiary = Pink80,
     onTertiary = Color.White,
-    background = Color.Black
+    background = Color.Black,
+    surface = Color(0xFF1E1E1E),
+    onSurface = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -29,15 +31,17 @@ private val LightColorScheme = lightColorScheme(
     onSecondary = Color.Black,
     tertiary = Pink40,
     onTertiary = Color.Black,
-    background = Color.White
-
+    background = Color(0xFFFDFCFB),
+    surface = Color.White,
+    onSurface = Color.Black
 )
+
 
 @Composable
 fun NotesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

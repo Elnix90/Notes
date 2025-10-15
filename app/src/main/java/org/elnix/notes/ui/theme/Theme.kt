@@ -12,31 +12,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF3B82F6),      // soft blue (buttons, highlights)
-    onPrimary = Color.White,          // white text on blue
-    secondary = Color(0xFF6366F1),    // violet accent
-    onSecondary = Color.White,
-    background = Color.White,   // warm off-white background
-    onBackground = Color(0xFF1F2937), // dark gray text
-    surface = Color(0xFFFFFFFF),      // card backgrounds
-    onSurface = Color(0xFF1F2937),    // text on cards
-    inversePrimary = Color(0xFFE0E7FF) // pale blue for inverse UI elements
-)
-
-
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF60A5FA),       // lighter blue
-    onPrimary = Color.Black,           // readable text on bright surfaces
-    secondary = Color(0xFFA78BFA),     // soft violet accent
-    onSecondary = Color.Black,
-    background = Color.Black,    // dark slate background
-    onBackground = Color(0xFFE2E8F0),  // light gray text
-    surface = Color(0xFF1E293B),       // slightly lighter cards
-    onSurface = Color(0xFFE2E8F0),     // text on cards
-    inversePrimary = Color(0xFF1D4ED8) // deep blue for special highlights
+    primary = Purple80,
+    onPrimary = Color.White,
+    secondary = PurpleGrey80,
+    onSecondary = Color.White,
+    tertiary = Pink80,
+    onTertiary = Color.White,
+    background = Color.Black
 )
 
+private val LightColorScheme = lightColorScheme(
+    primary = Purple40,
+    onPrimary = Color.White,
+    secondary = PurpleGrey40,
+    onSecondary = Color.Black,
+    tertiary = Pink40,
+    onTertiary = Color.Black,
+    background = Color.White
+
+)
 
 @Composable
 fun NotesTheme(

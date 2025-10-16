@@ -23,14 +23,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.elnix.notes.utils.Note
+import org.elnix.notes.data.NoteEntity
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
 @Composable
 fun NoteItem(
-    item: Note,
+    item: NoteEntity,
     onActionClick: (() -> Unit)? = null // optional callback for the button
 ) {
     val shape = RoundedCornerShape(16.dp)
@@ -90,7 +90,7 @@ fun NoteItem(
 
 
 @Composable
-fun NoteList(items: List<Note>) {
+fun NoteList(items: List<NoteEntity>) {
     val context = LocalContext.current
     Column (
         modifier = Modifier

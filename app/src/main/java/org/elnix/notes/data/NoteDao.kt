@@ -1,0 +1,23 @@
+// file: org/elnix/notes/data/NoteDao.kt
+package org.elnix.notes.data
+
+import androidx.room.*
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface NoteDao {
+    @Query("SELECT * FROM notes ORDER BY createdAt DESC")
+    fun observeAll(): Flow<List<NoteEntity>>
+
+    @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): NoteEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(note: NoteEntity): Long
+
+    @Update
+    suspend fun update(note: NoteEntity)
+
+    @Delete
+    suspend fun delete(note: NoteEntity)
+}

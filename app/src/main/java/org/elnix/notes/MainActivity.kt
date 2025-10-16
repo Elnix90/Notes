@@ -1,35 +1,31 @@
+// file: org/elnix/notes/MainActivity.kt
 package org.elnix.notes
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.Modifier
+import androidx.activity.viewModels
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.NotesTheme
-import org.elnix.notes.utils.getFakeNotes
 
 class MainActivity : ComponentActivity() {
+    private val vm by viewModels<NoteViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            NotesTheme {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
+            // read user's theme preference from DataStore (simple)
+            val context = this
+            val darkPref = remember { org.elnix.notes.data.SettingsStore.isDarkFlow(context) }
+            val isDark by darkPref.collectAsState(initial = false)
 
-                )
-                {
-                    Column {
-                        NoteList(getFakeNotes())
-                    }
-                }
+            NotesTheme(darkTheme = isDark, dynamicColor = false) {
+                MainApp(vm)
             }
         }
     }

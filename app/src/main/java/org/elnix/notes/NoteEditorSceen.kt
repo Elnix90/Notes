@@ -19,8 +19,8 @@ fun NoteEditorScreen(onSave: (String, String) -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .imePadding()
             .verticalScroll(scrollState)
+            .imePadding()
     ) {
         OutlinedTextField(
             value = title,

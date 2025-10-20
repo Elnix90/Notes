@@ -1,58 +1,34 @@
 package org.elnix.notes.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
+private val ColorScheme = darkColorScheme(
     primary = Purple80,
-    onPrimary = Color.White,
-    secondary = PurpleGrey80,
-    onSecondary = Color.White,
-    tertiary = Pink80,
-    onTertiary = Color.White,
     background = Color.Black,
-    surface = Color(0xFF1E1E1E),
-    onSurface = Color.White
+    onBackground = Color.White
 )
-
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    onPrimary = Color.White,
-    secondary = PurpleGrey40,
-    onSecondary = Color.Black,
-    tertiary = Pink40,
-    onTertiary = Color.Black,
-    background = Color(0xFFFDFCFB),
-    surface = Color.White,
-    onSurface = Color.Black
-)
-
 
 @Composable
 fun NotesTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false,
+    customPrimary: Int? = null,
+    customBackground: Int? = null,
+    customOnBackground: Int? = null,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+    val context = LocalContext.current
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    // pick base color scheme (dynamic/light/dark)
+    var colorScheme = ColorScheme
+
+    // Apply custom overrides (if set in settings)
+    colorScheme = colorScheme.copy(
+        primary = customPrimary?.let { Color(it) } ?: colorScheme.primary,
+        background = customBackground?.let { Color(it) } ?: colorScheme.background,
+        onBackground = customOnBackground?.let { Color(it) } ?: colorScheme.onBackground
+    )
 
     MaterialTheme(
         colorScheme = colorScheme,

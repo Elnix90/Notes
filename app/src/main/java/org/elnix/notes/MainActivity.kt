@@ -8,7 +8,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.NotesTheme
 
@@ -19,12 +20,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            // read user's theme preference from DataStore (simple)
-            val context = this
-            val darkPref = remember { org.elnix.notes.data.SettingsStore.isDarkFlow(context) }
-            val isDark by darkPref.collectAsState(initial = false)
+            val ctx = LocalContext.current
+            val primary by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
+            val background by SettingsStore.getBackgroundFlow(ctx).collectAsState(initial = null)
+            val onBackground by SettingsStore.getOnBackgroundFlow(ctx).collectAsState(initial = null)
 
-            NotesTheme(darkTheme = isDark, dynamicColor = false) {
+
+            NotesTheme(
+                customPrimary = primary,
+                customBackground = background,
+                customOnBackground = onBackground
+            ) {
                 MainApp(vm)
             }
         }

@@ -10,8 +10,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.ui.NoteViewModel
@@ -24,19 +26,37 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
     val notes by vm.notes.collectAsState()
     val ctx = LocalContext.current
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(notes) { note ->
-            NoteCard(
-                note = note,
-                onClick = { navController.navigate("edit/${note.id}") },
-                onDelete = {
-                    vm.delete(note)
-                    Toast.makeText(ctx, "Deleted", Toast.LENGTH_SHORT).show()
-                }
+    if (notes.isEmpty()) {
+        // Show placeholder message when no notes exist
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "No notes yet.\nTap + to create one!",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                textAlign = TextAlign.Center
             )
+        }
+    } else {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(notes) { note ->
+                NoteCard(
+                    note = note,
+                    onClick = { navController.navigate("edit/${note.id}") },
+                    onDelete = {
+                        vm.delete(note)
+                        Toast.makeText(ctx, "Deleted", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
         }
     }
 }
+
 
 @Composable
 fun NoteCard(note: NoteEntity, onClick: () -> Unit, onDelete: () -> Unit) {

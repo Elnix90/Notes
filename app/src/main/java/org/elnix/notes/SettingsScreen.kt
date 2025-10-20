@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.SettingsStore
+import org.elnix.notes.ui.theme.blendWith
 import org.json.JSONObject
 import java.io.File
 
@@ -63,9 +66,13 @@ fun SettingsScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Custom Colors", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = "Custom Colors",
+                style = MaterialTheme.typography.titleMedium
+            )
 
             ColorPickerRow("Primary", primary ?: MaterialTheme.colorScheme.primary.toArgb()) {
                 scope.launch { SettingsStore.setPrimary(ctx, it) }
@@ -75,11 +82,9 @@ fun SettingsScreen() {
                 scope.launch { SettingsStore.setBackground(ctx, it) }
             }
 
-            ColorPickerRow("On Background (Text)", onBackground ?: MaterialTheme.colorScheme.onBackground.toArgb()) {
+            ColorPickerRow("Text", onBackground ?: MaterialTheme.colorScheme.onBackground.toArgb()) {
                 scope.launch { SettingsStore.setOnBackground(ctx, it) }
             }
-
-            HorizontalDivider()
 
             Button(
                 onClick = { scope.launch { SettingsStore.resetColors(ctx) } },
@@ -135,20 +140,11 @@ fun ColorPickerRow(label: String, currentColor: Int, onColorPicked: (Int) -> Uni
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
-                    .size(28.dp)
+                    .size(40.dp)
                     .background(Color(currentColor), shape = CircleShape)
-                    .border(1.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
+                    .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), CircleShape)
+                    .clickable { showPicker = true }
             )
-            Spacer(Modifier.width(8.dp))
-            Button(
-                onClick = { showPicker = true },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                )
-            ) {
-                Text("Pick")
-            }
         }
     }
 
@@ -166,7 +162,8 @@ fun ColorPickerRow(label: String, currentColor: Int, onColorPicked: (Int) -> Uni
                 )
             },
             confirmButton = {},
-            dismissButton = {}
+            dismissButton = {},
+            containerColor = MaterialTheme.colorScheme.background.blendWith(MaterialTheme.colorScheme.primary, 0.3f)
         )
     }
 }
@@ -209,7 +206,15 @@ fun ColorPicker(initialColor: Color, onColorSelected: (Color) -> Unit) {
 private fun SliderWithLabel(label: String, value: Float, onChange: (Float) -> Unit) {
     Column {
         Text("$label: ${(value * 255).toInt()}")
-        Slider(value = value, onValueChange = onChange, valueRange = 0f..1f, steps = 254)
+        Slider(
+            value = value,
+            onValueChange = onChange,
+            valueRange = 0f..1f,
+            steps = 254,
+            colors = SliderDefaults.colors(
+                MaterialTheme.colorScheme.primary
+            ),
+        )
     }
 }
 

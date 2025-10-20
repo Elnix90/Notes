@@ -10,3 +10,12 @@ fun Color.blendWith(other: Color, ratio: Float): Color {
         alpha = alpha
     )
 }
+
+fun Color.adjustBrightness(factor: Float): Color {
+    return Color(
+        red = (red * factor).coerceIn(0f, 1f),
+        green = (green * factor).coerceIn(0f, 1f),
+        blue = (blue * factor).coerceIn(0f, 1f),
+        alpha = alpha
+    )
+}

@@ -24,6 +24,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -49,6 +50,7 @@ import java.io.File
 fun SettingsScreen() {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
+    val showNavbarLabels by SettingsStore.getShowBottomNavLabelsFlow(ctx).collectAsState(initial = true)
 
     val primary by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
     val background by SettingsStore.getBackgroundFlow(ctx).collectAsState(initial = null)
@@ -91,6 +93,21 @@ fun SettingsScreen() {
             }
 
             HorizontalDivider()
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Show Navigation Bar Labels", color = MaterialTheme.colorScheme.onBackground)
+                Switch(
+                    checked = showNavbarLabels ?: true,
+                    onCheckedChange = { scope.launch { SettingsStore.setShowBottomNavLabelsFlow(ctx, it) } }
+                )
+            }
+
+            HorizontalDivider()
+
 
             ExportImportRow(
                 ctx = ctx,

@@ -1,4 +1,3 @@
-// file: org/elnix/notes/ui/NoteViewModel.kt
 package org.elnix.notes.ui
 
 import android.app.Application
@@ -10,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.data.AppDatabase
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.NoteRepository
+import java.util.Calendar
 import java.util.Date
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
@@ -18,13 +18,21 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     val notes = repo.observeAll()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    fun addNote(title: String, desc: String) = viewModelScope.launch {
-        val n = NoteEntity(
+    // Updated addNote to include dueDateTime and reminderEnabled
+    fun addNote(
+        title: String,
+        desc: String,
+        dueDateTime: Calendar? = null,
+        reminderEnabled: Boolean = false
+    ) = viewModelScope.launch {
+        val note = NoteEntity(
             title = title,
             desc = desc,
-            createdAt = Date()
+            createdAt = Date(),
+            dueDateTime = dueDateTime,
+            reminderEnabled = reminderEnabled
         )
-        repo.upsert(n)
+        repo.upsert(note)
     }
 
     fun update(note: NoteEntity) = viewModelScope.launch { repo.upsert(note) }
@@ -32,5 +40,4 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun delete(note: NoteEntity) = viewModelScope.launch { repo.delete(note) }
 
     suspend fun getById(id: Long): NoteEntity? = repo.getById(id)
-
 }

@@ -13,9 +13,17 @@ private val Context.dataStore by preferencesDataStore(name = "settings")
 
 object SettingsStore {
 
+    private val SHOW_NAVBAR_LABELS = booleanPreferencesKey("navbar_labels")
     private val TEXT_COLOR = intPreferencesKey("text_color")
     private val PRIMARY_COLOR = intPreferencesKey("primary_color")
     private val BACKGROUND_COLOR = intPreferencesKey("background_color")
+
+    fun getShowBottomNavLabelsFlow(ctx: Context): Flow<Boolean?> =
+        ctx.dataStore.data.map { it[SHOW_NAVBAR_LABELS]}
+
+    suspend fun setShowBottomNavLabelsFlow(ctx: Context, state: Boolean) {
+        ctx.dataStore.edit { it[SHOW_NAVBAR_LABELS] = state }
+    }
 
     fun getOnBackgroundFlow(ctx: Context): Flow<Int?> =
         ctx.dataStore.data.map { it[TEXT_COLOR] }

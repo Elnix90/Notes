@@ -4,6 +4,7 @@ package org.elnix.notes.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.Instant
+import java.util.Calendar
 import java.util.Date
 
 @Entity(tableName = "notes")
@@ -12,6 +13,6 @@ data class NoteEntity(
     val title: String,
     val desc: String,
     val createdAt: Date = Date.from(Instant.now()),
-    val reminder: Boolean = false,
-    val dueFor: Date? = null
+    val reminderEnabled: Boolean = false,
+    val dueDateTime: Calendar? = null
 )

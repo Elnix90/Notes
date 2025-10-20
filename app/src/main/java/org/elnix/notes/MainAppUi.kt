@@ -10,11 +10,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
+import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.theme.adjustBrightness
 import org.elnix.notes.ui.theme.blendWith
 
 sealed class Screen(val route: String, val label: String, val icon: @Composable () -> Unit) {
@@ -41,10 +44,11 @@ fun MainApp(vm: NoteViewModel) {
             composable("notes") { NotesScreen(vm, navController) }
             composable("settings") { SettingsScreen() }
             composable(Screen.Create.route) {
-                NoteEditorScreen(onSave = { title, desc ->
-                    vm.addNote(title, desc)
+                NoteEditorScreen(onSave = { title, desc, dueDateTime, reminderEnabled ->
+                    vm.addNote(title, desc, dueDateTime, reminderEnabled)
                     navController.popBackStack()
                 })
+
             }
             composable(
                 route = "edit/{noteId}",
@@ -59,10 +63,14 @@ fun MainApp(vm: NoteViewModel) {
 
 @Composable
 fun BottomNav(navController: NavHostController) {
+    val ctx = LocalContext.current
+    val showLabels by SettingsStore.getShowBottomNavLabelsFlow(ctx).collectAsState(initial = true)
+
     val items = listOf(
         Screen.Notes,
         Screen.Settings
     )
+
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.background.blendWith(MaterialTheme.colorScheme.primary, 0.2f)
     ) {
@@ -72,16 +80,13 @@ fun BottomNav(navController: NavHostController) {
                 selected = current == screen.route,
                 onClick = { navController.navigate(screen.route) { launchSingleTop = true } },
                 icon = screen.icon,
-                label = { Text(
-                    text = screen.label,
-                    color = MaterialTheme.colorScheme.onBackground
-                ) },
+                label = if (showLabels == false) null else { { Text(screen.label, color = MaterialTheme.colorScheme.onBackground) } },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                    unselectedIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                    selectedIconColor = MaterialTheme.colorScheme.primary.adjustBrightness(1.5f),
+                    unselectedIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                     selectedTextColor = MaterialTheme.colorScheme.primary,
                     unselectedTextColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                    indicatorColor = Color(0x00000000)
+                    indicatorColor = Color.Transparent
                 )
             )
         }

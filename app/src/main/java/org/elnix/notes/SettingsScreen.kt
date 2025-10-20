@@ -113,7 +113,8 @@ fun SettingsScreen() {
                 ctx = ctx,
                 primaryColor = primary ?: MaterialTheme.colorScheme.primary.toArgb(),
                 backgroundColor = background ?: MaterialTheme.colorScheme.background.toArgb(),
-                onBackgroundColor = onBackground ?: MaterialTheme.colorScheme.onBackground.toArgb()
+                onBackgroundColor = onBackground ?: MaterialTheme.colorScheme.onBackground.toArgb(),
+                showNavBarLabels = showNavbarLabels ?: true
             )
         }
     }
@@ -217,7 +218,8 @@ fun ExportImportRow(
     ctx: Context,
     primaryColor: Int,
     backgroundColor: Int,
-    onBackgroundColor: Int
+    onBackgroundColor: Int,
+    showNavBarLabels: Boolean
 ) {
     val scope = rememberCoroutineScope()
 
@@ -230,6 +232,7 @@ fun ExportImportRow(
                     SettingsStore.setPrimary(ctx, obj.optInt("primary"))
                     SettingsStore.setBackground(ctx, obj.optInt("background"))
                     SettingsStore.setOnBackground(ctx, obj.optInt("onBackground"))
+                    SettingsStore.setShowBottomNavLabelsFlow(ctx, obj.optBoolean("showNavLabels"))
                 }
             }
         }
@@ -241,11 +244,12 @@ fun ExportImportRow(
     ) {
         Button(
             onClick = {
-            val file = File(ctx.cacheDir, "theme_export.json")
+            val file = File(ctx.cacheDir, "settings_export.json")
             val json = JSONObject().apply {
                 put("primary", primaryColor)
                 put("background", backgroundColor)
                 put("onBackground", onBackgroundColor)
+                put("showNavLabels", showNavBarLabels)
             }.toString()
             file.writeText(json)
             },
@@ -254,7 +258,7 @@ fun ExportImportRow(
                 contentColor = MaterialTheme.colorScheme.onBackground
             )
         ) {
-            Text("Export Theme")
+            Text("Export Settings")
         }
 
         Button(
@@ -264,7 +268,7 @@ fun ExportImportRow(
                 contentColor = MaterialTheme.colorScheme.onBackground
             )
         ) {
-            Text("Import Theme")
+            Text("Import Settings")
         }
     }
 }

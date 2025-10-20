@@ -9,35 +9,41 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.data.AppDatabase
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.NoteRepository
-import java.util.Calendar
+import org.elnix.notes.data.ReminderEntity
+import org.elnix.notes.data.ReminderRepository
 import java.util.Date
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
-    private val repo = NoteRepository(AppDatabase.get(application).noteDao())
+    private val noteRepo = NoteRepository(AppDatabase.get(application).noteDao())
+    private val reminderRepo = ReminderRepository(AppDatabase.get(application).reminderDao())
 
-    val notes = repo.observeAll()
+    val notes = noteRepo.observeAll()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // Updated addNote to include dueDateTime and reminderEnabled
-    fun addNote(
-        title: String,
-        desc: String,
-        dueDateTime: Calendar? = null,
-        reminderEnabled: Boolean = false
-    ) = viewModelScope.launch {
-        val note = NoteEntity(
-            title = title,
-            desc = desc,
-            createdAt = Date(),
-            dueDateTime = dueDateTime,
-            reminderEnabled = reminderEnabled
-        )
-        repo.upsert(note)
+    // --- Notes ---
+    fun addNote(title: String, desc: String) = viewModelScope.launch {
+        val note = NoteEntity(title = title, desc = desc, createdAt = Date())
+        noteRepo.upsert(note)
     }
 
-    fun update(note: NoteEntity) = viewModelScope.launch { repo.upsert(note) }
+    fun update(note: NoteEntity) = viewModelScope.launch { noteRepo.upsert(note) }
+    fun delete(note: NoteEntity) = viewModelScope.launch { noteRepo.delete(note) }
+    suspend fun getById(id: Long): NoteEntity? = noteRepo.getById(id)
 
-    fun delete(note: NoteEntity) = viewModelScope.launch { repo.delete(note) }
+    // --- Reminders ---
+    suspend fun getReminders(noteId: Long): List<ReminderEntity> =
+        reminderRepo.getByNoteId(noteId)
 
-    suspend fun getById(id: Long): NoteEntity? = repo.getById(id)
+    fun addReminder(reminder: ReminderEntity) = viewModelScope.launch {
+        reminderRepo.insert(reminder)
+    }
+
+    fun updateReminder(reminder: ReminderEntity) = viewModelScope.launch {
+        reminderRepo.update(reminder)
+    }
+
+    fun deleteReminder(reminder: ReminderEntity) = viewModelScope.launch {
+        reminderRepo.delete(reminder)
+    }
 }
+

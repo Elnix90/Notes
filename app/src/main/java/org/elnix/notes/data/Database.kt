@@ -7,10 +7,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [NoteEntity::class], version = 1)
+@Database(entities = [NoteEntity::class, ReminderEntity::class], version = 1)
 @TypeConverters(Converters::class) // ← Add this
 abstract class AppDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
+    abstract fun reminderDao(): ReminderDao
 
     companion object {
         @Volatile
@@ -29,4 +30,3 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
-

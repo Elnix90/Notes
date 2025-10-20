@@ -97,4 +97,8 @@ dependencies {
 
     // Notifications
     implementation("androidx.work:work-runtime-ktx:2.8.1")
+
+    // Compose Material Dialogs
+    implementation("io.github.vanpra.compose-material-dialogs:core:0.9.0")
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
 }

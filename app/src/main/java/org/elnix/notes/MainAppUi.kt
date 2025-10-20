@@ -1,10 +1,8 @@
-// file: org/elnix/notes/MainAppUi.kt
 package org.elnix.notes
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,7 +21,7 @@ import org.elnix.notes.ui.theme.blendWith
 sealed class Screen(val route: String, val label: String, val icon: @Composable () -> Unit) {
     object Notes : Screen("notes", "Notes", { Icon(Icons.Default.Add, contentDescription = "notes") })
     object Settings : Screen("settings", "Settings", { Icon(Icons.Default.Settings, contentDescription = "settings") })
-    object Edit : Screen("edit/{noteId}", "Edit", { Icon(Icons.Default.Edit, contentDescription = "edit") }) {
+    object Edit : Screen("edit/{noteId}", "Edit", { Icon(Icons.Default.Add, contentDescription = "edit") }) {
         fun createRoute(noteId: Long) = "edit/$noteId"
     }
     object Create : Screen("create", "Create", { Icon(Icons.Default.Add, contentDescription = "create") })
@@ -43,19 +41,23 @@ fun MainApp(vm: NoteViewModel) {
         NavHost(navController, startDestination = "notes", Modifier.padding(innerPadding)) {
             composable("notes") { NotesScreen(vm, navController) }
             composable("settings") { SettingsScreen() }
-            composable(Screen.Create.route) {
-                NoteEditorScreen(onSave = { title, desc, dueDateTime, reminderEnabled ->
-                    vm.addNote(title, desc, dueDateTime, reminderEnabled)
-                    navController.popBackStack()
-                })
 
+            // Create Note
+            composable(Screen.Create.route) {
+                NoteEditorScreen(vm = vm, noteId = null) {
+                    navController.popBackStack()
+                }
             }
+
+            // Edit Note
             composable(
                 route = "edit/{noteId}",
                 arguments = listOf(navArgument("noteId") { type = NavType.LongType })
             ) { backStackEntry ->
                 val noteId = backStackEntry.arguments?.getLong("noteId") ?: 0L
-                EditNoteScreen(noteId = noteId, vm = vm, onSaved = { navController.popBackStack() })
+                NoteEditorScreen(vm = vm, noteId = noteId) {
+                    navController.popBackStack()
+                }
             }
         }
     }

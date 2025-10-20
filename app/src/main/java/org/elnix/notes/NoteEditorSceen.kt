@@ -1,9 +1,11 @@
 package org.elnix.notes
 
+import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,9 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,10 +33,13 @@ import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
+import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderBubble
 import java.util.Calendar
 
@@ -41,7 +48,8 @@ import java.util.Calendar
 fun NoteEditorScreen(
     vm: NoteViewModel,
     noteId: Long? = null,
-    onSaved: () -> Unit
+    onSaved: () -> Unit,
+    onCancel: (Long?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
@@ -49,27 +57,64 @@ fun NoteEditorScreen(
     var note by remember { mutableStateOf<NoteEntity?>(null) }
     var title by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
+    var createdNewNoteId by remember { mutableStateOf<Long?>(null) }
 
     // Dialog states for date & time pickers
     val dateDialogState = rememberMaterialDialogState()
     val timeDialogState = rememberMaterialDialogState()
     var tempCalendar by remember { mutableStateOf(Calendar.getInstance()) }
 
-    // Load note if editing existing one
+    // Load note or create a new one
     LaunchedEffect(noteId) {
         if (noteId != null) {
             val loaded = vm.getById(noteId)
             note = loaded
             title = loaded?.title ?: ""
             desc = loaded?.desc ?: ""
+        } else {
+            // Create a new empty note right away
+            val id = vm.addNoteAndReturnId("", "")
+            createdNewNoteId = id
+            note = vm.getById(id)
+
+            // Apply default reminders
+            val ctx = vm.getApplication<Application>()
+            val defaults = SettingsStore.getDefaultRemindersFlow(ctx)
+                .first() // collect current list once
+            defaults.forEach { offset ->
+                val cal = Calendar.getInstance()
+                offset.applyTo(cal)
+                vm.addReminder(
+                    ReminderEntity(
+                        noteId = id,
+                        dueDateTime = cal,
+                        enabled = true
+                    )
+                )
+            }
         }
     }
 
-    // Observe reminders — only if we already have a noteId
-    val reminders by remember(noteId) {
-        if (noteId != null) vm.remindersFor(noteId)
+    // Observe reminders for this note
+    val reminders by remember(note?.id) {
+        if (note?.id != null) vm.remindersFor(note!!.id)
         else null
     }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
+
+    // Track cancel/delete case
+    DisposableEffect(Unit) {
+        onDispose {
+            // If we created a new note but didn't save it, delete it
+            if (createdNewNoteId != null && noteId == null) {
+                scope.launch {
+                    val savedNote = vm.getById(createdNewNoteId!!)
+                    if (savedNote != null && savedNote.title.isBlank() && savedNote.desc.isBlank()) {
+                        vm.delete(savedNote)
+                    }
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -94,7 +139,6 @@ fun NoteEditorScreen(
         )
 
         // === Reminder section ===
-        // List existing reminders as interactive bubbles
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -111,7 +155,10 @@ fun NoteEditorScreen(
                 )
             }
 
-            Button(onClick = { dateDialogState.show() }) {
+            Button(
+                onClick = { dateDialogState.show() },
+                colors = AppObjectsColors.defaultButtonColors()
+            ) {
                 Text("Add Reminder")
             }
         }
@@ -132,9 +179,7 @@ fun NoteEditorScreen(
         MaterialDialog(dialogState = timeDialogState, buttons = {
             positiveButton("OK") {
                 scope.launch {
-                    // Create note if it doesn't exist yet
-                    val id = noteId ?: vm.addNoteAndReturnId(title, desc)
-
+                    val id = note?.id ?: createdNewNoteId ?: return@launch
                     val newReminder = ReminderEntity(
                         noteId = id,
                         dueDateTime = tempCalendar,
@@ -154,23 +199,37 @@ fun NoteEditorScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // === Save/Update Button ===
-        Button(
-            onClick = {
-                scope.launch {
-                    if (note != null) {
-                        vm.update(note!!.copy(title = title, desc = desc))
-                    } else {
-                        vm.addNote(title, desc)
-                    }
-                    onSaved()
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(if (noteId == null) "Save" else "Update")
+            Button(
+                onClick = {
+                    scope.launch {
+                        if (note != null) {
+                            vm.update(note!!.copy(title = title, desc = desc))
+                        }
+                        onSaved()
+                    }
+                },
+                modifier = Modifier.weight(1f),
+                colors = AppObjectsColors.defaultButtonColors()
+            ) {
+                Text(if (noteId == null) "Save" else "Update")
+            }
+
+            OutlinedButton(
+                onClick = {
+                    onCancel(note?.id)
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Cancel")
+            }
         }
+
     }
 }
+
 
 

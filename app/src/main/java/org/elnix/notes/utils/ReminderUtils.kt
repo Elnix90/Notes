@@ -3,7 +3,11 @@ package org.elnix.notes.utils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
@@ -17,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.ReminderEntity
 import java.util.Calendar
+import kotlin.math.max
 
 data class ReminderOffset(
     val minutesFromNow: Long? = null,
@@ -25,12 +30,33 @@ data class ReminderOffset(
 ) {
     fun toCalendar(): Calendar {
         val cal = Calendar.getInstance()
-        minutesFromNow?.let { cal.add(Calendar.MINUTE, it.toInt()) }
-        hourOfDay?.let { cal.set(Calendar.HOUR_OF_DAY, it) }
-        minute?.let { cal.set(Calendar.MINUTE, it) }
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
+
+        minutesFromNow?.let {
+            cal.add(Calendar.MINUTE, it.toInt())
+        } ?: run {
+            cal.set(Calendar.HOUR_OF_DAY, hourOfDay ?: cal.get(Calendar.HOUR_OF_DAY))
+            cal.set(Calendar.MINUTE, minute ?: cal.get(Calendar.MINUTE))
+            cal.set(Calendar.SECOND, 0)
+            cal.set(Calendar.MILLISECOND, 0)
+            if (cal.timeInMillis <= System.currentTimeMillis()) {
+                cal.add(Calendar.DAY_OF_YEAR, 1)
+            }
+        }
+
         return cal
+    }
+
+    fun applyTo(calendar: Calendar) {
+        when {
+            minutesFromNow != null -> {
+                calendar.add(Calendar.MINUTE, minutesFromNow.toInt())
+            }
+            hourOfDay != null && minute != null -> {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                calendar.set(Calendar.MINUTE, minute)
+                calendar.set(Calendar.SECOND, 0)
+            }
+        }
     }
 }
 
@@ -41,21 +67,20 @@ fun ReminderBubble(
     onDelete: () -> Unit
 ) {
     val now = System.currentTimeMillis()
-    val diffMillis = reminder.dueDateTime.timeInMillis - now
+    val diffMillis = max(0, reminder.dueDateTime.timeInMillis - now)
 
-    val (text, urgency) = when {
-        diffMillis <= 0 -> "Expired" to 1f
-        diffMillis < 60_000 -> "<1 min" to 1f
-        diffMillis < 3_600_000 -> "${diffMillis / 60_000} min" to 0.9f
-        diffMillis < 86_400_000 -> "${diffMillis / 3_600_000} h" to 0.8f
-        diffMillis < 30L * 86_400_000 -> "${diffMillis / 86_400_000} d" to 0.6f
-        diffMillis < 365L * 86_400_000 -> "${diffMillis / (30L * 86_400_000)} mo" to 0.4f
-        else -> "in ${(diffMillis / (365L * 86_400_000))} yr" to 0.2f
+    val (text, ratio) = when {
+        diffMillis < 60_000 -> "<1 min" to 0f
+        diffMillis < 3_600_000 -> "${diffMillis / 60_000} min" to 0.1f
+        diffMillis < 86_400_000 -> "${diffMillis / 3_600_000} h" to 0.3f
+        diffMillis < 7L * 86_400_000 -> "${diffMillis / 86_400_000} d" to 0.6f
+        else -> "${diffMillis / (7L * 86_400_000)} wk" to 1f
     }
 
+    // Redder when closer (ratio = 0 → red, ratio = 1 → green)
     val color = Color.hsv(
-        hue = 120f * urgency,
-        saturation = 0.8f,
+        hue = (120f * ratio), // 0 = red, 120 = green
+        saturation = 0.9f,
         value = 0.9f
     )
 
@@ -73,7 +98,6 @@ fun ReminderBubble(
                 shape = CircleShape
             )
             .padding(horizontal = 12.dp, vertical = 6.dp),
-
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(

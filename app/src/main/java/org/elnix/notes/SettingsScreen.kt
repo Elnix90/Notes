@@ -9,6 +9,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -45,13 +46,14 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.SettingsStore
+import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.blendWith
 import org.elnix.notes.utils.ReminderBubble
-import org.elnix.notes.utils.ReminderOffset
 import org.elnix.notes.utils.ReminderPicker
 import org.json.JSONObject
 import java.io.File
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen() {
     val ctx = LocalContext.current
@@ -62,11 +64,8 @@ fun SettingsScreen() {
     val background by SettingsStore.getBackgroundFlow(ctx).collectAsState(initial = null)
     val onBackground by SettingsStore.getOnBackgroundFlow(ctx).collectAsState(initial = null)
 
-//    val defaultReminders by SettingsStore.getDefaultRemindersFlow(ctx)
-//        .collectAsState(initial = emptySet())
-
-    var defaultReminders by remember { mutableStateOf(listOf<ReminderOffset>()) }
-
+    val defaultReminders by SettingsStore.getDefaultRemindersFlow(ctx)
+        .collectAsState(initial = emptyList())
 
     CompositionLocalProvider(
         LocalContentColor provides MaterialTheme.colorScheme.onBackground
@@ -98,48 +97,61 @@ fun SettingsScreen() {
             Button(
                 onClick = { scope.launch { SettingsStore.resetColors(ctx) } },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                )
+                colors = AppObjectsColors.defaultButtonColors()
             ) {
                 Text("Reset to Defaults Colors")
             }
 
             HorizontalDivider()
 
+            var checked by remember { mutableStateOf(showNavbarLabels ?: true) }
+
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        checked = !checked
+                        scope.launch { SettingsStore.setShowBottomNavLabelsFlow(ctx, checked) }
+                    },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Show Navigation Bar Labels", color = MaterialTheme.colorScheme.onBackground)
+                Text("Show Navigation Bar Labels")
                 Switch(
                     checked = showNavbarLabels ?: true,
-                    onCheckedChange = { scope.launch { SettingsStore.setShowBottomNavLabelsFlow(ctx, it) } }
+                    onCheckedChange = { scope.launch { SettingsStore.setShowBottomNavLabelsFlow(ctx, it) } },
+                    colors = AppObjectsColors.defaultSwitchColors()
                 )
             }
             HorizontalDivider()
 
 
-            defaultReminders.forEachIndexed { index, reminder ->
-                ReminderBubble(
-                    reminder = ReminderEntity(
-                        noteId = -1, // dummy
-                        dueDateTime = reminder.toCalendar(),
-                        enabled = true
-                    ),
-                    onToggle = {},
-                    onDelete = {
-                        defaultReminders = defaultReminders.toMutableList().apply { removeAt(index) }
-                        scope.launch { SettingsStore.setDefaultReminders(ctx, defaultReminders) }
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                defaultReminders
+                    .sortedBy { it.toCalendar().timeInMillis }
+                    .forEachIndexed {index, reminder ->
+                        ReminderBubble(
+                            reminder = ReminderEntity(
+                                noteId = -1, // dummy
+                                dueDateTime = reminder.toCalendar(),
+                                enabled = true
+                            ),
+                            onToggle = {},
+                            onDelete = {
+                                val newList = defaultReminders.toMutableList().apply { removeAt(index) }
+                                scope.launch { SettingsStore.setDefaultReminders(ctx, newList) }
+                            }
+                        )
                     }
-                )
             }
 
+
             ReminderPicker { picked ->
-                defaultReminders = defaultReminders + picked
-                scope.launch { SettingsStore.setDefaultReminders(ctx, defaultReminders) }
+                val newList = defaultReminders + picked
+                scope.launch { SettingsStore.setDefaultReminders(ctx, newList) }
             }
 
 
@@ -166,7 +178,9 @@ fun ColorPickerRow(label: String, currentColor: Int, onColorPicked: (Int) -> Uni
     Row(
         Modifier
             .fillMaxWidth()
+            .clickable { showPicker = true }
             .padding(vertical = 8.dp),
+
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -177,7 +191,6 @@ fun ColorPickerRow(label: String, currentColor: Int, onColorPicked: (Int) -> Uni
                     .size(40.dp)
                     .background(Color(currentColor), shape = CircleShape)
                     .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), CircleShape)
-                    .clickable { showPicker = true }
             )
         }
     }
@@ -226,10 +239,7 @@ fun ColorPicker(initialColor: Color, onColorSelected: (Color) -> Unit) {
         Button(
             onClick = { onColorSelected(Color(red, green, blue)) },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            )
+            colors = AppObjectsColors.defaultButtonColors()
         ) {
             Text("Apply")
         }
@@ -292,20 +302,14 @@ fun ExportImportRow(
             }.toString()
             file.writeText(json)
             },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            )
+            colors = AppObjectsColors.defaultButtonColors()
         ) {
             Text("Export Settings")
         }
 
         Button(
             onClick = { launcher.launch(arrayOf("application/json")) },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            )
+            colors = AppObjectsColors.defaultButtonColors()
         ) {
             Text("Import Settings")
         }

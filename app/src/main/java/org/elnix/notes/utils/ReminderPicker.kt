@@ -12,6 +12,7 @@ import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import org.elnix.notes.ui.theme.AppObjectsColors
 import java.util.Calendar
 
 @Composable
@@ -23,7 +24,10 @@ fun ReminderPicker(
     var tempCalendar by remember { mutableStateOf(Calendar.getInstance()) }
 
     Column {
-        Button(onClick = { dateDialogState.show() }) {
+        Button(
+            onClick = { dateDialogState.show() },
+            colors = AppObjectsColors.defaultButtonColors()
+        ) {
             Text("Pick Reminder")
         }
 

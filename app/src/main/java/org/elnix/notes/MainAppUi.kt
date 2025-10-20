@@ -9,11 +9,13 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.theme.blendWith
 
 sealed class Screen(val route: String, val label: String, val icon: @Composable () -> Unit) {
     object Notes : Screen("notes", "Notes", { Icon(Icons.Default.Add, contentDescription = "notes") })
@@ -61,14 +63,26 @@ fun BottomNav(navController: NavHostController) {
         Screen.Notes,
         Screen.Settings
     )
-    NavigationBar {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.background.blendWith(MaterialTheme.colorScheme.primary, 0.2f)
+    ) {
         val current = navController.currentBackStackEntryAsState().value?.destination?.route
         items.forEach { screen ->
             NavigationBarItem(
                 selected = current == screen.route,
                 onClick = { navController.navigate(screen.route) { launchSingleTop = true } },
                 icon = screen.icon,
-                label = { Text(screen.label) }
+                label = { Text(
+                    text = screen.label,
+                    color = MaterialTheme.colorScheme.onBackground
+                ) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedTextColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                    indicatorColor = Color(0x00000000)
+                )
             )
         }
     }

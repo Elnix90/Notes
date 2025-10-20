@@ -84,11 +84,13 @@ fun SettingsScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = onBackground?.let { Color(it) } ?: MaterialTheme.colorScheme.onBackground
+                    contentColor = MaterialTheme.colorScheme.onBackground
                 )
             ) {
                 Text("Reset to Defaults")
             }
+
+            HorizontalDivider()
 
             ExportImportRow(
                 ctx = ctx,
@@ -121,7 +123,11 @@ fun ColorPickerRow(label: String, currentColor: Int, onColorPicked: (Int) -> Uni
             )
             Spacer(Modifier.width(8.dp))
             Button(
-                onClick = { showPicker = true }
+                onClick = { showPicker = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
             ) {
                 Text("Pick")
             }
@@ -170,7 +176,11 @@ fun ColorPicker(initialColor: Color, onColorSelected: (Color) -> Unit) {
         Spacer(Modifier.height(12.dp))
         Button(
             onClick = { onColorSelected(Color(red, green, blue)) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onBackground
+            )
         ) {
             Text("Apply")
         }
@@ -212,7 +222,8 @@ fun ExportImportRow(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Button(onClick = {
+        Button(
+            onClick = {
             val file = File(ctx.cacheDir, "theme_export.json")
             val json = JSONObject().apply {
                 put("primary", primaryColor)
@@ -220,11 +231,22 @@ fun ExportImportRow(
                 put("onBackground", onBackgroundColor)
             }.toString()
             file.writeText(json)
-        }) {
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onBackground
+            )
+        ) {
             Text("Export Theme")
         }
 
-        Button(onClick = { launcher.launch(arrayOf("application/json")) }) {
+        Button(
+            onClick = { launcher.launch(arrayOf("application/json")) },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onBackground
+            )
+        ) {
             Text("Import Theme")
         }
     }

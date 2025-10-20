@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.theme.blendWith
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -45,7 +46,8 @@ fun NoteCard(note: NoteEntity, onClick: () -> Unit, onDelete: () -> Unit) {
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .fillMaxWidth(),
         shape = shape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background.blendWith(
+            MaterialTheme.colorScheme.primary, 0.2f)),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(modifier = Modifier
@@ -61,7 +63,7 @@ fun NoteCard(note: NoteEntity, onClick: () -> Unit, onDelete: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
                 Spacer(Modifier.height(6.dp))
-                Text(text = note.title, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                Text(text = note.title, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
             }
             IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.primary)

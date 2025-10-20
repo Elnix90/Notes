@@ -61,4 +61,12 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun addReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.insert(reminder) }
     fun updateReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.update(reminder) }
     fun deleteReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.delete(reminder) }
+
+
+    suspend fun deleteNoteAndReminders(noteId: Long) {
+        // delete reminders first
+        reminderRepo.deleteByNoteId(noteId)
+        // delete note
+        noteRepo.deleteById(noteId)
+    }
 }

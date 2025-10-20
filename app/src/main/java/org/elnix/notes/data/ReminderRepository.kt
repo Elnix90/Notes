@@ -15,4 +15,6 @@ class ReminderRepository(private val dao: ReminderDao) {
 
     suspend fun delete(reminder: ReminderEntity) =
         dao.delete(reminder)
+
+    suspend fun deleteByNoteId(noteId: Long) = dao.deleteByNoteId(noteId)
 }

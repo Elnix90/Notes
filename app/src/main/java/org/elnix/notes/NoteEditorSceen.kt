@@ -29,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
@@ -47,7 +48,7 @@ import java.util.Calendar
 @Composable
 fun NoteEditorScreen(
     vm: NoteViewModel,
-    noteId: Long? = null,
+    noteId: Long?,
     onSaved: () -> Unit,
     onCancel: (Long?) -> Unit
 ) {
@@ -71,50 +72,16 @@ fun NoteEditorScreen(
             note = loaded
             title = loaded?.title ?: ""
             desc = loaded?.desc ?: ""
-        } else {
-            // Create a new empty note right away
-            val id = vm.addNoteAndReturnId("", "")
-            createdNewNoteId = id
-            note = vm.getById(id)
-
-            // Apply default reminders
-            val ctx = vm.getApplication<Application>()
-            val defaults = SettingsStore.getDefaultRemindersFlow(ctx)
-                .first() // collect current list once
-            defaults.forEach { offset ->
-                val cal = Calendar.getInstance()
-                offset.applyTo(cal)
-                vm.addReminder(
-                    ReminderEntity(
-                        noteId = id,
-                        dueDateTime = cal,
-                        enabled = true
-                    )
-                )
-            }
         }
     }
 
-    // Observe reminders for this note
+//    // Observe reminders for this note
     val reminders by remember(note?.id) {
         if (note?.id != null) vm.remindersFor(note!!.id)
         else null
     }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
 
-    // Track cancel/delete case
-    DisposableEffect(Unit) {
-        onDispose {
-            // If we created a new note but didn't save it, delete it
-            if (createdNewNoteId != null && noteId == null) {
-                scope.launch {
-                    val savedNote = vm.getById(createdNewNoteId!!)
-                    if (savedNote != null && savedNote.title.isBlank() && savedNote.desc.isBlank()) {
-                        vm.delete(savedNote)
-                    }
-                }
-            }
-        }
-    }
+
 
     Column(
         modifier = Modifier

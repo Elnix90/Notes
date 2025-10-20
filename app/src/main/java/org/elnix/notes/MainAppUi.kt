@@ -37,7 +37,7 @@ fun MainApp(vm: NoteViewModel) {
         bottomBar = { BottomNav(navController) },
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate(Screen.Create.route) }) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
+                Icon(Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.primary)
             }
         }
     ) { innerPadding ->
@@ -48,31 +48,43 @@ fun MainApp(vm: NoteViewModel) {
             // --- CREATE NOTE ---
             composable(Screen.Create.route) {
                 var createdNoteId by remember { mutableStateOf<Long?>(null) }
+                var saved by remember { mutableStateOf(false) }
 
-                // We create the note right away when this screen opens
+                // Create note once
                 LaunchedEffect(Unit) {
                     if (createdNoteId == null) {
-                        val id = vm.addNoteAndReturnId(title = "", desc = "")
-                        createdNoteId = id
+                        createdNoteId = vm.addNoteAndReturnId("", "")
                     }
                 }
 
-                // Pass both save and cancel handlers
+                // Cleanup if leaving without saving
+                DisposableEffect(createdNoteId, saved) {
+                    onDispose {
+                        if (!saved && createdNoteId != null) {
+                            vm.viewModelScope.launch {
+                                vm.deleteNoteAndReminders(createdNoteId!!)
+                            }
+                        }
+                    }
+                }
+
                 NoteEditorScreen(
                     vm = vm,
                     noteId = createdNoteId,
                     onSaved = {
-                        navController.popBackStack() // Just go back — keep the note
+                        saved = true
+                        navController.popBackStack()
                     },
                     onCancel = { id ->
-                        if (id != null) {
-                            // Delete the note if user cancels
+                        val realId = createdNoteId ?: id
+                        if (realId != null) {
                             vm.viewModelScope.launch {
-                                val note = vm.getById(id)
-                                if (note != null) vm.delete(note)
+                                vm.deleteNoteAndReminders(realId)
+                                navController.popBackStack()
                             }
+                        } else {
+                            navController.popBackStack()
                         }
-                        navController.popBackStack()
                     }
                 )
             }

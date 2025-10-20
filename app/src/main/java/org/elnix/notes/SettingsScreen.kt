@@ -89,7 +89,7 @@ fun SettingsScreen() {
                     contentColor = MaterialTheme.colorScheme.onBackground
                 )
             ) {
-                Text("Reset to Defaults")
+                Text("Reset to Defaults Colors")
             }
 
             HorizontalDivider()

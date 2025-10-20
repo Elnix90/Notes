@@ -8,6 +8,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.Flow
 import org.elnix.notes.ui.theme.Purple40
+import org.elnix.notes.utils.ReminderOffset
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
@@ -51,4 +52,37 @@ object SettingsStore {
         setBackground(ctx, Color.Black.toArgb())
         setOnBackground(ctx, Color.White.toArgb())
     }
+
+
+    private val DEFAULT_REMINDERS = stringPreferencesKey("default_reminders")
+
+    fun getDefaultRemindersFlow(ctx: Context): Flow<List<ReminderOffset>> =
+        ctx.dataStore.data.map { prefs ->
+            prefs[DEFAULT_REMINDERS]?.let { jsonStr ->
+                val arr = org.json.JSONArray(jsonStr)
+                List(arr.length()) { i ->
+                    val obj = arr.getJSONObject(i)
+                    ReminderOffset(
+                        minutesFromNow = if (obj.has("minutes")) obj.getLong("minutes") else null,
+                        hourOfDay = if (obj.has("hour")) obj.getInt("hour") else null,
+                        minute = if (obj.has("minute")) obj.getInt("minute") else null
+                    )
+                }
+            } ?: emptyList()
+        }
+
+    suspend fun setDefaultReminders(ctx: Context, reminders: List<ReminderOffset>) {
+        val jsonStr = org.json.JSONArray().apply {
+            reminders.forEach { r ->
+                put(org.json.JSONObject().apply {
+                    r.minutesFromNow?.let { put("minutes", it) }
+                    r.hourOfDay?.let { put("hour", it) }
+                    r.minute?.let { put("minute", it) }
+                })
+            }
+        }.toString()
+
+        ctx.dataStore.edit { it[DEFAULT_REMINDERS] = jsonStr }
+    }
+
 }

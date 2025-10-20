@@ -1,9 +1,9 @@
 package org.elnix.notes.ui.theme
 
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 
 private val ColorScheme = darkColorScheme(
     primary = Purple40,
@@ -18,7 +18,6 @@ fun NotesTheme(
     customOnBackground: Int? = null,
     content: @Composable () -> Unit
 ) {
-    val context = LocalContext.current
 
     // pick base color scheme (dynamic/light/dark)
     var colorScheme = ColorScheme

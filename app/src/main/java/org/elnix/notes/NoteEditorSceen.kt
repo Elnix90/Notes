@@ -2,7 +2,8 @@ package org.elnix.notes
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,22 +12,17 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -37,9 +33,10 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.utils.ReminderBubble
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NoteEditorScreen(
     vm: NoteViewModel,
@@ -53,26 +50,26 @@ fun NoteEditorScreen(
     var title by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
 
-    // List of reminders for this note
-    var reminders by remember { mutableStateOf(listOf<ReminderEntity>()) }
-
-    // Compose dialog states
+    // Dialog states for date & time pickers
     val dateDialogState = rememberMaterialDialogState()
     val timeDialogState = rememberMaterialDialogState()
     var tempCalendar by remember { mutableStateOf(Calendar.getInstance()) }
 
-    // Load note and reminders
+    // Load note if editing existing one
     LaunchedEffect(noteId) {
         if (noteId != null) {
-            val n = vm.getById(noteId)
-            note = n
-            n?.let {
-                title = it.title
-                desc = it.desc
-            }
-            reminders = vm.getReminders(noteId)
+            val loaded = vm.getById(noteId)
+            note = loaded
+            title = loaded?.title ?: ""
+            desc = loaded?.desc ?: ""
         }
     }
+
+    // Observe reminders — only if we already have a noteId
+    val reminders by remember(noteId) {
+        if (noteId != null) vm.remindersFor(noteId)
+        else null
+    }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
 
     Column(
         modifier = Modifier
@@ -96,44 +93,30 @@ fun NoteEditorScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // List existing reminders
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // === Reminder section ===
+        // List existing reminders as interactive bubbles
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             reminders.forEach { reminder ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Reminder at: ${reminder.dueDateTime.time}")
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Switch(
-                            checked = reminder.enabled,
-                            onCheckedChange = { enabled ->
-                                scope.launch {
-                                    vm.updateReminder(reminder.copy(enabled = enabled))
-                                    reminders = vm.getReminders(noteId!!)
-                                }
-                            }
-                        )
-                        IconButton(onClick = {
-                            scope.launch {
-                                vm.deleteReminder(reminder)
-                                reminders = vm.getReminders(noteId!!)
-                            }
-                        }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete Reminder")
-                        }
+                ReminderBubble(
+                    reminder = reminder,
+                    onToggle = { enabled ->
+                        scope.launch { vm.updateReminder(reminder.copy(enabled = enabled)) }
+                    },
+                    onDelete = {
+                        scope.launch { vm.deleteReminder(reminder) }
                     }
-                }
+                )
             }
 
-            // Add new reminder button
             Button(onClick = { dateDialogState.show() }) {
                 Text("Add Reminder")
             }
         }
 
-        // Date picker
+        // === Date Picker ===
         MaterialDialog(dialogState = dateDialogState, buttons = {
             positiveButton("OK") { timeDialogState.show() }
             negativeButton("Cancel")
@@ -145,16 +128,20 @@ fun NoteEditorScreen(
             }
         }
 
-        // Time picker
+        // === Time Picker ===
         MaterialDialog(dialogState = timeDialogState, buttons = {
             positiveButton("OK") {
-                val newReminder = ReminderEntity(
-                    noteId = noteId!!,
-                    dueDateTime = tempCalendar,
-                    enabled = true
-                )
-                vm.addReminder(newReminder)
-                // update reminders list
+                scope.launch {
+                    // Create note if it doesn't exist yet
+                    val id = noteId ?: vm.addNoteAndReturnId(title, desc)
+
+                    val newReminder = ReminderEntity(
+                        noteId = id,
+                        dueDateTime = tempCalendar,
+                        enabled = true
+                    )
+                    vm.addReminder(newReminder)
+                }
             }
             negativeButton("Cancel")
         }) {
@@ -167,14 +154,14 @@ fun NoteEditorScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Save/Update button
+        // === Save/Update Button ===
         Button(
             onClick = {
                 scope.launch {
                     if (note != null) {
                         vm.update(note!!.copy(title = title, desc = desc))
                     } else {
-                        vm.addNote(title, desc) // returns Job, but we ignore it
+                        vm.addNote(title, desc)
                     }
                     onSaved()
                 }
@@ -186,20 +173,4 @@ fun NoteEditorScreen(
     }
 }
 
-//// Helper for remaining time (optional)
-//private fun getRemainingTimeText(due: Calendar): String {
-//    val now = Calendar.getInstance()
-//    val diff = due.timeInMillis - now.timeInMillis
-//    if (diff <= 0) return "Due time passed"
-//
-//    val days = TimeUnit.MILLISECONDS.toDays(diff)
-//    val hours = TimeUnit.MILLISECONDS.toHours(diff) % 24
-//    val minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60
-//
-//    return buildString {
-//        append("in ")
-//        if (days > 0) append("${days}d ")
-//        if (hours > 0) append("${hours}h ")
-//        if (minutes > 0) append("${minutes}m")
-//    }
-//}
+

@@ -10,7 +10,7 @@ class NoteRepository(private val dao: NoteDao) {
 
     suspend fun upsert(note: NoteEntity): Long {
         // if id == 0 insert, else update (insert with REPLACE works too)
-        return if (note.id == 0L) dao.insert(note) else { dao.update(note); note.id }
+        return if (note.id == 0L) dao.upsert(note) else { dao.update(note); note.id }
     }
 
     suspend fun delete(note: NoteEntity) = dao.delete(note)

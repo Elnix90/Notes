@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -44,8 +43,12 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.ui.theme.blendWith
+import org.elnix.notes.utils.ReminderBubble
+import org.elnix.notes.utils.ReminderOffset
+import org.elnix.notes.utils.ReminderPicker
 import org.json.JSONObject
 import java.io.File
 
@@ -58,6 +61,12 @@ fun SettingsScreen() {
     val primary by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
     val background by SettingsStore.getBackgroundFlow(ctx).collectAsState(initial = null)
     val onBackground by SettingsStore.getOnBackgroundFlow(ctx).collectAsState(initial = null)
+
+//    val defaultReminders by SettingsStore.getDefaultRemindersFlow(ctx)
+//        .collectAsState(initial = emptySet())
+
+    var defaultReminders by remember { mutableStateOf(listOf<ReminderOffset>()) }
+
 
     CompositionLocalProvider(
         LocalContentColor provides MaterialTheme.colorScheme.onBackground
@@ -110,6 +119,31 @@ fun SettingsScreen() {
                     onCheckedChange = { scope.launch { SettingsStore.setShowBottomNavLabelsFlow(ctx, it) } }
                 )
             }
+            HorizontalDivider()
+
+
+            defaultReminders.forEachIndexed { index, reminder ->
+                ReminderBubble(
+                    reminder = ReminderEntity(
+                        noteId = -1, // dummy
+                        dueDateTime = reminder.toCalendar(),
+                        enabled = true
+                    ),
+                    onToggle = {},
+                    onDelete = {
+                        defaultReminders = defaultReminders.toMutableList().apply { removeAt(index) }
+                        scope.launch { SettingsStore.setDefaultReminders(ctx, defaultReminders) }
+                    }
+                )
+            }
+
+            ReminderPicker { picked ->
+                defaultReminders = defaultReminders + picked
+                scope.launch { SettingsStore.setDefaultReminders(ctx, defaultReminders) }
+            }
+
+
+
 
             HorizontalDivider()
 

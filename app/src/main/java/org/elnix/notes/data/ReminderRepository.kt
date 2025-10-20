@@ -1,9 +1,11 @@
 package org.elnix.notes.data
 
+import kotlinx.coroutines.flow.Flow
+
 class ReminderRepository(private val dao: ReminderDao) {
 
-    suspend fun getByNoteId(noteId: Long): List<ReminderEntity> =
-        dao.getByNoteId(noteId)
+    fun observeByNoteId(noteId: Long): Flow<List<ReminderEntity>> =
+        dao.observeByNoteId(noteId)
 
     suspend fun insert(reminder: ReminderEntity): Long =
         dao.insert(reminder)

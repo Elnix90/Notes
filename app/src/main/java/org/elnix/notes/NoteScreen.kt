@@ -26,6 +26,11 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
     val notes by vm.notes.collectAsState()
     val ctx = LocalContext.current
 
+    LaunchedEffect(Unit) {
+        vm.deleteAllEmptyNotes()
+    }
+
+
     if (notes.isEmpty()) {
         // Show placeholder message when no notes exist
         Box(

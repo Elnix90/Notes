@@ -1,6 +1,9 @@
 package org.elnix.notes
 
 import android.app.Application
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -13,8 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -29,11 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
-import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.datetime.date.datepicker
-import com.vanpra.composematerialdialogs.datetime.time.timepicker
-import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
@@ -50,39 +50,79 @@ fun NoteEditorScreen(
     vm: NoteViewModel,
     noteId: Long?,
     onSaved: () -> Unit,
-    onCancel: (Long?) -> Unit
+    onCancel: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+    val ctx = vm.getApplication<Application>()
 
     var note by remember { mutableStateOf<NoteEntity?>(null) }
     var title by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
-    var createdNewNoteId by remember { mutableStateOf<Long?>(null) }
+    var createdNoteId by remember { mutableStateOf<Long?>(null) }
 
-    // Dialog states for date & time pickers
-    val dateDialogState = rememberMaterialDialogState()
-    val timeDialogState = rememberMaterialDialogState()
-    var tempCalendar by remember { mutableStateOf(Calendar.getInstance()) }
-
-    // Load note or create a new one
+    // Load or create note
     LaunchedEffect(noteId) {
         if (noteId != null) {
             val loaded = vm.getById(noteId)
             note = loaded
             title = loaded?.title ?: ""
             desc = loaded?.desc ?: ""
+        } else if (createdNoteId == null) {
+            val id = vm.addNoteAndReturnId("", "")
+            createdNoteId = id
+            note = vm.getById(id)
+
+            // Apply default reminders
+            val defaults = SettingsStore.getDefaultRemindersFlow(ctx).first()
+            defaults.forEach { offset ->
+                val cal = Calendar.getInstance()
+                offset.applyTo(cal)
+                vm.addReminder(
+                    ReminderEntity(
+                        noteId = id,
+                        dueDateTime = cal,
+                        enabled = true
+                    )
+                )
+            }
         }
     }
 
-//    // Observe reminders for this note
-    val reminders by remember(note?.id) {
-        if (note?.id != null) vm.remindersFor(note!!.id)
-        else null
+    val currentId = note?.id ?: createdNoteId
+
+    val reminders by remember(currentId) {
+        if (currentId != null) vm.remindersFor(currentId) else null
     }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
 
+    // Auto-delete empty new note when leaving the screen
+    DisposableEffect(Unit) {
+        onDispose {
+            if (createdNoteId != null) {
+                scope.launch {
+                    val n = vm.getById(createdNoteId!!)
+                    if (n != null && n.title.isBlank() && n.desc.isBlank()) {
+                        vm.delete(n)
+                    }
+                }
+            }
+        }
+    }
 
-
+    // Handle system back press just like cancel
+    BackHandler {
+        scope.launch {
+            val id = note?.id ?: createdNoteId
+            if (id != null) {
+                val n = vm.getById(id)
+                if (n != null && n.title.isBlank() && n.desc.isBlank()) {
+                    vm.delete(n)
+                }
+            }
+            onCancel() // pop back
+        }
+    }
+    // ========== UI ==========
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -105,7 +145,6 @@ fun NoteEditorScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // === Reminder section ===
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -123,44 +162,10 @@ fun NoteEditorScreen(
             }
 
             Button(
-                onClick = { dateDialogState.show() },
+                onClick = { /* open dialogs */ },
                 colors = AppObjectsColors.defaultButtonColors()
             ) {
                 Text("Add Reminder")
-            }
-        }
-
-        // === Date Picker ===
-        MaterialDialog(dialogState = dateDialogState, buttons = {
-            positiveButton("OK") { timeDialogState.show() }
-            negativeButton("Cancel")
-        }) {
-            datepicker { date ->
-                tempCalendar = Calendar.getInstance().apply {
-                    set(date.year, date.monthValue - 1, date.dayOfMonth)
-                }
-            }
-        }
-
-        // === Time Picker ===
-        MaterialDialog(dialogState = timeDialogState, buttons = {
-            positiveButton("OK") {
-                scope.launch {
-                    val id = note?.id ?: createdNewNoteId ?: return@launch
-                    val newReminder = ReminderEntity(
-                        noteId = id,
-                        dueDateTime = tempCalendar,
-                        enabled = true
-                    )
-                    vm.addReminder(newReminder)
-                }
-            }
-            negativeButton("Cancel")
-        }) {
-            timepicker { time ->
-                tempCalendar.set(Calendar.HOUR_OF_DAY, time.hour)
-                tempCalendar.set(Calendar.MINUTE, time.minute)
-                tempCalendar.set(Calendar.SECOND, 0)
             }
         }
 
@@ -173,30 +178,51 @@ fun NoteEditorScreen(
             Button(
                 onClick = {
                     scope.launch {
-                        if (note != null) {
-                            vm.update(note!!.copy(title = title, desc = desc))
+                        currentId?.let { id ->
+                            val n = vm.getById(id)
+                            if (n != null) {
+                                val updated = n.copy(title = title.trim(), desc = desc.trim())
+                                if (updated.title.isBlank() && updated.desc.isBlank()) {
+                                    // Empty note → delete and cancel
+                                    vm.delete(updated)
+                                    onCancel()
+                                } else {
+                                    // Valid note → update and go back
+                                    vm.update(updated)
+                                    onSaved()
+                                }
+                            }
                         }
-                        onSaved()
                     }
                 },
                 modifier = Modifier.weight(1f),
                 colors = AppObjectsColors.defaultButtonColors()
             ) {
-                Text(if (noteId == null) "Save" else "Update")
+                Text("Save")
             }
 
             OutlinedButton(
                 onClick = {
-                    onCancel(note?.id)
+                    scope.launch {
+                        currentId?.let {
+                            val n = vm.getById(it)
+                            if (n != null && n.title.isBlank() && n.desc.isBlank()) {
+                                vm.delete(n)
+                            }
+                        }
+                        onCancel() // always go back
+                    }
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                colors = AppObjectsColors.cancelButtonColors()
             ) {
                 Text("Cancel")
             }
         }
-
     }
 }
+
 
 
 

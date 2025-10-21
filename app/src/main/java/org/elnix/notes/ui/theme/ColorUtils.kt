@@ -50,6 +50,16 @@ object AppObjectsColors {
             contentColor = MaterialTheme.colorScheme.onBackground
         )
     }
+
+    @Composable
+    fun cancelButtonColors(): ButtonColors {
+        return ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
+    }
+
+
 }
 
 

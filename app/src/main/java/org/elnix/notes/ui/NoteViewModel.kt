@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -63,10 +64,13 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.delete(reminder) }
 
 
-    suspend fun deleteNoteAndReminders(noteId: Long) {
-        // delete reminders first
-        reminderRepo.deleteByNoteId(noteId)
-        // delete note
-        noteRepo.deleteById(noteId)
+
+    //  Deletes all notes that have both a blank title and description.
+    //  Safe to call at startup or when returning to the list screen.
+    suspend fun deleteAllEmptyNotes() {
+        val allNotes = noteRepo.observeAll().first() // get current list
+        allNotes
+            .filter { it.title.isBlank() && it.desc.isBlank() }
+            .forEach { noteRepo.delete(it) }
     }
 }

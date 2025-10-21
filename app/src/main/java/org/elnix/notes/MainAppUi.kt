@@ -4,17 +4,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import kotlinx.coroutines.launch
 import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.adjustBrightness
@@ -32,75 +42,60 @@ sealed class Screen(val route: String, val label: String, val icon: @Composable 
 @Composable
 fun MainApp(vm: NoteViewModel) {
     val navController = rememberNavController()
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(
         bottomBar = { BottomNav(navController) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(Screen.Create.route) }) {
-                Icon(Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.primary)
+            if (currentRoute != Screen.Create.route && currentRoute != Screen.Edit.route) {
+                FloatingActionButton(onClick = {
+                    navController.navigate(Screen.Create.route) {
+                        launchSingleTop = true
+                        popUpTo(Screen.Create.route) { inclusive = true }
+                    }
+                }) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Add",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             }
+
         }
     ) { innerPadding ->
-        NavHost(navController, startDestination = "notes", Modifier.padding(innerPadding)) {
-            composable("notes") { NotesScreen(vm, navController) }
-            composable("settings") { SettingsScreen() }
+        NavHost(navController, startDestination = Screen.Notes.route, Modifier.padding(innerPadding)) {
+            // NOTES LIST
+            composable(Screen.Notes.route) {
+                NotesScreen(vm, navController)
+            }
 
-            // --- CREATE NOTE ---
+            // SETTINGS
+            composable(Screen.Settings.route) {
+                SettingsScreen()
+            }
+
+            // CREATE NOTE (no note created here — NoteEditorScreen handles it)
             composable(Screen.Create.route) {
-                var createdNoteId by remember { mutableStateOf<Long?>(null) }
-                var saved by remember { mutableStateOf(false) }
-
-                // Create note once
-                LaunchedEffect(Unit) {
-                    if (createdNoteId == null) {
-                        createdNoteId = vm.addNoteAndReturnId("", "")
-                    }
-                }
-
-                // Cleanup if leaving without saving
-                DisposableEffect(createdNoteId, saved) {
-                    onDispose {
-                        if (!saved && createdNoteId != null) {
-                            vm.viewModelScope.launch {
-                                vm.deleteNoteAndReminders(createdNoteId!!)
-                            }
-                        }
-                    }
-                }
-
                 NoteEditorScreen(
                     vm = vm,
-                    noteId = createdNoteId,
-                    onSaved = {
-                        saved = true
-                        navController.popBackStack()
-                    },
-                    onCancel = { id ->
-                        val realId = createdNoteId ?: id
-                        if (realId != null) {
-                            vm.viewModelScope.launch {
-                                vm.deleteNoteAndReminders(realId)
-                                navController.popBackStack()
-                            }
-                        } else {
-                            navController.popBackStack()
-                        }
-                    }
+                    noteId = null, // indicates new note
+                    onSaved = { navController.popBackStack() },
+                    onCancel = { navController.popBackStack() }
                 )
             }
 
-            // --- EDIT NOTE ---
+            // EDIT NOTE
             composable(
-                route = "edit/{noteId}",
+                route = Screen.Edit.route,
                 arguments = listOf(navArgument("noteId") { type = NavType.LongType })
             ) { backStackEntry ->
-                val noteId = backStackEntry.arguments?.getLong("noteId") ?: 0L
-
+                val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
                 NoteEditorScreen(
                     vm = vm,
                     noteId = noteId,
                     onSaved = { navController.popBackStack() },
-                    onCancel = { navController.popBackStack() } // no delete on cancel for edits
+                    onCancel = { navController.popBackStack() }
                 )
             }
         }

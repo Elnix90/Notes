@@ -112,7 +112,7 @@ fun ReminderBubble(
             Icon(
                 imageVector = Icons.Default.Cancel,
                 contentDescription = "Delete Reminder",
-                tint = color.copy(alpha = 0.7f)
+                tint = color.copy(if (reminder.enabled) 1f else 0.4f)
             )
         }
     }

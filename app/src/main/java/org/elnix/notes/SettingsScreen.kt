@@ -72,7 +72,7 @@ fun SettingsItem(
             .fillMaxWidth()
             .clickable { onClick() }
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 16.dp, vertical = 14.dp),
@@ -107,17 +107,21 @@ fun AppearanceSettingsScreen(navController: NavController) {
 }
 
 @Composable
-fun RemindersSettingsScreen() {
+fun RemindersSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    RemindersTab(ctx, scope)
+    RemindersTab(ctx, scope) {
+        navController.popBackStack()
+    }
 }
 
 @Composable
-fun BackupSettingsScreen() {
+fun BackupSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    BackupTab(ctx, scope)
+    BackupTab(ctx, scope) {
+        navController.popBackStack()
+    }
 }
 
 

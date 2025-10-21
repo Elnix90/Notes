@@ -46,7 +46,7 @@ fun ColorPickerRow(label: String, currentColor: Int, onColorPicked: (Int) -> Uni
             .fillMaxWidth()
             .clickable { showPicker = true }
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 16.dp, vertical = 14.dp),
@@ -93,7 +93,6 @@ fun ColorPicker(initialColor: Color, onColorSelected: (Color) -> Unit) {
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
 
-        // Top row with preview title and random button
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

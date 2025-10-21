@@ -30,7 +30,6 @@ import androidx.navigation.navArgument
 import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.adjustBrightness
-import org.elnix.notes.ui.theme.blendWith
 
 sealed class Screen(val route: String, val label: String, val icon: @Composable () -> Unit) {
     object Notes : Screen("notes", "Notes", { Icon(Icons.Default.Add, contentDescription = "notes") })
@@ -82,8 +81,8 @@ fun MainApp(vm: NoteViewModel) {
 
             // Settings sub-screens
             composable("settings/appearance") { AppearanceSettingsScreen(navController) }
-            composable("settings/reminders") { RemindersSettingsScreen() }
-            composable("settings/backup") { BackupSettingsScreen() }
+            composable("settings/reminders") { RemindersSettingsScreen(navController) }
+            composable("settings/backup") { BackupSettingsScreen(navController) }
 
 
             // CREATE NOTE (no note created here — NoteEditorScreen handles it)

@@ -1,6 +1,9 @@
 package org.elnix.notes
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
@@ -18,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -48,16 +52,20 @@ fun MainApp(vm: NoteViewModel) {
         bottomBar = { BottomNav(navController) },
         floatingActionButton = {
             if (currentRoute != Screen.Create.route && currentRoute != Screen.Edit.route) {
-                FloatingActionButton(onClick = {
-                    navController.navigate(Screen.Create.route) {
-                        launchSingleTop = true
-                        popUpTo(Screen.Create.route) { inclusive = true }
-                    }
-                }) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(Screen.Create.route) {
+                            launchSingleTop = true
+                            popUpTo(Screen.Create.route) { inclusive = true }
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.background,
+                    modifier = Modifier.size(56.dp)
+                ) {
                     Icon(
                         Icons.Default.Add,
                         contentDescription = "Add",
-                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }

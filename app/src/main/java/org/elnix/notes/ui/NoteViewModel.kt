@@ -25,19 +25,9 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     val notes = noteRepo.observeAll()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+
+
     // --- Notes ---
-    fun addNote(title: String, desc: String) = viewModelScope.launch {
-        val note = NoteEntity(title = title, desc = desc, createdAt = Date())
-        val noteId = noteRepo.upsert(note)
-
-        // Apply default reminders
-        val defaults = SettingsStore.getDefaultRemindersFlow(ctx).firstOrNull() ?: emptyList()
-        defaults.forEach { offset ->
-            val cal = offset.toCalendar()
-            reminderRepo.insert(ReminderEntity(noteId = noteId, dueDateTime = cal, enabled = true))
-        }
-    }
-
     suspend fun addNoteAndReturnId(title: String, desc: String): Long {
         val note = NoteEntity(title = title, desc = desc, createdAt = Date())
         val id = noteRepo.upsert(note)
@@ -53,6 +43,8 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun update(note: NoteEntity) = viewModelScope.launch { noteRepo.upsert(note) }
     fun delete(note: NoteEntity) = viewModelScope.launch { noteRepo.delete(note) }
     suspend fun getById(id: Long): NoteEntity? = noteRepo.getById(id)
+
+
 
     // --- Reminders ---
     fun remindersFor(noteId: Long): StateFlow<List<ReminderEntity>> =

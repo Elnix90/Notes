@@ -28,7 +28,7 @@ fun ReminderPicker(
             onClick = { dateDialogState.show() },
             colors = AppObjectsColors.defaultButtonColors()
         ) {
-            Text("Pick Reminder")
+            Text("Add Reminder")
         }
 
         MaterialDialog(dialogState = dateDialogState, buttons = {

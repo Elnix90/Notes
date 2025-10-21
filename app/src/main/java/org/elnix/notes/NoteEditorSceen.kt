@@ -1,9 +1,7 @@
 package org.elnix.notes
 
-import android.app.Application
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -16,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -34,15 +31,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
-import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderBubble
-import java.util.Calendar
+import org.elnix.notes.utils.ReminderPicker
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -54,7 +49,7 @@ fun NoteEditorScreen(
 ) {
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
-    val ctx = vm.getApplication<Application>()
+
 
     var note by remember { mutableStateOf<NoteEntity?>(null) }
     var title by remember { mutableStateOf("") }
@@ -72,20 +67,6 @@ fun NoteEditorScreen(
             val id = vm.addNoteAndReturnId("", "")
             createdNoteId = id
             note = vm.getById(id)
-
-            // Apply default reminders
-            val defaults = SettingsStore.getDefaultRemindersFlow(ctx).first()
-            defaults.forEach { offset ->
-                val cal = Calendar.getInstance()
-                offset.applyTo(cal)
-                vm.addReminder(
-                    ReminderEntity(
-                        noteId = id,
-                        dueDateTime = cal,
-                        enabled = true
-                    )
-                )
-            }
         }
     }
 
@@ -161,11 +142,16 @@ fun NoteEditorScreen(
                 )
             }
 
-            Button(
-                onClick = { /* open dialogs */ },
-                colors = AppObjectsColors.defaultButtonColors()
-            ) {
-                Text("Add Reminder")
+            ReminderPicker { picked ->
+                // Only add a reminder if we have a valid current note
+                currentId?.let { noteId ->
+                    val reminderEntity = ReminderEntity(
+                        noteId = noteId,
+                        dueDateTime = picked.toCalendar(),
+                        enabled = true
+                    )
+                    scope.launch { vm.addReminder(reminderEntity) }
+                }
             }
         }
 

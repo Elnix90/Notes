@@ -1,9 +1,7 @@
 package org.elnix.notes
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
@@ -78,10 +76,15 @@ fun MainApp(vm: NoteViewModel) {
                 NotesScreen(vm, navController)
             }
 
-            // SETTINGS
-            composable(Screen.Settings.route) {
-                SettingsScreen()
-            }
+
+            // Settings list
+            composable(Screen.Settings.route) { SettingsListScreen(navController) }
+
+            // Settings sub-screens
+            composable("settings/appearance") { AppearanceSettingsScreen(navController) }
+            composable("settings/reminders") { RemindersSettingsScreen() }
+            composable("settings/backup") { BackupSettingsScreen() }
+
 
             // CREATE NOTE (no note created here — NoteEditorScreen handles it)
             composable(Screen.Create.route) {
@@ -121,7 +124,9 @@ fun BottomNav(navController: NavHostController) {
     )
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.background.blendWith(MaterialTheme.colorScheme.primary, 0.2f)
+//        containerColor = MaterialTheme.colorScheme.background.blendWith(MaterialTheme.colorScheme.primary, 0.2f)
+        containerColor = MaterialTheme.colorScheme.surface
+
     ) {
         val current = navController.currentBackStackEntryAsState().value?.destination?.route
 

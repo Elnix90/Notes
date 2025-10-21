@@ -1,4 +1,4 @@
-package org.elnix.notes.settings
+package org.elnix.notes.ui.settings
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement

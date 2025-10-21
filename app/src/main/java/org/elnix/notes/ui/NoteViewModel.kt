@@ -51,7 +51,10 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         reminderRepo.observeByNoteId(noteId)
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    fun addReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.insert(reminder) }
+    suspend fun addReminder(reminder: ReminderEntity): Long {
+        return reminderRepo.insert(reminder)
+    }
+
     fun updateReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.update(reminder) }
     fun deleteReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.delete(reminder) }
 

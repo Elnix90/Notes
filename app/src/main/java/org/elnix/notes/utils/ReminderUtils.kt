@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.ReminderEntity
 import java.util.Calendar
-import kotlin.math.max
+import kotlin.math.abs
 
 data class ReminderOffset(
     val minutesFromNow: Long? = null,
@@ -67,22 +67,31 @@ fun ReminderBubble(
     onDelete: () -> Unit
 ) {
     val now = System.currentTimeMillis()
-    val diffMillis = max(0, reminder.dueDateTime.timeInMillis - now)
+    val diffMillis = reminder.dueDateTime.timeInMillis - now
+    val isPast = diffMillis < 0
+    val absDiff = abs(diffMillis)
 
     val (text, ratio) = when {
-        diffMillis < 60_000 -> "<1 min" to 0f
-        diffMillis < 3_600_000 -> "${diffMillis / 60_000} min" to 0.1f
-        diffMillis < 86_400_000 -> "${diffMillis / 3_600_000} h" to 0.3f
-        diffMillis < 7L * 86_400_000 -> "${diffMillis / 86_400_000} d" to 0.6f
-        else -> "${diffMillis / (7L * 86_400_000)} wk" to 1f
+        absDiff < 60_000 -> "<1 min" to 0f
+        absDiff < 3_600_000 -> "${absDiff / 60_000} min" to 0.1f
+        absDiff < 86_400_000 -> "${absDiff / 3_600_000} h" to 0.3f
+        absDiff < 7L * 86_400_000 -> "${absDiff / 86_400_000} d" to 0.6f
+        else -> "${absDiff / (7L * 86_400_000)} wk" to 1f
     }
 
-    // Redder when closer (ratio = 0 → red, ratio = 1 → green)
-    val color = Color.hsv(
-        hue = (120f * ratio), // 0 = red, 120 = green
-        saturation = 0.9f,
-        value = 0.9f
-    )
+    val displayText = if (isPast) "$text ago" else text
+
+    val color = if (isPast) {
+        Color(0xFF2196F3)
+    } else {
+        // Gradient for upcoming events
+        Color.hsv(
+            hue = (120f * ratio),
+            saturation = 0.9f,
+            value = 0.9f
+        )
+    }
+
 
     Row(
         modifier = Modifier
@@ -92,7 +101,7 @@ fun ReminderBubble(
                 color = color.copy(alpha = if (reminder.enabled) 1f else 0.3f),
                 shape = CircleShape
             )
-            .clickable { onToggle(!reminder.enabled) }
+            .clickable { if (!isPast) { onToggle(!reminder.enabled) } }
             .background(
                 color = color.copy(alpha = if (reminder.enabled) 0.15f else 0.05f),
                 shape = CircleShape
@@ -101,7 +110,7 @@ fun ReminderBubble(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = text,
+            text = displayText,
             color = color.copy(alpha = if (reminder.enabled) 1f else 0.4f)
         )
         Spacer(Modifier.width(8.dp))
@@ -112,7 +121,7 @@ fun ReminderBubble(
             Icon(
                 imageVector = Icons.Default.Cancel,
                 contentDescription = "Delete Reminder",
-                tint = color.copy(if (reminder.enabled) 1f else 0.4f)
+                tint = color.copy(alpha = if (reminder.enabled) 1f else 0.4f)
             )
         }
     }

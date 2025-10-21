@@ -24,9 +24,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import org.elnix.notes.settings.AppearanceTab
-import org.elnix.notes.settings.BackupTab
-import org.elnix.notes.settings.RemindersTab
+import org.elnix.notes.ui.settings.AppearanceTab
+import org.elnix.notes.ui.settings.BackupTab
+import org.elnix.notes.ui.settings.RemindersTab
 
 
 @Composable

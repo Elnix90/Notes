@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
@@ -38,6 +39,8 @@ import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderBubble
 import org.elnix.notes.utils.ReminderPicker
+import org.elnix.notes.utils.cancelReminderNotification
+import org.elnix.notes.utils.scheduleReminderNotification
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -48,6 +51,7 @@ fun NoteEditorScreen(
     onCancel: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
 
 
@@ -134,7 +138,19 @@ fun NoteEditorScreen(
                 ReminderBubble(
                     reminder = reminder,
                     onToggle = { enabled ->
-                        scope.launch { vm.updateReminder(reminder.copy(enabled = enabled)) }
+                        scope.launch {
+                            val updatedReminder = reminder.copy(enabled = enabled)
+                            vm.updateReminder(updatedReminder)
+                            if (enabled) {
+                                scheduleReminderNotification(
+                                    context,
+                                    updatedReminder,
+                                    title = title.ifBlank { "Reminder" }
+                                )
+                            } else {
+                                cancelReminderNotification(context, reminder.id)
+                            }
+                        }
                     },
                     onDelete = {
                         scope.launch { vm.deleteReminder(reminder) }
@@ -143,14 +159,21 @@ fun NoteEditorScreen(
             }
 
             ReminderPicker { picked ->
-                // Only add a reminder if we have a valid current note
                 currentId?.let { noteId ->
                     val reminderEntity = ReminderEntity(
                         noteId = noteId,
                         dueDateTime = picked.toCalendar(),
                         enabled = true
                     )
-                    scope.launch { vm.addReminder(reminderEntity) }
+                    scope.launch {
+                        val id = vm.addReminder(reminderEntity)
+
+                        scheduleReminderNotification(
+                            context,
+                            reminderEntity.copy(id = id),
+                            title = title.ifBlank { "Reminder" }
+                        )
+                    }
                 }
             }
         }

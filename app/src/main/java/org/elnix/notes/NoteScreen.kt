@@ -1,17 +1,11 @@
 package org.elnix.notes
 
-import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,13 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,9 +40,10 @@ import org.elnix.notes.data.Action
 import org.elnix.notes.data.ActionSettings
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.SettingsStore
+import org.elnix.notes.data.actionColor
+import org.elnix.notes.data.actionIcon
 import org.elnix.notes.ui.NoteViewModel
-import java.text.SimpleDateFormat
-import java.util.Locale
+import org.elnix.notes.ui.helpers.NoteCard
 
 
 @Stable
@@ -107,7 +97,6 @@ fun SwipeableNoteCard(
     navController: androidx.navigation.NavHostController,
     actionSettings: ActionSettings
 ) {
-    val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
 
     val maxSwipePx = 100f
@@ -180,10 +169,6 @@ fun SwipeableNoteCard(
             onClick = {
                 performAction(actionSettings.clickAction, vm, navController, note, scope)
             },
-            onDelete = {
-                vm.delete(note)
-                Toast.makeText(ctx, "Deleted", Toast.LENGTH_SHORT).show()
-            },
             modifier = Modifier.offset(x = swipeOffset.dp)
         )
     }
@@ -195,7 +180,6 @@ private fun performAction(
     vm: NoteViewModel,
     navController: androidx.navigation.NavHostController,
     note: NoteEntity,
-//    ctx: android.content.Context,
     scope: kotlinx.coroutines.CoroutineScope
 ) {
     when (action) {
@@ -215,61 +199,4 @@ private fun performAction(
 
         Action.EDIT -> navController.navigate("edit/${note.id}")
     }
-}
-
-@Composable
-fun NoteCard(note: NoteEntity, onClick: () -> Unit, onDelete: () -> Unit, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onClick() }
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(note.createdAt),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    text = note.title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun actionColor(action: Action): Color = when (action) {
-    Action.DELETE -> MaterialTheme.colorScheme.error
-    Action.COMPLETE -> MaterialTheme.colorScheme.primary
-    Action.EDIT -> MaterialTheme.colorScheme.secondary
-}
-
-@Composable
-private fun actionIcon(action: Action) = when (action) {
-    Action.DELETE -> Icons.Default.Delete
-    Action.EDIT -> Icons.Default.Edit
-    Action.COMPLETE -> Icons.Default.CheckBox
 }

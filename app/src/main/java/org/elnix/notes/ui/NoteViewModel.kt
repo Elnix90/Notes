@@ -18,6 +18,7 @@ import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.ReminderRepository
 import org.elnix.notes.data.SettingsStore
 import java.util.Date
+import kotlin.random.Random
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
     private val ctx = application.applicationContext
@@ -63,7 +64,6 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
 
     //  Deletes all notes that have both a blank title and description.
-    //  Safe to call at startup or when returning to the list screen.
     suspend fun deleteAllEmptyNotes() {
         val allNotes = noteRepo.observeAll().first() // get current list
         allNotes
@@ -72,6 +72,8 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
+
+    // DEBUG FEATURES
     fun deleteAllReminders() = viewModelScope.launch {
         val allNotes = noteRepo.observeAll().first()
         allNotes.forEach { note ->
@@ -101,8 +103,23 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         WorkManager.getInstance(context).cancelAllWork()
     }
 
+    fun createFakeNotes() {
+        viewModelScope.launch {
+            repeat(10) { it ->
+                val id = Random.nextLong().toString()
+                val title = "Fake Note $id"
+                val description = "This is a description for fake note $id."
+                addNoteAndReturnId(title, description)
+            }
+        }
+    }
 
 
+
+
+
+
+    // Complete / Un-complete notes
     fun markCompleted(note: NoteEntity) = viewModelScope.launch {
         noteRepo.upsert(note.copy(isCompleted = true))
     }

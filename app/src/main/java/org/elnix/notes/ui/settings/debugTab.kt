@@ -66,6 +66,15 @@ fun DebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, onBack: (()
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
+
+            Button(
+                onClick = { vm.createFakeNotes() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Create 10 fake notes",
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
         }
     }
 }

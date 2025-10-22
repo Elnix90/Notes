@@ -11,5 +11,6 @@ data class NoteEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
     val desc: String,
-    val createdAt: Date = Date.from(Instant.now())
+    val createdAt: Date = Date.from(Instant.now()),
+    val isCompleted: Boolean = false
 )

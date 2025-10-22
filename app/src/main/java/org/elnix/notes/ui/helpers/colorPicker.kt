@@ -54,7 +54,10 @@ fun ColorPickerRow(label: String, currentColor: Int, onColorPicked: (Int) -> Uni
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label)
+        Text(
+            text = label,
+            color = MaterialTheme.colorScheme.onBackground
+        )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
@@ -68,7 +71,7 @@ fun ColorPickerRow(label: String, currentColor: Int, onColorPicked: (Int) -> Uni
     if (showPicker) {
         AlertDialog(
             onDismissRequest = { showPicker = false },
-            title = { Text("Pick a $label color") },
+            title = { Text(text = "Pick a $label color", color = MaterialTheme.colorScheme.onBackground) },
             text = {
                 ColorPicker(
                     initialColor = Color(currentColor),
@@ -98,7 +101,11 @@ fun ColorPicker(initialColor: Color, onColorSelected: (Color) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Preview", style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text ="Preview",
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyLarge
+            )
             IconButton(onClick = {
                 red = Random.nextFloat()
                 green = Random.nextFloat()

@@ -35,6 +35,7 @@ fun SettingsTitle(title: String, onBack: (() -> Unit)) {
 
         Text(
             text = title,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.titleLarge
         )
     }

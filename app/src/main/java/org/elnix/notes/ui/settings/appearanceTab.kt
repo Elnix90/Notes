@@ -96,7 +96,10 @@ fun AppearanceTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Show Navigation Bar Labels")
+                Text(
+                    text= "Show Navigation Bar Labels",
+                    color = MaterialTheme.colorScheme.onBackground
+                )
                 Switch(
                     checked = showNavbarLabels ?: true,
                     onCheckedChange = { scope.launch { SettingsStore.setShowBottomNavLabelsFlow(ctx, it) } },

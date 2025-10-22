@@ -12,7 +12,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DashboardCustomize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,8 +26,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.settings.AppearanceTab
 import org.elnix.notes.ui.settings.BackupTab
+import org.elnix.notes.ui.settings.CustomisationTab
+import org.elnix.notes.ui.settings.DebugTab
 import org.elnix.notes.ui.settings.RemindersTab
 
 
@@ -49,6 +54,11 @@ fun SettingsListScreen(navController: NavController) {
             onClick = { navController.navigate("settings/appearance") }
         )
         SettingsItem(
+            title = "Customisation",
+            icon = Icons.Default.DashboardCustomize,
+            onClick = { navController.navigate("settings/customisation") }
+        )
+        SettingsItem(
             title = "Reminders",
             icon = Icons.Default.Alarm,
             onClick = { navController.navigate("settings/reminders") }
@@ -57,6 +67,11 @@ fun SettingsListScreen(navController: NavController) {
             title = "Backup",
             icon = Icons.Default.Backup,
             onClick = { navController.navigate("settings/backup") }
+        )
+        SettingsItem(
+            title = "Debug",
+            icon = Icons.Default.BugReport,
+            onClick = { navController.navigate("settings/debug") }
         )
     }
 }
@@ -125,3 +140,20 @@ fun BackupSettingsScreen(navController: NavController) {
 }
 
 
+@Composable
+fun CustomisationSettingsScreen(navController: NavController) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    CustomisationTab(ctx, scope) {
+        navController.popBackStack()
+    }
+}
+
+@Composable
+fun DebugSettingsScreen(navController: NavController, vm : NoteViewModel) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    DebugTab(ctx, scope, vm) {
+        navController.popBackStack()
+    }
+}

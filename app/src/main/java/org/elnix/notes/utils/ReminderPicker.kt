@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,7 +53,10 @@ fun ReminderPicker(
         Button(
             onClick = { Toast.makeText(ctx, "Notification Permission Required", Toast.LENGTH_SHORT).show() },
         ) {
-            Text("Add Reminder")
+            Text(
+                text ="Add Reminder",
+                color = MaterialTheme.colorScheme.onBackground
+            )
         }
     }
 }

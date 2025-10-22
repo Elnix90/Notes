@@ -81,9 +81,10 @@ fun MainApp(vm: NoteViewModel) {
 
             // Settings sub-screens
             composable("settings/appearance") { AppearanceSettingsScreen(navController) }
+            composable("settings/customisation") { CustomisationSettingsScreen(navController) }
             composable("settings/reminders") { RemindersSettingsScreen(navController) }
             composable("settings/backup") { BackupSettingsScreen(navController) }
-
+            composable("settings/debug") { DebugSettingsScreen(navController, vm) }
 
             // CREATE NOTE (no note created here — NoteEditorScreen handles it)
             composable(Screen.Create.route) {

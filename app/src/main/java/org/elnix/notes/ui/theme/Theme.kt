@@ -16,27 +16,28 @@ fun generateColorScheme(
 
     val base = darkColorScheme()
 
-    val onPrimary = if (primary.luminance() > 0.5f) Color.Black else Color.White
+
     val surface = background.blendWith(primary, 0.2f)
-    val onSurface = if (surface.luminance() > 0.5f) Color.Black else Color.White
+    val onPrimary = if (primary.luminance() > 0.5f) Color.Black else Color.White
+    val onSecondary = onPrimary.adjustBrightness(0.2f)
 
     return base.copy(
         primary = primary,
         onPrimary = onPrimary,
         secondary = primary.adjustBrightness(1.5f),
-        onSecondary = if (primary.luminance() > 0.5f) Color.Black else Color.White,
+        onSecondary = onSecondary,
         background = background,
         onBackground = onBackground,
         surface = surface,
-        onSurface = onSurface,
+        onSurface = if (surface.luminance() > 0.5f) Color.Black else Color.White,
         error = Color.Red,
         onError = Color.White,
         primaryContainer = primary.blendWith(Color.Black, 0.1f),
-        onPrimaryContainer = if (primary.luminance() > 0.5f) Color.Black else Color.White,
+        onPrimaryContainer = onPrimary,
         secondaryContainer = primary.blendWith(Color.Gray, 0.2f),
-        onSecondaryContainer = if (primary.luminance() > 0.5f) Color.Black else Color.White,
+        onSecondaryContainer = onSecondary,
         tertiary = primary.blendWith(Color.Cyan, 0.3f),
-        onTertiary = if (primary.luminance() > 0.5f) Color.Black else Color.White,
+        onTertiary = onSecondary.adjustBrightness(0.2f),
         surfaceVariant = background.blendWith(Color.Gray, 0.1f),
         onSurfaceVariant = if (background.luminance() > 0.5f) Color.Black else Color.White,
         outline = primary.blendWith(Color.White, 0.5f),

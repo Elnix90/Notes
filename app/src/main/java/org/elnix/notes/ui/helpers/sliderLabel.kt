@@ -6,19 +6,21 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
 fun SliderWithLabel(label: String, value: Float, onChange: (Float) -> Unit) {
     Column {
-        Text("$label: ${(value * 255).toInt()}")
+        Text(
+            text = "$label: ${(value * 255).toInt()}",
+            color = MaterialTheme.colorScheme.onSurface
+        )
         Slider(
             value = value,
             onValueChange = onChange,
             valueRange = 0f..1f,
             steps = 254,
-            colors = SliderDefaults.colors(
-                MaterialTheme.colorScheme.primary
-            ),
+            colors = AppObjectsColors.sliderColors()
         )
     }
 }

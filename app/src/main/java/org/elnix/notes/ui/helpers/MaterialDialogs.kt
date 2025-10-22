@@ -1,5 +1,7 @@
 package org.elnix.notes.ui.helpers
 
+import android.app.TimePickerDialog
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -7,7 +9,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -32,7 +33,7 @@ fun StyledReminderDialogs(
         Text("Add Reminder")
     }
 
-    // Date Picker
+    // --- Date Picker ---
     if (showDate) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = tempCalendar.timeInMillis
@@ -48,14 +49,10 @@ fun StyledReminderDialogs(
                         showDate = false
                         showTime = true
                     }
-                ) {
-                    Text("Next")
-                }
+                ) { Text("Next") }
             },
             dismissButton = {
-                TextButton(onClick = { showDate = false }) {
-                    Text("Cancel")
-                }
+                TextButton(onClick = { showDate = false }) { Text("Cancel") }
             },
             colors = AppObjectsColors.datePickerColors()
         ) {
@@ -63,7 +60,7 @@ fun StyledReminderDialogs(
         }
     }
 
-    // Time Picker
+    // --- Time Picker (use AlertDialog wrapper) ---
     if (showTime) {
         val timePickerState = rememberTimePickerState(
             initialHour = tempCalendar.get(Calendar.HOUR_OF_DAY),
@@ -71,7 +68,7 @@ fun StyledReminderDialogs(
             is24Hour = true
         )
 
-        TimePickerDialog(
+        AlertDialog(
             onDismissRequest = { showTime = false },
             confirmButton = {
                 TextButton(
@@ -86,21 +83,17 @@ fun StyledReminderDialogs(
                             )
                         )
                     }
-                ) {
-                    Text("OK")
-                }
+                ) { Text("OK") }
             },
             dismissButton = {
                 TextButton(onClick = {
                     showTime = false
                     showDate = true
-                }) {
-                    Text("Previous")
-                }
+                }) { Text("Previous") }
             },
-            title = { Text("Select Time") }
-        ) {
-            TimePicker(state = timePickerState)
-        }
+            title = { Text("Select Time") },
+            text = { TimePicker(state = timePickerState) }
+        )
     }
 }
+

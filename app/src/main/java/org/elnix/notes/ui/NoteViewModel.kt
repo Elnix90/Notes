@@ -1,8 +1,10 @@
 package org.elnix.notes.ui
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -68,4 +70,45 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
             .filter { it.title.isBlank() && it.desc.isBlank() }
             .forEach { noteRepo.delete(it) }
     }
+
+
+    fun deleteAllReminders() = viewModelScope.launch {
+        val allNotes = noteRepo.observeAll().first()
+        allNotes.forEach { note ->
+            reminderRepo.deleteByNoteId(note.id) // clears reminders from DB
+        }
+    }
+
+    fun disableAllReminders() = viewModelScope.launch {
+        val allNotes = noteRepo.observeAll().first()
+        allNotes.forEach { note ->
+            reminderRepo.observeByNoteId(note.id).first().forEach { reminder ->
+                reminderRepo.update(reminder.copy(enabled = false))
+            }
+        }
+    }
+
+    fun enableAllReminders() = viewModelScope.launch {
+        val allNotes = noteRepo.observeAll().first()
+        allNotes.forEach { note ->
+            reminderRepo.observeByNoteId(note.id).first().forEach { reminder ->
+                reminderRepo.update(reminder.copy(enabled = true))
+            }
+        }
+    }
+
+    fun cancelAllPendingNotifications(context: Context) {
+        WorkManager.getInstance(context).cancelAllWork()
+    }
+
+
+
+    fun markCompleted(note: NoteEntity) = viewModelScope.launch {
+        noteRepo.upsert(note.copy(isCompleted = true))
+    }
+
+    fun markUnCompleted(note: NoteEntity) = viewModelScope.launch {
+        noteRepo.upsert(note.copy(isCompleted = false))
+    }
+
 }

@@ -4,7 +4,10 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
@@ -61,6 +64,7 @@ object AppObjectsColors {
         )
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun datePickerColors(): DatePickerColors {
         val colors = MaterialTheme.colorScheme
@@ -95,20 +99,20 @@ object AppObjectsColors {
     }
 
 
-//    @Composable
-//    fun timePickerColors(): TimePickerColors {
-//        val colors = MaterialTheme.colorScheme
-//        return TimePickerDefaults.colors(
-//            containerColor = colors.background,           // Time picker container bg
-//            hourDigitTextColor = colors.onSurface,        // Hour digits
-//            minuteDigitTextColor = colors.onSurface,      // Minute digits
-//            activeHourDigitTextColor = colors.onPrimary,  // Selected hour digit
-//            activeMinuteDigitTextColor = colors.onPrimary,
-//            activePeriodIconColor = colors.primary,       // AM/PM active icon color
-//            inactivePeriodIconColor = colors.onSurfaceVariant,
-//            selectionContainerColor = colors.primary,     // Circle around selected hour/minute
-//        )
-//    }
+    @Composable
+    fun sliderColors(): SliderColors {
+        val colors = MaterialTheme.colorScheme
+        return SliderDefaults.colors(
+            thumbColor = colors.primary,
+            activeTrackColor = colors.secondary,
+            activeTickColor = colors.primary,
+            inactiveTrackColor = colors.background,
+            inactiveTickColor = colors.primary,
+            disabledThumbColor = colors.primary,
+            disabledActiveTrackColor = colors.onSurface,
+            disabledActiveTickColor = colors.primary,
+        )
+    }
 
 
 }

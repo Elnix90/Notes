@@ -85,4 +85,33 @@ object SettingsStore {
         ctx.dataStore.edit { it[DEFAULT_REMINDERS] = jsonStr }
     }
 
+
+    private val SWIPE_LEFT_ACTION = stringPreferencesKey("swipe_left_action")
+    private val SWIPE_RIGHT_ACTION = stringPreferencesKey("swipe_right_action")
+    private val CLICK_ACTION = stringPreferencesKey("click_action")
+
+    // --- Combined model
+    fun getActionSettingsFlow(ctx: Context): Flow<ActionSettings> =
+        ctx.dataStore.data.map { prefs ->
+            ActionSettings(
+                leftAction = prefs[SWIPE_LEFT_ACTION]?.let { Action.valueOf(it) } ?: Action.DELETE,
+                rightAction = prefs[SWIPE_RIGHT_ACTION]?.let { Action.valueOf(it) } ?: Action.EDIT,
+                clickAction = prefs[CLICK_ACTION]?.let { Action.valueOf(it) } ?: Action.COMPLETE
+            )
+        }
+
+    // --- Individual setters
+    suspend fun setSwipeLeftAction(ctx: Context, action: Action) {
+        ctx.dataStore.edit { it[SWIPE_LEFT_ACTION] = action.name }
+    }
+
+    suspend fun setSwipeRightAction(ctx: Context, action: Action) {
+        ctx.dataStore.edit { it[SWIPE_RIGHT_ACTION] = action.name }
+    }
+
+    suspend fun setClickAction(ctx: Context, action: Action) {
+        ctx.dataStore.edit { it[CLICK_ACTION] = action.name }
+    }
+
+
 }

@@ -131,7 +131,7 @@ fun ColorPicker(initialColor: Color, onColorSelected: (Color) -> Unit) {
         Button(
             onClick = { onColorSelected(Color(red, green, blue)) },
             modifier = Modifier.fillMaxWidth(),
-            colors = AppObjectsColors.defaultButtonColors()
+            colors = AppObjectsColors.buttonColors()
         ) {
             Text("Apply")
         }

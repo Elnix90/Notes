@@ -72,7 +72,7 @@ fun AppearanceTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
             Button(
                 onClick = { scope.launch { SettingsStore.resetColors(ctx) } },
                 modifier = Modifier.fillMaxWidth(),
-                colors = AppObjectsColors.defaultButtonColors()
+                colors = AppObjectsColors.buttonColors()
             ) {
                 Text("Reset to Default Colors")
             }
@@ -103,7 +103,7 @@ fun AppearanceTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
                 Switch(
                     checked = showNavbarLabels ?: true,
                     onCheckedChange = { scope.launch { SettingsStore.setShowBottomNavLabelsFlow(ctx, it) } },
-                    colors = AppObjectsColors.defaultSwitchColors()
+                    colors = AppObjectsColors.switchColors()
                 )
             }
         }

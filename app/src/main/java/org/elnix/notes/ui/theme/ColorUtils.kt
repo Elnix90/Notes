@@ -10,6 +10,8 @@ import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
@@ -35,7 +37,7 @@ fun Color.adjustBrightness(factor: Float): Color {
 object AppObjectsColors {
 
     @Composable
-    fun defaultSwitchColors(): SwitchColors {
+    fun switchColors(): SwitchColors {
         return SwitchDefaults.colors(
             checkedThumbColor = MaterialTheme.colorScheme.primary,
             checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
@@ -49,7 +51,7 @@ object AppObjectsColors {
     }
 
     @Composable
-    fun defaultButtonColors(): ButtonColors {
+    fun buttonColors(): ButtonColors {
         return ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onBackground
@@ -111,6 +113,21 @@ object AppObjectsColors {
             disabledThumbColor = colors.primary,
             disabledActiveTrackColor = colors.onSurface,
             disabledActiveTickColor = colors.primary,
+        )
+    }
+
+
+    @Composable
+    fun dropDownMenuColors(): TextFieldColors {
+        val colors = MaterialTheme.colorScheme
+        return TextFieldDefaults.colors(
+            focusedContainerColor = colors.secondary,
+            unfocusedContainerColor = colors.secondary,
+            disabledContainerColor = colors.surface,
+            focusedIndicatorColor = colors.primary,
+            unfocusedIndicatorColor = colors.outline,
+            focusedTextColor = colors.onSurface,
+            unfocusedTextColor = colors.onSurface
         )
     }
 

@@ -57,14 +57,14 @@ fun ExportImportRow(
                 }.toString()
                 file.writeText(json)
             },
-            colors = AppObjectsColors.defaultButtonColors()
+            colors = AppObjectsColors.buttonColors()
         ) {
             Text("Export Settings")
         }
 
         Button(
             onClick = { launcher.launch(arrayOf("application/json")) },
-            colors = AppObjectsColors.defaultButtonColors()
+            colors = AppObjectsColors.buttonColors()
         ) {
             Text("Import Settings")
         }

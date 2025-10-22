@@ -57,7 +57,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
-    implementation(platform("androidx.compose:compose-bom:2025.01.00"))
+    implementation(platform("androidx.compose:compose-bom:2025.10.00"))
 
     // Compose UI
     implementation("androidx.compose.ui:ui")
@@ -75,6 +75,7 @@ dependencies {
     // Room
     implementation("androidx.room:room-runtime:2.8.2")
     implementation("androidx.room:room-ktx:2.8.2")
+    implementation(libs.androidx.compose.material3)
     ksp("androidx.room:room-compiler:2.8.2")
 
     // DataStore

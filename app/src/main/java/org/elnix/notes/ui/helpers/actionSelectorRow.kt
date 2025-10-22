@@ -1,15 +1,17 @@
 package org.elnix.notes.ui.helpers
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,49 +22,79 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.Action
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionSelectorRow(
     label: String,
     selected: Action,
     onSelected: (Action) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
 
     Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(label, style = typography.labelLarge)
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
-            TextField(
-                value = selected.name,
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(14.dp)
             )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                Action.entries.forEach { action ->
-                    DropdownMenuItem(
-                        text = { Text(action.name) },
-                        onClick = {
-                            onSelected(action)
-                            expanded = false
+            .padding(horizontal = 16.dp, vertical = 14.dp)
+            .clickable(
+                onClick = { showDialog = true}
+            )
+    ) {
+
+
+        Text(
+            text = label,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Text(
+            text = selected.name,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            style = MaterialTheme.typography.labelSmall,
+        )
+
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {},
+            dismissButton = {},
+            title = {},
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Action.entries.forEach { action ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp)
+                                .clickable {
+                                    onSelected(action)
+                                    showDialog = false
+                                }
+                        ) {
+                            RadioButton(
+                                selected = (selected == action),
+                                onClick = {
+                                    onSelected(action)
+                                    showDialog = false
+                                }
+                            )
+                            Text(
+                                text = action.name,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
-                    )
+                    }
                 }
-            }
-        }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(16.dp)
+        )
     }
 }

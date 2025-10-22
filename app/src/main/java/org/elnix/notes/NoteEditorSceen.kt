@@ -205,7 +205,7 @@ fun NoteEditorScreen(
                     }
                 },
                 modifier = Modifier.weight(1f),
-                colors = AppObjectsColors.defaultButtonColors()
+                colors = AppObjectsColors.buttonColors()
             ) {
                 Text("Save")
             }

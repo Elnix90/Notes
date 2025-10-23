@@ -27,11 +27,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import org.elnix.notes.ui.NoteViewModel
-import org.elnix.notes.ui.settings.AppearanceTab
+import org.elnix.notes.ui.settings.appearance.AppearanceTab
 import org.elnix.notes.ui.settings.BackupTab
 import org.elnix.notes.ui.settings.CustomisationTab
 import org.elnix.notes.ui.settings.DebugTab
 import org.elnix.notes.ui.settings.RemindersTab
+import org.elnix.notes.ui.settings.appearance.ColorSelectorTab
 
 
 @Composable
@@ -116,11 +117,19 @@ fun SettingsItem(
 fun AppearanceSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    AppearanceTab(ctx, scope) {
+    AppearanceTab(ctx, scope, navController) {
         navController.popBackStack()
     }
 }
 
+@Composable
+fun ColorSelectorSettingsScreen(navController: NavController) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    ColorSelectorTab(ctx, scope) {
+        navController.popBackStack()
+    }
+}
 @Composable
 fun RemindersSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current

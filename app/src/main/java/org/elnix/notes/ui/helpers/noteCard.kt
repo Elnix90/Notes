@@ -43,7 +43,7 @@ fun NoteCard(note: NoteEntity, onClick: () -> Unit, modifier: Modifier = Modifie
                     style = MaterialTheme.typography.bodyLarge.copy(
                         textDecoration = if (note.isCompleted) TextDecoration.LineThrough else null
                     ),
-                    color = MaterialTheme.colorScheme.onBackground.copy(
+                    color = MaterialTheme.colorScheme.onSurface.copy(
                         alpha = if (note.isCompleted) 0.5f else 1f
                     )
                 )

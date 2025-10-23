@@ -27,6 +27,9 @@ fun generateColorScheme(
         onPrimary = onPrimary,
         secondary = secondary,
         onSecondary = onSecondary,
+        tertiary = primary.blendWith(Color.Cyan, 0.3f),
+        onTertiary = onSecondary.adjustBrightness(0.2f),
+
         background = background,
         onBackground = onBackground,
         surface = surface,
@@ -37,8 +40,6 @@ fun generateColorScheme(
         onPrimaryContainer = onPrimary,
         secondaryContainer = primary.blendWith(secondary, 0.2f),
         onSecondaryContainer = onSecondary,
-        tertiary = primary.blendWith(Color.Cyan, 0.3f),
-        onTertiary = onSecondary.adjustBrightness(0.2f),
         surfaceVariant = background.blendWith(Color.Gray, 0.1f),
         onSurfaceVariant = if (background.luminance() > 0.5f) Color.Black else Color.White,
         outline = primary.blendWith(Color.White, 0.5f),

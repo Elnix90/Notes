@@ -1,26 +1,16 @@
-package org.elnix.notes.ui.settings
+package org.elnix.notes.ui.settings.appearance
 
 import android.content.Context
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
@@ -32,12 +22,36 @@ import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
-fun AppearanceTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
+fun ColorSelectorTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
+
     val primary by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
+    val onPrimary by SettingsStore.getOnPrimaryFlow(ctx).collectAsState(initial = null)
+
+    val secondary by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
+    val onSecondary by SettingsStore.getOnPrimaryFlow(ctx).collectAsState(initial = null)
+
+    val tertiary by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
+    val onTertiary by SettingsStore.getOnPrimaryFlow(ctx).collectAsState(initial = null)
+
     val background by SettingsStore.getBackgroundFlow(ctx).collectAsState(initial = null)
     val onBackground by SettingsStore.getOnBackgroundFlow(ctx).collectAsState(initial = null)
 
-    val showNavbarLabels by SettingsStore.getShowBottomNavLabelsFlow(ctx).collectAsState(initial = true)
+    val surface by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
+    val onSurface by SettingsStore.getOnPrimaryFlow(ctx).collectAsState(initial = null)
+
+    val error by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
+    val onError by SettingsStore.getOnPrimaryFlow(ctx).collectAsState(initial = null)
+
+    val primaryContainer by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
+    val onPrimaryContainer by SettingsStore.getOnPrimaryFlow(ctx).collectAsState(initial = null)
+
+    val secondaryContainer by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
+    val onSecondaryContainer by SettingsStore.getOnPrimaryFlow(ctx).collectAsState(initial = null)
+
+    val surfaceVariant by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
+    val onSurfaceVariant by SettingsStore.getOnPrimaryFlow(ctx).collectAsState(initial = null)
+
+//    val outline by
 
     Column(
         modifier = Modifier
@@ -45,14 +59,22 @@ fun AppearanceTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SettingsTitle("Appearance", onBack)
+        SettingsTitle("Color Selector", onBack)
 
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
             ColorPickerRow(
-                label = "Primary",
+                label = "primary",
                 currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb()
             ) {
                 scope.launch { SettingsStore.setPrimary(ctx, it) }
+            }
+
+            ColorPickerRow(
+                label = "onPrimary",
+                currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb()
+            ) {
+                scope.launch { SettingsStore.setOnPrimary(ctx, it) }
             }
 
             ColorPickerRow(
@@ -69,42 +91,19 @@ fun AppearanceTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
                 scope.launch { SettingsStore.setOnBackground(ctx, it) }
             }
 
+            ColorPickerRow(
+                label = "Text",
+                currentColor = onBackground ?: MaterialTheme.colorScheme.onBackground.toArgb()
+            ) {
+                scope.launch { SettingsStore.setOnBackground(ctx, it) }
+            }
+
             Button(
                 onClick = { scope.launch { SettingsStore.resetColors(ctx) } },
                 modifier = Modifier.fillMaxWidth(),
                 colors = AppObjectsColors.buttonColors()
             ) {
                 Text("Reset to Default Colors")
-            }
-
-            HorizontalDivider()
-
-            var checked by remember { mutableStateOf(showNavbarLabels ?: true) }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        checked = !checked
-                        scope.launch { SettingsStore.setShowBottomNavLabelsFlow(ctx, checked) }
-                    }
-                    .background(
-                        color = MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text= "Show Navigation Bar Labels",
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Switch(
-                    checked = showNavbarLabels ?: true,
-                    onCheckedChange = { scope.launch { SettingsStore.setShowBottomNavLabelsFlow(ctx, it) } },
-                    colors = AppObjectsColors.switchColors()
-                )
             }
         }
     }

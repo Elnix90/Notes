@@ -2,6 +2,8 @@ package org.elnix.notes.ui.theme
 
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -131,6 +133,18 @@ object AppObjectsColors {
         )
     }
 
+    @Composable
+    fun checkboxColors(): CheckboxColors {
+        val colors = MaterialTheme.colorScheme
+        return CheckboxDefaults.colors(
+            colors.primary,
+            colors.onBackground,
+            colors.onSurface,
+            colors.primary.copy(alpha = 0.5f),
+            colors.outline,
+            colors.onSurface,
+        )
+    }
 
 }
 

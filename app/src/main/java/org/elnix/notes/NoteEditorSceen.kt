@@ -1,8 +1,6 @@
 package org.elnix.notes
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
@@ -195,7 +191,7 @@ fun NoteEditorScreen(
         Surface(
 //            modifier = Modifier
 //                .padding(vertical = 8.dp),
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface
         ) {
             Row(
@@ -216,19 +212,24 @@ fun NoteEditorScreen(
                     }
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                Checkbox(
-                    checked = isCompleted,
-                    onCheckedChange = null // handled by Row click
-                )
-                Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = "Completed",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Checkbox(
+                    checked = isCompleted,
+                    onCheckedChange = null,
+                    colors = AppObjectsColors.checkboxColors()
+                )
+
             }
         }
 
+        Spacer(Modifier.height(10.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -258,27 +259,35 @@ fun NoteEditorScreen(
                 colors = AppObjectsColors.buttonColors(),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Save")
+                Text(
+                    text = "Save",
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
 
-            OutlinedButton(
-                onClick = {
-                    scope.launch {
-                        currentId?.let {
-                            val n = vm.getById(it)
-                            if (n != null && n.title.isBlank() && n.desc.isBlank()) {
-                                vm.delete(n)
-                            }
-                        }
-                        onCancel()
-                    }
-                },
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                colors = AppObjectsColors.cancelButtonColors(),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Cancel")
-            }
+
+
+//            OutlinedButton(
+//                onClick = {
+//                    scope.launch {
+//                        currentId?.let {
+//                            val n = vm.getById(it)
+//                            if (n != null && n.title.isBlank() && n.desc.isBlank()) {
+//                                vm.delete(n)
+//                            }
+//                        }
+//                        onCancel()
+//                    }
+//                },
+//                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+//                colors = AppObjectsColors.cancelButtonColors(),
+////                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                Text(
+//                    text = "Cancel",
+//                    color = MaterialTheme.colorScheme.onPrimary
+//                )
+//            }
         }
     }
 }

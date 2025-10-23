@@ -21,7 +21,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val ctx = LocalContext.current
+
             val primary by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
+            val onPrimary by SettingsStore.getOnPrimaryFlow(ctx).collectAsState(initial = null)
+            
+
             val background by SettingsStore.getBackgroundFlow(ctx).collectAsState(initial = null)
             val onBackground by SettingsStore.getOnBackgroundFlow(ctx).collectAsState(initial = null)
 

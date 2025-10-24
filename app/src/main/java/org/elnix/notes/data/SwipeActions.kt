@@ -4,9 +4,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import org.elnix.notes.ui.theme.LocalExtraColors
 
 enum class Action { DELETE, COMPLETE, EDIT }
 
@@ -17,10 +17,13 @@ data class ActionSettings(
 )
 
 @Composable
-fun actionColor(action: Action): Color = when (action) {
-    Action.DELETE -> MaterialTheme.colorScheme.error
-    Action.COMPLETE -> MaterialTheme.colorScheme.primary
-    Action.EDIT -> MaterialTheme.colorScheme.secondary
+fun actionColor(action: Action): Color {
+    val extras = LocalExtraColors.current
+    return when (action) {
+        Action.DELETE -> extras.delete
+        Action.EDIT -> extras.edit
+        Action.COMPLETE -> extras.complete
+    }
 }
 
 @Composable

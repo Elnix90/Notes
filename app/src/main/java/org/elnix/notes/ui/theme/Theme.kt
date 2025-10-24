@@ -4,66 +4,111 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
-
 
 fun generateColorScheme(
     primary: Color,
+    onPrimary: Color,
+    secondary: Color,
+    onSecondary: Color,
+    tertiary: Color,
+    onTertiary: Color,
     background: Color,
-    onBackground: Color
+    onBackground: Color,
+    surface: Color,
+    onSurface: Color,
+    error: Color,
+    onError: Color,
+    outline: Color
 ): ColorScheme {
 
     val base = darkColorScheme()
-
-
-    val surface = background.blendWith(primary, 0.2f)
-    val onPrimary = if (primary.luminance() > 0.5f) Color.Black else Color.White
-    val secondary = primary.adjustBrightness(1.5f)
-    val onSecondary = onPrimary.adjustBrightness(0.2f)
 
     return base.copy(
         primary = primary,
         onPrimary = onPrimary,
         secondary = secondary,
         onSecondary = onSecondary,
-        tertiary = primary.blendWith(Color.Cyan, 0.3f),
-        onTertiary = onSecondary.adjustBrightness(0.2f),
-
+        tertiary = tertiary,
+        onTertiary = onTertiary,
         background = background,
         onBackground = onBackground,
         surface = surface,
-        onSurface = if (surface.luminance() > 0.5f) Color.Black else Color.White,
-        error = Color.Red,
-        onError = Color.White,
-        primaryContainer = primary.blendWith(background, 0.1f),
-        onPrimaryContainer = onPrimary,
-        secondaryContainer = primary.blendWith(secondary, 0.2f),
-        onSecondaryContainer = onSecondary,
-        surfaceVariant = background.blendWith(Color.Gray, 0.1f),
-        onSurfaceVariant = if (background.luminance() > 0.5f) Color.Black else Color.White,
-        outline = primary.blendWith(Color.White, 0.5f),
+        onSurface = onSurface,
+        error = error,
+        onError = onError,
+        outline = outline
     )
 }
-
-
 
 @Composable
 fun NotesTheme(
     customPrimary: Int? = null,
+    customOnPrimary: Int? = null,
+    customSecondary: Int? = null,
+    customOnSecondary: Int? = null,
+    customTertiary: Int? = null,
+    customOnTertiary: Int? = null,
     customBackground: Int? = null,
     customOnBackground: Int? = null,
+    customSurface: Int? = null,
+    customOnSurface: Int? = null,
+    customError: Int? = null,
+    customOnError: Int? = null,
+    customOutline: Int? = null,
+    customDelete: Int? = null,
+    customEdit: Int? = null,
+    customComplete: Int? = null,
     content: @Composable () -> Unit
 ) {
+    val primary = customPrimary?.let { Color(it) } ?: PrimaryDefault
+    val onPrimary = customOnPrimary?.let { Color(it) } ?: OnPrimaryDefault
 
-    val primaryColor = customPrimary?.let { Color(it) } ?: Purple40
-    val backgroundColor = customBackground?.let { Color(it) } ?: Color.Black
-    val onBackgroundColor = customOnBackground?.let { Color(it) } ?: Color.White
-    val colorScheme = generateColorScheme(primaryColor, backgroundColor, onBackgroundColor)
+    val secondary = customSecondary?.let { Color(it) } ?: Secondary40
+    val onSecondary = customOnSecondary?.let { Color(it) } ?: OnSecondaryDefault
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
+    val tertiary = customTertiary?.let { Color(it) } ?: Tertiary40
+    val onTertiary = customOnTertiary?.let { Color(it) } ?: OnTertiaryDefault
+
+    val background = customBackground?.let { Color(it) } ?: BackgroundDefault
+    val onBackground = customOnBackground?.let { Color(it) } ?: OnBackgroundDefault
+
+    val surface = customSurface?.let { Color(it) } ?: SurfaceDefault
+    val onSurface = customOnSurface?.let { Color(it) } ?: OnSurfaceDefault
+
+    val error = customError?.let { Color(it) } ?: ErrorDefault
+    val onError = customOnError?.let { Color(it) } ?: OnErrorDefault
+
+    val outline = customOutline?.let { Color(it) } ?: OutlineDefault
+
+    val delete = customDelete?.let { Color(it) } ?: DeleteDefault
+    val edit = customEdit?.let { Color(it) } ?: EditDefault
+    val complete = customComplete?.let { Color(it) } ?: CompleteDefault
+
+    val extraColors = ExtraColors(delete, edit, complete)
+
+    val colorScheme = generateColorScheme(
+        primary = primary,
+        onPrimary = onPrimary,
+        secondary = secondary,
+        onSecondary = onSecondary,
+        tertiary = tertiary,
+        onTertiary = onTertiary,
+        background = background,
+        onBackground = onBackground,
+        surface = surface,
+        onSurface = onSurface,
+        error = error,
+        onError = onError,
+        outline = outline
     )
+
+    CompositionLocalProvider(LocalExtraColors provides extraColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

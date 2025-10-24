@@ -1,13 +1,30 @@
 package org.elnix.notes.data
 
 import android.content.Context
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.Flow
-import org.elnix.notes.ui.theme.Purple40
+import kotlinx.coroutines.flow.map
+import org.elnix.notes.ui.theme.BackgroundDefault
+import org.elnix.notes.ui.theme.CompleteDefault
+import org.elnix.notes.ui.theme.DeleteDefault
+import org.elnix.notes.ui.theme.EditDefault
+import org.elnix.notes.ui.theme.ErrorDefault
+import org.elnix.notes.ui.theme.OnBackgroundDefault
+import org.elnix.notes.ui.theme.OnErrorDefault
+import org.elnix.notes.ui.theme.OnPrimaryDefault
+import org.elnix.notes.ui.theme.OnSecondaryDefault
+import org.elnix.notes.ui.theme.OnSurfaceDefault
+import org.elnix.notes.ui.theme.OnTertiaryDefault
+import org.elnix.notes.ui.theme.OutlineDefault
+import org.elnix.notes.ui.theme.PrimaryDefault
+import org.elnix.notes.ui.theme.Secondary40
+import org.elnix.notes.ui.theme.SurfaceDefault
+import org.elnix.notes.ui.theme.Tertiary40
 import org.elnix.notes.utils.ReminderOffset
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
@@ -15,8 +32,6 @@ private val Context.dataStore by preferencesDataStore(name = "settings")
 object SettingsStore {
 
     private val SHOW_NAVBAR_LABELS = booleanPreferencesKey("navbar_labels")
-
-
 
     // --- COLORS ---
 
@@ -27,19 +42,12 @@ object SettingsStore {
     private val TERTIARY_COLOR = intPreferencesKey("tertiary_color")
     private val ON_TERTIARY_COLOR = intPreferencesKey("on_tertiary_color")
     private val BACKGROUND_COLOR = intPreferencesKey("background_color")
-    private val ON_BACKGROUND_COLOR = intPreferencesKey("on_background")
+    private val ON_BACKGROUND_COLOR = intPreferencesKey("on_background_color")
 
     private val SURFACE_COLOR = intPreferencesKey("surface_color")
     private val ON_SURFACE_COLOR = intPreferencesKey("on_surface_color")
     private val ERROR_COLOR = intPreferencesKey("error_color")
     private val ON_ERROR_COLOR = intPreferencesKey("on_error_color")
-    private val PRIMARY_CONTAINER_COLOR = intPreferencesKey("primary_container_color")
-    private val ON_PRIMARY_CONTAINER_COLOR = intPreferencesKey("on_primary_container_color")
-    private val SECONDARY_CONTAINER_COLOR = intPreferencesKey("secondary_container_color")
-    private val ON_SECONDARY_CONTAINER_COLOR = intPreferencesKey("on_secondary_container_color")
-
-    private val SURFACE_VARIANT_COLOR = intPreferencesKey("surface_variant")
-    private val ON_SURFACE_VARIANT_COLOR = intPreferencesKey("on_surface_variant_color")
 
     private val OUTLINE_COLOR = intPreferencesKey("outline_color")
 
@@ -48,155 +56,117 @@ object SettingsStore {
     private val COMPLETE_COLOR = intPreferencesKey("complete_color")
 
 
-
     fun getShowBottomNavLabelsFlow(ctx: Context): Flow<Boolean?> =
-        ctx.dataStore.data.map { it[SHOW_NAVBAR_LABELS]}
+        ctx.dataStore.data.map { it[SHOW_NAVBAR_LABELS] }
+
     suspend fun setShowBottomNavLabelsFlow(ctx: Context, state: Boolean) {
         ctx.dataStore.edit { it[SHOW_NAVBAR_LABELS] = state }
     }
 
 
-
-
-
-
-    fun getPrimaryFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[PRIMARY_COLOR] }
+    fun getPrimaryFlow(ctx: Context) = ctx.dataStore.data.map { it[PRIMARY_COLOR] }
     suspend fun setPrimary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[PRIMARY_COLOR] = color }
     }
-    fun getOnPrimaryFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[ON_PRIMARY_COLOR] }
+
+    fun getOnPrimaryFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_PRIMARY_COLOR] }
     suspend fun setOnPrimary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_PRIMARY_COLOR] = color }
     }
 
-    fun getSecondaryFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[SECONDARY_COLOR] }
+    fun getSecondaryFlow(ctx: Context) = ctx.dataStore.data.map { it[SECONDARY_COLOR] }
     suspend fun setSecondary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[SECONDARY_COLOR] = color }
     }
-    fun getOnSecondaryFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[ON_SECONDARY_COLOR] }
+
+    fun getOnSecondaryFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_SECONDARY_COLOR] }
     suspend fun setOnSecondary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_SECONDARY_COLOR] = color }
     }
 
-    fun getTertiaryFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[TERTIARY_COLOR] }
+    fun getTertiaryFlow(ctx: Context) = ctx.dataStore.data.map { it[TERTIARY_COLOR] }
     suspend fun setTertiary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[TERTIARY_COLOR] = color }
     }
-    fun getOnTertiaryFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[ON_TERTIARY_COLOR] }
+
+    fun getOnTertiaryFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_TERTIARY_COLOR] }
     suspend fun setOnTertiary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_TERTIARY_COLOR] = color }
     }
 
 
-    fun getBackgroundFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[BACKGROUND_COLOR] }
+    fun getBackgroundFlow(ctx: Context) = ctx.dataStore.data.map { it[BACKGROUND_COLOR] }
     suspend fun setBackground(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[BACKGROUND_COLOR] = color }
     }
-    fun getOnBackgroundFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[ON_BACKGROUND_COLOR] }
+
+    fun getOnBackgroundFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_BACKGROUND_COLOR] }
     suspend fun setOnBackground(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_BACKGROUND_COLOR] = color }
     }
 
 
-    fun getSurfaceFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[SURFACE_COLOR] }
+    fun getSurfaceFlow(ctx: Context) = ctx.dataStore.data.map { it[SURFACE_COLOR] }
     suspend fun setSurface(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[SURFACE_COLOR] = color }
     }
-    fun getOnSurfaceFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[ON_SURFACE_COLOR] }
+
+    fun getOnSurfaceFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_SURFACE_COLOR] }
     suspend fun setOnSurface(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_SURFACE_COLOR] = color }
     }
 
-    fun getErrorFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[ERROR_COLOR] }
+    fun getErrorFlow(ctx: Context) = ctx.dataStore.data.map { it[ERROR_COLOR] }
     suspend fun setError(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ERROR_COLOR] = color }
     }
-    fun getOnErrorFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[ON_ERROR_COLOR] }
+
+    fun getOnErrorFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_ERROR_COLOR] }
     suspend fun setOnError(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_ERROR_COLOR] = color }
     }
 
-    fun getPrimaryContainerFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[PRIMARY_CONTAINER_COLOR] }
-    suspend fun setPrimaryContainer(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[PRIMARY_CONTAINER_COLOR] = color }
-    }
-    fun getOnPrimaryContainerFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[ON_PRIMARY_CONTAINER_COLOR] }
-    suspend fun setOnPrimaryContainer(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[ON_PRIMARY_CONTAINER_COLOR] = color }
-    }
-
-    fun getSecondaryContainerFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[SECONDARY_CONTAINER_COLOR] }
-    suspend fun setSecondaryContainer(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[SECONDARY_CONTAINER_COLOR] = color }
-    }
-    fun getOnSecondaryContainerFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[ON_SECONDARY_CONTAINER_COLOR] }
-    suspend fun setOnSecondaryContainer(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[ON_SECONDARY_CONTAINER_COLOR] = color }
-    }
-
-    fun getSurfaceVariantFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[SURFACE_VARIANT_COLOR] }
-    suspend fun setSurfaceVariant(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[SURFACE_VARIANT_COLOR] = color }
-    }
-    fun getOnSurfaceVariantFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[ON_SURFACE_VARIANT_COLOR] }
-    suspend fun setOnSurfaceVariant(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[ON_SURFACE_VARIANT_COLOR] = color }
-    }
-
-    fun getOutlineFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[OUTLINE_COLOR] }
+    fun getOutlineFlow(ctx: Context) = ctx.dataStore.data.map { it[OUTLINE_COLOR] }
     suspend fun setOutline(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[OUTLINE_COLOR] = color }
     }
 
-    fun getDeleteFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[DELETE_COLOR] }
+    fun getDeleteFlow(ctx: Context) = ctx.dataStore.data.map { it[DELETE_COLOR] }
     suspend fun setDelete(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[DELETE_COLOR] = color }
     }
 
-    fun getEditFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[EDIT_COLOR] }
+    fun getEditFlow(ctx: Context) = ctx.dataStore.data.map { it[EDIT_COLOR] }
     suspend fun setEdit(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[EDIT_COLOR] = color }
     }
 
-    fun getCompleteFlow(ctx: Context): Flow<Int?> =
-        ctx.dataStore.data.map { it[COMPLETE_COLOR] }
+    fun getCompleteFlow(ctx: Context) = ctx.dataStore.data.map { it[COMPLETE_COLOR] }
     suspend fun setComplete(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[COMPLETE_COLOR] = color }
     }
 
 
-
-
-
-
     suspend fun resetColors(ctx: Context) {
-        setPrimary(ctx, Purple40.toArgb())
-        setBackground(ctx, Color.Black.toArgb())
-        setOnBackground(ctx, Color.White.toArgb())
+        ctx.dataStore.edit {
+            it[PRIMARY_COLOR] = PrimaryDefault.toArgb()
+            it[ON_PRIMARY_COLOR] = OnPrimaryDefault.toArgb()
+            it[SECONDARY_COLOR] = Secondary40.toArgb()
+            it[ON_SECONDARY_COLOR] = OnSecondaryDefault.toArgb()
+            it[TERTIARY_COLOR] = Tertiary40.toArgb()
+            it[ON_TERTIARY_COLOR] = OnTertiaryDefault.toArgb()
+            it[BACKGROUND_COLOR] = BackgroundDefault.toArgb()
+            it[ON_BACKGROUND_COLOR] = OnBackgroundDefault.toArgb()
+            it[SURFACE_COLOR] = SurfaceDefault.toArgb()
+            it[ON_SURFACE_COLOR] = OnSurfaceDefault.toArgb()
+            it[ERROR_COLOR] = ErrorDefault.toArgb()
+            it[ON_ERROR_COLOR] = OnErrorDefault.toArgb()
+            it[OUTLINE_COLOR] = OutlineDefault.toArgb()
+            it[DELETE_COLOR] = DeleteDefault.toArgb()
+            it[EDIT_COLOR] = EditDefault.toArgb()
+            it[COMPLETE_COLOR] = CompleteDefault.toArgb()
+        }
     }
-
-
 
 
     // REMINDERS
@@ -259,6 +229,5 @@ object SettingsStore {
     suspend fun setClickAction(ctx: Context, action: Action) {
         ctx.dataStore.edit { it[CLICK_ACTION] = action.name }
     }
-
 
 }

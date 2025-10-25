@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.LockSettings
-import org.elnix.notes.data.LockSettingsStore
+import org.elnix.notes.data.settings.LockSettingsStore
 import org.elnix.notes.security.BiometricManagerHelper
 import java.time.Instant
 

@@ -17,7 +17,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.SettingsItem
-import org.elnix.notes.data.SettingsStore
+import org.elnix.notes.data.settings.UiSettingsStore
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
 
@@ -28,7 +28,7 @@ fun AppearanceTab(
     navController: NavController,
     onBack: () -> Unit
 ) {
-    val showNavbarLabels by SettingsStore.getShowBottomNavLabelsFlow(ctx)
+    val showNavbarLabels by UiSettingsStore.getShowBottomNavLabelsFlow(ctx)
         .collectAsState(initial = true)
 
     Column(
@@ -53,7 +53,7 @@ fun AppearanceTab(
                 state = showNavbarLabels,
                 text = "Show Navigation Bar Labels"
             ) { newValue ->
-                scope.launch { SettingsStore.setShowBottomNavLabelsFlow(ctx, newValue) }
+                scope.launch { UiSettingsStore.setShowBottomNavLabelsFlow(ctx, newValue) }
             }
         }
     }

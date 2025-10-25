@@ -13,13 +13,16 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.ActionSettings
-import org.elnix.notes.data.SettingsStore
+import org.elnix.notes.data.settings.ActionSettingsStore.getActionSettingsFlow
+import org.elnix.notes.data.settings.ActionSettingsStore.setClickAction
+import org.elnix.notes.data.settings.ActionSettingsStore.setSwipeLeftAction
+import org.elnix.notes.data.settings.ActionSettingsStore.setSwipeRightAction
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsTitle
 
 @Composable
 fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
-    val settings by SettingsStore.getActionSettingsFlow(ctx).collectAsState(initial = ActionSettings())
+    val settings by getActionSettingsFlow(ctx).collectAsState(initial = ActionSettings())
 
     Column(
         modifier = Modifier
@@ -33,21 +36,21 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
         ActionSelectorRow(
             label = "Swipe Left Action",
             selected = settings.leftAction,
-            onSelected = { scope.launch { SettingsStore.setSwipeLeftAction(ctx, it) } }
+            onSelected = { scope.launch { setSwipeLeftAction(ctx, it) } }
         )
 
         // --- Swipe Right ---
         ActionSelectorRow(
             label = "Swipe Right Action",
             selected = settings.rightAction,
-            onSelected = { scope.launch { SettingsStore.setSwipeRightAction(ctx, it) } }
+            onSelected = { scope.launch { setSwipeRightAction(ctx, it) } }
         )
 
         // --- Click Action ---
         ActionSelectorRow(
             label = "Click Action",
             selected = settings.clickAction,
-            onSelected = { scope.launch { SettingsStore.setClickAction(ctx, it) } }
+            onSelected = { scope.launch { setClickAction(ctx, it) } }
         )
     }
 }

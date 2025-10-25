@@ -14,7 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.LockSettings
-import org.elnix.notes.data.LockSettingsStore
+import org.elnix.notes.data.settings.LockSettingsStore
 import org.elnix.notes.ui.helpers.SettingsOutlinedField
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow

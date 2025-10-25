@@ -12,16 +12,17 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.ReminderEntity
-import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.utils.ReminderBubble
 import org.elnix.notes.utils.ReminderPicker
 import androidx.compose.foundation.ExperimentalFoundationApi
+import org.elnix.notes.data.settings.ReminderSettingsStore.getDefaultRemindersFlow
+import org.elnix.notes.data.settings.ReminderSettingsStore.setDefaultReminders
 import org.elnix.notes.ui.helpers.SettingsTitle
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun RemindersTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
-    val defaultReminders by SettingsStore.getDefaultRemindersFlow(ctx)
+    val defaultReminders by getDefaultRemindersFlow(ctx)
         .collectAsState(initial = emptyList())
 
     Column(
@@ -50,7 +51,7 @@ fun RemindersTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
                         onToggle = {},
                         onDelete = {
                             val newList = defaultReminders.toMutableList().apply { removeAt(index) }
-                            scope.launch { SettingsStore.setDefaultReminders(ctx, newList) }
+                            scope.launch { setDefaultReminders(ctx, newList) }
                         }
                     )
                 }
@@ -59,7 +60,7 @@ fun RemindersTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
 
         ReminderPicker { picked ->
             val newList = defaultReminders + picked
-            scope.launch { SettingsStore.setDefaultReminders(ctx, newList) }
+            scope.launch { setDefaultReminders(ctx, newList) }
         }
     }
 }

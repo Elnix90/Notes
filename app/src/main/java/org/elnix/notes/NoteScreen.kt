@@ -39,9 +39,9 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.data.Action
 import org.elnix.notes.data.ActionSettings
 import org.elnix.notes.data.NoteEntity
-import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.data.actionColor
 import org.elnix.notes.data.actionIcon
+import org.elnix.notes.data.settings.ActionSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.NoteCard
 
@@ -54,7 +54,7 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
     val notes by vm.notes.collectAsState()
     val ctx = LocalContext.current
 
-    val actionSettings by SettingsStore.getActionSettingsFlow(ctx).collectAsState(
+    val actionSettings by ActionSettingsStore.getActionSettingsFlow(ctx).collectAsState(
         initial = ActionSettings()
     )
 

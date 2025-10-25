@@ -11,16 +11,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
-import org.elnix.notes.data.SettingsStore
+import org.elnix.notes.data.settings.ColorSettingsStore.getBackgroundFlow
+import org.elnix.notes.data.settings.ColorSettingsStore.getOnBackgroundFlow
+import org.elnix.notes.data.settings.ColorSettingsStore.getPrimaryFlow
+import org.elnix.notes.data.settings.UiSettingsStore.getShowBottomNavLabelsFlow
 import org.elnix.notes.ui.helpers.ExportImportRow
 import org.elnix.notes.ui.helpers.SettingsTitle
 
 @Composable
 fun BackupTab(ctx: Context, onBack: (() -> Unit)) {
-    val primary by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
-    val background by SettingsStore.getBackgroundFlow(ctx).collectAsState(initial = null)
-    val onBackground by SettingsStore.getOnBackgroundFlow(ctx).collectAsState(initial = null)
-    val showNavLabels by SettingsStore.getShowBottomNavLabelsFlow(ctx).collectAsState(initial = true)
+    val primary by getPrimaryFlow(ctx).collectAsState(initial = null)
+    val background by getBackgroundFlow(ctx).collectAsState(initial = null)
+    val onBackground by getOnBackgroundFlow(ctx).collectAsState(initial = null)
+    val showNavLabels by getShowBottomNavLabelsFlow(ctx).collectAsState(initial = true)
 
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         SettingsTitle("Backup / Restore", onBack)

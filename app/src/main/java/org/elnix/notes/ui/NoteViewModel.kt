@@ -16,7 +16,7 @@ import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.NoteRepository
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.ReminderRepository
-import org.elnix.notes.data.SettingsStore
+import org.elnix.notes.data.settings.ReminderSettingsStore
 import java.util.Date
 import kotlin.random.Random
 
@@ -35,7 +35,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         val note = NoteEntity(title = title, desc = desc, createdAt = Date())
         val id = noteRepo.upsert(note)
 
-        val defaults = SettingsStore.getDefaultRemindersFlow(ctx).firstOrNull() ?: emptyList()
+        val defaults = ReminderSettingsStore.getDefaultRemindersFlow(ctx).firstOrNull() ?: emptyList()
         defaults.forEach { offset ->
             val cal = offset.toCalendar()
             reminderRepo.insert(ReminderEntity(noteId = id, dueDateTime = cal, enabled = true))

@@ -1,13 +1,12 @@
-package org.elnix.notes.data
+package org.elnix.notes.data.settings
 
 import android.content.Context
 import android.util.Log
 import androidx.datastore.preferences.core.*
-import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.elnix.notes.data.LockSettings
 
-val Context.lockDataStore by preferencesDataStore("lock_settings")
 
 object LockSettingsStore {
     private val USE_BIOMETRICS = booleanPreferencesKey("use_biometrics")
@@ -16,7 +15,7 @@ object LockSettingsStore {
     private val LAST_UNLOCK_TIMESTAMP = longPreferencesKey("last_unlock_timestamp")
 
     fun getLockSettings(context: Context): Flow<LockSettings> {
-        return context.lockDataStore.data.map { prefs ->
+        return context.dataStore.data.map { prefs ->
             LockSettings(
                 useBiometrics = prefs[USE_BIOMETRICS] ?: false,
                 useDeviceCredential = prefs[USE_DEVICE_CREDENTIAL] ?: false,
@@ -28,7 +27,7 @@ object LockSettingsStore {
 
     suspend fun updateLockSettings(context: Context, settings: LockSettings) {
         Log.d("LockSettingsStore", "Saving: $settings")
-        context.lockDataStore.edit { prefs ->
+        context.dataStore.edit { prefs ->
             prefs[USE_BIOMETRICS] = settings.useBiometrics
             prefs[USE_DEVICE_CREDENTIAL] = settings.useDeviceCredential
             prefs[LOCK_TIMEOUT_MINUTES] = settings.lockTimeoutMinutes
@@ -37,9 +36,4 @@ object LockSettingsStore {
     }
 }
 
-data class LockSettings(
-    val useBiometrics: Boolean = false,
-    val useDeviceCredential: Boolean = false,
-    val lockTimeoutMinutes: Int = 5,
-    val lastUnlockTimestamp: Long = 0L
-)
+

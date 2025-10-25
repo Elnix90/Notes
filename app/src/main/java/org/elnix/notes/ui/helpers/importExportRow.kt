@@ -12,7 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
-import org.elnix.notes.data.SettingsStore
+import org.elnix.notes.data.settings.ColorSettingsStore
+import org.elnix.notes.data.settings.UiSettingsStore
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.json.JSONObject
 import java.io.File
@@ -33,10 +34,10 @@ fun ExportImportRow(
                 val json = it.bufferedReader().readText()
                 val obj = JSONObject(json)
                 scope.launch {
-                    SettingsStore.setPrimary(ctx, obj.optInt("primary"))
-                    SettingsStore.setBackground(ctx, obj.optInt("background"))
-                    SettingsStore.setOnBackground(ctx, obj.optInt("onBackground"))
-                    SettingsStore.setShowBottomNavLabelsFlow(ctx, obj.optBoolean("showNavLabels"))
+                    ColorSettingsStore.setPrimary(ctx, obj.optInt("primary"))
+                    ColorSettingsStore.setBackground(ctx, obj.optInt("background"))
+                    ColorSettingsStore.setOnBackground(ctx, obj.optInt("onBackground"))
+                    UiSettingsStore.setShowBottomNavLabelsFlow(ctx, obj.optBoolean("showNavLabels"))
                 }
             }
         }

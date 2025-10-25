@@ -30,7 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import org.elnix.notes.data.SettingsStore
+import org.elnix.notes.data.settings.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.security.LockScreen
 import org.elnix.notes.ui.theme.adjustBrightness
@@ -136,7 +136,7 @@ fun MainApp(vm: NoteViewModel) {
 @Composable
 fun BottomNav(navController: NavHostController) {
     val ctx = LocalContext.current
-    val showLabels by SettingsStore.getShowBottomNavLabelsFlow(ctx).collectAsState(initial = true)
+    val showLabels by UiSettingsStore.getShowBottomNavLabelsFlow(ctx).collectAsState(initial = true)
 
     val items = listOf(
         Screen.Notes,

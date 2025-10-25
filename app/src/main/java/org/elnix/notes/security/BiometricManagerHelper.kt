@@ -37,6 +37,7 @@ object BiometricManagerHelper {
         useBiometrics: Boolean,
         useDeviceCredential: Boolean,
         title: String = "Unlock Notes",
+        subTitle: String = "",
         onSuccess: () -> Unit,
         onFailure: () -> Unit
     ) {
@@ -47,27 +48,29 @@ object BiometricManagerHelper {
 
         val executor: Executor = ContextCompat.getMainExecutor(activity)
 
-        val allowedAuthenticators = when {
-            useBiometrics && useDeviceCredential ->
-                BiometricManager.Authenticators.BIOMETRIC_STRONG or
-                        BiometricManager.Authenticators.DEVICE_CREDENTIAL
-            useBiometrics ->
-                BiometricManager.Authenticators.BIOMETRIC_STRONG
-            useDeviceCredential ->
-                BiometricManager.Authenticators.DEVICE_CREDENTIAL
-            else -> 0
-        }
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(title)
-            .setSubtitle("")
-            .setAllowedAuthenticators(allowedAuthenticators)
+            .setSubtitle(subTitle)
             .apply {
-                if (useBiometrics && !useDeviceCredential) {
-                    setNegativeButtonText("Cancel")
+                when {
+                    useBiometrics && useDeviceCredential -> {
+                        setAllowedAuthenticators(
+                            BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                                    BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                        )
+                    }
+                    useBiometrics -> {
+                        setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+                        setNegativeButtonText("Cancel")
+                    }
+                    useDeviceCredential -> {
+                        setAllowedAuthenticators(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                    }
                 }
             }
             .build()
+
 
         val biometricPrompt = BiometricPrompt(
             activity,
@@ -90,6 +93,12 @@ object BiometricManagerHelper {
             }
         )
 
-        biometricPrompt.authenticate(promptInfo)
+        try {
+            biometricPrompt.authenticate(promptInfo)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            onFailure()
+        }
     }
+
 }

@@ -1,6 +1,7 @@
 package org.elnix.notes.data
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +27,7 @@ object LockSettingsStore {
     }
 
     suspend fun updateLockSettings(context: Context, settings: LockSettings) {
+        Log.d("LockSettingsStore", "Saving: $settings")
         context.lockDataStore.edit { prefs ->
             prefs[USE_BIOMETRICS] = settings.useBiometrics
             prefs[USE_DEVICE_CREDENTIAL] = settings.useDeviceCredential

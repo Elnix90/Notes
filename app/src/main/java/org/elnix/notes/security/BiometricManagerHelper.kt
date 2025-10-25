@@ -48,7 +48,6 @@ object BiometricManagerHelper {
 
         val executor: Executor = ContextCompat.getMainExecutor(activity)
 
-
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(title)
             .setSubtitle(subTitle)

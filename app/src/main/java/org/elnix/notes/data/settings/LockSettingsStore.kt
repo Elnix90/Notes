@@ -11,7 +11,7 @@ import org.elnix.notes.data.LockSettings
 object LockSettingsStore {
     private val USE_BIOMETRICS = booleanPreferencesKey("use_biometrics")
     private val USE_DEVICE_CREDENTIAL = booleanPreferencesKey("use_device_credential")
-    private val LOCK_TIMEOUT_MINUTES = intPreferencesKey("lock_timeout_minutes")
+    private val LOCK_TIMEOUT_SECONDS = intPreferencesKey("lock_timeout_seconds")
     private val LAST_UNLOCK_TIMESTAMP = longPreferencesKey("last_unlock_timestamp")
 
     fun getLockSettings(context: Context): Flow<LockSettings> {
@@ -19,7 +19,7 @@ object LockSettingsStore {
             LockSettings(
                 useBiometrics = prefs[USE_BIOMETRICS] ?: false,
                 useDeviceCredential = prefs[USE_DEVICE_CREDENTIAL] ?: false,
-                lockTimeoutMinutes = prefs[LOCK_TIMEOUT_MINUTES] ?: 5,
+                lockTimeoutSeconds = prefs[LOCK_TIMEOUT_SECONDS] ?: 300,
                 lastUnlockTimestamp = prefs[LAST_UNLOCK_TIMESTAMP] ?: 0L
             )
         }
@@ -30,7 +30,7 @@ object LockSettingsStore {
         context.dataStore.edit { prefs ->
             prefs[USE_BIOMETRICS] = settings.useBiometrics
             prefs[USE_DEVICE_CREDENTIAL] = settings.useDeviceCredential
-            prefs[LOCK_TIMEOUT_MINUTES] = settings.lockTimeoutMinutes
+            prefs[LOCK_TIMEOUT_SECONDS] = settings.lockTimeoutSeconds
             prefs[LAST_UNLOCK_TIMESTAMP] = settings.lastUnlockTimestamp
         }
     }

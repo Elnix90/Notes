@@ -35,7 +35,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // Kotlin JVM toolchain (recommended for new Kotlin plugin API)
     kotlin {
         jvmToolchain(17)
     }

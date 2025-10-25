@@ -1,9 +1,23 @@
 package org.elnix.notes.ui.security
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,36 +38,23 @@ fun LockScreen(onUnlock: () -> Unit) {
 
     var isAuthenticating by remember { mutableStateOf(false) }
     var authFailed by remember { mutableStateOf(false) }
+    var authenticationStarted by remember { mutableStateOf(false) }
 
-    // React to settings once they're loaded
+
     LaunchedEffect(settings) {
-        if (settings == null) return@LaunchedEffect
-        val s = settings!!
-
-        val now = Instant.now().toEpochMilli()
-        val diffMinutes =
-            if (s.lastUnlockTimestamp == 0L) Long.MAX_VALUE
-            else (now - s.lastUnlockTimestamp) / (1000 * 60)
-
-        // only run authentication after settings are available
-        if (diffMinutes >= s.lockTimeoutMinutes) {
-            if (!isAuthenticating) {
-                isAuthenticating = true
-                authFailed = false
-                startAuthentication(
-                    activity = activity,
-                    ctx = ctx,
-                    settings = s,
-                    scope = scope,
-                    onSuccess = onUnlock,
-                    onFailure = {
-                        authFailed = true
-                        isAuthenticating = false
-                    }
-                )
-            }
-        } else {
-            onUnlock()
+        if (settings != null && !authenticationStarted) {
+            authenticationStarted = true
+            startAuthentication(
+                activity,
+                ctx,
+                settings!!,
+                scope,
+                onSuccess = onUnlock,
+                onFailure = {
+                    authFailed = true
+                    isAuthenticating = false
+                }
+            )
         }
     }
 
@@ -78,26 +79,26 @@ fun LockScreen(onUnlock: () -> Unit) {
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = {
                         authFailed = false
-                        isAuthenticating = true
-                        startAuthentication(
-                            activity = activity,
-                            ctx = ctx,
-                            settings = settings ?: return@Button,
-                            scope = scope,
-                            onSuccess = onUnlock,
-                            onFailure = {
-                                authFailed = true
-                                isAuthenticating = false
-                            }
-                        )
+                        settings?.let {
+                            startAuthentication(
+                                activity,
+                                ctx,
+                                it,
+                                scope,
+                                onSuccess = onUnlock,
+                                onFailure = {
+                                    authFailed = true
+                                    isAuthenticating = false
+                                }
+                            )
+                        }
                     }) {
                         Text("Retry")
                     }
                 }
-
                 isAuthenticating -> {
                     Text(
-                        text = "Authenticating...",
+                        "Authenticating...",
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -114,30 +115,39 @@ private fun startAuthentication(
     onSuccess: () -> Unit,
     onFailure: () -> Unit
 ) {
-    if (!BiometricManagerHelper.canAuthenticate(
-            activity,
-            useBiometrics = settings.useBiometrics,
-            useDeviceCredential = settings.useDeviceCredential
-        )
-    ) {
-        onFailure()
+
+    val now = Instant.now().toEpochMilli()
+    val diffSeconds =
+        if (settings.lastUnlockTimestamp == 0L) Long.MAX_VALUE
+        else (now - settings.lastUnlockTimestamp) / (1000 * 60)
+
+    val canAuth = BiometricManagerHelper.canAuthenticate(
+        activity,
+        useBiometrics = settings.useBiometrics,
+        useDeviceCredential = settings.useDeviceCredential
+    )
+
+    // If no valid authentication method or if user unlocked recently, skip authentication
+    if (!canAuth || diffSeconds < settings.lockTimeoutSeconds) {
+        onSuccess()
         return
     }
 
-    BiometricManagerHelper.authenticateUser(
-        activity,
-        useBiometrics = settings.useBiometrics,
-        useDeviceCredential = settings.useDeviceCredential,
-        title = "Unlock Notes",
-        onSuccess = {
-            scope.launch {
-                LockSettingsStore.updateLockSettings(
-                    ctx,
-                    settings.copy(lastUnlockTimestamp = Instant.now().toEpochMilli())
-                )
-                // Wait for the write to finish before proceeding
-            }.invokeOnCompletion { onSuccess() }
-        },
-        onFailure = { onFailure() }
-    )
+    scope.launch {
+        BiometricManagerHelper.authenticateUser(
+            activity,
+            settings.useBiometrics,
+            settings.useDeviceCredential,
+            title = "Unlock Notes",
+            onSuccess = {
+                scope.launch {
+                    LockSettingsStore.updateLockSettings(
+                        ctx,
+                        settings.copy(lastUnlockTimestamp = Instant.now().toEpochMilli())
+                    )
+                }.invokeOnCompletion { onSuccess() }
+            },
+            onFailure = { onFailure() }
+        )
+    }
 }

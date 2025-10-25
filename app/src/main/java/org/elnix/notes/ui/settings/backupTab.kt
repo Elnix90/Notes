@@ -11,13 +11,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
 import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.ui.helpers.ExportImportRow
 import org.elnix.notes.ui.helpers.SettingsTitle
 
 @Composable
-fun BackupTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
+fun BackupTab(ctx: Context, onBack: (() -> Unit)) {
     val primary by SettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
     val background by SettingsStore.getBackgroundFlow(ctx).collectAsState(initial = null)
     val onBackground by SettingsStore.getOnBackgroundFlow(ctx).collectAsState(initial = null)

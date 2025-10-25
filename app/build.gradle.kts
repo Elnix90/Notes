@@ -101,5 +101,8 @@ dependencies {
     // Debug tools
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // Biometric API
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
 }
 

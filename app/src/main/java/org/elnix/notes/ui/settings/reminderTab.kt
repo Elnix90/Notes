@@ -4,14 +4,9 @@ import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
@@ -21,8 +16,6 @@ import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.utils.ReminderBubble
 import org.elnix.notes.utils.ReminderPicker
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.MaterialTheme
 import org.elnix.notes.ui.helpers.SettingsTitle
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)

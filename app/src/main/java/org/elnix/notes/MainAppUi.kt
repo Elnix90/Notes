@@ -16,6 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -29,14 +32,20 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.elnix.notes.data.SettingsStore
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.security.LockScreen
 import org.elnix.notes.ui.theme.adjustBrightness
 
 sealed class Screen(val route: String, val label: String, val icon: @Composable () -> Unit) {
     object Notes : Screen("notes", "Notes", { Icon(Icons.Default.Add, contentDescription = "notes") })
-    object Settings : Screen("settings", "Settings", { Icon(Icons.Default.Settings, contentDescription = "settings") })
-    object Edit : Screen("edit/{noteId}", "Edit", { Icon(Icons.Default.Add, contentDescription = "edit") }) {
-        fun createRoute(noteId: Long) = "edit/$noteId"
+    object Settings : Screen("settings", "Settings", { Icon(Icons.Default.Settings, contentDescription = "settings") }) {
+        fun appearanceTab() = "${route}/appearance"
+        fun customisationTab() = "${route}/customisation"
+        fun reminderTab() = "${route}/reminder"
+        fun securityTab() = "${route}/security"
+        fun backupTab() = "${route}/backup"
+        fun debugTab() = "${route}/debug"
     }
+    object Edit : Screen("edit/{noteId}", "Edit", { Icon(Icons.Default.Add, contentDescription = "edit") })
     object Create : Screen("create", "Create", { Icon(Icons.Default.Add, contentDescription = "create") })
 }
 
@@ -45,72 +54,80 @@ fun MainApp(vm: NoteViewModel) {
     val navController = rememberNavController()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    Scaffold(
-        bottomBar = { BottomNav(navController) },
-        floatingActionButton = {
-            if (currentRoute != Screen.Create.route && currentRoute != Screen.Edit.route) {
-                FloatingActionButton(
-                    onClick = {
-                        navController.navigate(Screen.Create.route) {
-                            launchSingleTop = true
-                            popUpTo(Screen.Create.route) { inclusive = true }
-                        }
-                    },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.size(56.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = "Add",
+    var unlocked by remember { mutableStateOf(false) }
+
+
+    if (!unlocked) {
+        LockScreen(onUnlock = { unlocked = true })
+    } else {
+        Scaffold(
+            bottomBar = { BottomNav(navController) },
+            floatingActionButton = {
+                if (currentRoute != Screen.Create.route && currentRoute != Screen.Edit.route && currentRoute != Screen.Settings.route) {
+                    FloatingActionButton(
+                        onClick = {
+                            navController.navigate(Screen.Create.route) {
+                                launchSingleTop = true
+                                popUpTo(Screen.Create.route) { inclusive = true }
+                            }
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.background,
+                        modifier = Modifier.size(56.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = "Add",
+                        )
+                    }
+                }
+
+            }
+        ) { innerPadding ->
+            NavHost(navController, startDestination = Screen.Notes.route, Modifier.padding(innerPadding)) {
+                // NOTES LIST
+                composable(Screen.Notes.route) {
+                    NotesScreen(vm, navController)
+                }
+
+
+                // SETTINGS LIST
+                composable(Screen.Settings.route) { SettingsListScreen(navController) }
+
+                // APPEARANCE SETTINGS
+                composable(Screen.Settings.appearanceTab()) { AppearanceSettingsScreen(navController) }
+                    // sub-sub-setting screen for color customisation
+                    composable("settings/appearance/colors") { ColorSelectorSettingsScreen(navController)}
+                composable(Screen.Settings.customisationTab()) { CustomisationSettingsScreen(navController) }
+                composable(Screen.Settings.reminderTab()) { RemindersSettingsScreen(navController) }
+                composable(Screen.Settings.securityTab()) { SecuritySettingsScreen(navController) }
+                composable(Screen.Settings.backupTab()) { BackupSettingsScreen(navController) }
+                composable(Screen.Settings.debugTab()) { DebugSettingsScreen(navController, vm) }
+
+
+                // CREATE NOTE
+                composable(Screen.Create.route) {
+                    NoteEditorScreen(
+                        vm = vm,
+                        noteId = null, // indicates new note
+                        onSaved = { navController.popBackStack() },
+                        onCancel = { navController.popBackStack() }
                     )
                 }
-            }
 
-        }
-    ) { innerPadding ->
-        NavHost(navController, startDestination = Screen.Notes.route, Modifier.padding(innerPadding)) {
-            // NOTES LIST
-            composable(Screen.Notes.route) {
-                NotesScreen(vm, navController)
-            }
-
-
-            // Settings list
-            composable(Screen.Settings.route) { SettingsListScreen(navController) }
-
-            // Settings sub-screens
-            composable("settings/appearance") { AppearanceSettingsScreen(navController) }
-                // sub-sub-setting screen for color customisation
-                composable("settings/appearance/colors") { ColorSelectorSettingsScreen(navController)}
-            composable("settings/customisation") { CustomisationSettingsScreen(navController) }
-            composable("settings/reminders") { RemindersSettingsScreen(navController) }
-            composable("settings/backup") { BackupSettingsScreen(navController) }
-            composable("settings/debug") { DebugSettingsScreen(navController, vm) }
-
-
-            // CREATE NOTE (no note created here — NoteEditorScreen handles it)
-            composable(Screen.Create.route) {
-                NoteEditorScreen(
-                    vm = vm,
-                    noteId = null, // indicates new note
-                    onSaved = { navController.popBackStack() },
-                    onCancel = { navController.popBackStack() }
-                )
-            }
-
-            // EDIT NOTE
-            composable(
-                route = Screen.Edit.route,
-                arguments = listOf(navArgument("noteId") { type = NavType.LongType })
-            ) { backStackEntry ->
-                val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
-                NoteEditorScreen(
-                    vm = vm,
-                    noteId = noteId,
-                    onSaved = { navController.popBackStack() },
-                    onCancel = { navController.popBackStack() }
-                )
+                // EDIT NOTE
+                composable(
+                    route = Screen.Edit.route,
+                    arguments = listOf(navArgument("noteId") { type = NavType.LongType })
+                ) { backStackEntry ->
+                    val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
+                    NoteEditorScreen(
+                        vm = vm,
+                        noteId = noteId,
+                        onSaved = { navController.popBackStack() },
+                        onCancel = { navController.popBackStack() }
+                    )
+                }
             }
         }
     }

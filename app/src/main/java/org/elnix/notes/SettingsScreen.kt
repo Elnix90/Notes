@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DashboardCustomize
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import org.elnix.notes.ui.settings.CustomisationTab
 import org.elnix.notes.ui.settings.DebugTab
 import org.elnix.notes.ui.settings.RemindersTab
 import org.elnix.notes.ui.settings.appearance.ColorSelectorTab
+import org.elnix.notes.ui.settings.security.SecurityTab
 
 
 @Composable
@@ -52,27 +54,32 @@ fun SettingsListScreen(navController: NavController) {
         SettingsItem(
             title = "Appearance",
             icon = Icons.Default.DarkMode,
-            onClick = { navController.navigate("settings/appearance") }
+            onClick = { navController.navigate(Screen.Settings.appearanceTab()) }
         )
         SettingsItem(
             title = "Customisation",
             icon = Icons.Default.DashboardCustomize,
-            onClick = { navController.navigate("settings/customisation") }
+            onClick = { navController.navigate(Screen.Settings.customisationTab()) }
         )
         SettingsItem(
             title = "Reminders",
             icon = Icons.Default.Alarm,
-            onClick = { navController.navigate("settings/reminders") }
+            onClick = { navController.navigate(Screen.Settings.reminderTab()) }
+        )
+        SettingsItem(
+            title = "Security",
+            icon = Icons.Default.Shield,
+            onClick = { navController.navigate(Screen.Settings.securityTab()) }
         )
         SettingsItem(
             title = "Backup",
             icon = Icons.Default.Backup,
-            onClick = { navController.navigate("settings/backup") }
+            onClick = { navController.navigate(Screen.Settings.backupTab()) }
         )
         SettingsItem(
             title = "Debug",
             icon = Icons.Default.BugReport,
-            onClick = { navController.navigate("settings/debug") }
+            onClick = { navController.navigate(Screen.Settings.debugTab()) }
         )
     }
 }
@@ -142,8 +149,13 @@ fun RemindersSettingsScreen(navController: NavController) {
 @Composable
 fun BackupSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
-    val scope = rememberCoroutineScope()
-    BackupTab(ctx, scope) {
+    BackupTab(ctx) {
+        navController.popBackStack()
+    }
+}
+@Composable
+fun SecuritySettingsScreen(navController: NavController) {
+    SecurityTab {
         navController.popBackStack()
     }
 }

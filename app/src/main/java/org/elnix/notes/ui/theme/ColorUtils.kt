@@ -1,5 +1,6 @@
 package org.elnix.notes.ui.theme
 
+import android.R.attr.enabled
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CheckboxColors
@@ -62,11 +63,10 @@ object AppObjectsColors {
     }
 
     @Composable
-    fun cancelButtonColors(): ButtonColors {
-        val colors = MaterialTheme.colorScheme
-        return ButtonDefaults.buttonColors(
-            containerColor = colors.background,
-            contentColor = colors.error
+    fun cancelButtonColors(containerColor: Color = MaterialTheme.colorScheme.background): ButtonColors {
+        return ButtonDefaults.outlinedButtonColors(
+            containerColor = containerColor,
+            contentColor = MaterialTheme.colorScheme.error
         )
     }
 
@@ -106,14 +106,16 @@ object AppObjectsColors {
 
 
     @Composable
-    fun sliderColors(): SliderColors {
+    fun sliderColors(
+        activeTrackColor: Color? = null
+    ): SliderColors {
         val colors = MaterialTheme.colorScheme
         return SliderDefaults.colors(
-            thumbColor = colors.primary,
-            activeTrackColor = colors.secondary,
-            activeTickColor = colors.primary,
-            inactiveTrackColor = colors.background,
-            inactiveTickColor = colors.primary,
+            thumbColor = activeTrackColor?: colors.primary,
+            activeTrackColor = activeTrackColor?: colors.secondary,
+            activeTickColor = activeTrackColor?: colors.primary,
+            inactiveTrackColor = colors.surface,
+            inactiveTickColor = activeTrackColor?: colors.primary,
             disabledThumbColor = colors.primary,
             disabledActiveTrackColor = colors.onSurface,
             disabledActiveTickColor = colors.primary,
@@ -140,8 +142,8 @@ object AppObjectsColors {
         val colors = MaterialTheme.colorScheme
         return CheckboxDefaults.colors(
             checkedColor = colors.primary,
-            uncheckedColor = colors.onBackground,
-            checkmarkColor = colors.onSurface,
+            uncheckedColor = colors.outline,
+            checkmarkColor = colors.onPrimary,
             disabledCheckedColor = colors.primary.copy(alpha = 0.5f),
             disabledUncheckedColor = colors.outline,
             disabledIndeterminateColor = colors.onSurface,
@@ -149,18 +151,21 @@ object AppObjectsColors {
     }
 
     @Composable
-    fun outlinedTextFieldColors(): TextFieldColors {
+    fun outlinedTextFieldColors(
+        backgroundColor: Color? = null,
+        onBackgroundColor: Color? = null
+    ): TextFieldColors {
         val colors = MaterialTheme.colorScheme
         return OutlinedTextFieldDefaults.colors(
-            focusedTextColor = colors.onBackground,
-            unfocusedTextColor = colors.onBackground,
-            disabledTextColor = colors.onSurfaceVariant,
+            focusedTextColor = onBackgroundColor ?: colors.onBackground,
+            unfocusedTextColor = onBackgroundColor ?: colors.onBackground,
+            disabledTextColor = onBackgroundColor ?: colors.onBackground.adjustBrightness( 0.5f),
             errorTextColor = colors.error,
 
-            focusedContainerColor = colors.background,
-            unfocusedContainerColor = colors.background,
-            disabledContainerColor = colors.background,
-            errorContainerColor = colors.background,
+            focusedContainerColor = backgroundColor ?: colors.background,
+            unfocusedContainerColor = backgroundColor ?: colors.background,
+            disabledContainerColor = backgroundColor ?: colors.background,
+            errorContainerColor = backgroundColor ?: colors.background,
 
             cursorColor = colors.primary,
             errorCursorColor = colors.error,

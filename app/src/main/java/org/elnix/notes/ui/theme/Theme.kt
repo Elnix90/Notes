@@ -65,10 +65,10 @@ fun NotesTheme(
     val primary = customPrimary?.let { Color(it) } ?: PrimaryDefault
     val onPrimary = customOnPrimary?.let { Color(it) } ?: OnPrimaryDefault
 
-    val secondary = customSecondary?.let { Color(it) } ?: Secondary40
+    val secondary = customSecondary?.let { Color(it) } ?: SecondaryDefault
     val onSecondary = customOnSecondary?.let { Color(it) } ?: OnSecondaryDefault
 
-    val tertiary = customTertiary?.let { Color(it) } ?: Tertiary40
+    val tertiary = customTertiary?.let { Color(it) } ?: TertiaryDefault
     val onTertiary = customOnTertiary?.let { Color(it) } ?: OnTertiaryDefault
 
     val background = customBackground?.let { Color(it) } ?: BackgroundDefault

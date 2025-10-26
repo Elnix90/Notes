@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.ui.theme.*
 
@@ -122,9 +121,9 @@ object ColorSettingsStore {
         ctx.dataStore.edit {
             it[PRIMARY_COLOR] = PrimaryDefault.toArgb()
             it[ON_PRIMARY_COLOR] = OnPrimaryDefault.toArgb()
-            it[SECONDARY_COLOR] = Secondary40.toArgb()
+            it[SECONDARY_COLOR] = SecondaryDefault.toArgb()
             it[ON_SECONDARY_COLOR] = OnSecondaryDefault.toArgb()
-            it[TERTIARY_COLOR] = Tertiary40.toArgb()
+            it[TERTIARY_COLOR] = TertiaryDefault.toArgb()
             it[ON_TERTIARY_COLOR] = OnTertiaryDefault.toArgb()
             it[BACKGROUND_COLOR] = BackgroundDefault.toArgb()
             it[ON_BACKGROUND_COLOR] = OnBackgroundDefault.toArgb()

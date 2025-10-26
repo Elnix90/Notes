@@ -4,9 +4,9 @@ import androidx.compose.ui.graphics.Color
 
 val PrimaryDefault = Color(0xFF6650a4)
 val OnPrimaryDefault = Color(0xFFCECECE)
-val Secondary40 = PrimaryDefault.adjustBrightness(0.2f)
+val SecondaryDefault = PrimaryDefault.adjustBrightness(0.2f)
 val OnSecondaryDefault = OnPrimaryDefault
-val Tertiary40 = Secondary40.adjustBrightness(0.2f)
+val TertiaryDefault = SecondaryDefault.adjustBrightness(0.2f)
 val OnTertiaryDefault = OnPrimaryDefault
 val BackgroundDefault = Color.Black
 val OnBackgroundDefault = OnPrimaryDefault

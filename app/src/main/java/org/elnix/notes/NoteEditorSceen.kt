@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -189,7 +190,7 @@ fun NoteEditorScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        HorizontalDivider()
 
         var isCompleted by remember { mutableStateOf(note?.isCompleted ?: false) }
 
@@ -220,7 +221,7 @@ fun NoteEditorScreen(
                 Text(
                     text = "Completed",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
@@ -234,7 +235,6 @@ fun NoteEditorScreen(
             }
         }
 
-        Spacer(Modifier.height(10.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),

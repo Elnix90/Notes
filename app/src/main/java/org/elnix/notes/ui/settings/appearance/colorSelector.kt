@@ -22,6 +22,23 @@ import org.elnix.notes.data.settings.ColorSettingsStore
 import org.elnix.notes.ui.helpers.ColorPickerRow
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.theme.AppObjectsColors
+import org.elnix.notes.ui.theme.BackgroundDefault
+import org.elnix.notes.ui.theme.CompleteDefault
+import org.elnix.notes.ui.theme.DeleteDefault
+import org.elnix.notes.ui.theme.EditDefault
+import org.elnix.notes.ui.theme.ErrorDefault
+import org.elnix.notes.ui.theme.LocalExtraColors
+import org.elnix.notes.ui.theme.OnBackgroundDefault
+import org.elnix.notes.ui.theme.OnErrorDefault
+import org.elnix.notes.ui.theme.OnPrimaryDefault
+import org.elnix.notes.ui.theme.OnSecondaryDefault
+import org.elnix.notes.ui.theme.OnSurfaceDefault
+import org.elnix.notes.ui.theme.OnTertiaryDefault
+import org.elnix.notes.ui.theme.OutlineDefault
+import org.elnix.notes.ui.theme.PrimaryDefault
+import org.elnix.notes.ui.theme.SecondaryDefault
+import org.elnix.notes.ui.theme.SurfaceDefault
+import org.elnix.notes.ui.theme.TertiaryDefault
 
 @Composable
 fun ColorSelectorTab(
@@ -72,89 +89,105 @@ fun ColorSelectorTab(
             // === Primary set ===
             ColorPickerRow(
                 label = "Primary",
+                defaultColor = PrimaryDefault,
                 currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb()
             ) { scope.launch { ColorSettingsStore.setPrimary(ctx, it) } }
 
             ColorPickerRow(
                 label = "On Primary",
+                defaultColor = OnPrimaryDefault,
                 currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb()
             ) { scope.launch { ColorSettingsStore.setOnPrimary(ctx, it) } }
 
             // === Secondary set ===
             ColorPickerRow(
                 label = "Secondary",
+                defaultColor = SecondaryDefault,
                 currentColor = secondary ?: MaterialTheme.colorScheme.secondary.toArgb()
             ) { scope.launch { ColorSettingsStore.setSecondary(ctx, it) } }
 
             ColorPickerRow(
                 label = "On Secondary",
+                defaultColor = OnSecondaryDefault,
                 currentColor = onSecondary ?: MaterialTheme.colorScheme.onSecondary.toArgb()
             ) { scope.launch { ColorSettingsStore.setOnSecondary(ctx, it) } }
 
             // === Tertiary set ===
             ColorPickerRow(
                 label = "Tertiary",
+                defaultColor = TertiaryDefault,
                 currentColor = tertiary ?: MaterialTheme.colorScheme.tertiary.toArgb()
             ) { scope.launch { ColorSettingsStore.setTertiary(ctx, it) } }
 
             ColorPickerRow(
                 label = "On Tertiary",
+                defaultColor = OnTertiaryDefault,
                 currentColor = onTertiary ?: MaterialTheme.colorScheme.onTertiary.toArgb()
             ) { scope.launch { ColorSettingsStore.setOnTertiary(ctx, it) } }
 
             // === Background ===
             ColorPickerRow(
                 label = "Background",
+                defaultColor = BackgroundDefault,
                 currentColor = background ?: MaterialTheme.colorScheme.background.toArgb()
             ) { scope.launch { ColorSettingsStore.setBackground(ctx, it) } }
 
             ColorPickerRow(
                 label = "On Background",
+                defaultColor = OnBackgroundDefault,
                 currentColor = onBackground ?: MaterialTheme.colorScheme.onBackground.toArgb()
             ) { scope.launch { ColorSettingsStore.setOnBackground(ctx, it) } }
 
             // === Surface ===
             ColorPickerRow(
                 label = "Surface",
+                defaultColor = SurfaceDefault,
                 currentColor = surface ?: MaterialTheme.colorScheme.surface.toArgb()
             ) { scope.launch { ColorSettingsStore.setSurface(ctx, it) } }
 
             ColorPickerRow(
                 label = "On Surface",
+                defaultColor = OnSurfaceDefault,
                 currentColor = onSurface ?: MaterialTheme.colorScheme.onSurface.toArgb()
             ) { scope.launch { ColorSettingsStore.setOnSurface(ctx, it) } }
 
             // === Error ===
             ColorPickerRow(
                 label = "Error",
+                defaultColor = ErrorDefault,
                 currentColor = error ?: MaterialTheme.colorScheme.error.toArgb()
             ) { scope.launch { ColorSettingsStore.setError(ctx, it) } }
 
             ColorPickerRow(
                 label = "On Error",
+                defaultColor = OnErrorDefault,
                 currentColor = onError ?: MaterialTheme.colorScheme.onError.toArgb()
             ) { scope.launch { ColorSettingsStore.setOnError(ctx, it) } }
 
             // === Outline ===
             ColorPickerRow(
                 label = "Outline",
+                defaultColor = OutlineDefault,
                 currentColor = outline ?: MaterialTheme.colorScheme.outline.toArgb()
             ) { scope.launch { ColorSettingsStore.setOutline(ctx, it) } }
 
             // === Extra custom action colors ===
             ColorPickerRow(
                 label = "Delete",
-                currentColor = delete ?: MaterialTheme.colorScheme.error.toArgb()
+                defaultColor = DeleteDefault,
+                currentColor = delete ?: LocalExtraColors.current.delete.toArgb()
             ) { scope.launch { ColorSettingsStore.setDelete(ctx, it) } }
 
             ColorPickerRow(
                 label = "Edit",
-                currentColor = edit ?: MaterialTheme.colorScheme.secondary.toArgb()
+                defaultColor = EditDefault,
+                currentColor = edit ?: LocalExtraColors.current.edit.toArgb()
             ) { scope.launch { ColorSettingsStore.setEdit(ctx, it) } }
 
             ColorPickerRow(
                 label = "Complete",
-                currentColor = complete ?: MaterialTheme.colorScheme.primary.toArgb()
+                defaultColor = CompleteDefault,
+                currentColor = complete ?: LocalExtraColors.current.complete.toArgb()
             ) { scope.launch { ColorSettingsStore.setComplete(ctx, it) } }
 
             // === Reset button ===
@@ -163,7 +196,10 @@ fun ColorSelectorTab(
                 modifier = Modifier.fillMaxWidth(),
                 colors = AppObjectsColors.buttonColors()
             ) {
-                Text("Reset to Default Colors")
+                Text(
+                    text = "Reset to Default Colors",
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     }

@@ -36,6 +36,7 @@ import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.helpers.SettingsOutlinedField
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
+import org.elnix.notes.ui.theme.adjustBrightness
 import java.time.Instant
 
 @Composable
@@ -44,6 +45,7 @@ fun SecurityTab(onBack: (() -> Unit)) {
     val activity = ctx as androidx.fragment.app.FragmentActivity
     val settings by LockSettingsStore.getLockSettings(ctx).collectAsState(initial = LockSettings())
     val scope = rememberCoroutineScope()
+    val enabled = settings.useBiometrics || settings.useDeviceCredential
 
     Column(
         modifier = Modifier.padding(16.dp),
@@ -110,14 +112,13 @@ fun SecurityTab(onBack: (() -> Unit)) {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = MaterialTheme.colorScheme.surface,
+                    color =MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(horizontal = 8.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            // Numeric input field
             SettingsOutlinedField(
                 value = displayedValue,
                 label = "Timeout",
@@ -127,7 +128,8 @@ fun SecurityTab(onBack: (() -> Unit)) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 8.dp),
-                scope = scope
+                scope = scope,
+                enabled = enabled
             ) { newValue ->
                 val parsed = newValue.toIntOrNull() ?: return@SettingsOutlinedField
                 val seconds = parsed * unitMultiplier
@@ -139,31 +141,37 @@ fun SecurityTab(onBack: (() -> Unit)) {
                 }
             }
 
-            // Dropdown for unit selection
             Box(
                 modifier = Modifier
                     .wrapContentWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        color = MaterialTheme.colorScheme.secondary,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(horizontal = 8.dp)
             ) {
-                TextButton(onClick = { expanded = true }) {
-                    Text(selectedUnit, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                TextButton(
+                    onClick = { expanded = true },
+                    enabled = enabled
+                ) {
+                    Text(selectedUnit, color = MaterialTheme.colorScheme.onSecondary.adjustBrightness(if (enabled) 1f else 0.5f))
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
                         contentDescription = "Select unit",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSecondary.adjustBrightness(if (enabled) 1f else 0.5f)
                     )
                 }
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
+                    containerColor = MaterialTheme.colorScheme.secondary
                 ) {
                     listOf("Seconds", "Minutes", "Hours", "Days").forEach { unit ->
                         DropdownMenuItem(
-                            text = { Text(unit) },
+                            text = { Text(
+                                text = unit,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            ) },
                             onClick = {
                                 selectedUnit = unit
                                 expanded = false

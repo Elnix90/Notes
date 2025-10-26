@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.ui.theme.AppObjectsColors
+import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
 fun SettingsOutlinedField(
@@ -31,6 +32,7 @@ fun SettingsOutlinedField(
     maxValue: Int? = null,
     keyboardType: KeyboardType = KeyboardType.Number,
     scope: CoroutineScope,
+    enabled: Boolean = true,
     onValueChange: suspend (String) -> Unit,
 ) {
     var inputValue by remember { mutableStateOf(value) }
@@ -44,7 +46,7 @@ fun SettingsOutlinedField(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 16.dp, vertical = 14.dp)
@@ -53,6 +55,7 @@ fun SettingsOutlinedField(
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = inputValue,
+            enabled = enabled,
             onValueChange = { newValue ->
 
                 if (keyboardType == KeyboardType.Number && !newValue.matches(Regex("^[0-9]*$"))) return@OutlinedTextField
@@ -76,7 +79,7 @@ fun SettingsOutlinedField(
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             isError = isError,
             singleLine = true,
-            colors = AppObjectsColors.outlinedTextFieldColors()
+            colors = AppObjectsColors.outlinedTextFieldColors(MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f))
         )
     }
 }

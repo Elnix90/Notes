@@ -5,6 +5,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -15,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderOffset
 import java.util.Calendar
 
@@ -50,7 +52,8 @@ fun StyledReminderDialogs(
             },
             dismissButton = {
                 TextButton(onClick = { showDate = false }) { Text("Cancel") }
-            }
+            },
+            colors = AppObjectsColors.datePickerColors()
         ) {
             DatePicker(state = datePickerState)
         }
@@ -87,7 +90,11 @@ fun StyledReminderDialogs(
                 }) { Text("Previous") }
             },
             title = { Text("Select Time") },
-            text = { TimePicker(state = timePickerState) }
+            text = { TimePicker(state = timePickerState) },
+            containerColor = MaterialTheme.colorScheme.surface,
+            iconContentColor = MaterialTheme.colorScheme.onSurface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurface
         )
     }
 }

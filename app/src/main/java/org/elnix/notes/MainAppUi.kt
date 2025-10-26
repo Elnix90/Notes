@@ -63,12 +63,12 @@ fun MainApp(vm: NoteViewModel) {
         Scaffold(
             bottomBar = { BottomNav(navController) },
             floatingActionButton = {
-                if (currentRoute != Screen.Create.route && currentRoute != Screen.Edit.route && currentRoute != Screen.Settings.route) {
+                if (currentRoute == Screen.Notes.route) {
                     FloatingActionButton(
                         onClick = {
                             navController.navigate(Screen.Create.route) {
                                 launchSingleTop = true
-                                popUpTo(Screen.Create.route) { inclusive = true }
+                                popUpTo(Screen.Create.route)
                             }
                         },
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -144,7 +144,6 @@ fun BottomNav(navController: NavHostController) {
     )
 
     NavigationBar(
-//        containerColor = MaterialTheme.colorScheme.background.blendWith(MaterialTheme.colorScheme.primary, 0.2f)
         containerColor = MaterialTheme.colorScheme.surface
 
     ) {

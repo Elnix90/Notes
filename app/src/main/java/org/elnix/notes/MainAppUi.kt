@@ -30,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.security.LockScreen
@@ -72,7 +73,7 @@ fun MainApp(vm: NoteViewModel) {
                             }
                         },
                         containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(56.dp)
                     ) {
                         Icon(
@@ -94,7 +95,6 @@ fun MainApp(vm: NoteViewModel) {
                 // SETTINGS LIST
                 composable(Screen.Settings.route) { SettingsListScreen(navController) }
 
-                // APPEARANCE SETTINGS
                 composable(Screen.Settings.appearanceTab()) { AppearanceSettingsScreen(navController) }
                     // sub-sub-setting screen for color customisation
                     composable("settings/appearance/colors") { ColorSelectorSettingsScreen(navController)}
@@ -136,7 +136,8 @@ fun MainApp(vm: NoteViewModel) {
 @Composable
 fun BottomNav(navController: NavHostController) {
     val ctx = LocalContext.current
-    val showLabels by UiSettingsStore.getShowBottomNavLabelsFlow(ctx).collectAsState(initial = true)
+    val showNavbarLabel by UiSettingsStore.getShowBottomNavLabelsFlow(ctx)
+        .collectAsState(initial = ShowNavBarActions.ALWAYS)
 
     val items = listOf(
         Screen.Notes,
@@ -147,14 +148,22 @@ fun BottomNav(navController: NavHostController) {
         containerColor = MaterialTheme.colorScheme.surface
 
     ) {
-        val current = navController.currentBackStackEntryAsState().value?.destination?.route
+        val current = navController.currentBackStackEntryAsState().value?.destination?.route.orEmpty()
 
         items.forEach { screen ->
+            val isCurrentOrSub = current.startsWith(screen.route)
+            val showLabel = when (showNavbarLabel) {
+                ShowNavBarActions.ALWAYS -> true
+                ShowNavBarActions.NEVER -> false
+                ShowNavBarActions.SELECTED -> isCurrentOrSub
+                ShowNavBarActions.OTHER -> !isCurrentOrSub
+            }
+
             NavigationBarItem(
                 selected = current == screen.route,
                 onClick = { navController.navigate(screen.route) { launchSingleTop = true } },
                 icon = screen.icon,
-                label = if (showLabels == false) null else {
+                label = if (!showLabel) null else {
                     { Text(screen.label, color = MaterialTheme.colorScheme.onBackground) }
                 },
                 colors = NavigationBarItemDefaults.colors(

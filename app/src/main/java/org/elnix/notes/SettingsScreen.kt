@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.settings.appearance.AppearanceTab
 import org.elnix.notes.ui.settings.BackupTab
 import org.elnix.notes.ui.settings.CustomisationTab
@@ -45,11 +46,9 @@ fun SettingsListScreen(navController: NavController) {
             .padding(horizontal = 16.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = "Settings",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        SettingsTitle("Settings") {
+            navController.popBackStack()
+        }
 
         SettingsItem(
             title = "Appearance",

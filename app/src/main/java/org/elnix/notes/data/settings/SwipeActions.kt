@@ -8,27 +8,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import org.elnix.notes.ui.theme.LocalExtraColors
 
-enum class Action { DELETE, COMPLETE, EDIT }
+enum class SwipeActions { DELETE, COMPLETE, EDIT }
 
-data class ActionSettings(
-    val leftAction: Action = Action.DELETE,
-    val rightAction: Action = Action.EDIT,
-    val clickAction: Action = Action.COMPLETE
+data class SwipeActionSettings(
+    val leftAction: SwipeActions = SwipeActions.DELETE,
+    val rightAction: SwipeActions = SwipeActions.EDIT,
+    val clickAction: SwipeActions = SwipeActions.COMPLETE
 )
 
 @Composable
-fun actionColor(action: Action): Color {
+fun swipeActionColor(action: SwipeActions): Color {
     val extras = LocalExtraColors.current
     return when (action) {
-        Action.DELETE -> extras.delete
-        Action.EDIT -> extras.edit
-        Action.COMPLETE -> extras.complete
+        SwipeActions.DELETE -> extras.delete
+        SwipeActions.EDIT -> extras.edit
+        SwipeActions.COMPLETE -> extras.complete
     }
 }
 
 @Composable
-fun actionIcon(action: Action) = when (action) {
-    Action.DELETE -> Icons.Default.Delete
-    Action.EDIT -> Icons.Default.Edit
-    Action.COMPLETE -> Icons.Default.CheckBox
+fun swipeActionIcon(action: SwipeActions) = when (action) {
+    SwipeActions.DELETE -> Icons.Default.Delete
+    SwipeActions.EDIT -> Icons.Default.Edit
+    SwipeActions.COMPLETE -> Icons.Default.CheckBox
 }

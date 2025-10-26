@@ -12,7 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.elnix.notes.data.settings.ActionSettings
+import org.elnix.notes.data.settings.SwipeActions
+import org.elnix.notes.data.settings.SwipeActionSettings
 import org.elnix.notes.data.settings.ActionSettingsStore.getActionSettingsFlow
 import org.elnix.notes.data.settings.ActionSettingsStore.setClickAction
 import org.elnix.notes.data.settings.ActionSettingsStore.setSwipeLeftAction
@@ -22,7 +23,7 @@ import org.elnix.notes.ui.helpers.SettingsTitle
 
 @Composable
 fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
-    val settings by getActionSettingsFlow(ctx).collectAsState(initial = ActionSettings())
+    val settings by getActionSettingsFlow(ctx).collectAsState(initial = SwipeActionSettings())
 
     Column(
         modifier = Modifier
@@ -35,22 +36,31 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
         // --- Swipe Left ---
         ActionSelectorRow(
             label = "Swipe Left Action",
+            options = SwipeActions.entries,
             selected = settings.leftAction,
-            onSelected = { scope.launch { setSwipeLeftAction(ctx, it) } }
-        )
+            optionLabel = { it.name}
+        ) {
+            scope.launch { setSwipeLeftAction(ctx, it) }
+        }
 
         // --- Swipe Right ---
         ActionSelectorRow(
             label = "Swipe Right Action",
+            options = SwipeActions.entries,
             selected = settings.rightAction,
-            onSelected = { scope.launch { setSwipeRightAction(ctx, it) } }
-        )
+            optionLabel = { it.name}
+        ) {
+            scope.launch { setSwipeRightAction(ctx, it) }
+        }
 
         // --- Click Action ---
         ActionSelectorRow(
             label = "Click Action",
+            options = SwipeActions.entries,
             selected = settings.clickAction,
-            onSelected = { scope.launch { setClickAction(ctx, it) } }
-        )
+            optionLabel = { it.name}
+        ) {
+            scope.launch { setClickAction(ctx, it) }
+        }
     }
 }

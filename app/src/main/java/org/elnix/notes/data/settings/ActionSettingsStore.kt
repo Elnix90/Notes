@@ -12,25 +12,25 @@ object ActionSettingsStore {
     private val CLICK_ACTION = stringPreferencesKey("click_action")
 
     // --- Combined model
-    fun getActionSettingsFlow(ctx: Context): Flow<ActionSettings> =
+    fun getActionSettingsFlow(ctx: Context): Flow<SwipeActionSettings> =
         ctx.dataStore.data.map { prefs ->
-            ActionSettings(
-                leftAction = prefs[SWIPE_LEFT_ACTION]?.let { Action.valueOf(it) } ?: Action.DELETE,
-                rightAction = prefs[SWIPE_RIGHT_ACTION]?.let { Action.valueOf(it) } ?: Action.EDIT,
-                clickAction = prefs[CLICK_ACTION]?.let { Action.valueOf(it) } ?: Action.COMPLETE
+            SwipeActionSettings(
+                leftAction = prefs[SWIPE_LEFT_ACTION]?.let { SwipeActions.valueOf(it) } ?: SwipeActions.DELETE,
+                rightAction = prefs[SWIPE_RIGHT_ACTION]?.let { SwipeActions.valueOf(it) } ?: SwipeActions.EDIT,
+                clickAction = prefs[CLICK_ACTION]?.let { SwipeActions.valueOf(it) } ?: SwipeActions.COMPLETE
             )
         }
 
     // --- Individual setters
-    suspend fun setSwipeLeftAction(ctx: Context, action: Action) {
+    suspend fun setSwipeLeftAction(ctx: Context, action: SwipeActions) {
         ctx.dataStore.edit { it[SWIPE_LEFT_ACTION] = action.name }
     }
 
-    suspend fun setSwipeRightAction(ctx: Context, action: Action) {
+    suspend fun setSwipeRightAction(ctx: Context, action: SwipeActions) {
         ctx.dataStore.edit { it[SWIPE_RIGHT_ACTION] = action.name }
     }
 
-    suspend fun setClickAction(ctx: Context, action: Action) {
+    suspend fun setClickAction(ctx: Context, action: SwipeActions) {
         ctx.dataStore.edit { it[CLICK_ACTION] = action.name }
     }
 }

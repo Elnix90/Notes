@@ -12,21 +12,19 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.elnix.notes.data.settings.Action
+
 
 @Composable
-fun ActionSelectorRow(
+fun <T> ActionSelectorRow(
     label: String,
-    selected: Action,
-    onSelected: (Action) -> Unit
+    options: List<T>,
+    selected: T,
+    optionLabel: (T) -> String = { it.toString() },
+    onSelected: (T) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -39,25 +37,19 @@ fun ActionSelectorRow(
                 color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(14.dp)
             )
-            .clickable(
-                onClick = { showDialog = true}
-            )
+            .clickable { showDialog = true }
             .padding(horizontal = 16.dp, vertical = 14.dp)
-
     ) {
-
-
         Text(
             text = label,
             color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
-            text = selected.name,
+            text = optionLabel(selected),
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
             style = MaterialTheme.typography.labelSmall,
         )
-
     }
 
     if (showDialog) {
@@ -68,26 +60,26 @@ fun ActionSelectorRow(
             title = {},
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Action.entries.forEach { action ->
+                    options.forEach { option ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 4.dp)
                                 .clickable {
-                                    onSelected(action)
+                                    onSelected(option)
                                     showDialog = false
                                 }
                         ) {
                             RadioButton(
-                                selected = (selected == action),
+                                selected = (selected == option),
                                 onClick = {
-                                    onSelected(action)
+                                    onSelected(option)
                                     showDialog = false
                                 }
                             )
                             Text(
-                                text = action.name,
+                                text = optionLabel(option),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }

@@ -17,9 +17,10 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.SettingsItem
+import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.UiSettingsStore
+import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsTitle
-import org.elnix.notes.ui.helpers.SwitchRow
 
 @Composable
 fun AppearanceTab(
@@ -28,8 +29,9 @@ fun AppearanceTab(
     navController: NavController,
     onBack: () -> Unit
 ) {
-    val showNavbarLabels by UiSettingsStore.getShowBottomNavLabelsFlow(ctx)
-        .collectAsState(initial = true)
+    val showNavbarLabel by UiSettingsStore.getShowBottomNavLabelsFlow(ctx)
+        .collectAsState(initial = ShowNavBarActions.ALWAYS)
+
 
     Column(
         modifier = Modifier
@@ -49,11 +51,13 @@ fun AppearanceTab(
 
             HorizontalDivider()
 
-            SwitchRow(
-                state = showNavbarLabels,
-                text = "Show Navigation Bar Labels",
-            ) { newValue ->
-                scope.launch { UiSettingsStore.setShowBottomNavLabelsFlow(ctx, newValue) }
+            ActionSelectorRow(
+                label = "Show Navigation Bar Labels",
+                options = ShowNavBarActions.entries,
+                selected = showNavbarLabel,
+                optionLabel = { it.name}
+            ) {
+                scope.launch { UiSettingsStore.setShowBottomNavLabelsFlow(ctx, it) }
             }
         }
     }

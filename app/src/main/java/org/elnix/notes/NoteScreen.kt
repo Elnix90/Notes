@@ -36,11 +36,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.elnix.notes.data.settings.Action
-import org.elnix.notes.data.settings.ActionSettings
+import org.elnix.notes.data.settings.SwipeActions
+import org.elnix.notes.data.settings.SwipeActionSettings
 import org.elnix.notes.data.NoteEntity
-import org.elnix.notes.data.settings.actionColor
-import org.elnix.notes.data.settings.actionIcon
+import org.elnix.notes.data.settings.swipeActionColor
+import org.elnix.notes.data.settings.swipeActionIcon
 import org.elnix.notes.data.settings.ActionSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.NoteCard
@@ -55,7 +55,7 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
     val ctx = LocalContext.current
 
     val actionSettings by ActionSettingsStore.getActionSettingsFlow(ctx).collectAsState(
-        initial = ActionSettings()
+        initial = SwipeActionSettings()
     )
 
     LaunchedEffect(Unit) {
@@ -95,7 +95,7 @@ fun SwipeableNoteCard(
     note: NoteEntity,
     vm: NoteViewModel,
     navController: androidx.navigation.NavHostController,
-    actionSettings: ActionSettings
+    actionSettings: SwipeActionSettings
 ) {
     val scope = rememberCoroutineScope()
 
@@ -139,8 +139,8 @@ fun SwipeableNoteCard(
                 .matchParentSize()
                 .background(
                     color = when {
-                        swipeOffset > 0f -> actionColor(actionSettings.rightAction)
-                        swipeOffset < 0f -> actionColor(actionSettings.leftAction)
+                        swipeOffset > 0f -> swipeActionColor(actionSettings.rightAction)
+                        swipeOffset < 0f -> swipeActionColor(actionSettings.leftAction)
                         else -> Color.Transparent
                     },
                     shape = RoundedCornerShape(12.dp)
@@ -151,8 +151,8 @@ fun SwipeableNoteCard(
         if (swipeOffset != 0f) {
             Icon(
                 imageVector = when {
-                    swipeOffset > 0f -> actionIcon(actionSettings.rightAction)
-                    swipeOffset < 0f -> actionIcon(actionSettings.leftAction)
+                    swipeOffset > 0f -> swipeActionIcon(actionSettings.rightAction)
+                    swipeOffset < 0f -> swipeActionIcon(actionSettings.leftAction)
                     else -> Icons.Default.Delete
                 },
                 contentDescription = null,
@@ -176,20 +176,20 @@ fun SwipeableNoteCard(
 
 
 private fun performAction(
-    action: Action,
+    action: SwipeActions,
     vm: NoteViewModel,
     navController: androidx.navigation.NavHostController,
     note: NoteEntity,
     scope: kotlinx.coroutines.CoroutineScope
 ) {
     when (action) {
-        Action.DELETE -> {
+        SwipeActions.DELETE -> {
             scope.launch {
                 vm.delete(note)
             }
         }
 
-        Action.COMPLETE -> {
+        SwipeActions.COMPLETE -> {
             scope.launch {
                 val isCompleted = note.isCompleted
                 if (isCompleted) vm.markUnCompleted(note)
@@ -197,6 +197,6 @@ private fun performAction(
             }
         }
 
-        Action.EDIT -> navController.navigate("edit/${note.id}")
+        SwipeActions.EDIT -> navController.navigate("edit/${note.id}")
     }
 }

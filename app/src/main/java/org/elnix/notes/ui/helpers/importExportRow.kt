@@ -37,7 +37,7 @@ fun ExportImportRow(
                     ColorSettingsStore.setPrimary(ctx, obj.optInt("primary"))
                     ColorSettingsStore.setBackground(ctx, obj.optInt("background"))
                     ColorSettingsStore.setOnBackground(ctx, obj.optInt("onBackground"))
-                    UiSettingsStore.setShowBottomNavLabelsFlow(ctx, obj.optBoolean("showNavLabels"))
+//                    UiSettingsStore.setShowBottomNavLabelsFlow(ctx, obj.optBoolean("showNavLabels"))
                 }
             }
         }

@@ -33,7 +33,7 @@ fun BackupTab(ctx: Context, onBack: (() -> Unit)) {
             primaryColor = primary ?: MaterialTheme.colorScheme.primary.toArgb(),
             backgroundColor = background ?: MaterialTheme.colorScheme.background.toArgb(),
             onBackgroundColor = onBackground ?: MaterialTheme.colorScheme.onBackground.toArgb(),
-            showNavBarLabels = showNavLabels ?: true
+            showNavBarLabels = true
         )
     }
 }

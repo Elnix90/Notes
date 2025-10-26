@@ -51,7 +51,7 @@ fun AppearanceTab(
 
             SwitchRow(
                 state = showNavbarLabels,
-                text = "Show Navigation Bar Labels"
+                text = "Show Navigation Bar Labels",
             ) { newValue ->
                 scope.launch { UiSettingsStore.setShowBottomNavLabelsFlow(ctx, newValue) }
             }

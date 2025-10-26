@@ -20,9 +20,10 @@ import org.elnix.notes.ui.theme.AppObjectsColors
 fun SwitchRow(
     state: Boolean?,
     text: String,
+    defaultValue: Boolean = false,
     onCheck: (Boolean) -> Unit
 ) {
-    val checked = state ?: false
+    val checked = state ?: defaultValue
 
     Row(
         modifier = Modifier

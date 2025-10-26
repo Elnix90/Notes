@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.map
 object UiSettingsStore {
     private val SHOW_NAVBAR_LABELS = booleanPreferencesKey("navbar_labels")
 
-    fun getShowBottomNavLabelsFlow(ctx: Context): Flow<Boolean?> =
-        ctx.dataStore.data.map { it[SHOW_NAVBAR_LABELS] }
+    fun getShowBottomNavLabelsFlow(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[SHOW_NAVBAR_LABELS] ?: true }
 
     suspend fun setShowBottomNavLabelsFlow(ctx: Context, state: Boolean) {
         ctx.dataStore.edit { it[SHOW_NAVBAR_LABELS] = state }

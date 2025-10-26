@@ -40,31 +40,32 @@ object AppObjectsColors {
 
     @Composable
     fun switchColors(): SwitchColors {
+        val colors = MaterialTheme.colorScheme
         return SwitchDefaults.colors(
-            checkedThumbColor = MaterialTheme.colorScheme.primary,
-            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-            checkedBorderColor = MaterialTheme.colorScheme.background,
-            uncheckedThumbColor = MaterialTheme.colorScheme.background
-                .blendWith(MaterialTheme.colorScheme.primary, 0.5f),
-            uncheckedTrackColor = MaterialTheme.colorScheme.background,
-            uncheckedBorderColor = MaterialTheme.colorScheme.background
-                .blendWith(MaterialTheme.colorScheme.primary, 0.5f)
+            checkedThumbColor = colors.onSurface,
+            checkedTrackColor = colors.primary,
+            checkedBorderColor = Color.Transparent,
+            uncheckedThumbColor = colors.onSurface,
+            uncheckedTrackColor = colors.background,
+            uncheckedBorderColor = Color.Transparent
         )
     }
 
     @Composable
     fun buttonColors(): ButtonColors {
+        val colors = MaterialTheme.colorScheme
         return ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onBackground
+            containerColor = colors.primary,
+            contentColor =   colors.onBackground
         )
     }
 
     @Composable
     fun cancelButtonColors(): ButtonColors {
+        val colors = MaterialTheme.colorScheme
         return ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.error
+            containerColor = colors.background,
+            contentColor = colors.error
         )
     }
 
@@ -137,12 +138,12 @@ object AppObjectsColors {
     fun checkboxColors(): CheckboxColors {
         val colors = MaterialTheme.colorScheme
         return CheckboxDefaults.colors(
-            colors.primary,
-            colors.onBackground,
-            colors.onSurface,
-            colors.primary.copy(alpha = 0.5f),
-            colors.outline,
-            colors.onSurface,
+            checkedColor = colors.primary,
+            uncheckedColor = colors.onBackground,
+            checkmarkColor = colors.onSurface,
+            disabledCheckedColor = colors.primary.copy(alpha = 0.5f),
+            disabledUncheckedColor = colors.outline,
+            disabledIndeterminateColor = colors.onSurface,
         )
     }
 

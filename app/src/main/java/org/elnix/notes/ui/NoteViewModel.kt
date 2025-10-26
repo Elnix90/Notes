@@ -31,7 +31,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // --- Notes ---
-    suspend fun addNoteAndReturnId(title: String, desc: String): Long {
+    suspend fun addNoteAndReturnId(title: String = "", desc: String = ""): Long {
         val note = NoteEntity(title = title, desc = desc, createdAt = Date())
         val id = noteRepo.upsert(note)
 

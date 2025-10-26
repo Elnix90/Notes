@@ -12,6 +12,7 @@ navigation = "2.9.5"
 material3 = "1.4.0"
 ksp = "2.2.20-1.0.28"
 material3Version = "1.4.0"
+roomRuntime = "2.8.2"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version = "1.17.0" }
@@ -20,6 +21,7 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+androidx-room-runtime-v282 = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-ui = { module = "androidx.compose.ui:ui" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }

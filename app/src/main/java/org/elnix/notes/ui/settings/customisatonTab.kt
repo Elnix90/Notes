@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.elnix.notes.data.ActionSettings
+import org.elnix.notes.data.settings.ActionSettings
 import org.elnix.notes.data.settings.ActionSettingsStore.getActionSettingsFlow
 import org.elnix.notes.data.settings.ActionSettingsStore.setClickAction
 import org.elnix.notes.data.settings.ActionSettingsStore.setSwipeLeftAction

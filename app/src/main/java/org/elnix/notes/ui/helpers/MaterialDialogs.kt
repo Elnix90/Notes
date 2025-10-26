@@ -15,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderOffset
 import java.util.Calendar
 
@@ -32,7 +31,6 @@ fun StyledReminderDialogs(
         Text("Add Reminder")
     }
 
-    // --- Date Picker ---
     if (showDate) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = tempCalendar.timeInMillis
@@ -52,14 +50,12 @@ fun StyledReminderDialogs(
             },
             dismissButton = {
                 TextButton(onClick = { showDate = false }) { Text("Cancel") }
-            },
-            colors = AppObjectsColors.datePickerColors()
+            }
         ) {
             DatePicker(state = datePickerState)
         }
     }
 
-    // --- Time Picker (use AlertDialog wrapper) ---
     if (showTime) {
         val timePickerState = rememberTimePickerState(
             initialHour = tempCalendar.get(Calendar.HOUR_OF_DAY),

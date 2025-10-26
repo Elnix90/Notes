@@ -36,11 +36,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.elnix.notes.data.Action
-import org.elnix.notes.data.ActionSettings
+import org.elnix.notes.data.settings.Action
+import org.elnix.notes.data.settings.ActionSettings
 import org.elnix.notes.data.NoteEntity
-import org.elnix.notes.data.actionColor
-import org.elnix.notes.data.actionIcon
+import org.elnix.notes.data.settings.actionColor
+import org.elnix.notes.data.settings.actionIcon
 import org.elnix.notes.data.settings.ActionSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.NoteCard

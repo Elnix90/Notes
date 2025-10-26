@@ -5,8 +5,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import org.elnix.notes.data.Action
-import org.elnix.notes.data.ActionSettings
 
 object ActionSettingsStore {
     private val SWIPE_LEFT_ACTION = stringPreferencesKey("swipe_left_action")

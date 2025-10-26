@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "org.elnix.notes"
-        minSdk = 28
+        minSdk = 33
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -56,7 +56,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
-    implementation(platform("androidx.compose:compose-bom:2025.10.00"))
+    implementation(platform(libs.androidx.compose.bom))
 
     // Compose UI
     implementation("androidx.compose.ui:ui")
@@ -69,10 +69,10 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // Lifecycle ViewModel Compose
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Room
-    implementation("androidx.room:room-runtime:2.8.2")
+    implementation(libs.androidx.room.runtime)
     implementation("androidx.room:room-ktx:2.8.2")
     implementation(libs.androidx.compose.material3)
     ksp("androidx.room:room-compiler:2.8.2")

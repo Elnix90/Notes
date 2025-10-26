@@ -64,7 +64,7 @@ object AppObjectsColors {
     fun cancelButtonColors(): ButtonColors {
         return ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.primary
+            contentColor = MaterialTheme.colorScheme.error
         )
     }
 

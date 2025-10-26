@@ -1,7 +1,14 @@
 package org.elnix.notes.ui.settings
 
 import android.content.Context
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -12,12 +19,11 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.ReminderEntity
-import org.elnix.notes.utils.ReminderBubble
-import org.elnix.notes.utils.ReminderPicker
-import androidx.compose.foundation.ExperimentalFoundationApi
 import org.elnix.notes.data.settings.ReminderSettingsStore.getDefaultRemindersFlow
 import org.elnix.notes.data.settings.ReminderSettingsStore.setDefaultReminders
 import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.utils.ReminderBubble
+import org.elnix.notes.utils.ReminderPicker
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable

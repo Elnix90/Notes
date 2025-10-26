@@ -32,13 +32,16 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.LockSettings
 import org.elnix.notes.data.settings.LockSettingsStore
+import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.helpers.SettingsOutlinedField
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
+import java.time.Instant
 
 @Composable
 fun SecurityTab(onBack: (() -> Unit)) {
     val ctx = LocalContext.current
+    val activity = ctx as androidx.fragment.app.FragmentActivity
     val settings by LockSettingsStore.getLockSettings(ctx).collectAsState(initial = LockSettings())
     val scope = rememberCoroutineScope()
 
@@ -54,10 +57,22 @@ fun SecurityTab(onBack: (() -> Unit)) {
             "Enable Biometrics",
         ) {
             scope.launch {
-                LockSettingsStore.updateLockSettings(
-                    ctx,
-                    settings.copy(useBiometrics = it)
+                BiometricManagerHelper.authenticateUser(
+                    activity = activity,
+                    useBiometrics = true,
+                    useDeviceCredential = false,
+                    title = "Verification",
+                    onSuccess = {
+                        scope.launch {
+                            LockSettingsStore.updateLockSettings(
+                                ctx,
+                                settings.copy(lastUnlockTimestamp = Instant.now().toEpochMilli(), useBiometrics = !settings.useBiometrics)
+                            )
+                        }
+                    },
+                    onFailure = {}
                 )
+
             }
         }
 

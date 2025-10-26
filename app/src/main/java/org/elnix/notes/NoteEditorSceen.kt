@@ -127,14 +127,16 @@ fun NoteEditorScreen(
             value = title,
             onValueChange = { title = it },
             label = { Text("Title") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = AppObjectsColors.outlinedTextFieldColors()
         )
 
         OutlinedTextField(
             value = desc,
             onValueChange = { desc = it },
             label = { Text("Description") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = AppObjectsColors.outlinedTextFieldColors()
         )
 
         Spacer(modifier = Modifier.height(8.dp))

@@ -1,6 +1,7 @@
 package org.elnix.notes
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -72,7 +74,7 @@ fun NoteEditorScreen(
             title = loaded?.title ?: ""
             desc = loaded?.desc ?: ""
         } else if (createdNoteId == null) {
-            val id = vm.addNoteAndReturnId("", "")
+            val id = vm.addNoteAndReturnId()
             createdNoteId = id
             note = vm.getById(id)
         }
@@ -108,10 +110,11 @@ fun NoteEditorScreen(
                     vm.delete(n)
                 }
             }
-            onCancel() // pop back
+            onCancel()
         }
     }
-    // ========== UI ==========
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -257,7 +260,7 @@ fun NoteEditorScreen(
                     }
                 },
                 colors = AppObjectsColors.buttonColors(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.weight(3f)
             ) {
                 Text(
                     text = "Save",
@@ -265,29 +268,29 @@ fun NoteEditorScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.width(10.dp))
 
-
-//            OutlinedButton(
-//                onClick = {
-//                    scope.launch {
-//                        currentId?.let {
-//                            val n = vm.getById(it)
-//                            if (n != null && n.title.isBlank() && n.desc.isBlank()) {
-//                                vm.delete(n)
-//                            }
-//                        }
-//                        onCancel()
-//                    }
-//                },
-//                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-//                colors = AppObjectsColors.cancelButtonColors(),
-////                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                Text(
-//                    text = "Cancel",
-//                    color = MaterialTheme.colorScheme.onPrimary
-//                )
-//            }
+            OutlinedButton(
+                onClick = {
+                    scope.launch {
+                        currentId?.let {
+                            val n = vm.getById(it)
+                            if (n != null && n.title.isBlank() && n.desc.isBlank()) {
+                                vm.delete(n)
+                            }
+                        }
+                        onCancel()
+                    }
+                },
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                colors = AppObjectsColors.cancelButtonColors(),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Cancel",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
         }
     }
 }

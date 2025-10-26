@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.elnix.notes.data.Action
+import org.elnix.notes.data.settings.Action
 
 @Composable
 fun ActionSelectorRow(
@@ -39,10 +39,11 @@ fun ActionSelectorRow(
                 color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(14.dp)
             )
-            .padding(horizontal = 16.dp, vertical = 14.dp)
             .clickable(
                 onClick = { showDialog = true}
             )
+            .padding(horizontal = 16.dp, vertical = 14.dp)
+
     ) {
 
 

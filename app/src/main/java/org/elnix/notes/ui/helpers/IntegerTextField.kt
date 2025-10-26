@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
 fun SettingsOutlinedField(
@@ -74,7 +75,8 @@ fun SettingsOutlinedField(
             label = { if (label != null) Text(label) },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             isError = isError,
-            singleLine = true
+            singleLine = true,
+            colors = AppObjectsColors.outlinedTextFieldColors()
         )
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwitchColors
@@ -146,6 +147,66 @@ object AppObjectsColors {
             disabledIndeterminateColor = colors.onSurface,
         )
     }
+
+    @Composable
+    fun outlinedTextFieldColors(): TextFieldColors {
+        val colors = MaterialTheme.colorScheme
+        return OutlinedTextFieldDefaults.colors(
+            focusedTextColor = colors.onBackground,
+            unfocusedTextColor = colors.onBackground,
+            disabledTextColor = colors.onSurfaceVariant,
+            errorTextColor = colors.error,
+
+            focusedContainerColor = colors.background,
+            unfocusedContainerColor = colors.background,
+            disabledContainerColor = colors.background,
+            errorContainerColor = colors.background,
+
+            cursorColor = colors.primary,
+            errorCursorColor = colors.error,
+
+            focusedBorderColor = colors.primary,
+            unfocusedBorderColor = colors.outline,
+            disabledBorderColor = colors.surfaceVariant,
+            errorBorderColor = colors.error,
+
+            focusedLeadingIconColor = colors.primary,
+            unfocusedLeadingIconColor = colors.onSurfaceVariant,
+            disabledLeadingIconColor = colors.surfaceVariant,
+            errorLeadingIconColor = colors.error,
+
+            focusedTrailingIconColor = colors.primary,
+            unfocusedTrailingIconColor = colors.onSurfaceVariant,
+            disabledTrailingIconColor = colors.surfaceVariant,
+            errorTrailingIconColor = colors.error,
+
+            focusedLabelColor = colors.primary,
+            unfocusedLabelColor = colors.onSurfaceVariant,
+            disabledLabelColor = colors.surfaceVariant,
+            errorLabelColor = colors.error,
+
+            focusedPlaceholderColor = colors.onSurfaceVariant,
+            unfocusedPlaceholderColor = colors.onSurfaceVariant,
+            disabledPlaceholderColor = colors.surfaceVariant,
+            errorPlaceholderColor = colors.error,
+
+            focusedSupportingTextColor = colors.onSurfaceVariant,
+            unfocusedSupportingTextColor = colors.onSurfaceVariant,
+            disabledSupportingTextColor = colors.surfaceVariant,
+            errorSupportingTextColor = colors.error,
+
+            focusedPrefixColor = colors.onSurfaceVariant,
+            unfocusedPrefixColor = colors.onSurfaceVariant,
+            disabledPrefixColor = colors.surfaceVariant,
+            errorPrefixColor = colors.error,
+
+            focusedSuffixColor = colors.onSurfaceVariant,
+            unfocusedSuffixColor = colors.onSurfaceVariant,
+            disabledSuffixColor = colors.surfaceVariant,
+            errorSuffixColor = colors.error
+        )
+    }
+
 
 }
 

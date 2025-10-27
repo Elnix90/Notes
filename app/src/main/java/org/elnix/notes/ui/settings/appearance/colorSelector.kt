@@ -48,29 +48,29 @@ fun ColorSelectorTab(
 ) {
 
     // === Collect all theme color states ===
-    val primary by ColorSettingsStore.getPrimaryFlow(ctx).collectAsState(initial = null)
-    val onPrimary by ColorSettingsStore.getOnPrimaryFlow(ctx).collectAsState(initial = null)
+    val primary by ColorSettingsStore.getPrimary(ctx).collectAsState(initial = null)
+    val onPrimary by ColorSettingsStore.getOnPrimary(ctx).collectAsState(initial = null)
 
-    val secondary by ColorSettingsStore.getSecondaryFlow(ctx).collectAsState(initial = null)
-    val onSecondary by ColorSettingsStore.getOnSecondaryFlow(ctx).collectAsState(initial = null)
+    val secondary by ColorSettingsStore.getSecondary(ctx).collectAsState(initial = null)
+    val onSecondary by ColorSettingsStore.getOnSecondary(ctx).collectAsState(initial = null)
 
-    val tertiary by ColorSettingsStore.getTertiaryFlow(ctx).collectAsState(initial = null)
-    val onTertiary by ColorSettingsStore.getOnTertiaryFlow(ctx).collectAsState(initial = null)
+    val tertiary by ColorSettingsStore.getTertiary(ctx).collectAsState(initial = null)
+    val onTertiary by ColorSettingsStore.getOnTertiary(ctx).collectAsState(initial = null)
 
-    val background by ColorSettingsStore.getBackgroundFlow(ctx).collectAsState(initial = null)
-    val onBackground by ColorSettingsStore.getOnBackgroundFlow(ctx).collectAsState(initial = null)
+    val background by ColorSettingsStore.getBackground(ctx).collectAsState(initial = null)
+    val onBackground by ColorSettingsStore.getOnBackground(ctx).collectAsState(initial = null)
 
-    val surface by ColorSettingsStore.getSurfaceFlow(ctx).collectAsState(initial = null)
-    val onSurface by ColorSettingsStore.getOnSurfaceFlow(ctx).collectAsState(initial = null)
+    val surface by ColorSettingsStore.getSurface(ctx).collectAsState(initial = null)
+    val onSurface by ColorSettingsStore.getOnSurface(ctx).collectAsState(initial = null)
 
-    val error by ColorSettingsStore.getErrorFlow(ctx).collectAsState(initial = null)
-    val onError by ColorSettingsStore.getOnErrorFlow(ctx).collectAsState(initial = null)
+    val error by ColorSettingsStore.getError(ctx).collectAsState(initial = null)
+    val onError by ColorSettingsStore.getOnError(ctx).collectAsState(initial = null)
 
-    val outline by ColorSettingsStore.getOutlineFlow(ctx).collectAsState(initial = null)
+    val outline by ColorSettingsStore.getOutline(ctx).collectAsState(initial = null)
 
-    val delete by ColorSettingsStore.getDeleteFlow(ctx).collectAsState(initial = null)
-    val edit by ColorSettingsStore.getEditFlow(ctx).collectAsState(initial = null)
-    val complete by ColorSettingsStore.getCompleteFlow(ctx).collectAsState(initial = null)
+    val delete by ColorSettingsStore.getDelete(ctx).collectAsState(initial = null)
+    val edit by ColorSettingsStore.getEdit(ctx).collectAsState(initial = null)
+    val complete by ColorSettingsStore.getComplete(ctx).collectAsState(initial = null)
 
     val scrollState = rememberScrollState()
 

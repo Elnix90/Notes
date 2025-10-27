@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -51,7 +52,7 @@ sealed class Screen(val route: String, val label: String, val icon: @Composable 
 }
 
 @Composable
-fun MainApp(vm: NoteViewModel) {
+fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
     val navController = rememberNavController()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
@@ -59,7 +60,9 @@ fun MainApp(vm: NoteViewModel) {
 
 
     if (!unlocked) {
-        LockScreen(onUnlock = { unlocked = true })
+        LockScreen(activity) {
+            unlocked = true
+        }
     } else {
         Scaffold(
             bottomBar = { BottomNav(navController) },
@@ -82,7 +85,6 @@ fun MainApp(vm: NoteViewModel) {
                         )
                     }
                 }
-
             }
         ) { innerPadding ->
             NavHost(navController, startDestination = Screen.Notes.route, Modifier.padding(innerPadding)) {

@@ -13,6 +13,7 @@ material3 = "1.4.0"
 ksp = "2.2.20-1.0.28"
 material3Version = "1.4.0"
 roomRuntime = "2.8.3"
+appcompat = "1.7.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version = "1.17.0" }
@@ -45,6 +46,7 @@ androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core",
 
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version = "2.11.0" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3Version" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

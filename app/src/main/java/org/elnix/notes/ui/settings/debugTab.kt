@@ -75,6 +75,10 @@ fun DebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, onBack: (()
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
+
+            Button(onClick = { error("Crash Application") }) {
+                Text("Crash Application")
+            }
         }
     }
 }

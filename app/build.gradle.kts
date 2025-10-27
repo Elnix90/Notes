@@ -65,6 +65,10 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
 
+
+    implementation("com.google.android.material:material:1.13.0")
+
+
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
@@ -75,6 +79,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation("androidx.room:room-ktx:2.8.3")
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.appcompat)
     ksp("androidx.room:room-compiler:2.8.3")
 
     // DataStore

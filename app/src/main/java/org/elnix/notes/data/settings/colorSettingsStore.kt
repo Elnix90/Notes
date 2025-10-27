@@ -34,84 +34,84 @@ object ColorSettingsStore {
 
 
 
-    fun getPrimaryFlow(ctx: Context) = ctx.dataStore.data.map { it[PRIMARY_COLOR] }
+    fun getPrimary(ctx: Context) = ctx.dataStore.data.map { it[PRIMARY_COLOR] }
     suspend fun setPrimary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[PRIMARY_COLOR] = color }
     }
 
-    fun getOnPrimaryFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_PRIMARY_COLOR] }
+    fun getOnPrimary(ctx: Context) = ctx.dataStore.data.map { it[ON_PRIMARY_COLOR] }
     suspend fun setOnPrimary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_PRIMARY_COLOR] = color }
     }
 
-    fun getSecondaryFlow(ctx: Context) = ctx.dataStore.data.map { it[SECONDARY_COLOR] }
+    fun getSecondary(ctx: Context) = ctx.dataStore.data.map { it[SECONDARY_COLOR] }
     suspend fun setSecondary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[SECONDARY_COLOR] = color }
     }
 
-    fun getOnSecondaryFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_SECONDARY_COLOR] }
+    fun getOnSecondary(ctx: Context) = ctx.dataStore.data.map { it[ON_SECONDARY_COLOR] }
     suspend fun setOnSecondary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_SECONDARY_COLOR] = color }
     }
 
-    fun getTertiaryFlow(ctx: Context) = ctx.dataStore.data.map { it[TERTIARY_COLOR] }
+    fun getTertiary(ctx: Context) = ctx.dataStore.data.map { it[TERTIARY_COLOR] }
     suspend fun setTertiary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[TERTIARY_COLOR] = color }
     }
 
-    fun getOnTertiaryFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_TERTIARY_COLOR] }
+    fun getOnTertiary(ctx: Context) = ctx.dataStore.data.map { it[ON_TERTIARY_COLOR] }
     suspend fun setOnTertiary(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_TERTIARY_COLOR] = color }
     }
 
 
-    fun getBackgroundFlow(ctx: Context) = ctx.dataStore.data.map { it[BACKGROUND_COLOR] }
+    fun getBackground(ctx: Context) = ctx.dataStore.data.map { it[BACKGROUND_COLOR] }
     suspend fun setBackground(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[BACKGROUND_COLOR] = color }
     }
 
-    fun getOnBackgroundFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_BACKGROUND_COLOR] }
+    fun getOnBackground(ctx: Context) = ctx.dataStore.data.map { it[ON_BACKGROUND_COLOR] }
     suspend fun setOnBackground(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_BACKGROUND_COLOR] = color }
     }
 
 
-    fun getSurfaceFlow(ctx: Context) = ctx.dataStore.data.map { it[SURFACE_COLOR] }
+    fun getSurface(ctx: Context) = ctx.dataStore.data.map { it[SURFACE_COLOR] }
     suspend fun setSurface(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[SURFACE_COLOR] = color }
     }
 
-    fun getOnSurfaceFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_SURFACE_COLOR] }
+    fun getOnSurface(ctx: Context) = ctx.dataStore.data.map { it[ON_SURFACE_COLOR] }
     suspend fun setOnSurface(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_SURFACE_COLOR] = color }
     }
 
-    fun getErrorFlow(ctx: Context) = ctx.dataStore.data.map { it[ERROR_COLOR] }
+    fun getError(ctx: Context) = ctx.dataStore.data.map { it[ERROR_COLOR] }
     suspend fun setError(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ERROR_COLOR] = color }
     }
 
-    fun getOnErrorFlow(ctx: Context) = ctx.dataStore.data.map { it[ON_ERROR_COLOR] }
+    fun getOnError(ctx: Context) = ctx.dataStore.data.map { it[ON_ERROR_COLOR] }
     suspend fun setOnError(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[ON_ERROR_COLOR] = color }
     }
 
-    fun getOutlineFlow(ctx: Context) = ctx.dataStore.data.map { it[OUTLINE_COLOR] }
+    fun getOutline(ctx: Context) = ctx.dataStore.data.map { it[OUTLINE_COLOR] }
     suspend fun setOutline(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[OUTLINE_COLOR] = color }
     }
 
-    fun getDeleteFlow(ctx: Context) = ctx.dataStore.data.map { it[DELETE_COLOR] }
+    fun getDelete(ctx: Context) = ctx.dataStore.data.map { it[DELETE_COLOR] }
     suspend fun setDelete(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[DELETE_COLOR] = color }
     }
 
-    fun getEditFlow(ctx: Context) = ctx.dataStore.data.map { it[EDIT_COLOR] }
+    fun getEdit(ctx: Context) = ctx.dataStore.data.map { it[EDIT_COLOR] }
     suspend fun setEdit(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[EDIT_COLOR] = color }
     }
 
-    fun getCompleteFlow(ctx: Context) = ctx.dataStore.data.map { it[COMPLETE_COLOR] }
+    fun getComplete(ctx: Context) = ctx.dataStore.data.map { it[COMPLETE_COLOR] }
     suspend fun setComplete(ctx: Context, color: Int) {
         ctx.dataStore.edit { it[COMPLETE_COLOR] = color }
     }

@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.LockSettings
 import org.elnix.notes.data.settings.LockSettingsStore
@@ -29,9 +30,10 @@ import org.elnix.notes.security.BiometricManagerHelper
 import java.time.Instant
 
 @Composable
-fun LockScreen(onUnlock: () -> Unit) {
+fun LockScreen(activity: FragmentActivity, onUnlock: () -> Unit) {
     val ctx = LocalContext.current
-    val activity = ctx as androidx.fragment.app.FragmentActivity
+//    val activity = ctx.findFragmentActivity() ?: return
+
     val scope = rememberCoroutineScope()
     val settingsFlow = LockSettingsStore.getLockSettings(ctx)
     val settings by settingsFlow.collectAsState(initial = null)
@@ -108,7 +110,7 @@ fun LockScreen(onUnlock: () -> Unit) {
 }
 
 private fun startAuthentication(
-    activity: androidx.fragment.app.FragmentActivity,
+    activity: FragmentActivity,
     ctx: android.content.Context,
     settings: LockSettings,
     scope: kotlinx.coroutines.CoroutineScope,

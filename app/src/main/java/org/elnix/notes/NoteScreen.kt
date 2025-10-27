@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -99,15 +100,15 @@ fun SwipeableNoteCard(
 ) {
     val scope = rememberCoroutineScope()
 
-    val maxSwipePx = 100f
+    val maxSwipePx = 80f
     var swipeOffset by remember { mutableFloatStateOf(0f) }
     var swipeState by remember { mutableStateOf(SwipeState.Default) }
 
     val draggableState = rememberDraggableState { delta ->
         swipeOffset = (swipeOffset + delta).coerceIn(-maxSwipePx, maxSwipePx)
         swipeState = when {
-            swipeOffset >= maxSwipePx -> SwipeState.RightAction
-            swipeOffset <= -maxSwipePx -> SwipeState.LeftAction
+            swipeOffset >= maxSwipePx - 20 -> SwipeState.RightAction
+            swipeOffset <= -maxSwipePx + 20 -> SwipeState.LeftAction
             else -> SwipeState.Default
         }
     }
@@ -149,6 +150,7 @@ fun SwipeableNoteCard(
 
         // Action icon on respective side
         if (swipeOffset != 0f) {
+            val isActionReady = swipeState != SwipeState.Default
             Icon(
                 imageVector = when {
                     swipeOffset > 0f -> swipeActionIcon(actionSettings.rightAction)
@@ -156,10 +158,11 @@ fun SwipeableNoteCard(
                     else -> Icons.Default.Delete
                 },
                 contentDescription = null,
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.outline,
                 modifier = Modifier
                     .align(if (swipeOffset > 0f) Alignment.CenterStart else Alignment.CenterEnd)
                     .padding(horizontal = 24.dp)
+                    .size(if (isActionReady) 30.dp else 24.dp)
             )
         }
 

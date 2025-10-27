@@ -9,6 +9,10 @@ interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY createdAt DESC")
     fun observeAll(): Flow<List<NoteEntity>>
 
+    @Query("SELECT * FROM notes ORDER BY createdAt DESC")
+    suspend fun getAll(): List<NoteEntity>
+
+
     @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")
     suspend fun getById(id: Long): NoteEntity?
 

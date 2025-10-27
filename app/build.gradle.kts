@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "org.elnix.notes"
-        minSdk = 33
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -73,25 +73,25 @@ dependencies {
 
     // Room
     implementation(libs.androidx.room.runtime)
-    implementation("androidx.room:room-ktx:2.8.2")
+    implementation("androidx.room:room-ktx:2.8.3")
     implementation(libs.androidx.compose.material3)
-    ksp("androidx.room:room-compiler:2.8.2")
+    ksp("androidx.room:room-compiler:2.8.3")
 
     // DataStore
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     // WorkManager
-    implementation("androidx.work:work-runtime-ktx:2.10.0")
+    implementation("androidx.work:work-runtime-ktx:2.11.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2025.01.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2025.10.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 
     // Reorderable Lazy lists

@@ -1,5 +1,6 @@
 package org.elnix.notes.ui
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
@@ -21,6 +22,7 @@ import java.util.Date
 import kotlin.random.Random
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
+    @SuppressLint("StaticFieldLeak")
     private val ctx = application.applicationContext
     private val noteRepo = NoteRepository(AppDatabase.get(ctx).noteDao())
     private val reminderRepo = ReminderRepository(AppDatabase.get(ctx).reminderDao())

@@ -10,6 +10,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ReminderDao {
+
+    @Query("SELECT * FROM reminders")
+    suspend fun getAll(): List<ReminderEntity>
+
     @Query("SELECT * FROM reminders WHERE noteId = :noteId")
     fun observeByNoteId(noteId: Long): Flow<List<ReminderEntity>>
 

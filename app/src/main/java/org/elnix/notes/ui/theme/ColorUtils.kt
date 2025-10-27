@@ -1,6 +1,5 @@
 package org.elnix.notes.ui.theme
 
-import android.R.attr.enabled
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CheckboxColors

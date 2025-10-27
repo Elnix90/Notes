@@ -2,6 +2,7 @@ package org.elnix.notes.utils
 
 import android.Manifest
 import android.app.Activity
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.material3.Button
@@ -29,15 +30,19 @@ fun ReminderPicker(onPicked: (ReminderOffset) -> Unit) {
     var hasPermission by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        hasPermission = ctx.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-                android.content.pm.PackageManager.PERMISSION_GRANTED
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            hasPermission = ctx.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                    android.content.pm.PackageManager.PERMISSION_GRANTED
+        }
     }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                hasPermission = ctx.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-                        android.content.pm.PackageManager.PERMISSION_GRANTED
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    hasPermission = ctx.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                            android.content.pm.PackageManager.PERMISSION_GRANTED
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -50,11 +55,13 @@ fun ReminderPicker(onPicked: (ReminderOffset) -> Unit) {
         Button(
             onClick = {
                 try {
-                    ActivityCompat.requestPermissions(
-                        ctx as Activity,
-                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                        1001
-                    )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        ActivityCompat.requestPermissions(
+                            ctx as Activity,
+                            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                            1001
+                        )
+                    }
                 } catch (e: Exception) {
                     Log.e("ReminderPicker", "Permission launch failed", e)
                     Toast.makeText(ctx, e.message ?: "Error", Toast.LENGTH_SHORT).show()

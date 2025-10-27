@@ -2,6 +2,7 @@ package org.elnix.notes.utils
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -17,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -29,20 +31,24 @@ fun ReminderPicker(onPicked: (ReminderOffset) -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
     var hasPermission by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            hasPermission = ctx.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+    fun checkPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
                     android.content.pm.PackageManager.PERMISSION_GRANTED
+        } else {
+            // Older devices: check if notifications are enabled globally
+            NotificationManagerCompat.from(context).areNotificationsEnabled()
         }
+    }
+
+    LaunchedEffect(Unit) {
+        hasPermission = checkPermission(ctx)
     }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    hasPermission = ctx.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-                            android.content.pm.PackageManager.PERMISSION_GRANTED
-                }
+                hasPermission = checkPermission(ctx)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

@@ -1,6 +1,8 @@
 package org.elnix.notes.ui.helpers
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.elnix.notes.data.LockSettings
 import org.elnix.notes.data.settings.ColorSettingsStore
 import org.elnix.notes.data.settings.LockSettingsStore
 import org.elnix.notes.data.settings.ShowNavBarActions
@@ -22,88 +29,185 @@ import java.io.OutputStreamWriter
 
 @Composable
 fun ExportImportRow(
-    ctx: Context,
-    primaryColor: Int,
-    backgroundColor: Int,
-    onBackgroundColor: Int,
     showNavBarLabels: ShowNavBarActions
 ) {
     val scope = rememberCoroutineScope()
+    val ctx = LocalContext.current
 
-    // --- Import launcher ---
-    val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) {
-            ctx.contentResolver.openInputStream(uri)?.use { input ->
-                val json = input.bufferedReader().readText()
-                val obj = JSONObject(json)
-
-                scope.launch {
-                    // --- Color settings ---
-                    obj.optInt("primary").takeIf { it != 0 }?.let { ColorSettingsStore.setPrimary(ctx, it) }
-                    obj.optInt("background").takeIf { it != 0 }?.let { ColorSettingsStore.setBackground(ctx, it) }
-                    obj.optInt("onBackground").takeIf { it != 0 }?.let { ColorSettingsStore.setOnBackground(ctx, it) }
-
-                    // --- UI ---
-                    obj.optString("showNavLabels").takeIf { it.isNotBlank() }?.let {
-                        UiSettingsStore.setShowBottomNavLabelsFlow(ctx, ShowNavBarActions.valueOf(it))
-                    }
-
-                    // --- Lock settings ---
-                    if (obj.has("lock")) {
-                        val lockObj = obj.getJSONObject("lock")
-                        val settings = org.elnix.notes.data.LockSettings(
-                            useBiometrics = lockObj.optBoolean("useBiometrics", false),
-                            useDeviceCredential = lockObj.optBoolean("useDeviceCredential", false),
-                            lockTimeoutSeconds = lockObj.optInt("lockTimeoutSeconds", 300),
-                            lastUnlockTimestamp = lockObj.optLong("lastUnlockTimestamp", 0L)
-                        )
-                        LockSettingsStore.updateLockSettings(ctx, settings)
-                    }
-                }
+    // -------------------- IMPORT --------------------
+    val importLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            if (uri == null) {
+                Toast.makeText(ctx, "No file selected", Toast.LENGTH_SHORT).show()
+                Log.w("ImportSettings", "User canceled file selection.")
+                return@rememberLauncherForActivityResult
             }
-        }
-    }
 
-    // --- Export launcher ---
-    val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
-        if (uri != null) {
             scope.launch {
-                val json = JSONObject().apply {
-                    put("primary", primaryColor)
-                    put("background", backgroundColor)
-                    put("onBackground", onBackgroundColor)
-                    put("showNavLabels", showNavBarLabels.name)
-                    put("lock", JSONObject().apply {
-                        val lock = LockSettingsStore.getLockSettings(ctx)
-                        lock.collect { lockSettings ->
-                            put("useBiometrics", lockSettings.useBiometrics)
-                            put("useDeviceCredential", lockSettings.useDeviceCredential)
-                            put("lockTimeoutSeconds", lockSettings.lockTimeoutSeconds)
-                            put("lastUnlockTimestamp", lockSettings.lastUnlockTimestamp)
-                        }
-                    })
-                }
+                try {
+                    val json = withContext(Dispatchers.IO) {
+                        ctx.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+                    }
 
-                ctx.contentResolver.openOutputStream(uri)?.use { output ->
-                    OutputStreamWriter(output).use { it.write(json.toString(2)) }
+                    if (json.isNullOrBlank()) {
+                        Toast.makeText(ctx, "Invalid or empty file", Toast.LENGTH_SHORT).show()
+                        Log.e("ImportSettings", "JSON content was empty or null.")
+                        return@launch
+                    }
+
+                    Log.d("ImportSettings", "Loaded JSON: $json")
+                    val obj = JSONObject(json)
+
+                    // Apply color settings safely in IO context
+                    withContext(Dispatchers.IO) {
+                        suspend fun applyColor(key: String, setter: suspend (Context, Int) -> Unit) {
+                            val value = obj.optInt(key)
+                            if (value != 0) {
+                                try {
+                                    setter(ctx, value)
+                                    Log.d("ImportSettings", "Applied color: $key = $value")
+                                } catch (e: Exception) {
+                                    Log.e("ImportSettings", "Failed to apply $key", e)
+                                }
+                            }
+                        }
+
+                        applyColor("primary", ColorSettingsStore::setPrimary)
+                        applyColor("onPrimary", ColorSettingsStore::setOnPrimary)
+                        applyColor("secondary", ColorSettingsStore::setSecondary)
+                        applyColor("onSecondary", ColorSettingsStore::setOnSecondary)
+                        applyColor("tertiary", ColorSettingsStore::setTertiary)
+                        applyColor("onTertiary", ColorSettingsStore::setOnTertiary)
+                        applyColor("background", ColorSettingsStore::setBackground)
+                        applyColor("onBackground", ColorSettingsStore::setOnBackground)
+                        applyColor("surface", ColorSettingsStore::setSurface)
+                        applyColor("onSurface", ColorSettingsStore::setOnSurface)
+                        applyColor("error", ColorSettingsStore::setError)
+                        applyColor("onError", ColorSettingsStore::setOnError)
+                        applyColor("outline", ColorSettingsStore::setOutline)
+                        applyColor("delete", ColorSettingsStore::setDelete)
+                        applyColor("edit", ColorSettingsStore::setEdit)
+                        applyColor("complete", ColorSettingsStore::setComplete)
+
+                        // UI setting
+                        obj.optString("showNavLabels").takeIf { it.isNotBlank() }?.let {
+                            try {
+                                UiSettingsStore.setShowBottomNavLabelsFlow(ctx, ShowNavBarActions.valueOf(it))
+                                Log.d("ImportSettings", "Set showNavLabels = $it")
+                            } catch (e: Exception) {
+                                Log.e("ImportSettings", "Invalid showNavLabels value: $it", e)
+                            }
+                        }
+
+                        // Lock settings
+                        if (obj.has("lock")) {
+                            val lockObj = obj.getJSONObject("lock")
+                            val settings = LockSettings(
+                                useBiometrics = lockObj.optBoolean("useBiometrics", false),
+                                useDeviceCredential = lockObj.optBoolean("useDeviceCredential", false),
+                                lockTimeoutSeconds = lockObj.optInt("lockTimeoutSeconds", 300),
+                                lastUnlockTimestamp = lockObj.optLong("lastUnlockTimestamp", 0L)
+                            )
+                            LockSettingsStore.updateLockSettings(ctx, settings)
+                            Log.d("ImportSettings", "Updated lock settings.")
+                        }
+                    }
+
+                    Toast.makeText(ctx, "Settings imported successfully", Toast.LENGTH_LONG).show()
+                    Log.i("ImportSettings", "Import completed successfully.")
+                } catch (e: Exception) {
+                    Log.e("ImportSettings", "Error during import", e)
+                    Toast.makeText(ctx, "Import failed: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
-    }
 
+    // -------------------- EXPORT --------------------
+    val exportLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+            if (uri == null) {
+                Toast.makeText(ctx, "Export canceled", Toast.LENGTH_SHORT).show()
+                Log.w("ExportSettings", "User canceled export.")
+                return@rememberLauncherForActivityResult
+            }
+
+            scope.launch {
+                try {
+                    val json = withContext(Dispatchers.IO) {
+                        val lock = LockSettingsStore.getLockSettings(ctx).first()
+
+                        JSONObject().apply {
+                            put("primary", ColorSettingsStore.getPrimary(ctx).first())
+                            put("onPrimary", ColorSettingsStore.getOnPrimary(ctx).first())
+                            put("secondary", ColorSettingsStore.getSecondary(ctx).first())
+                            put("onSecondary", ColorSettingsStore.getOnSecondary(ctx).first())
+                            put("tertiary", ColorSettingsStore.getTertiary(ctx).first())
+                            put("onTertiary", ColorSettingsStore.getOnTertiary(ctx).first())
+                            put("background", ColorSettingsStore.getBackground(ctx).first())
+                            put("onBackground", ColorSettingsStore.getOnBackground(ctx).first())
+                            put("surface", ColorSettingsStore.getSurface(ctx).first())
+                            put("onSurface", ColorSettingsStore.getOnSurface(ctx).first())
+                            put("error", ColorSettingsStore.getError(ctx).first())
+                            put("onError", ColorSettingsStore.getOnError(ctx).first())
+                            put("outline", ColorSettingsStore.getOutline(ctx).first())
+                            put("delete", ColorSettingsStore.getDelete(ctx).first())
+                            put("edit", ColorSettingsStore.getEdit(ctx).first())
+                            put("complete", ColorSettingsStore.getComplete(ctx).first())
+                            put("showNavLabels", showNavBarLabels.name)
+                            put("lock", JSONObject().apply {
+                                put("useBiometrics", lock.useBiometrics)
+                                put("useDeviceCredential", lock.useDeviceCredential)
+                                put("lockTimeoutSeconds", lock.lockTimeoutSeconds)
+                                put("lastUnlockTimestamp", lock.lastUnlockTimestamp)
+                            })
+                        }
+                    }
+
+                    Log.d("ExportSettings", "Generated JSON: $json")
+
+                    withContext(Dispatchers.IO) {
+                        ctx.contentResolver.openOutputStream(uri)?.use { output ->
+                            OutputStreamWriter(output).use { it.write(json.toString(2)) }
+                        }
+                    }
+
+                    Toast.makeText(ctx, "Settings exported successfully", Toast.LENGTH_LONG).show()
+                    Log.i("ExportSettings", "Export completed successfully.")
+                } catch (e: Exception) {
+                    Log.e("ExportSettings", "Error during export", e)
+                    Toast.makeText(ctx, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
+    // -------------------- UI ROW --------------------
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Button(
-            onClick = { exportLauncher.launch("settings_backup.json") },
+            onClick = {
+                try {
+                    exportLauncher.launch("notes_settings_backup.json")
+                } catch (e: Exception) {
+                    Log.e("ExportButton", "Crash on export launch", e)
+                    Toast.makeText(ctx, "Export failed to start: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            },
             colors = AppObjectsColors.buttonColors()
         ) {
             Text("Export Settings")
         }
 
         Button(
-            onClick = { importLauncher.launch(arrayOf("application/json")) },
+            onClick = {
+                try {
+                    importLauncher.launch(arrayOf("application/json"))
+                } catch (e: Exception) {
+                    Log.e("ImportButton", "Crash on import launch", e)
+                    Toast.makeText(ctx, "Import failed to start: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            },
             colors = AppObjectsColors.buttonColors()
         ) {
             Text("Import Settings")

@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,14 +39,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.elnix.notes.data.settings.SwipeActions
-import org.elnix.notes.data.settings.SwipeActionSettings
 import org.elnix.notes.data.NoteEntity
+import org.elnix.notes.data.settings.ActionSettingsStore
+import org.elnix.notes.data.settings.SwipeActionSettings
+import org.elnix.notes.data.settings.SwipeActions
+import org.elnix.notes.data.settings.UiSettingsStore
 import org.elnix.notes.data.settings.swipeActionColor
 import org.elnix.notes.data.settings.swipeActionIcon
-import org.elnix.notes.data.settings.ActionSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.NoteCard
+import org.elnix.notes.ui.theme.adjustBrightness
 
 
 @Stable
@@ -58,6 +62,8 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
     val actionSettings by ActionSettingsStore.getActionSettingsFlow(ctx).collectAsState(
         initial = SwipeActionSettings()
     )
+
+    val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx).collectAsState(initial = true)
 
     LaunchedEffect(Unit) {
         vm.deleteAllEmptyNotes()
@@ -73,19 +79,32 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
             Text(
                 text = "No notes yet.\nTap + to create one!",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
                 textAlign = TextAlign.Center
             )
         }
     } else {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(notes) { note ->
-                SwipeableNoteCard(
-                    note = note,
-                    vm = vm,
-                    navController = navController,
-                    actionSettings = actionSettings
+        Column (
+            modifier = Modifier.fillMaxWidth()
+        ){
+            if (showNotesNumber) {
+                Text(
+                    text = "Note number : ${notes.size}",
+                    color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
+                HorizontalDivider()
+            }
+
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(notes) { note ->
+                    SwipeableNoteCard(
+                        note = note,
+                        vm = vm,
+                        navController = navController,
+                        actionSettings = actionSettings
+                    )
+                }
             }
         }
     }

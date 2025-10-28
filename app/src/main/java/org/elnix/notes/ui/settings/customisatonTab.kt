@@ -18,12 +18,17 @@ import org.elnix.notes.data.settings.ActionSettingsStore.getActionSettingsFlow
 import org.elnix.notes.data.settings.ActionSettingsStore.setClickAction
 import org.elnix.notes.data.settings.ActionSettingsStore.setSwipeLeftAction
 import org.elnix.notes.data.settings.ActionSettingsStore.setSwipeRightAction
+import org.elnix.notes.data.settings.UiSettingsStore.getShowNotesNumber
+import org.elnix.notes.data.settings.UiSettingsStore.setShowNotesNumber
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.SwitchRow
 
 @Composable
 fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
     val settings by getActionSettingsFlow(ctx).collectAsState(initial = SwipeActionSettings())
+
+    val showNotesNumber by getShowNotesNumber(ctx).collectAsState(initial = true)
 
     Column(
         modifier = Modifier
@@ -61,6 +66,13 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             optionLabel = { it.name}
         ) {
             scope.launch { setClickAction(ctx, it) }
+        }
+
+        SwitchRow(
+            showNotesNumber,
+            "Show Notes Number",
+        ) {
+            scope.launch { setShowNotesNumber(ctx, it) }
         }
     }
 }

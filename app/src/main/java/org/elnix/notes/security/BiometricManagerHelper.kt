@@ -100,4 +100,18 @@ object BiometricManagerHelper {
         }
     }
 
+    /** Returns true if the device has at least one biometric enrolled */
+    fun canBiometrics(activity: FragmentActivity): Boolean {
+        val manager = BiometricManager.from(activity)
+        return manager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) ==
+                BiometricManager.BIOMETRIC_SUCCESS
+    }
+
+    /** Returns true if the device has a PIN, pattern, or password set */
+    fun canDeviceLock(activity: FragmentActivity): Boolean {
+        val manager = BiometricManager.from(activity)
+        return manager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL) ==
+                BiometricManager.BIOMETRIC_SUCCESS
+    }
+
 }

@@ -46,6 +46,8 @@ fun SecurityTab(onBack: (() -> Unit)) {
     val settings by LockSettingsStore.getLockSettings(ctx).collectAsState(initial = LockSettings())
     val scope = rememberCoroutineScope()
     val enabled = settings.useBiometrics || settings.useDeviceCredential
+    val canBiometrics = BiometricManagerHelper.canBiometrics(activity)
+    val canDeviceLock = BiometricManagerHelper.canDeviceLock(activity)
 
     Column(
         modifier = Modifier.padding(16.dp),
@@ -56,7 +58,8 @@ fun SecurityTab(onBack: (() -> Unit)) {
 
         SwitchRow(
             settings.useBiometrics,
-            "Enable Biometrics",
+            "Enable Biometric Lock",
+            canBiometrics
         ) {
             scope.launch {
                 BiometricManagerHelper.authenticateUser(
@@ -80,7 +83,8 @@ fun SecurityTab(onBack: (() -> Unit)) {
 
         SwitchRow(
             settings.useDeviceCredential,
-            "Enable Device Credential",
+            "Enable Device Credential Lock",
+            canDeviceLock
         ) {
             scope.launch {
                 LockSettingsStore.updateLockSettings(

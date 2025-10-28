@@ -115,7 +115,7 @@ fun ColorPicker(
     fun pushCurrentColor() {
         val color = Color(red, green, blue)
         previousColors.add(color)
-        if (previousColors.size > 100) previousColors.removeAt(0)
+//        if (previousColors.size > 100) previousColors.removeAt(0)
     }
 
     fun popLastColor() {
@@ -181,9 +181,18 @@ fun ColorPicker(
         )
 
 
-        SliderWithLabel(red, Color.Red) { red = it }
-        SliderWithLabel(green, Color.Green) { green = it }
-        SliderWithLabel(blue, Color.Blue) { blue = it }
+        SliderWithLabel(red, Color.Red) {
+            red = it
+            pushCurrentColor()
+        }
+        SliderWithLabel(green, Color.Green) {
+            green = it
+            pushCurrentColor()
+        }
+        SliderWithLabel(blue, Color.Blue) {
+            blue = it
+            pushCurrentColor()
+        }
 
         Spacer(Modifier.height(12.dp))
         Row (

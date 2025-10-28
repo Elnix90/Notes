@@ -20,6 +20,7 @@ import org.elnix.notes.ui.theme.AppObjectsColors
 fun SwitchRow(
     state: Boolean?,
     text: String,
+    enabled: Boolean = true,
     defaultValue: Boolean = false,
     onCheck: (Boolean) -> Unit
 ) {
@@ -28,18 +29,19 @@ fun SwitchRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onCheck(!checked) }
+            .clickable(enabled) { onCheck(!checked) }
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.surface.copy(alpha = if (enabled) 1f else 0.5f),
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = text, color = MaterialTheme.colorScheme.onSurface)
+        Text(text = text, color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.5f))
         Switch(
             checked = checked,
+            enabled = enabled,
             onCheckedChange = { onCheck(it) },
             colors = AppObjectsColors.switchColors()
         )

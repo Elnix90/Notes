@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import org.elnix.notes.ui.helpers.SettingsTitle
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import kotlinx.coroutines.launch
@@ -76,7 +77,12 @@ fun DebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, onBack: (()
                 )
             }
 
-            Button(onClick = { error("Crash Application") }) {
+            HorizontalDivider()
+
+            Button(
+                onClick = { error("Crash Application") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text("Crash Application")
             }
         }

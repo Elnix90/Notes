@@ -105,9 +105,9 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         WorkManager.getInstance(context).cancelAllWork()
     }
 
-    fun createFakeNotes() {
+    fun createFakeNotes(number: Int) {
         viewModelScope.launch {
-            repeat(10) { it ->
+            repeat(number) { it ->
                 val id = Random.nextLong().toString()
                 val title = "Fake Note $id"
                 val description = "This is a description for fake note $id."
@@ -115,10 +115,6 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
-
-
-
 
 
     // Complete / Un-complete notes

@@ -53,4 +53,6 @@ Feel free to use, modify, and distribute this project with attribution.
 ### 📸 Screenshots 
 
 
-![](screenshots/noteEditor.jpeg) ![](screenshots/noteScreen.jpeg) ![](screenshots/colorPicker.jpeg) ![](screenshots/settings.jpeg) ![](screenshots/colorSelector.jpeg)
+| Editor                                               | Note List                                            | Color Picker                                          | Settings                                           | Selector                                                |
+|------------------------------------------------------|------------------------------------------------------|-------------------------------------------------------|----------------------------------------------------|---------------------------------------------------------|
+| <img src="screenshots/noteEditor.jpeg" width="160"/> | <img src="screenshots/noteScreen.jpeg" width="160"/> | <img src="screenshots/colorPicker.jpeg" width="160"/> | <img src="screenshots/settings.jpeg" width="160"/> | <img src="screenshots/colorSelector.jpeg" width="160"/> |

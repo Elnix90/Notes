@@ -35,21 +35,12 @@ fun <T> ActionSelectorRow(
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
+    val baseModifier = if (label != null) Modifier.fillMaxWidth() else Modifier.wrapContentWidth()
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = if (label != null) {
-            Arrangement.SpaceBetween
-        } else {
-            Arrangement.Center
-        },
-        modifier = Modifier
-            .apply{
-                if (label != null) {
-                    Modifier.fillMaxWidth()
-                } else {
-                    Modifier.wrapContentWidth()
-                }
-            }
+        horizontalArrangement = if (label != null) Arrangement.SpaceBetween else Arrangement.Center,
+        modifier = baseModifier
             .background(
                 color = backgroundColor.adjustBrightness(if (enabled) 1f else 0.5f),
                 shape = RoundedCornerShape(14.dp)
@@ -60,15 +51,17 @@ fun <T> ActionSelectorRow(
         if (label != null) {
             Text(
                 text = label,
-                color = textColor.adjustBrightness(if (enabled) 1f else 0.5f)
+                color = textColor.adjustBrightness(if (enabled) 1f else 0.5f),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f)
             )
         }
 
         Text(
             text = optionLabel(selected),
             color = textColor.adjustBrightness(if (enabled) 1f else 0.5f),
-            style = MaterialTheme.typography.labelSmall,
-    )
+            style = MaterialTheme.typography.labelLarge
+        )
     }
 
     if (showDialog) {
@@ -76,7 +69,15 @@ fun <T> ActionSelectorRow(
             onDismissRequest = { showDialog = false },
             confirmButton = {},
             dismissButton = {},
-            title = {},
+            title = {
+                if (label != null) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = textColor
+                    )
+                }
+            },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     options.forEach { option ->
@@ -99,7 +100,8 @@ fun <T> ActionSelectorRow(
                             )
                             Text(
                                 text = optionLabel(option),
-                                color = textColor
+                                color = textColor,
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
                     }
@@ -110,3 +112,4 @@ fun <T> ActionSelectorRow(
         )
     }
 }
+

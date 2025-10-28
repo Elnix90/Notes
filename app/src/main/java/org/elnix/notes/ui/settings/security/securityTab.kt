@@ -2,21 +2,13 @@ package org.elnix.notes.ui.settings.security
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.LockSettings
 import org.elnix.notes.data.settings.LockSettingsStore
+import org.elnix.notes.data.settings.TimeoutOptions
 import org.elnix.notes.security.BiometricManagerHelper
+import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsOutlinedField
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
@@ -95,16 +89,15 @@ fun SecurityTab(onBack: (() -> Unit)) {
         }
 
 
-        var selectedUnit by remember { mutableStateOf("Minutes") }
-        var expanded by remember { mutableStateOf(false) }
+        var selectedUnit by remember { mutableStateOf(TimeoutOptions.MINUTES) }
+
 
         // Conversion multiplier to seconds
         val unitMultiplier = when (selectedUnit) {
-            "Seconds" -> 1
-            "Minutes" -> 60
-            "Hours" -> 3600
-            "Days" -> 86400
-            else -> 60
+            TimeoutOptions.SECONDS -> 1
+            TimeoutOptions.MINUTES ->60
+            TimeoutOptions.HOURS -> 3600
+            TimeoutOptions.DAYS ->  86400
         }
 
         // Convert current seconds back to the selected display unit
@@ -130,8 +123,12 @@ fun SecurityTab(onBack: (() -> Unit)) {
                 maxValue = Int.MAX_VALUE,
                 keyboardType = KeyboardType.Number,
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp),
+                    .wrapContentWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
                 scope = scope,
                 enabled = enabled
             ) { newValue ->
@@ -145,44 +142,16 @@ fun SecurityTab(onBack: (() -> Unit)) {
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.secondary,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(horizontal = 8.dp)
-            ) {
-                TextButton(
-                    onClick = { expanded = true },
-                    enabled = enabled
-                ) {
-                    Text(selectedUnit, color = MaterialTheme.colorScheme.onSecondary.adjustBrightness(if (enabled) 1f else 0.5f))
-                    Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = "Select unit",
-                        tint = MaterialTheme.colorScheme.onSecondary.adjustBrightness(if (enabled) 1f else 0.5f)
-                    )
-                }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    containerColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    listOf("Seconds", "Minutes", "Hours", "Days").forEach { unit ->
-                        DropdownMenuItem(
-                            text = { Text(
-                                text = unit,
-                                color = MaterialTheme.colorScheme.onSecondary
-                            ) },
-                            onClick = {
-                                selectedUnit = unit
-                                expanded = false
-                            }
-                        )
-                    }
-                }
+            ActionSelectorRow(
+                options = TimeoutOptions.entries,
+                selected = selectedUnit,
+                enabled = enabled,
+                backgroundColor = MaterialTheme.colorScheme.secondary,
+                surfaceColor = MaterialTheme.colorScheme.surface,
+                textColor = MaterialTheme.colorScheme.onSecondary,
+                optionLabel = { it.name.lowercase().replaceFirstChar { c -> c.uppercase() } }
+            ) { newOption ->
+                selectedUnit = newOption
             }
         }
     }

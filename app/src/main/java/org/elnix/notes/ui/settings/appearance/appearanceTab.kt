@@ -41,7 +41,10 @@ fun AppearanceTab(
     ) {
         SettingsTitle("Appearance", onBack)
 
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
 
             SettingsItem(
                 title = "Color Selector",

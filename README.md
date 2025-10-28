@@ -24,7 +24,7 @@
 * [ ] Search & tags
 * [ ] Encrypted Notes database
 * [ ] Backup encryption
-
+* [ ] Translations
 ---
 
 ## 🤝 Contributing

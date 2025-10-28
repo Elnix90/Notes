@@ -3,6 +3,7 @@ package org.elnix.notes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
@@ -24,11 +25,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.elnix.notes.data.settings.ShowNavBarActions
@@ -37,81 +40,76 @@ import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.security.LockScreen
 import org.elnix.notes.ui.theme.adjustBrightness
 
-sealed class Screen(val route: String, val label: String, val icon: @Composable () -> Unit) {
-    object Notes : Screen("notes", "Notes", { Icon(Icons.Default.Add, contentDescription = "notes") })
-    object Settings : Screen("settings", "Settings", { Icon(Icons.Default.Settings, contentDescription = "settings") }) {
-        fun appearanceTab() = "${route}/appearance"
-        fun customisationTab() = "${route}/customisation"
-        fun reminderTab() = "${route}/reminder"
-        fun securityTab() = "${route}/security"
-        fun backupTab() = "${route}/backup"
-        fun debugTab() = "${route}/debug"
+// -------------------- ROUTES --------------------
+object Routes {
+    const val NOTES = "notes"
+    const val CREATE = "create"
+    const val EDIT = "edit/{noteId}"
+
+    object Settings {
+        const val ROOT = "settings"
+        const val APPEARANCE = "settings/appearance"
+        const val COLORS = "settings/appearance/colors"
+        const val CUSTOMISATION = "settings/customisation"
+        const val REMINDER = "settings/reminder"
+        const val SECURITY = "settings/security"
+        const val BACKUP = "settings/backup"
+        const val DEBUG = "settings/debug"
+
+        object DebugSub {
+            const val REMINDERS = "settings/debug/reminders"
+            const val NOTES = "settings/debug/notes"
+            const val OTHER = "settings/debug/other"
+        }
     }
-    object Edit : Screen("edit/{noteId}", "Edit", { Icon(Icons.Default.Add, contentDescription = "edit") })
-    object Create : Screen("create", "Create", { Icon(Icons.Default.Add, contentDescription = "create") })
 }
 
+// -------------------- MAIN APP --------------------
 @Composable
 fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
     val navController = rememberNavController()
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route.orEmpty()
     var unlocked by remember { mutableStateOf(false) }
 
-
     if (!unlocked) {
-        LockScreen(activity) {
-            unlocked = true
-        }
+        LockScreen(activity) { unlocked = true }
     } else {
         Scaffold(
             bottomBar = { BottomNav(navController) },
             floatingActionButton = {
-                if (currentRoute == Screen.Notes.route) {
+                if (currentRoute == Routes.NOTES) {
                     FloatingActionButton(
                         onClick = {
-                            navController.navigate(Screen.Create.route) {
+                            navController.navigate(Routes.CREATE) {
                                 launchSingleTop = true
-                                popUpTo(Screen.Create.route)
+                                popUpTo(Routes.CREATE)
                             }
                         },
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(56.dp)
                     ) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = "Add",
-                        )
+                        Icon(Icons.Default.Add, contentDescription = "Add")
                     }
                 }
             }
         ) { innerPadding ->
-            NavHost(navController, startDestination = Screen.Notes.route, Modifier.padding(innerPadding)) {
-                // NOTES LIST
-                composable(Screen.Notes.route) {
-                    NotesScreen(vm, navController)
-                }
+            NavHost(
+                navController = navController,
+                startDestination = Routes.NOTES,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                // NOTES
+                composable(Routes.NOTES) { NotesScreen(vm, navController) }
 
-
-                // SETTINGS LIST
-                composable(Screen.Settings.route) { SettingsListScreen(navController) }
-
-                composable(Screen.Settings.appearanceTab()) { AppearanceSettingsScreen(navController) }
-                    // sub-sub-setting screen for color customisation
-                    composable("settings/appearance/colors") { ColorSelectorSettingsScreen(navController)}
-                composable(Screen.Settings.customisationTab()) { CustomisationSettingsScreen(navController) }
-                composable(Screen.Settings.reminderTab()) { RemindersSettingsScreen(navController) }
-                composable(Screen.Settings.securityTab()) { SecuritySettingsScreen(navController) }
-                composable(Screen.Settings.backupTab()) { BackupSettingsScreen(navController) }
-                composable(Screen.Settings.debugTab()) { DebugSettingsScreen(navController, vm) }
-
+                // SETTINGS NAV GRAPH
+                settingsNavGraph(navController, vm)
 
                 // CREATE NOTE
-                composable(Screen.Create.route) {
+                composable(Routes.CREATE) {
                     NoteEditorScreen(
                         vm = vm,
-                        noteId = null, // indicates new note
+                        noteId = null,
                         onSaved = { navController.popBackStack() },
                         onCancel = { navController.popBackStack() }
                     )
@@ -119,7 +117,7 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
 
                 // EDIT NOTE
                 composable(
-                    route = Screen.Edit.route,
+                    route = Routes.EDIT,
                     arguments = listOf(navArgument("noteId") { type = NavType.LongType })
                 ) { backStackEntry ->
                     val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
@@ -135,6 +133,29 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
     }
 }
 
+// -------------------- SETTINGS NAV GRAPH --------------------
+fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteViewModel) {
+    navigation(
+        startDestination = Routes.Settings.ROOT,
+        route = "settings_graph"
+    ) {
+        composable(Routes.Settings.ROOT) { SettingsListScreen(navController) }
+        composable(Routes.Settings.APPEARANCE) { AppearanceSettingsScreen(navController) }
+        composable(Routes.Settings.COLORS) { ColorSelectorSettingsScreen(navController) }
+        composable(Routes.Settings.CUSTOMISATION) { CustomisationSettingsScreen(navController) }
+        composable(Routes.Settings.REMINDER) { RemindersSettingsScreen(navController) }
+        composable(Routes.Settings.SECURITY) { SecuritySettingsScreen(navController) }
+        composable(Routes.Settings.BACKUP) { BackupSettingsScreen(navController) }
+
+        composable(Routes.Settings.DEBUG) { DebugSettingsScreen(navController, vm) }
+        // Debug sub-settings
+        composable(Routes.Settings.DebugSub.REMINDERS) { DebugReminderSettingsScreen(navController, vm) }
+        composable(Routes.Settings.DebugSub.NOTES) { DebugNotesSettingsScreen(navController, vm) }
+        composable(Routes.Settings.DebugSub.OTHER) { OtherSettingsScreen(navController) }
+    }
+}
+
+// -------------------- BOTTOM NAV --------------------
 @Composable
 fun BottomNav(navController: NavHostController) {
     val ctx = LocalContext.current
@@ -142,18 +163,15 @@ fun BottomNav(navController: NavHostController) {
         .collectAsState(initial = ShowNavBarActions.ALWAYS)
 
     val items = listOf(
-        Screen.Notes,
-        Screen.Settings
+        BottomNavItem(Routes.NOTES, "Notes", Icons.AutoMirrored.Filled.FormatListBulleted),
+        BottomNavItem(Routes.Settings.ROOT, "Settings", Icons.Default.Settings)
     )
 
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface
-
-    ) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
         val current = navController.currentBackStackEntryAsState().value?.destination?.route.orEmpty()
 
-        items.forEach { screen ->
-            val isCurrentOrSub = current.startsWith(screen.route)
+        items.forEach { item ->
+            val isCurrentOrSub = current.startsWith(item.route)
             val showLabel = when (showNavbarLabel) {
                 ShowNavBarActions.ALWAYS -> true
                 ShowNavBarActions.NEVER -> false
@@ -162,12 +180,10 @@ fun BottomNav(navController: NavHostController) {
             }
 
             NavigationBarItem(
-                selected = current == screen.route,
-                onClick = { navController.navigate(screen.route) { launchSingleTop = true } },
-                icon = screen.icon,
-                label = if (!showLabel) null else {
-                    { Text(screen.label, color = MaterialTheme.colorScheme.onBackground) }
-                },
+                selected = current.startsWith(item.route),
+                onClick = { navController.navigate(item.route) { launchSingleTop = true } },
+                icon = { Icon(item.icon, contentDescription = item.label) },
+                label = if (!showLabel) null else { { Text(item.label, color = MaterialTheme.colorScheme.onBackground) } },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.primary.adjustBrightness(1.5f),
                     unselectedIconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
@@ -179,3 +195,9 @@ fun BottomNav(navController: NavHostController) {
         }
     }
 }
+
+data class BottomNavItem(
+    val route: String,
+    val label: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector
+)

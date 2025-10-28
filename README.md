@@ -17,6 +17,7 @@
 
 ## 🚀 Roadmap
 
+* [ ] Enable default light/dark or more custom or all colors
 * [ ] Note attachments (images, audio)
 * [ ] Notes reordering
 * [ ] Notes resizable
@@ -25,6 +26,7 @@
 * [ ] Encrypted Notes database
 * [ ] Backup encryption
 * [ ] Translations
+* [ ] Show how many days / hours / min left
 ---
 
 ## 🤝 Contributing

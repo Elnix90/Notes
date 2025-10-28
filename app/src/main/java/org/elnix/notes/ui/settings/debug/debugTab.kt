@@ -1,10 +1,16 @@
-package org.elnix.notes.ui.settings
+package org.elnix.notes.ui.settings.debug
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
+import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.FormatListBulleted
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,11 +20,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import org.elnix.notes.Routes
+import org.elnix.notes.SettingsItem
 import org.elnix.notes.ui.NoteViewModel
 
 @Composable
-fun DebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, onBack: (() -> Unit)) {
+fun DebugTab(vm: NoteViewModel, navController: NavController, onBack: (() -> Unit)) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -29,71 +38,23 @@ fun DebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, onBack: (()
 
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-            Button(
-                onClick = { scope.launch { vm.disableAllReminders() } },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text ="Disable All Reminders",
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            SettingsItem(
+                title = "Reminders",
+                icon = Icons.Default.Alarm,
+                onClick = { navController.navigate(Routes.Settings.DebugSub.REMINDERS) }
+            )
 
-            Button(
-                onClick = { scope.launch { vm.enableAllReminders() } },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Enable All Reminders",
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            SettingsItem(
+                title = "Notes",
+                icon = Icons.AutoMirrored.Filled.FormatListBulleted,
+                onClick = { navController.navigate(Routes.Settings.DebugSub.NOTES) }
+            )
 
-            Button(
-                onClick = { scope.launch { vm.deleteAllReminders() } },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Delete All Reminders",
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            Button(
-                onClick = { vm.cancelAllPendingNotifications(ctx) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Cancel All Pending Notifications",
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            Button(
-                onClick = { vm.createFakeNotes() },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Create 10 fake notes",
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            Button(
-                onClick = { vm.createFakeNotes() },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Create 10 fake notes",
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            HorizontalDivider()
-
-            Button(
-                onClick = { error("Crash Application") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Crash Application")
-            }
+            SettingsItem(
+                title = "Other",
+                icon = Icons.Default.Build,
+                onClick = { navController.navigate(Routes.Settings.DebugSub.OTHER) }
+            )
         }
     }
 }

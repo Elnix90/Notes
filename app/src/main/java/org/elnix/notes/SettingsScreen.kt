@@ -29,12 +29,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.SettingsTitle
-import org.elnix.notes.ui.settings.appearance.AppearanceTab
 import org.elnix.notes.ui.settings.BackupTab
 import org.elnix.notes.ui.settings.CustomisationTab
-import org.elnix.notes.ui.settings.DebugTab
 import org.elnix.notes.ui.settings.RemindersTab
+import org.elnix.notes.ui.settings.appearance.AppearanceTab
 import org.elnix.notes.ui.settings.appearance.ColorSelectorTab
+import org.elnix.notes.ui.settings.debug.DebugTab
+import org.elnix.notes.ui.settings.debug.NotesDebugTab
+import org.elnix.notes.ui.settings.debug.OtherDebugTab
+import org.elnix.notes.ui.settings.debug.RemindersDebugTab
 import org.elnix.notes.ui.settings.security.SecurityTab
 
 
@@ -53,32 +56,32 @@ fun SettingsListScreen(navController: NavController) {
         SettingsItem(
             title = "Appearance",
             icon = Icons.Default.DarkMode,
-            onClick = { navController.navigate(Screen.Settings.appearanceTab()) }
+            onClick = { navController.navigate(Routes.Settings.APPEARANCE) }
         )
         SettingsItem(
             title = "Customisation",
             icon = Icons.Default.DashboardCustomize,
-            onClick = { navController.navigate(Screen.Settings.customisationTab()) }
+            onClick = { navController.navigate(Routes.Settings.CUSTOMISATION) }
         )
         SettingsItem(
             title = "Reminders",
             icon = Icons.Default.Alarm,
-            onClick = { navController.navigate(Screen.Settings.reminderTab()) }
+            onClick = { navController.navigate(Routes.Settings.REMINDER) }
         )
         SettingsItem(
             title = "Security",
             icon = Icons.Default.Shield,
-            onClick = { navController.navigate(Screen.Settings.securityTab()) }
+            onClick = { navController.navigate(Routes.Settings.SECURITY) }
         )
         SettingsItem(
             title = "Backup",
             icon = Icons.Default.Backup,
-            onClick = { navController.navigate(Screen.Settings.backupTab()) }
+            onClick = { navController.navigate(Routes.Settings.BACKUP) }
         )
         SettingsItem(
             title = "Debug",
             icon = Icons.Default.BugReport,
-            onClick = { navController.navigate(Screen.Settings.debugTab()) }
+            onClick = { navController.navigate(Routes.Settings.DEBUG) }
         )
     }
 }
@@ -87,7 +90,7 @@ fun SettingsListScreen(navController: NavController) {
 fun SettingsItem(
     title: String,
     onClick: () -> Unit,
-    icon: ImageVector? = null // optional leading icon
+    icon: ImageVector? = null
 ) {
     Row(
         modifier = Modifier
@@ -171,9 +174,30 @@ fun CustomisationSettingsScreen(navController: NavController) {
 
 @Composable
 fun DebugSettingsScreen(navController: NavController, vm : NoteViewModel) {
+    DebugTab(vm, navController) {
+        navController.popBackStack()
+    }
+}
+
+@Composable
+fun DebugReminderSettingsScreen(navController: NavController, vm : NoteViewModel) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    DebugTab(ctx, scope, vm) {
+    RemindersDebugTab(ctx, scope, vm) {
+        navController.popBackStack()
+    }
+}
+
+@Composable
+fun DebugNotesSettingsScreen(navController: NavController, vm : NoteViewModel) {
+    NotesDebugTab(vm) {
+        navController.popBackStack()
+    }
+}
+
+@Composable
+fun OtherSettingsScreen(navController: NavController) {
+    OtherDebugTab {
         navController.popBackStack()
     }
 }

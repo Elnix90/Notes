@@ -55,6 +55,7 @@ import org.elnix.notes.ui.settings.debug.NotesDebugTab
 import org.elnix.notes.ui.settings.debug.OtherDebugTab
 import org.elnix.notes.ui.settings.debug.RemindersDebugTab
 import org.elnix.notes.ui.settings.security.SecurityTab
+import org.elnix.notes.ui.theme.adjustBrightness
 
 
 @Composable
@@ -83,36 +84,38 @@ fun SettingsListScreen(navController: NavController) {
 
         SettingsItem(
             title = "Appearance",
-            icon = Icons.Default.DarkMode,
-            onClick = { navController.navigate(Routes.Settings.APPEARANCE) }
-        )
+            icon = Icons.Default.DarkMode
+        ) { navController.navigate(Routes.Settings.APPEARANCE) }
+
         SettingsItem(
             title = "Customisation",
-            icon = Icons.Default.DashboardCustomize,
-            onClick = { navController.navigate(Routes.Settings.CUSTOMISATION) }
-        )
+            icon = Icons.Default.DashboardCustomize
+        ) { navController.navigate(Routes.Settings.CUSTOMISATION) }
+
         SettingsItem(
             title = "Notifications / Reminders",
-            icon = Icons.Default.Alarm,
-            onClick = { navController.navigate(Routes.Settings.REMINDER) }
-        )
+            icon = Icons.Default.Alarm
+        ) { navController.navigate(Routes.Settings.REMINDER) }
+
         SettingsItem(
             title = "Security",
-            icon = Icons.Default.Shield,
-            onClick = { navController.navigate(Routes.Settings.SECURITY) }
-        )
+            icon = Icons.Default.Shield
+        ) { navController.navigate(Routes.Settings.SECURITY) }
+
         SettingsItem(
             title = "Backup / Restore",
             icon = Icons.Default.Backup,
-            onClick = { navController.navigate(Routes.Settings.BACKUP) }
-        )
-        if (isDebugModeEnabled){
+            enabled = false,
+            comingSoon = true
+        ) { navController.navigate(Routes.Settings.BACKUP) }
+
+        if (isDebugModeEnabled) {
             SettingsItem(
                 title = "Debug",
-                icon = Icons.Default.BugReport,
-                onClick = { navController.navigate(Routes.Settings.DEBUG) }
-            )
+                icon = Icons.Default.BugReport
+            ) { navController.navigate(Routes.Settings.DEBUG) }
         }
+
 
         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
@@ -127,13 +130,12 @@ fun SettingsListScreen(navController: NavController) {
         SettingsItem(
             title = "Source Code",
             icon = Icons.Default.Code,
-            onClick = {
-                val intent = Intent(Intent.ACTION_VIEW).apply {
-                    data = "https://github.com/Elnix90/Notes".toUri()
-                }
-                ctx.startActivity(intent)
+        ) {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = "https://github.com/Elnix90/Notes".toUri()
             }
-        )
+            ctx.startActivity(intent)
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -189,15 +191,17 @@ fun SettingsListScreen(navController: NavController) {
 @Composable
 fun SettingsItem(
     title: String,
-    onClick: () -> Unit,
-    icon: ImageVector? = null
+    enabled: Boolean = true,
+    comingSoon: Boolean = false,
+    icon: ImageVector? = null,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable(enabled) { onClick() }
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 16.dp, vertical = 14.dp),
@@ -209,14 +213,22 @@ fun SettingsItem(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary.adjustBrightness(if (enabled) 1f else 0.5f)
                 )
             }
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (enabled) 1f else 0.5f)
             )
+            if (comingSoon) {
+                Spacer(Modifier.weight(1f))
+                Text(
+                    text = "Coming soon...",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface.adjustBrightness(0.5f)
+                )
+            }
         }
     }
 }

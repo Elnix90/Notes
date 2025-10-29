@@ -1,6 +1,5 @@
 package org.elnix.notes.ui.helpers
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,9 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.ui.theme.AppObjectsColors
+import org.elnix.notes.ui.theme.adjustBrightness
 import kotlin.random.Random
 
 @Composable
@@ -47,26 +46,25 @@ fun SliderColorPicker(
     var alpha by remember { mutableFloatStateOf(initialColor.alpha) }
 
     val previousColors = remember { mutableStateListOf<Color>() }
+    val color = Color(red, green, blue, alpha)
+    val canPopLastColor = previousColors.isNotEmpty()
 
-    val ctx = LocalContext.current
 
     var hexText by remember {
-        mutableStateOf(toHexWithAlpha(Color(red, green, blue, alpha)))
+        mutableStateOf(toHexWithAlpha(color))
     }
     fun pushCurrentColor() {
-        val color = Color(red, green, blue, alpha)
         previousColors.add(color)
     }
 
     fun popLastColor() {
-        if (previousColors.isNotEmpty()) {
+        if (canPopLastColor) {
             val last = previousColors.removeAt(previousColors.lastIndex)
             red = last.red
             green = last.green
             blue = last.blue
             alpha = last.alpha
-        } else {
-            Toast.makeText(ctx,"No previous color", Toast.LENGTH_SHORT).show()
+            hexText = toHexWithAlpha(color)
         }
     }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -80,11 +78,12 @@ fun SliderColorPicker(
             IconButton(
                 onClick = { popLastColor() },
                 modifier = Modifier.weight(1f),
+                enabled = canPopLastColor
             ) {
                 Icon(
                     Icons.Default.Replay,
                     contentDescription = "Reset",
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (canPopLastColor) 1f else 0.5f)
                 )
             }
 
@@ -109,13 +108,13 @@ fun SliderColorPicker(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(60.dp)
-                .background(Color(red, green, blue, alpha))
+                .background(color)
                 .border(1.dp, MaterialTheme.colorScheme.outline),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = hexText,
-                color = if (Color(red, green, blue, alpha).luminance() > 0.4) Color.Black else Color.White
+                color = if (color.luminance() > 0.4) Color.Black else Color.White
             )
         }
 
@@ -123,14 +122,17 @@ fun SliderColorPicker(
         SliderWithLabel(label = "Red :", value = red, color = Color.Red) {
             red = it
             pushCurrentColor()
+            hexText = toHexWithAlpha(color)
         }
         SliderWithLabel(label = "Green :", value = green, color = Color.Green) {
             green = it
             pushCurrentColor()
+            hexText = toHexWithAlpha(color)
         }
         SliderWithLabel(label = "Blue :", value = blue, color = Color.Blue) {
             blue = it
             pushCurrentColor()
+            hexText = toHexWithAlpha(color)
         }
 
         SliderWithLabel(
@@ -141,6 +143,7 @@ fun SliderColorPicker(
         ) {
             alpha = it
             pushCurrentColor()
+            hexText = toHexWithAlpha(color)
         }
 
 
@@ -150,7 +153,7 @@ fun SliderColorPicker(
             horizontalArrangement = Arrangement.spacedBy(5.dp)
         ){
             Button(
-                onClick = { onColorSelected(Color(red, green, blue, alpha)) },
+                onClick = { onColorSelected(color) },
                 modifier = Modifier.weight(3f),
                 colors = AppObjectsColors.buttonColors()
             ) {

@@ -210,8 +210,6 @@ object AppObjectsColors {
             errorSuffixColor = colors.error
         )
     }
-
-
 }
 
 

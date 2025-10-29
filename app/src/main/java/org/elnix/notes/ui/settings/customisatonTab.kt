@@ -12,12 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.elnix.notes.data.settings.SwipeActions
-import org.elnix.notes.data.settings.SwipeActionSettings
 import org.elnix.notes.data.settings.ActionSettingsStore.getActionSettingsFlow
 import org.elnix.notes.data.settings.ActionSettingsStore.setClickAction
 import org.elnix.notes.data.settings.ActionSettingsStore.setSwipeLeftAction
 import org.elnix.notes.data.settings.ActionSettingsStore.setSwipeRightAction
+import org.elnix.notes.data.settings.SwipeActionSettings
+import org.elnix.notes.data.settings.SwipeActions
 import org.elnix.notes.data.settings.UiSettingsStore.getShowNotesNumber
 import org.elnix.notes.data.settings.UiSettingsStore.setShowNotesNumber
 import org.elnix.notes.ui.helpers.ActionSelectorRow

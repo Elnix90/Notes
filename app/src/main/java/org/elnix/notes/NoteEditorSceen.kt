@@ -190,7 +190,7 @@ fun NoteEditorScreen(
             }
         }
 
-        HorizontalDivider()
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
         var isCompleted by remember { mutableStateOf(note?.isCompleted ?: false) }
 

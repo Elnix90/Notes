@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,7 +53,7 @@ fun AppearanceTab(
                 onClick = { navController.navigate("settings/appearance/colors") }
             )
 
-            HorizontalDivider()
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
             ActionSelectorRow(
                 label = "Show Navigation Bar Labels",

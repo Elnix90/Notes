@@ -8,37 +8,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.elnix.notes.data.settings.ColorCustomisationMode
 import org.elnix.notes.data.settings.ColorSettingsStore
+import org.elnix.notes.data.settings.DefaultThemes
+import org.elnix.notes.data.settings.UiSettingsStore
+import org.elnix.notes.data.settings.applyDefaultThemeColors
+import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.ColorPickerRow
 import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.theme.AmoledDefault
 import org.elnix.notes.ui.theme.AppObjectsColors
-import org.elnix.notes.ui.theme.BackgroundDefault
-import org.elnix.notes.ui.theme.CompleteDefault
-import org.elnix.notes.ui.theme.DeleteDefault
-import org.elnix.notes.ui.theme.EditDefault
-import org.elnix.notes.ui.theme.ErrorDefault
 import org.elnix.notes.ui.theme.LocalExtraColors
-import org.elnix.notes.ui.theme.OnBackgroundDefault
-import org.elnix.notes.ui.theme.OnErrorDefault
-import org.elnix.notes.ui.theme.OnPrimaryDefault
-import org.elnix.notes.ui.theme.OnSecondaryDefault
-import org.elnix.notes.ui.theme.OnSurfaceDefault
-import org.elnix.notes.ui.theme.OnTertiaryDefault
-import org.elnix.notes.ui.theme.OutlineDefault
-import org.elnix.notes.ui.theme.PrimaryDefault
-import org.elnix.notes.ui.theme.SecondaryDefault
-import org.elnix.notes.ui.theme.SurfaceDefault
-import org.elnix.notes.ui.theme.TertiaryDefault
+import org.elnix.notes.ui.theme.adjustBrightness
+import org.elnix.notes.ui.theme.blendWith
 
 @Composable
 fun ColorSelectorTab(
@@ -72,6 +66,10 @@ fun ColorSelectorTab(
     val edit by ColorSettingsStore.getEdit(ctx).collectAsState(initial = null)
     val complete by ColorSettingsStore.getComplete(ctx).collectAsState(initial = null)
 
+
+    val colorCustomisationMode by UiSettingsStore.getColorCustomisationMode(ctx).collectAsState(initial = ColorCustomisationMode.DEFAULT)
+    val selectedDefaultTheme by UiSettingsStore.getDefaultTheme(ctx).collectAsState(initial = DefaultThemes.DARK)
+
     val scrollState = rememberScrollState()
 
     // === Layout ===
@@ -84,139 +82,216 @@ fun ColorSelectorTab(
     ) {
         SettingsTitle("Color Selector", onBack)
 
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        ActionSelectorRow(
+            options = ColorCustomisationMode.entries,
+            selected = colorCustomisationMode,
+            label = "Color custom mode"
+        ) {
+            scope.launch { UiSettingsStore.setColorCustomisationMode(ctx, it) }
+        }
 
-            // === Primary set ===
-            ColorPickerRow(
-                label = "Primary",
-                defaultColor = PrimaryDefault,
-                currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setPrimary(ctx, it) } }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
-            ColorPickerRow(
-                label = "On Primary",
-                defaultColor = OnPrimaryDefault,
-                currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setOnPrimary(ctx, it) } }
+        when (colorCustomisationMode) {
+            ColorCustomisationMode.ALL -> {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-            // === Secondary set ===
-            ColorPickerRow(
-                label = "Secondary",
-                defaultColor = SecondaryDefault,
-                currentColor = secondary ?: MaterialTheme.colorScheme.secondary.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setSecondary(ctx, it) } }
+                    ColorPickerRow(
+                        label = "Primary",
+                        defaultColor = AmoledDefault.Primary,
+                        currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setPrimary(ctx, it) } }
 
-            ColorPickerRow(
-                label = "On Secondary",
-                defaultColor = OnSecondaryDefault,
-                currentColor = onSecondary ?: MaterialTheme.colorScheme.onSecondary.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setOnSecondary(ctx, it) } }
+                    ColorPickerRow(
+                        label = "On Primary",
+                        defaultColor = AmoledDefault.OnPrimary,
+                        currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setOnPrimary(ctx, it) } }
 
-            // === Tertiary set ===
-            ColorPickerRow(
-                label = "Tertiary",
-                defaultColor = TertiaryDefault,
-                currentColor = tertiary ?: MaterialTheme.colorScheme.tertiary.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setTertiary(ctx, it) } }
+                    ColorPickerRow(
+                        label = "Secondary",
+                        defaultColor = AmoledDefault.Secondary,
+                        currentColor = secondary ?: MaterialTheme.colorScheme.secondary.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setSecondary(ctx, it) } }
 
-            ColorPickerRow(
-                label = "On Tertiary",
-                defaultColor = OnTertiaryDefault,
-                currentColor = onTertiary ?: MaterialTheme.colorScheme.onTertiary.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setOnTertiary(ctx, it) } }
+                    ColorPickerRow(
+                        label = "On Secondary",
+                        defaultColor = AmoledDefault.OnSecondary,
+                        currentColor = onSecondary
+                            ?: MaterialTheme.colorScheme.onSecondary.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setOnSecondary(ctx, it) } }
 
-            // === Background ===
-            ColorPickerRow(
-                label = "Background",
-                defaultColor = BackgroundDefault,
-                currentColor = background ?: MaterialTheme.colorScheme.background.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setBackground(ctx, it) } }
+                    ColorPickerRow(
+                        label = "Tertiary",
+                        defaultColor = AmoledDefault.Tertiary,
+                        currentColor = tertiary ?: MaterialTheme.colorScheme.tertiary.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setTertiary(ctx, it) } }
 
-            ColorPickerRow(
-                label = "On Background",
-                defaultColor = OnBackgroundDefault,
-                currentColor = onBackground ?: MaterialTheme.colorScheme.onBackground.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setOnBackground(ctx, it) } }
+                    ColorPickerRow(
+                        label = "On Tertiary",
+                        defaultColor = AmoledDefault.OnTertiary,
+                        currentColor = onTertiary ?: MaterialTheme.colorScheme.onTertiary.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setOnTertiary(ctx, it) } }
 
-            // === Surface ===
-            ColorPickerRow(
-                label = "Surface",
-                defaultColor = SurfaceDefault,
-                currentColor = surface ?: MaterialTheme.colorScheme.surface.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setSurface(ctx, it) } }
+                    ColorPickerRow(
+                        label = "Background",
+                        defaultColor = AmoledDefault.Background,
+                        currentColor = background ?: MaterialTheme.colorScheme.background.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setBackground(ctx, it) } }
 
-            ColorPickerRow(
-                label = "On Surface",
-                defaultColor = OnSurfaceDefault,
-                currentColor = onSurface ?: MaterialTheme.colorScheme.onSurface.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setOnSurface(ctx, it) } }
+                    ColorPickerRow(
+                        label = "On Background",
+                        defaultColor = AmoledDefault.OnBackground,
+                        currentColor = onBackground
+                            ?: MaterialTheme.colorScheme.onBackground.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setOnBackground(ctx, it) } }
 
-            // === Error ===
-            ColorPickerRow(
-                label = "Error",
-                defaultColor = ErrorDefault,
-                currentColor = error ?: MaterialTheme.colorScheme.error.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setError(ctx, it) } }
+                    ColorPickerRow(
+                        label = "Surface",
+                        defaultColor = AmoledDefault.Surface,
+                        currentColor = surface ?: MaterialTheme.colorScheme.surface.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setSurface(ctx, it) } }
 
-            ColorPickerRow(
-                label = "On Error",
-                defaultColor = OnErrorDefault,
-                currentColor = onError ?: MaterialTheme.colorScheme.onError.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setOnError(ctx, it) } }
+                    ColorPickerRow(
+                        label = "On Surface",
+                        defaultColor = AmoledDefault.OnSurface,
+                        currentColor = onSurface ?: MaterialTheme.colorScheme.onSurface.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setOnSurface(ctx, it) } }
 
-            // === Outline ===
-            ColorPickerRow(
-                label = "Outline",
-                defaultColor = OutlineDefault,
-                currentColor = outline ?: MaterialTheme.colorScheme.outline.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setOutline(ctx, it) } }
+                    ColorPickerRow(
+                        label = "Error",
+                        defaultColor = AmoledDefault.Error,
+                        currentColor = error ?: MaterialTheme.colorScheme.error.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setError(ctx, it) } }
 
-            // === Extra custom action colors ===
-            ColorPickerRow(
-                label = "Delete",
-                defaultColor = DeleteDefault,
-                currentColor = delete ?: LocalExtraColors.current.delete.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setDelete(ctx, it) } }
+                    ColorPickerRow(
+                        label = "On Error",
+                        defaultColor = AmoledDefault.OnError,
+                        currentColor = onError ?: MaterialTheme.colorScheme.onError.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setOnError(ctx, it) } }
 
-            ColorPickerRow(
-                label = "Edit",
-                defaultColor = EditDefault,
-                currentColor = edit ?: LocalExtraColors.current.edit.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setEdit(ctx, it) } }
+                    ColorPickerRow(
+                        label = "Outline",
+                        defaultColor = AmoledDefault.Outline,
+                        currentColor = outline ?: MaterialTheme.colorScheme.outline.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setOutline(ctx, it) } }
 
-            ColorPickerRow(
-                label = "Complete",
-                defaultColor = CompleteDefault,
-                currentColor = complete ?: LocalExtraColors.current.complete.toArgb(),
-                scope = scope,
-            ) { scope.launch { ColorSettingsStore.setComplete(ctx, it) } }
+                    // === Extra custom action colors ===
+                    ColorPickerRow(
+                        label = "Delete",
+                        defaultColor = AmoledDefault.Delete,
+                        currentColor = delete ?: LocalExtraColors.current.delete.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setDelete(ctx, it) } }
 
-            // === Reset button ===
-            Button(
-                onClick = { scope.launch { ColorSettingsStore.resetColors(ctx) } },
-                modifier = Modifier.fillMaxWidth(),
-                colors = AppObjectsColors.buttonColors()
-            ) {
-                Text(
-                    text = "Reset to Default Colors",
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
+                    ColorPickerRow(
+                        label = "Edit",
+                        defaultColor = AmoledDefault.Edit,
+                        currentColor = edit ?: LocalExtraColors.current.edit.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setEdit(ctx, it) } }
+
+                    ColorPickerRow(
+                        label = "Complete",
+                        defaultColor = AmoledDefault.Complete,
+                        currentColor = complete ?: LocalExtraColors.current.complete.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setComplete(ctx, it) } }
+                }
             }
+
+            ColorCustomisationMode.NORMAL -> {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    val bgColorFromTheme = MaterialTheme.colorScheme.background
+                    ColorPickerRow(
+                        label = "Main",
+                        defaultColor = AmoledDefault.Primary,
+                        currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb(),
+                        scope = scope,
+                    ) { newColorInt ->
+
+
+                        val currentColorObject = Color(newColorInt)
+
+                        val backgroundColor = background?.let { Color(it) } ?: bgColorFromTheme
+
+                        val secondaryColor = currentColorObject.adjustBrightness(1.2f)
+                        val tertiaryColor = secondaryColor.adjustBrightness(1.2f)
+                        val surfaceColor = currentColorObject.blendWith(backgroundColor, 0.7f)
+
+                        scope.launch {
+                            ColorSettingsStore.setPrimary(ctx, newColorInt)
+                            ColorSettingsStore.setSecondary(ctx, secondaryColor.toArgb())
+                            ColorSettingsStore.setTertiary(ctx, tertiaryColor.toArgb())
+                            ColorSettingsStore.setSurface(ctx, surfaceColor.toArgb())
+                        }
+                    }
+
+                    ColorPickerRow(
+                        label = "Background",
+                        defaultColor = AmoledDefault.Background,
+                        currentColor = background ?: MaterialTheme.colorScheme.background.toArgb(),
+                        scope = scope,
+                    ) {
+                        scope.launch {
+                            ColorSettingsStore.setBackground(ctx, it)
+                        }
+                    }
+
+                    ColorPickerRow(
+                        label = "Text Color",
+                        defaultColor = AmoledDefault.OnPrimary,
+                        currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb(),
+                        scope = scope,
+                    ) {
+                        scope.launch {
+                            ColorSettingsStore.setOnPrimary(ctx, it)
+                            ColorSettingsStore.setOnSecondary(ctx, it)
+                            ColorSettingsStore.setOnTertiary(ctx, it)
+                            ColorSettingsStore.setOnSurface(ctx, it)
+                            ColorSettingsStore.setOnBackground(ctx, it)
+                            ColorSettingsStore.setOutline(ctx, it)
+                            ColorSettingsStore.setOnError(ctx, it)
+                        }
+                    }
+                }
+            }
+
+            ColorCustomisationMode.DEFAULT ->  {
+                ActionSelectorRow(
+                    options = DefaultThemes.entries,
+                    selected = selectedDefaultTheme,
+                    label = "Theme"
+                ) {
+                    scope.launch {
+                        UiSettingsStore.setDefaultTheme(ctx, it)
+                        applyDefaultThemeColors(ctx, it)
+                    }
+                }
+            }
+        }
+        Button(
+            onClick = { scope.launch { ColorSettingsStore.resetColors(ctx, colorCustomisationMode, selectedDefaultTheme) } },
+            modifier = Modifier.fillMaxWidth(),
+            colors = AppObjectsColors.buttonColors()
+        ) {
+            Text(
+                text = "Reset to Default Colors",
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
     }
 }

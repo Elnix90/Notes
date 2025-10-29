@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.data.helpers.ColorPickerMode
 import org.elnix.notes.data.settings.UiSettingsStore.getColorPickerMode
 import org.elnix.notes.data.settings.UiSettingsStore.setColorPickerMode
+import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
 fun ColorPickerRow(label: String, defaultColor: Color, currentColor: Int, scope: CoroutineScope, onColorPicked: (Int) -> Unit) {
@@ -64,7 +65,7 @@ fun ColorPickerRow(label: String, defaultColor: Color, currentColor: Int, scope:
                     .background(Color(currentColor), shape = CircleShape)
                     .border(
                         1.dp,
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                        MaterialTheme.colorScheme.onSurface.adjustBrightness(0.3f),
                         CircleShape
                     )
             )
@@ -119,12 +120,20 @@ private fun ColorPicker(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Sliders", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = "Sliders",
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyMedium
+            )
             Switch(
                 checked = mode == ColorPickerMode.GRADIENT,
                 onCheckedChange = { changeSliderMode(ctx, scope, mode) }
             )
-            Text("Gradient", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = "Gradient",
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
 
 

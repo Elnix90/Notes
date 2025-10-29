@@ -143,7 +143,7 @@ fun GradientColorPicker(
                     .clip(RoundedCornerShape(8.dp))
                     .background(
                         Brush.verticalGradient(
-                            colors = (0..360 step 30).map { Color.hsv(it.toFloat(), 1f, 1f) }
+                            colors = (360 downTo 0 step 30).map { Color.hsv(it.toFloat(), 1f, 1f) }
                         )
                     )
                     .drawWithContent {

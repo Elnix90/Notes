@@ -62,29 +62,29 @@ fun NotesTheme(
     customComplete: Int? = null,
     content: @Composable () -> Unit
 ) {
-    val primary = customPrimary?.let { Color(it) } ?: PrimaryDefault
-    val onPrimary = customOnPrimary?.let { Color(it) } ?: OnPrimaryDefault
+    val primary = customPrimary?.let { Color(it) } ?: AmoledDefault.Primary
+    val onPrimary = customOnPrimary?.let { Color(it) } ?: AmoledDefault.OnPrimary
 
-    val secondary = customSecondary?.let { Color(it) } ?: SecondaryDefault
-    val onSecondary = customOnSecondary?.let { Color(it) } ?: OnSecondaryDefault
+    val secondary = customSecondary?.let { Color(it) } ?: AmoledDefault.Secondary
+    val onSecondary = customOnSecondary?.let { Color(it) } ?: AmoledDefault.OnSecondary
 
-    val tertiary = customTertiary?.let { Color(it) } ?: TertiaryDefault
-    val onTertiary = customOnTertiary?.let { Color(it) } ?: OnTertiaryDefault
+    val tertiary = customTertiary?.let { Color(it) } ?: AmoledDefault.Tertiary
+    val onTertiary = customOnTertiary?.let { Color(it) } ?: AmoledDefault.OnTertiary
 
-    val background = customBackground?.let { Color(it) } ?: BackgroundDefault
-    val onBackground = customOnBackground?.let { Color(it) } ?: OnBackgroundDefault
+    val background = customBackground?.let { Color(it) } ?: AmoledDefault.Background
+    val onBackground = customOnBackground?.let { Color(it) } ?: AmoledDefault.OnBackground
 
-    val surface = customSurface?.let { Color(it) } ?: SurfaceDefault
-    val onSurface = customOnSurface?.let { Color(it) } ?: OnSurfaceDefault
+    val surface = customSurface?.let { Color(it) } ?: AmoledDefault.Surface
+    val onSurface = customOnSurface?.let { Color(it) } ?: AmoledDefault.OnSurface
 
-    val error = customError?.let { Color(it) } ?: ErrorDefault
-    val onError = customOnError?.let { Color(it) } ?: OnErrorDefault
+    val error = customError?.let { Color(it) } ?: AmoledDefault.Error
+    val onError = customOnError?.let { Color(it) } ?: AmoledDefault.OnError
 
-    val outline = customOutline?.let { Color(it) } ?: OutlineDefault
+    val outline = customOutline?.let { Color(it) } ?: AmoledDefault.Outline
 
-    val delete = customDelete?.let { Color(it) } ?: DeleteDefault
-    val edit = customEdit?.let { Color(it) } ?: EditDefault
-    val complete = customComplete?.let { Color(it) } ?: CompleteDefault
+    val delete = customDelete?.let { Color(it) } ?: AmoledDefault.Delete
+    val edit = customEdit?.let { Color(it) } ?: AmoledDefault.Edit
+    val complete = customComplete?.let { Color(it) } ?: AmoledDefault.Complete
 
     val extraColors = ExtraColors(delete, edit, complete)
 

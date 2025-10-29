@@ -12,8 +12,8 @@ data class ExtraColors(
 // default fallback values
 val LocalExtraColors = staticCompositionLocalOf {
     ExtraColors(
-        delete = DeleteDefault,
-        edit = EditDefault,
-        complete = CompleteDefault
+        delete = AmoledDefault.Delete,
+        edit = AmoledDefault.Edit,
+        complete = AmoledDefault.Complete
     )
 }

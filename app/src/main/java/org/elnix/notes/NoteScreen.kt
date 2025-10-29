@@ -93,7 +93,7 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
                     color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
             }
 
             LazyColumn(modifier = Modifier.fillMaxSize()) {

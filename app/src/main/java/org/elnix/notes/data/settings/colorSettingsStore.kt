@@ -6,7 +6,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.flow.map
-import org.elnix.notes.ui.theme.*
+import org.elnix.notes.ui.theme.AmoledDefault
+import org.elnix.notes.ui.theme.DarkDefault
+import org.elnix.notes.ui.theme.LightDefault
 
 object ColorSettingsStore {
 
@@ -117,24 +119,84 @@ object ColorSettingsStore {
     }
 
 
-    suspend fun resetColors(ctx: Context) {
-        ctx.dataStore.edit {
-            it[PRIMARY_COLOR] = PrimaryDefault.toArgb()
-            it[ON_PRIMARY_COLOR] = OnPrimaryDefault.toArgb()
-            it[SECONDARY_COLOR] = SecondaryDefault.toArgb()
-            it[ON_SECONDARY_COLOR] = OnSecondaryDefault.toArgb()
-            it[TERTIARY_COLOR] = TertiaryDefault.toArgb()
-            it[ON_TERTIARY_COLOR] = OnTertiaryDefault.toArgb()
-            it[BACKGROUND_COLOR] = BackgroundDefault.toArgb()
-            it[ON_BACKGROUND_COLOR] = OnBackgroundDefault.toArgb()
-            it[SURFACE_COLOR] = SurfaceDefault.toArgb()
-            it[ON_SURFACE_COLOR] = OnSurfaceDefault.toArgb()
-            it[ERROR_COLOR] = ErrorDefault.toArgb()
-            it[ON_ERROR_COLOR] = OnErrorDefault.toArgb()
-            it[OUTLINE_COLOR] = OutlineDefault.toArgb()
-            it[DELETE_COLOR] = DeleteDefault.toArgb()
-            it[EDIT_COLOR] = EditDefault.toArgb()
-            it[COMPLETE_COLOR] = CompleteDefault.toArgb()
+    suspend fun resetColors(ctx: Context,selectedColorCustomisationMode: ColorCustomisationMode , selectedMode: DefaultThemes) {
+        when(selectedColorCustomisationMode) {
+            ColorCustomisationMode.DEFAULT -> {
+                when (selectedMode) {
+                    DefaultThemes.LIGHT -> {
+                        setPrimary(ctx, LightDefault.Primary.toArgb())
+                        setOnPrimary(ctx, LightDefault.OnPrimary.toArgb())
+                        setSecondary(ctx, LightDefault.Secondary.toArgb())
+                        setOnSecondary(ctx, LightDefault.OnSecondary.toArgb())
+                        setTertiary(ctx, LightDefault.Tertiary.toArgb())
+                        setOnTertiary(ctx, LightDefault.OnTertiary.toArgb())
+                        setBackground(ctx, LightDefault.Background.toArgb())
+                        setOnBackground(ctx, LightDefault.OnBackground.toArgb())
+                        setSurface(ctx, LightDefault.Surface.toArgb())
+                        setOnSurface(ctx, LightDefault.OnSurface.toArgb())
+                        setError(ctx, LightDefault.Error.toArgb())
+                        setOnError(ctx, LightDefault.OnError.toArgb())
+                        setOutline(ctx, LightDefault.Outline.toArgb())
+                        setDelete(ctx, LightDefault.Delete.toArgb())
+                        setEdit(ctx, LightDefault.Edit.toArgb())
+                        setComplete(ctx, LightDefault.Complete.toArgb())
+                    }
+                    DefaultThemes.DARK -> {
+                        setPrimary(ctx, DarkDefault.Primary.toArgb())
+                        setOnPrimary(ctx, DarkDefault.OnPrimary.toArgb())
+                        setSecondary(ctx, DarkDefault.Secondary.toArgb())
+                        setOnSecondary(ctx, DarkDefault.OnSecondary.toArgb())
+                        setTertiary(ctx, DarkDefault.Tertiary.toArgb())
+                        setOnTertiary(ctx, DarkDefault.OnTertiary.toArgb())
+                        setBackground(ctx, DarkDefault.Background.toArgb())
+                        setOnBackground(ctx, DarkDefault.OnBackground.toArgb())
+                        setSurface(ctx, DarkDefault.Surface.toArgb())
+                        setOnSurface(ctx, DarkDefault.OnSurface.toArgb())
+                        setError(ctx, DarkDefault.Error.toArgb())
+                        setOnError(ctx, DarkDefault.OnError.toArgb())
+                        setOutline(ctx, DarkDefault.Outline.toArgb())
+                        setDelete(ctx, DarkDefault.Delete.toArgb())
+                        setEdit(ctx, DarkDefault.Edit.toArgb())
+                        setComplete(ctx, DarkDefault.Complete.toArgb())
+                    }
+                    DefaultThemes.AMOLED -> {
+                        setPrimary(ctx, AmoledDefault.Primary.toArgb())
+                        setOnPrimary(ctx, AmoledDefault.OnPrimary.toArgb())
+                        setSecondary(ctx, AmoledDefault.Secondary.toArgb())
+                        setOnSecondary(ctx, AmoledDefault.OnSecondary.toArgb())
+                        setTertiary(ctx, AmoledDefault.Tertiary.toArgb())
+                        setOnTertiary(ctx, AmoledDefault.OnTertiary.toArgb())
+                        setBackground(ctx, AmoledDefault.Background.toArgb())
+                        setOnBackground(ctx, AmoledDefault.OnBackground.toArgb())
+                        setSurface(ctx, AmoledDefault.Surface.toArgb())
+                        setOnSurface(ctx, AmoledDefault.OnSurface.toArgb())
+                        setError(ctx, AmoledDefault.Error.toArgb())
+                        setOnError(ctx, AmoledDefault.OnError.toArgb())
+                        setOutline(ctx, AmoledDefault.Outline.toArgb())
+                        setDelete(ctx, AmoledDefault.Delete.toArgb())
+                        setEdit(ctx, AmoledDefault.Edit.toArgb())
+                        setComplete(ctx, AmoledDefault.Complete.toArgb())
+                    }
+                }
+            }
+            ColorCustomisationMode.NORMAL, ColorCustomisationMode.ALL -> {
+                setPrimary(ctx, AmoledDefault.Primary.toArgb())
+                setOnPrimary(ctx, AmoledDefault.OnPrimary.toArgb())
+                setSecondary(ctx, AmoledDefault.Secondary.toArgb())
+                setOnSecondary(ctx, AmoledDefault.OnSecondary.toArgb())
+                setTertiary(ctx, AmoledDefault.Tertiary.toArgb())
+                setOnTertiary(ctx, AmoledDefault.OnTertiary.toArgb())
+                setBackground(ctx, AmoledDefault.Background.toArgb())
+                setOnBackground(ctx, AmoledDefault.OnBackground.toArgb())
+                setSurface(ctx, AmoledDefault.Surface.toArgb())
+                setOnSurface(ctx, AmoledDefault.OnSurface.toArgb())
+                setError(ctx, AmoledDefault.Error.toArgb())
+                setOnError(ctx, AmoledDefault.OnError.toArgb())
+                setOutline(ctx, AmoledDefault.Outline.toArgb())
+                setDelete(ctx, AmoledDefault.Delete.toArgb())
+                setEdit(ctx, AmoledDefault.Edit.toArgb())
+                setComplete(ctx, AmoledDefault.Complete.toArgb())
+            }
         }
     }
 }

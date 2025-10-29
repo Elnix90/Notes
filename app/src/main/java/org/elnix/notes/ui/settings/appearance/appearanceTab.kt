@@ -40,7 +40,7 @@ fun AppearanceTab(
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SettingsTitle("Appearance", onBack)
+        SettingsTitle(title = "Appearance", onBack = onBack)
 
         Column(
             modifier = Modifier.fillMaxWidth(),

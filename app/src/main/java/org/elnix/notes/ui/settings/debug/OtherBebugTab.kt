@@ -21,7 +21,7 @@ fun OtherDebugTab(onBack: (() -> Unit)) {
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SettingsTitle("Debug -> Other", onBack)
+        SettingsTitle(title = "Debug -> Other", onBack = onBack)
 
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             OutlinedButton(

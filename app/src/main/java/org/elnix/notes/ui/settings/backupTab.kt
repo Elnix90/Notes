@@ -20,7 +20,7 @@ fun BackupTab(ctx: Context, onBack: (() -> Unit)) {
     val showNavLabels by getShowBottomNavLabelsFlow(ctx).collectAsState(initial = ShowNavBarActions.ALWAYS)
 
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        SettingsTitle("Backup / Restore", onBack)
+        SettingsTitle(title = "Backup / Restore", onBack = onBack)
 
         ExportImportRow(showNavLabels)
         NotesExportImportRow(ctx)

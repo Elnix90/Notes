@@ -1,6 +1,5 @@
 package org.elnix.notes.ui.settings.debug
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,32 +8,50 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.filled.FormatListBulleted
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import org.elnix.notes.ui.helpers.SettingsTitle
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.elnix.notes.Routes
 import org.elnix.notes.SettingsItem
-import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.data.settings.stores.UiSettingsStore
+import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.SwitchRow
 
 @Composable
-fun DebugTab(vm: NoteViewModel, navController: NavController, onBack: (() -> Unit)) {
+fun DebugTab(navController: NavController, onBack: (() -> Unit)) {
+    val scope = rememberCoroutineScope()
+    val ctx = LocalContext.current
+
+    val isDebugModeEnabled by UiSettingsStore.getDebugMode(ctx).collectAsState(initial = false)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SettingsTitle("Debug", onBack)
+        SettingsTitle(title = "Debug", onBack = onBack)
+
+        SwitchRow(
+            state = isDebugModeEnabled,
+            text = "Activate Debug Mode",
+            defaultValue = true
+        ) {
+            scope.launch{
+                UiSettingsStore.setDebugMode(ctx, false)
+            }
+            navController.popBackStack()
+        }
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 

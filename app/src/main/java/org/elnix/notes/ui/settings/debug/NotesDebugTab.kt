@@ -36,7 +36,7 @@ fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SettingsTitle("Debug -> Notes", onBack)
+        SettingsTitle(title = "Debug -> Notes", onBack = onBack)
 
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 

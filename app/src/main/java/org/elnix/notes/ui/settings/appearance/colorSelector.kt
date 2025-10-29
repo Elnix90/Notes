@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.settings.ColorCustomisationMode
-import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.data.settings.DefaultThemes
-import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.applyDefaultThemeColors
+import org.elnix.notes.data.settings.stores.ColorSettingsStore
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.ColorPickerRow
 import org.elnix.notes.ui.helpers.SettingsTitle
@@ -80,7 +80,7 @@ fun ColorSelectorTab(
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SettingsTitle("Color Selector", onBack)
+        SettingsTitle(title = "Color Selector", onBack = onBack)
 
         ActionSelectorRow(
             options = ColorCustomisationMode.entries,

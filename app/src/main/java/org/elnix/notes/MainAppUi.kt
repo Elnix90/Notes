@@ -147,7 +147,7 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteV
         composable(Routes.Settings.SECURITY) { SecuritySettingsScreen(navController) }
         composable(Routes.Settings.BACKUP) { BackupSettingsScreen(navController) }
 
-        composable(Routes.Settings.DEBUG) { DebugSettingsScreen(navController, vm) }
+        composable(Routes.Settings.DEBUG) { DebugSettingsScreen(navController) }
         // Debug sub-settings
         composable(Routes.Settings.DebugSub.REMINDERS) { DebugReminderSettingsScreen(navController, vm) }
         composable(Routes.Settings.DebugSub.NOTES) { DebugNotesSettingsScreen(navController, vm) }

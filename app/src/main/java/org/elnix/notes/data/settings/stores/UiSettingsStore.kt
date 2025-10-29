@@ -69,4 +69,13 @@ object UiSettingsStore {
     suspend fun setDefaultTheme(ctx: Context, state: DefaultThemes) {
         ctx.dataStore.edit { it[DEFAULT_THEME] = state.name }
     }
+
+
+    private val DEBUG_MODE_ENABLED = booleanPreferencesKey("debug_mode_enabled")
+    fun getDebugMode(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[DEBUG_MODE_ENABLED] ?: false }
+
+    suspend fun setDebugMode(ctx: Context, state: Boolean) {
+        ctx.dataStore.edit { it[DEBUG_MODE_ENABLED] = state}
+    }
+
 }

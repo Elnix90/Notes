@@ -12,12 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.elnix.notes.data.settings.SwipeActionSettings
+import org.elnix.notes.data.settings.SwipeActions
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.getActionSettingsFlow
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setClickAction
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setSwipeLeftAction
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setSwipeRightAction
-import org.elnix.notes.data.settings.SwipeActionSettings
-import org.elnix.notes.data.settings.SwipeActions
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowNotesNumber
 import org.elnix.notes.data.settings.stores.UiSettingsStore.setShowNotesNumber
 import org.elnix.notes.ui.helpers.ActionSelectorRow
@@ -36,7 +36,7 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SettingsTitle("Customisation", onBack)
+        SettingsTitle(title = "Customisation", onBack = onBack)
 
         // --- Swipe Left ---
         ActionSelectorRow(

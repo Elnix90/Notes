@@ -24,7 +24,7 @@ fun RemindersDebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, on
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SettingsTitle("Debug -> Reminders", onBack)
+        SettingsTitle(title = "Debug -> Reminders", onBack = onBack)
 
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 

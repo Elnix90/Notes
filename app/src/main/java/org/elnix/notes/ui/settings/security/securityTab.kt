@@ -47,7 +47,7 @@ fun SecurityTab(onBack: (() -> Unit)) {
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SettingsTitle("Security", onBack)
+        SettingsTitle(title = "Security", onBack = onBack)
 
 
         SwitchRow(

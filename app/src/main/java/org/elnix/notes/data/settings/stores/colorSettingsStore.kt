@@ -9,9 +9,26 @@ import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.settings.ColorCustomisationMode
 import org.elnix.notes.data.settings.DefaultThemes
 import org.elnix.notes.data.settings.dataStore
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setBackground
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setComplete
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setDelete
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setEdit
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setError
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setOnBackground
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setOnError
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setOnPrimary
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setOnSecondary
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setOnSurface
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setOnTertiary
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setOutline
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setPrimary
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setSecondary
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setSurface
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setTertiary
 import org.elnix.notes.ui.theme.AmoledDefault
 import org.elnix.notes.ui.theme.DarkDefault
 import org.elnix.notes.ui.theme.LightDefault
+import org.elnix.notes.ui.theme.ThemeColors
 
 object ColorSettingsStore {
 
@@ -121,85 +138,42 @@ object ColorSettingsStore {
         ctx.dataStore.edit { it[COMPLETE_COLOR] = color }
     }
 
+    suspend fun resetColors(
+        ctx: Context,
+        selectedColorCustomisationMode: ColorCustomisationMode,
+        selectedMode: DefaultThemes
+    ) {
 
-    suspend fun resetColors(ctx: Context, selectedColorCustomisationMode: ColorCustomisationMode, selectedMode: DefaultThemes) {
-        when(selectedColorCustomisationMode) {
-            ColorCustomisationMode.DEFAULT -> {
-                when (selectedMode) {
-                    DefaultThemes.LIGHT -> {
-                        setPrimary(ctx, LightDefault.Primary.toArgb())
-                        setOnPrimary(ctx, LightDefault.OnPrimary.toArgb())
-                        setSecondary(ctx, LightDefault.Secondary.toArgb())
-                        setOnSecondary(ctx, LightDefault.OnSecondary.toArgb())
-                        setTertiary(ctx, LightDefault.Tertiary.toArgb())
-                        setOnTertiary(ctx, LightDefault.OnTertiary.toArgb())
-                        setBackground(ctx, LightDefault.Background.toArgb())
-                        setOnBackground(ctx, LightDefault.OnBackground.toArgb())
-                        setSurface(ctx, LightDefault.Surface.toArgb())
-                        setOnSurface(ctx, LightDefault.OnSurface.toArgb())
-                        setError(ctx, LightDefault.Error.toArgb())
-                        setOnError(ctx, LightDefault.OnError.toArgb())
-                        setOutline(ctx, LightDefault.Outline.toArgb())
-                        setDelete(ctx, LightDefault.Delete.toArgb())
-                        setEdit(ctx, LightDefault.Edit.toArgb())
-                        setComplete(ctx, LightDefault.Complete.toArgb())
-                    }
-                    DefaultThemes.DARK -> {
-                        setPrimary(ctx, DarkDefault.Primary.toArgb())
-                        setOnPrimary(ctx, DarkDefault.OnPrimary.toArgb())
-                        setSecondary(ctx, DarkDefault.Secondary.toArgb())
-                        setOnSecondary(ctx, DarkDefault.OnSecondary.toArgb())
-                        setTertiary(ctx, DarkDefault.Tertiary.toArgb())
-                        setOnTertiary(ctx, DarkDefault.OnTertiary.toArgb())
-                        setBackground(ctx, DarkDefault.Background.toArgb())
-                        setOnBackground(ctx, DarkDefault.OnBackground.toArgb())
-                        setSurface(ctx, DarkDefault.Surface.toArgb())
-                        setOnSurface(ctx, DarkDefault.OnSurface.toArgb())
-                        setError(ctx, DarkDefault.Error.toArgb())
-                        setOnError(ctx, DarkDefault.OnError.toArgb())
-                        setOutline(ctx, DarkDefault.Outline.toArgb())
-                        setDelete(ctx, DarkDefault.Delete.toArgb())
-                        setEdit(ctx, DarkDefault.Edit.toArgb())
-                        setComplete(ctx, DarkDefault.Complete.toArgb())
-                    }
-                    DefaultThemes.AMOLED -> {
-                        setPrimary(ctx, AmoledDefault.Primary.toArgb())
-                        setOnPrimary(ctx, AmoledDefault.OnPrimary.toArgb())
-                        setSecondary(ctx, AmoledDefault.Secondary.toArgb())
-                        setOnSecondary(ctx, AmoledDefault.OnSecondary.toArgb())
-                        setTertiary(ctx, AmoledDefault.Tertiary.toArgb())
-                        setOnTertiary(ctx, AmoledDefault.OnTertiary.toArgb())
-                        setBackground(ctx, AmoledDefault.Background.toArgb())
-                        setOnBackground(ctx, AmoledDefault.OnBackground.toArgb())
-                        setSurface(ctx, AmoledDefault.Surface.toArgb())
-                        setOnSurface(ctx, AmoledDefault.OnSurface.toArgb())
-                        setError(ctx, AmoledDefault.Error.toArgb())
-                        setOnError(ctx, AmoledDefault.OnError.toArgb())
-                        setOutline(ctx, AmoledDefault.Outline.toArgb())
-                        setDelete(ctx, AmoledDefault.Delete.toArgb())
-                        setEdit(ctx, AmoledDefault.Edit.toArgb())
-                        setComplete(ctx, AmoledDefault.Complete.toArgb())
-                    }
-                }
+        val themeColors: ThemeColors = when (selectedColorCustomisationMode) {
+            ColorCustomisationMode.DEFAULT -> when (selectedMode) {
+                DefaultThemes.LIGHT -> LightDefault
+                DefaultThemes.DARK -> DarkDefault
+                DefaultThemes.AMOLED -> AmoledDefault
             }
-            ColorCustomisationMode.NORMAL, ColorCustomisationMode.ALL -> {
-                setPrimary(ctx, AmoledDefault.Primary.toArgb())
-                setOnPrimary(ctx, AmoledDefault.OnPrimary.toArgb())
-                setSecondary(ctx, AmoledDefault.Secondary.toArgb())
-                setOnSecondary(ctx, AmoledDefault.OnSecondary.toArgb())
-                setTertiary(ctx, AmoledDefault.Tertiary.toArgb())
-                setOnTertiary(ctx, AmoledDefault.OnTertiary.toArgb())
-                setBackground(ctx, AmoledDefault.Background.toArgb())
-                setOnBackground(ctx, AmoledDefault.OnBackground.toArgb())
-                setSurface(ctx, AmoledDefault.Surface.toArgb())
-                setOnSurface(ctx, AmoledDefault.OnSurface.toArgb())
-                setError(ctx, AmoledDefault.Error.toArgb())
-                setOnError(ctx, AmoledDefault.OnError.toArgb())
-                setOutline(ctx, AmoledDefault.Outline.toArgb())
-                setDelete(ctx, AmoledDefault.Delete.toArgb())
-                setEdit(ctx, AmoledDefault.Edit.toArgb())
-                setComplete(ctx, AmoledDefault.Complete.toArgb())
-            }
+            ColorCustomisationMode.NORMAL,
+            ColorCustomisationMode.ALL -> AmoledDefault
         }
+
+        applyThemeColors(ctx, themeColors)
     }
+}
+
+
+private suspend fun applyThemeColors(ctx: Context, colors: ThemeColors) {
+    setPrimary(ctx, colors.Primary.toArgb())
+    setOnPrimary(ctx, colors.OnPrimary.toArgb())
+    setSecondary(ctx, colors.Secondary.toArgb())
+    setOnSecondary(ctx, colors.OnSecondary.toArgb())
+    setTertiary(ctx, colors.Tertiary.toArgb())
+    setOnTertiary(ctx, colors.OnTertiary.toArgb())
+    setBackground(ctx, colors.Background.toArgb())
+    setOnBackground(ctx, colors.OnBackground.toArgb())
+    setSurface(ctx, colors.Surface.toArgb())
+    setOnSurface(ctx, colors.OnSurface.toArgb())
+    setError(ctx, colors.Error.toArgb())
+    setOnError(ctx, colors.OnError.toArgb())
+    setOutline(ctx, colors.Outline.toArgb())
+    setDelete(ctx, colors.Delete.toArgb())
+    setEdit(ctx, colors.Edit.toArgb())
+    setComplete(ctx, colors.Complete.toArgb())
 }

@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.ReminderEntity
-import org.elnix.notes.data.settings.ReminderSettingsStore.getDefaultRemindersFlow
-import org.elnix.notes.data.settings.ReminderSettingsStore.setDefaultReminders
+import org.elnix.notes.data.settings.stores.ReminderSettingsStore.getDefaultRemindersFlow
+import org.elnix.notes.data.settings.stores.ReminderSettingsStore.setDefaultReminders
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.utils.ReminderBubble
 import org.elnix.notes.utils.ReminderPicker

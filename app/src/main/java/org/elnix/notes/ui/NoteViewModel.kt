@@ -17,7 +17,7 @@ import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.NoteRepository
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.ReminderRepository
-import org.elnix.notes.data.settings.ReminderSettingsStore
+import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import java.util.Date
 import kotlin.random.Random
 
@@ -105,6 +105,8 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         WorkManager.getInstance(context).cancelAllWork()
     }
 
+
+    // --- DEBUG FEATURES ---
     fun createFakeNotes(number: Int) {
         viewModelScope.launch {
             repeat(number) { it ->

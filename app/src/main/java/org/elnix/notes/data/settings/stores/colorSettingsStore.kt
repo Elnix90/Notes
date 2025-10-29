@@ -1,4 +1,4 @@
-package org.elnix.notes.data.settings
+package org.elnix.notes.data.settings.stores
 
 
 import android.content.Context
@@ -6,6 +6,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.flow.map
+import org.elnix.notes.data.settings.ColorCustomisationMode
+import org.elnix.notes.data.settings.DefaultThemes
+import org.elnix.notes.data.settings.dataStore
 import org.elnix.notes.ui.theme.AmoledDefault
 import org.elnix.notes.ui.theme.DarkDefault
 import org.elnix.notes.ui.theme.LightDefault
@@ -119,7 +122,7 @@ object ColorSettingsStore {
     }
 
 
-    suspend fun resetColors(ctx: Context,selectedColorCustomisationMode: ColorCustomisationMode , selectedMode: DefaultThemes) {
+    suspend fun resetColors(ctx: Context, selectedColorCustomisationMode: ColorCustomisationMode, selectedMode: DefaultThemes) {
         when(selectedColorCustomisationMode) {
             ColorCustomisationMode.DEFAULT -> {
                 when (selectedMode) {

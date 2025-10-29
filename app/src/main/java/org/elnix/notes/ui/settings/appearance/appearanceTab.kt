@@ -19,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.SettingsItem
 import org.elnix.notes.data.settings.ShowNavBarActions
-import org.elnix.notes.data.settings.UiSettingsStore
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsTitle
 

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
-import org.elnix.notes.data.settings.ColorSettingsStore
+import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.NotesTheme
 

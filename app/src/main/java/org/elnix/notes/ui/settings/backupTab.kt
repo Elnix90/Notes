@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.settings.ShowNavBarActions
-import org.elnix.notes.data.settings.UiSettingsStore.getShowBottomNavLabelsFlow
+import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowBottomNavLabelsFlow
 import org.elnix.notes.ui.helpers.ExportImportRow
 import org.elnix.notes.ui.helpers.NotesExportImportRow
 import org.elnix.notes.ui.helpers.SettingsTitle

@@ -1,10 +1,13 @@
-package org.elnix.notes.data.settings
+package org.elnix.notes.data.settings.stores
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.elnix.notes.data.settings.SwipeActionSettings
+import org.elnix.notes.data.settings.SwipeActions
+import org.elnix.notes.data.settings.dataStore
 
 object ActionSettingsStore {
     private val SWIPE_LEFT_ACTION = stringPreferencesKey("swipe_left_action")
@@ -15,9 +18,12 @@ object ActionSettingsStore {
     fun getActionSettingsFlow(ctx: Context): Flow<SwipeActionSettings> =
         ctx.dataStore.data.map { prefs ->
             SwipeActionSettings(
-                leftAction = prefs[SWIPE_LEFT_ACTION]?.let { SwipeActions.valueOf(it) } ?: SwipeActions.DELETE,
-                rightAction = prefs[SWIPE_RIGHT_ACTION]?.let { SwipeActions.valueOf(it) } ?: SwipeActions.EDIT,
-                clickAction = prefs[CLICK_ACTION]?.let { SwipeActions.valueOf(it) } ?: SwipeActions.COMPLETE
+                leftAction = prefs[SWIPE_LEFT_ACTION]?.let { SwipeActions.valueOf(it) }
+                    ?: SwipeActions.DELETE,
+                rightAction = prefs[SWIPE_RIGHT_ACTION]?.let { SwipeActions.valueOf(it) }
+                    ?: SwipeActions.EDIT,
+                clickAction = prefs[CLICK_ACTION]?.let { SwipeActions.valueOf(it) }
+                    ?: SwipeActions.COMPLETE
             )
         }
 

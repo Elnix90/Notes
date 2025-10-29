@@ -1,4 +1,4 @@
-package org.elnix.notes.data.settings
+package org.elnix.notes.data.settings.stores
 
 import android.content.Context
 import android.util.Log
@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.LockSettings
+import org.elnix.notes.data.settings.dataStore
 
 
 object LockSettingsStore {

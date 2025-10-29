@@ -35,7 +35,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.elnix.notes.data.settings.ShowNavBarActions
-import org.elnix.notes.data.settings.UiSettingsStore
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.security.LockScreen
 import org.elnix.notes.ui.theme.adjustBrightness

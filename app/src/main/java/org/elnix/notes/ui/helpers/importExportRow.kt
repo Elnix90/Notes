@@ -19,10 +19,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.elnix.notes.data.LockSettings
-import org.elnix.notes.data.settings.ColorSettingsStore
-import org.elnix.notes.data.settings.LockSettingsStore
+import org.elnix.notes.data.settings.stores.ColorSettingsStore
+import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.data.settings.ShowNavBarActions
-import org.elnix.notes.data.settings.UiSettingsStore
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.json.JSONObject
 import java.io.OutputStreamWriter

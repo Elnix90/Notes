@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(entities = [NoteEntity::class, ReminderEntity::class], version = 1)
-@TypeConverters(Converters::class) // ← Add this
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
     abstract fun reminderDao(): ReminderDao
@@ -28,5 +28,18 @@ abstract class AppDatabase : RoomDatabase() {
                 instance
             }
         }
+
+        fun reset(context: Context) {
+            // Close the current instance (if any)
+            INSTANCE?.close()
+            INSTANCE = null
+
+            // Delete the physical database file
+            context.deleteDatabase("notes_db")
+
+            // Recreate a fresh instance
+            get(context)
+        }
+
     }
 }

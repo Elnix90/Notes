@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.LockSettings
-import org.elnix.notes.data.settings.LockSettingsStore
+import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.data.settings.TimeoutOptions
 import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.helpers.ActionSelectorRow

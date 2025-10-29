@@ -2,10 +2,10 @@ package org.elnix.notes.ui.settings.debug
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -14,9 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import org.elnix.notes.data.AppDatabase
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.UserValidation
@@ -24,7 +25,10 @@ import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
 fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
-    var showConfirm by remember { mutableStateOf(false) }
+    var showConfirmCreate1000Notes by remember { mutableStateOf(false) }
+    var showConfirmDeleteAllNotes by remember { mutableStateOf(false) }
+
+    val ctx = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -61,36 +65,57 @@ fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
             }
 
 
-            Row(
+
+
+            OutlinedButton(
+                onClick = { showConfirmCreate1000Notes = true },
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                colors = AppObjectsColors.cancelButtonColors()
             ) {
+                Text(
+                    text = "Create 100 000 fake notes",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
 
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
-                OutlinedButton(
-                    onClick = { showConfirm = true },
-                    modifier = Modifier.weight(1f),
-                    colors = AppObjectsColors.cancelButtonColors()
-                ) {
-                    Text(
-                        text = "Create 100 000 fake notes",
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+            OutlinedButton(
+                onClick = { showConfirmDeleteAllNotes = true },
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppObjectsColors.cancelButtonColors()
+            ) {
+                Text(
+                    text = "Delete All Notes",
+                    color = MaterialTheme.colorScheme.error
+                )
             }
         }
     }
 
 
-    if (showConfirm) {
+    if (showConfirmCreate1000Notes) {
         UserValidation(
             message = "You are about to create 100 000 fake notes.\nThis may crash your device.",
             title = "Are you sure?",
-            onCancel = { showConfirm = false },
+            onCancel = { showConfirmCreate1000Notes = false },
             onAgree = {
-                showConfirm = false
+                showConfirmCreate1000Notes = false
                 vm.createFakeNotes(100_000)
+            }
+        )
+    }
+
+
+    if (showConfirmDeleteAllNotes) {
+        UserValidation(
+            message = "You are about to delete all your notes, the app will crash.\nThis can't be undone.",
+            title = "Are you sure?",
+            onCancel = { showConfirmDeleteAllNotes = false },
+            onAgree = {
+                showConfirmDeleteAllNotes = false
+                AppDatabase.reset(ctx)
+                error("All Notes deleted")
             }
         )
     }

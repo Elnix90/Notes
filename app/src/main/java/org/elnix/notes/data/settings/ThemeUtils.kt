@@ -2,6 +2,7 @@ package org.elnix.notes.data.settings
 
 import android.content.Context
 import androidx.compose.ui.graphics.toArgb
+import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.ui.theme.AmoledDefault
 import org.elnix.notes.ui.theme.DarkDefault
 import org.elnix.notes.ui.theme.LightDefault

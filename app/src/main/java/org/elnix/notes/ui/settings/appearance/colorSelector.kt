@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.settings.ColorCustomisationMode
-import org.elnix.notes.data.settings.ColorSettingsStore
+import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.data.settings.DefaultThemes
-import org.elnix.notes.data.settings.UiSettingsStore
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.applyDefaultThemeColors
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.ColorPickerRow

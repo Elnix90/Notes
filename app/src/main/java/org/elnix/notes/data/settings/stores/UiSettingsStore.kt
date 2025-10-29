@@ -1,4 +1,4 @@
-package org.elnix.notes.data.settings
+package org.elnix.notes.data.settings.stores
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -7,6 +7,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.helpers.ColorPickerMode
+import org.elnix.notes.data.settings.ColorCustomisationMode
+import org.elnix.notes.data.settings.DefaultThemes
+import org.elnix.notes.data.settings.ShowNavBarActions
+import org.elnix.notes.data.settings.dataStore
 
 object UiSettingsStore {
 

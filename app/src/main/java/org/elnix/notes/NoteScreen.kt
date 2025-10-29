@@ -40,10 +40,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
-import org.elnix.notes.data.settings.ActionSettingsStore
+import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.SwipeActionSettings
 import org.elnix.notes.data.settings.SwipeActions
-import org.elnix.notes.data.settings.UiSettingsStore
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.swipeActionColor
 import org.elnix.notes.data.settings.swipeActionIcon
 import org.elnix.notes.ui.NoteViewModel

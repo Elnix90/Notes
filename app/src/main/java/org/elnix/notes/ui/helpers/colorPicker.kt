@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.helpers.ColorPickerMode
-import org.elnix.notes.data.settings.UiSettingsStore.getColorPickerMode
-import org.elnix.notes.data.settings.UiSettingsStore.setColorPickerMode
+import org.elnix.notes.data.settings.stores.UiSettingsStore.getColorPickerMode
+import org.elnix.notes.data.settings.stores.UiSettingsStore.setColorPickerMode
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable

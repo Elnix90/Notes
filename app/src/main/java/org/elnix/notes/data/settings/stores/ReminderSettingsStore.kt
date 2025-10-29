@@ -1,11 +1,14 @@
-package org.elnix.notes.data.settings
+package org.elnix.notes.data.settings.stores
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.elnix.notes.data.settings.dataStore
 import org.elnix.notes.utils.ReminderOffset
+import org.json.JSONArray
+import org.json.JSONObject
 import kotlin.collections.forEach
 
 object ReminderSettingsStore {
@@ -14,7 +17,7 @@ object ReminderSettingsStore {
     fun getDefaultRemindersFlow(ctx: Context): Flow<List<ReminderOffset>> =
         ctx.dataStore.data.map { prefs ->
             prefs[DEFAULT_REMINDERS]?.let { jsonStr ->
-                val arr = org.json.JSONArray(jsonStr)
+                val arr = JSONArray(jsonStr)
                 List(arr.length()) { i ->
                     val obj = arr.getJSONObject(i)
                     ReminderOffset(
@@ -27,9 +30,9 @@ object ReminderSettingsStore {
         }
 
     suspend fun setDefaultReminders(ctx: Context, reminders: List<ReminderOffset>) {
-        val jsonStr = org.json.JSONArray().apply {
+        val jsonStr = JSONArray().apply {
             reminders.forEach { r ->
-                put(org.json.JSONObject().apply {
+                put(JSONObject().apply {
                     r.minutesFromNow?.let { put("minutes", it) }
                     r.hourOfDay?.let { put("hour", it) }
                     r.minute?.let { put("minute", it) }

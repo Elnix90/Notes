@@ -1,6 +1,6 @@
 package org.elnix.notes.ui.helpers
 
-import android.widget.Toast
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,41 +8,36 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Replay
-import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import org.elnix.notes.ui.theme.AppObjectsColors
-import kotlin.random.Random
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import org.elnix.notes.data.helpers.ColorPickerMode
+import org.elnix.notes.data.settings.UiSettingsStore.getColorPickerMode
+import org.elnix.notes.data.settings.UiSettingsStore.setColorPickerMode
 
 @Composable
-fun ColorPickerRow(label: String, defaultColor: Color, currentColor: Int, onColorPicked: (Int) -> Unit) {
+fun ColorPickerRow(label: String, defaultColor: Color, currentColor: Int, scope: CoroutineScope, onColorPicked: (Int) -> Unit) {
     var showPicker by remember { mutableStateOf(false) }
 
     Row(
@@ -82,6 +77,7 @@ fun ColorPickerRow(label: String, defaultColor: Color, currentColor: Int, onColo
             title = { Text(text = "Pick a $label color", color = MaterialTheme.colorScheme.onSurface) },
             text = {
                 ColorPicker(
+                    scope,
                     initialColor = Color(currentColor),
                     defaultColor = defaultColor,
                     onColorSelected = {
@@ -97,134 +93,71 @@ fun ColorPickerRow(label: String, defaultColor: Color, currentColor: Int, onColo
     }
 }
 
+
+
 @Composable
-fun ColorPicker(
+private fun ColorPicker(
+    scope: CoroutineScope,
     initialColor: Color,
     defaultColor: Color,
     onColorSelected: (Color) -> Unit
 ) {
-    var red by remember { mutableFloatStateOf(initialColor.red) }
-    var green by remember { mutableFloatStateOf(initialColor.green) }
-    var blue by remember { mutableFloatStateOf(initialColor.blue) }
-
-    val previousColors = remember { mutableStateListOf<Color>() }
-
     val ctx = LocalContext.current
+    val mode by getColorPickerMode(ctx).collectAsState(initial = ColorPickerMode.SLIDERS)
 
-
-    fun pushCurrentColor() {
-        val color = Color(red, green, blue)
-        previousColors.add(color)
-//        if (previousColors.size > 100) previousColors.removeAt(0)
-    }
-
-    fun popLastColor() {
-        if (previousColors.isNotEmpty()) {
-            val last = previousColors.removeAt(previousColors.lastIndex)
-            red = last.red
-            green = last.green
-            blue = last.blue
-        } else {
-            Toast.makeText(ctx,"No previous color", Toast.LENGTH_SHORT).show()
-        }
-    }
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { changeSliderMode(ctx, scope, mode) },
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text ="Preview",
-                modifier = Modifier.weight(3f),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyLarge
+            Text("Sliders", style = MaterialTheme.typography.bodyMedium)
+            Switch(
+                checked = mode == ColorPickerMode.GRADIENT,
+                onCheckedChange = { changeSliderMode(ctx, scope, mode) }
+            )
+            Text("Gradient", style = MaterialTheme.typography.bodyMedium)
+        }
+
+
+        when (mode) {
+            ColorPickerMode.SLIDERS -> SliderColorPicker(
+                initialColor = initialColor,
+                defaultColor = defaultColor,
+                onColorSelected = onColorSelected
             )
 
-            IconButton(
-               onClick = { popLastColor() },
-                modifier = Modifier.weight(1f),
-            ) {
-                Icon(
-                    Icons.Default.Replay,
-                    contentDescription = "Reset",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            IconButton(
-                onClick = {
-                    pushCurrentColor()
-                    red = Random.nextFloat()
-                    green = Random.nextFloat()
-                    blue = Random.nextFloat()
-
-
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    Icons.Default.Shuffle,
-                    contentDescription = "Random Color",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
+            ColorPickerMode.GRADIENT -> GradientColorPicker(
+                initialColor = initialColor,
+                defaultColor = defaultColor,
+                onColorSelected = onColorSelected
+            )
         }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .background(Color(red, green, blue))
-                .border(1.dp, MaterialTheme.colorScheme.outline)
-        )
+    }
+}
 
 
-        SliderWithLabel(red, Color.Red) {
-            red = it
-            pushCurrentColor()
-        }
-        SliderWithLabel(green, Color.Green) {
-            green = it
-            pushCurrentColor()
-        }
-        SliderWithLabel(blue, Color.Blue) {
-            blue = it
-            pushCurrentColor()
-        }
-
-        Spacer(Modifier.height(12.dp))
-        Row (
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ){
-            Button(
-                onClick = { onColorSelected(Color(red, green, blue)) },
-                modifier = Modifier.weight(3f),
-                colors = AppObjectsColors.buttonColors()
-            ) {
-                Text(
-                    text = "Apply",
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            }
 
 
-            OutlinedButton(
-                onClick = {
-                    red = defaultColor.red
-                    green = defaultColor.green
-                    blue = defaultColor.blue
-                },
-                modifier = Modifier.weight(2f),
-                colors = AppObjectsColors.cancelButtonColors(MaterialTheme.colorScheme.surface)
-            ) {
-                Text(
-                    text = "Reset",
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        }
+// --- Utility: convert color → #RRGGBBAA ---
+fun toHexWithAlpha(color: Color): String {
+    val argb = color.toArgb()
+    val rgb = argb and 0xFFFFFF
+    val alpha = (color.alpha * 255).toInt().coerceIn(0, 255)
+    return "#${"%06X".format(rgb)}${"%02X".format(alpha)}"
+}
+
+
+private fun changeSliderMode(ctx: Context, scope: CoroutineScope, mode: ColorPickerMode) {
+    scope.launch{
+        setColorPickerMode(ctx, if (mode == ColorPickerMode.SLIDERS) ColorPickerMode.GRADIENT else ColorPickerMode.SLIDERS)
     }
 }

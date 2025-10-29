@@ -15,8 +15,8 @@ android {
         applicationId = "org.elnix.notes"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1-alpha"
+        versionCode = 3
+        versionName = "0.3-alpha"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

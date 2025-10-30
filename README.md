@@ -18,7 +18,7 @@
 ## 🚀 Roadmap
 
 * [x] Enable default light/dark or more custom or all colors
-* [ ] Add preset colors in color pickers
+* [x] Add preset colors in color pickers
 * [ ] Note attachments (images, audio)
 * [ ] Notes reordering
 * [ ] Notes resizable

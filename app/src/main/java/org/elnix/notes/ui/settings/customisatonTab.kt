@@ -20,7 +20,9 @@ import org.elnix.notes.data.settings.stores.ActionSettingsStore.getActionSetting
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setClickAction
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setSwipeLeftAction
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setSwipeRightAction
+import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowDeleteButton
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowNotesNumber
+import org.elnix.notes.data.settings.stores.UiSettingsStore.setShowDeleteButton
 import org.elnix.notes.data.settings.stores.UiSettingsStore.setShowNotesNumber
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsTitle
@@ -31,6 +33,8 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
     val settings by getActionSettingsFlow(ctx).collectAsState(initial = SwipeActionSettings())
 
     val showNotesNumber by getShowNotesNumber(ctx).collectAsState(initial = true)
+    val showDeleteButton by getShowDeleteButton(ctx).collectAsState(initial = true)
+
 
     Column(
         modifier = Modifier
@@ -75,6 +79,13 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             stringResource(R.string.show_notes_number),
         ) {
             scope.launch { setShowNotesNumber(ctx, it) }
+        }
+
+        SwitchRow(
+            showDeleteButton,
+            stringResource(R.string.show_delete_button),
+        ) {
+            scope.launch { setShowDeleteButton(ctx, it) }
         }
     }
 }

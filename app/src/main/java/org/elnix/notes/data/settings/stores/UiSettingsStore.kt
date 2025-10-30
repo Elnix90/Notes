@@ -78,4 +78,12 @@ object UiSettingsStore {
         ctx.dataStore.edit { it[DEBUG_MODE_ENABLED] = state}
     }
 
+
+    private val SHOW_DELETE_BUTTON = booleanPreferencesKey("show_delete_button")
+    fun getShowDeleteButton(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[SHOW_DELETE_BUTTON] ?: false }
+
+    suspend fun setShowDeleteButton(ctx: Context, state: Boolean) {
+        ctx.dataStore.edit { it[SHOW_DELETE_BUTTON] = state}
+    }
+
 }

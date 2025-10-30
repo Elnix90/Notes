@@ -94,4 +94,5 @@
     <string name="text_color">Couleur du texte</string>
     <string name="timeout">Délai d\'attente</string>
     <string name="default_text">Defaut</string>
+    <string name="show_delete_button">Afficher boutton supprimer</string>
 </resources>

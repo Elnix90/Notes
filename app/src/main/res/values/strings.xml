@@ -93,4 +93,5 @@
     <string name="gradient">Gradient</string>
     <string name="timeout">Timeout</string>
     <string name="default_text">Default</string>
+    <string name="show_delete_button">Show delete button</string>
 </resources>

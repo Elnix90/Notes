@@ -192,6 +192,11 @@ fun SwipeableNoteCard(
             onClick = {
                 performAction(actionSettings.clickAction, vm, navController, note, scope)
             },
+            onDeleteButtonClick = {
+                scope.launch {
+                    vm.delete(note)
+                }
+            },
             modifier = Modifier.offset(x = swipeOffset.dp)
         )
     }

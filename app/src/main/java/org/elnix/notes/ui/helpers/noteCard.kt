@@ -1,19 +1,45 @@
 package org.elnix.notes.ui.helpers
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.NoteEntity
+import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowDeleteButton
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun NoteCard(note: NoteEntity, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun NoteCard(
+    note: NoteEntity,
+    onClick: () -> Unit,
+    onDeleteButtonClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val ctx = LocalContext.current
+    val showDeleteButton by getShowDeleteButton(ctx).collectAsState(initial = true)
+
+
     Card(
         modifier = modifier
             .padding(horizontal = 12.dp, vertical = 6.dp)
@@ -28,8 +54,7 @@ fun NoteCard(note: NoteEntity, onClick: () -> Unit, modifier: Modifier = Modifie
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { onClick() }
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(16.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -47,6 +72,22 @@ fun NoteCard(note: NoteEntity, onClick: () -> Unit, modifier: Modifier = Modifie
                         alpha = if (note.isCompleted) 0.5f else 1f
                     )
                 )
+            }
+
+            if(showDeleteButton) {
+
+                Spacer(Modifier.weight(1f))
+
+                IconButton(
+                    onClick = { onDeleteButtonClick() },
+                    shape = CircleShape
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
     }

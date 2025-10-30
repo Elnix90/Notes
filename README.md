@@ -26,7 +26,7 @@
 * [ ] Search & tags
 * [ ] Encrypted Notes database
 * [ ] Backup encryption
-* [ ] Translations
+* [x] Translations
 * [ ] Add due date
 * [ ] Show how many days / hours / min left
 ---

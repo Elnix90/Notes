@@ -17,7 +17,8 @@
 
 ## 🚀 Roadmap
 
-* [ ] Enable default light/dark or more custom or all colors
+* [x] Enable default light/dark or more custom or all colors
+* [ ] Add preset colors in color pickers
 * [ ] Note attachments (images, audio)
 * [ ] Notes reordering
 * [ ] Notes resizable
@@ -26,6 +27,7 @@
 * [ ] Encrypted Notes database
 * [ ] Backup encryption
 * [ ] Translations
+* [ ] Add due date
 * [ ] Show how many days / hours / min left
 ---
 

@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
@@ -127,7 +128,7 @@ fun NoteEditorScreen(
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
-            label = { Text("Title") },
+            label = { Text(stringResource(R.string.title)) },
             modifier = Modifier.fillMaxWidth(),
             colors = AppObjectsColors.outlinedTextFieldColors()
         )
@@ -135,12 +136,15 @@ fun NoteEditorScreen(
         OutlinedTextField(
             value = desc,
             onValueChange = { desc = it },
-            label = { Text("Description") },
+            label = { Text(stringResource(R.string.description)) },
             modifier = Modifier.fillMaxWidth(),
             colors = AppObjectsColors.outlinedTextFieldColors()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
+
+
+        val reminderText = stringResource(R.string.reminder)
 
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -157,7 +161,7 @@ fun NoteEditorScreen(
                                 scheduleReminderNotification(
                                     context,
                                     updatedReminder,
-                                    title = title.ifBlank { "Reminder" }
+                                    title = title.ifBlank { reminderText }
                                 )
                             } else {
                                 cancelReminderNotification(context, reminder.id)
@@ -186,7 +190,7 @@ fun NoteEditorScreen(
                         scheduleReminderNotification(
                             context,
                             reminderEntity.copy(id = id),
-                            title = title.ifBlank { "Reminder" }
+                            title = title.ifBlank { reminderText }
                         )
                     }
                 }
@@ -198,8 +202,6 @@ fun NoteEditorScreen(
         var isCompleted by remember { mutableStateOf(note?.isCompleted ?: false) }
 
         Surface(
-//            modifier = Modifier
-//                .padding(vertical = 8.dp),
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface
         ) {
@@ -222,7 +224,7 @@ fun NoteEditorScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = "Completed",
+                    text = stringResource(R.string.completed),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -268,7 +270,7 @@ fun NoteEditorScreen(
                 modifier = Modifier.weight(1.5f)
             ) {
                 Text(
-                    text = "Save",
+                    text = stringResource(R.string.save),
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -292,7 +294,7 @@ fun NoteEditorScreen(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Cancel",
+                    text = stringResource(R.string.cancel),
                     color = MaterialTheme.colorScheme.error
                 )
             }

@@ -29,9 +29,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.elnix.notes.R
 import org.elnix.notes.data.helpers.ColorPickerMode
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getColorPickerMode
 import org.elnix.notes.data.settings.stores.UiSettingsStore.setColorPickerMode
@@ -75,7 +77,7 @@ fun ColorPickerRow(label: String, defaultColor: Color, currentColor: Int, scope:
     if (showPicker) {
         AlertDialog(
             onDismissRequest = { showPicker = false },
-            title = { Text(text = "Pick a $label color", color = MaterialTheme.colorScheme.onSurface) },
+            title = { Text(text = "${stringResource(R.string.pick_a)} $label ${stringResource(R.string.color_text_literal)}", color = MaterialTheme.colorScheme.onSurface) },
             text = {
                 ColorPicker(
                     scope,
@@ -121,7 +123,7 @@ private fun ColorPicker(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Sliders",
+                text = stringResource(R.string.sliders),
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyMedium
             )
@@ -130,7 +132,7 @@ private fun ColorPicker(
                 onCheckedChange = { changeSliderMode(ctx, scope, mode) }
             )
             Text(
-                text = "Gradient",
+                text = stringResource(R.string.gradient),
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyMedium
             )

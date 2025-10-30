@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import org.elnix.notes.R
 import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowBottomNavLabelsFlow
 import org.elnix.notes.ui.helpers.ExportImportRow
@@ -20,7 +22,7 @@ fun BackupTab(ctx: Context, onBack: (() -> Unit)) {
     val showNavLabels by getShowBottomNavLabelsFlow(ctx).collectAsState(initial = ShowNavBarActions.ALWAYS)
 
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        SettingsTitle(title = "Backup / Restore", onBack = onBack)
+        SettingsTitle(title = stringResource(R.string.verification), onBack = onBack)
 
         ExportImportRow(showNavLabels)
         NotesExportImportRow(ctx)

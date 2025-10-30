@@ -57,8 +57,8 @@ fun LanguageTab(onBack: () -> Unit) {
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
+                .fillMaxSize(),
+//                .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
@@ -72,8 +72,7 @@ fun LanguageTab(onBack: () -> Unit) {
                                 applyLocale(tag)
                                 selectedTag = tag
                             }
-                        }
-                        .padding(vertical = 12.dp),
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(
@@ -101,8 +100,7 @@ fun LanguageTab(onBack: () -> Unit) {
                             applyLocale(null)
                             selectedTag = null
                         }
-                    }
-                    .padding(vertical = 12.dp),
+                    },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 RadioButton(

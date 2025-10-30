@@ -6,25 +6,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.elnix.notes.R
 import org.elnix.notes.data.LockSettings
-import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.data.settings.TimeoutOptions
+import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsOutlinedField
@@ -89,7 +87,7 @@ fun SecurityTab(onBack: (() -> Unit)) {
         }
 
 
-        var selectedUnit by remember { mutableStateOf(TimeoutOptions.MINUTES) }
+        val selectedUnit by LockSettingsStore.getUnitSelected(ctx).collectAsState(initial = TimeoutOptions.MINUTES)
 
 
         // Conversion multiplier to seconds
@@ -109,21 +107,21 @@ fun SecurityTab(onBack: (() -> Unit)) {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color =MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
+                    color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(horizontal = 8.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(0.dp)
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             SettingsOutlinedField(
                 value = displayedValue,
-                label = "Timeout",
+                label = ctx.getString(R.string.timeout),
                 minValue = 0,
                 maxValue = Int.MAX_VALUE,
                 keyboardType = KeyboardType.Number,
                 modifier = Modifier
-                    .wrapContentWidth()
+                    .weight(1f)
                     .background(
                         color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
                         shape = RoundedCornerShape(12.dp)
@@ -151,7 +149,7 @@ fun SecurityTab(onBack: (() -> Unit)) {
                 textColor = MaterialTheme.colorScheme.onSecondary,
                 optionLabel = { it.name.lowercase().replaceFirstChar { c -> c.uppercase() } }
             ) { newOption ->
-                selectedUnit = newOption
+                scope.launch{ LockSettingsStore.setUnitSelected(ctx, newOption) }
             }
         }
     }

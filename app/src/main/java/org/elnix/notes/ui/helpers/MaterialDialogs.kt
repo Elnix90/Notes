@@ -16,6 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import org.elnix.notes.R
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderOffset
 import java.util.Calendar
@@ -30,7 +32,7 @@ fun StyledReminderDialogs(
     var showTime by remember { mutableStateOf(false) }
 
     Button(onClick = { showDate = true }) {
-        Text("Add Reminder")
+        Text(stringResource(R.string.add_reminder))
     }
 
     if (showDate) {
@@ -48,10 +50,10 @@ fun StyledReminderDialogs(
                         showDate = false
                         showTime = true
                     }
-                ) { Text("Next") }
+                ) { Text(stringResource(R.string.next)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDate = false }) { Text("Cancel") }
+                TextButton(onClick = { showDate = false }) { Text(stringResource(R.string.cancel)) }
             },
             colors = AppObjectsColors.datePickerColors()
         ) {
@@ -81,15 +83,15 @@ fun StyledReminderDialogs(
                             )
                         )
                     }
-                ) { Text("OK") }
+                ) { Text(stringResource(R.string.ok)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     showTime = false
                     showDate = true
-                }) { Text("Previous") }
+                }) { Text(stringResource(R.string.previous)) }
             },
-            title = { Text("Select Time") },
+            title = { Text(stringResource(R.string.select_time)) },
             text = { TimePicker(state = timePickerState) },
             containerColor = MaterialTheme.colorScheme.surface,
             iconContentColor = MaterialTheme.colorScheme.onSurface,

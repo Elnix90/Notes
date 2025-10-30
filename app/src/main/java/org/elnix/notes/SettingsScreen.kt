@@ -96,12 +96,12 @@ fun SettingsListScreen(navController: NavController) {
         }
 
         SettingsItem(
-            title = stringResource(R.string.settings),
+            title = stringResource(R.string.appearance),
             icon = Icons.Default.DarkMode
         ) { navController.navigate(Routes.Settings.APPEARANCE) }
 
         SettingsItem(
-            title = stringResource(R.string.customistation),
+            title = stringResource(R.string.customisation),
             icon = Icons.Default.DashboardCustomize
         ) { navController.navigate(Routes.Settings.CUSTOMISATION) }
 

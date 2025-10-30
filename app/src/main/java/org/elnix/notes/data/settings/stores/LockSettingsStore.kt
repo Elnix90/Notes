@@ -2,10 +2,15 @@ package org.elnix.notes.data.settings.stores
 
 import android.content.Context
 import android.util.Log
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.LockSettings
+import org.elnix.notes.data.settings.TimeoutOptions
 import org.elnix.notes.data.settings.dataStore
 
 
@@ -34,6 +39,18 @@ object LockSettingsStore {
             prefs[LOCK_TIMEOUT_SECONDS] = settings.lockTimeoutSeconds
             prefs[LAST_UNLOCK_TIMESTAMP] = settings.lastUnlockTimestamp
         }
+    }
+
+    private val SELECTED_UNIT = stringPreferencesKey("selected_unit")
+
+    fun getUnitSelected(ctx: Context) : Flow<TimeoutOptions> =
+        ctx.dataStore.data.map { prefs ->
+            prefs[SELECTED_UNIT]?.let { TimeoutOptions.valueOf(it) }
+                ?: TimeoutOptions.MINUTES
+        }
+
+    suspend fun setUnitSelected(ctx: Context, state: TimeoutOptions) {
+        ctx.dataStore.edit { it[SELECTED_UNIT] = state.name }
     }
 }
 

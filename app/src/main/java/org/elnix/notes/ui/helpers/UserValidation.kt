@@ -14,14 +14,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import org.elnix.notes.R
 
 @Composable
 fun UserValidation(
     title: String? = null,
     message: String,
-    validateText: String = "OK",
-    cancelText: String = "Cancel",
+    validateText: String = stringResource(R.string.ok),
+    cancelText: String = stringResource(R.string.cancel),
     onCancel: () -> Unit,
     onAgree: () -> Unit
 ) {

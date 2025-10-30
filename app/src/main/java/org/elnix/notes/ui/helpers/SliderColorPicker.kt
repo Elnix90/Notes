@@ -29,7 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import org.elnix.notes.R
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
 import kotlin.random.Random
@@ -82,7 +84,7 @@ fun SliderColorPicker(
             ) {
                 Icon(
                     Icons.Default.Replay,
-                    contentDescription = "Reset",
+                    contentDescription = stringResource(R.string.reset),
                     tint = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (canPopLastColor) 1f else 0.5f)
                 )
             }
@@ -119,24 +121,24 @@ fun SliderColorPicker(
         }
 
 
-        SliderWithLabel(label = "Red :", value = red, color = Color.Red) {
+        SliderWithLabel(label = "${stringResource(R.string.red)} :", value = red, color = Color.Red) {
             red = it
             pushCurrentColor()
             hexText = toHexWithAlpha(color)
         }
-        SliderWithLabel(label = "Green :", value = green, color = Color.Green) {
+        SliderWithLabel(label = "${stringResource(R.string.green)} :", value = green, color = Color.Green) {
             green = it
             pushCurrentColor()
             hexText = toHexWithAlpha(color)
         }
-        SliderWithLabel(label = "Blue :", value = blue, color = Color.Blue) {
+        SliderWithLabel(label = "${stringResource(R.string.blue)} :", value = blue, color = Color.Blue) {
             blue = it
             pushCurrentColor()
             hexText = toHexWithAlpha(color)
         }
 
         SliderWithLabel(
-            label = "Transparency",
+            label = stringResource(R.string.transparency),
             showValue = false,
             value = alpha,
             color = MaterialTheme.colorScheme.primary
@@ -158,7 +160,7 @@ fun SliderColorPicker(
                 colors = AppObjectsColors.buttonColors()
             ) {
                 Text(
-                    text = "Apply",
+                    text = stringResource(R.string.apply),
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -175,7 +177,7 @@ fun SliderColorPicker(
                 colors = AppObjectsColors.cancelButtonColors(MaterialTheme.colorScheme.surface)
             ) {
                 Text(
-                    text = "Reset",
+                    text = stringResource(R.string.reset),
                     color = MaterialTheme.colorScheme.error
                 )
             }

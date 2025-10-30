@@ -21,9 +21,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.launch
+import org.elnix.notes.R
 import org.elnix.notes.data.LockSettings
 import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.security.BiometricManagerHelper
@@ -74,7 +76,7 @@ fun LockScreen(activity: FragmentActivity, onUnlock: () -> Unit) {
             when {
                 authFailed -> {
                     Text(
-                        "Authentication failed or cancelled",
+                        stringResource(R.string.authentication_cancelled),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.titleMedium
                     )
@@ -95,12 +97,12 @@ fun LockScreen(activity: FragmentActivity, onUnlock: () -> Unit) {
                             )
                         }
                     }) {
-                        Text("Retry")
+                        Text(stringResource(R.string.retry))
                     }
                 }
                 isAuthenticating -> {
                     Text(
-                        "Authenticating...",
+                        stringResource(R.string.authenticating),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -135,12 +137,13 @@ private fun startAuthentication(
         return
     }
 
+
     scope.launch {
         BiometricManagerHelper.authenticateUser(
             activity,
             settings.useBiometrics,
             settings.useDeviceCredential,
-            title = "Unlock Notes",
+            title = ctx.getString(R.string.unlock_notes),
             onSuccess = {
                 scope.launch {
                     LockSettingsStore.updateLockSettings(

@@ -13,10 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.elnix.notes.R
+import org.elnix.notes.Routes
 import org.elnix.notes.SettingsItem
 import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.stores.UiSettingsStore
@@ -40,7 +43,7 @@ fun AppearanceTab(
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SettingsTitle(title = "Appearance", onBack = onBack)
+        SettingsTitle(title = stringResource(R.string.appearance), onBack = onBack)
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -48,14 +51,14 @@ fun AppearanceTab(
         ) {
 
             SettingsItem(
-                title = "Color Selector",
+                title = stringResource(R.string.color_selector),
                 icon = Icons.Default.ColorLens
-            ) { navController.navigate("settings/appearance/colors") }
+            ) { navController.navigate(Routes.Settings.COLORS) }
 
             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
             ActionSelectorRow(
-                label = "Show Navigation Bar Labels",
+                label = stringResource(R.string.show_navigation_bar_labels),
                 options = ShowNavBarActions.entries,
                 selected = showNavbarLabel,
                 optionLabel = { it.name}

@@ -28,9 +28,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.elnix.notes.R
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore.getDefaultRemindersFlow
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore.setDefaultReminders
@@ -56,7 +58,7 @@ fun RemindersTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
             Modifier.background(MaterialTheme.colorScheme.background)
         ) {
             SettingsTitle(
-                title ="Notifications / Reminders",
+                title = stringResource(R.string.notification_reminders),
                 helpIcon = { showHelpDialog = true },
                 onBack = onBack
             )
@@ -122,13 +124,13 @@ fun RemindersTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
             },
             title = {
                 Text(
-                    text = "Reminders help",
+                    text = stringResource(R.string.reminders_help),
                     color = MaterialTheme.colorScheme.onSurface
                 )
             },
             text = {
                 Text(
-                    text = "Those are the default reminders that automatically add when creating a new note, to avoid creating them again and again. You can for example set a reminder to 19h, to rapidly create a note and add a reminder when you return home",
+                    text = stringResource(R.string.reminders_help_text),
                     color = MaterialTheme.colorScheme.onSurface
                 )
             },

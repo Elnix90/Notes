@@ -13,7 +13,6 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Re-apply saved app language early
         val store = LanguageSettingsStore()
         CoroutineScope(Dispatchers.Default).launch {
             val tag = store.getLanguageTag(this@MyApplication)

@@ -35,8 +35,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import org.elnix.notes.R
 import org.elnix.notes.ui.theme.AppObjectsColors
 import android.graphics.Color as AndroidColor
 
@@ -175,7 +177,7 @@ fun GradientColorPicker(
 
 
         SliderWithLabel(
-            label = "Transparency",
+            label = stringResource(R.string.transparency),
             showValue = false,
             value = alpha,
             color = MaterialTheme.colorScheme.primary
@@ -196,7 +198,7 @@ fun GradientColorPicker(
                     }
                 }
             },
-            label = { Text("HEX (with alpha)") },
+            label = { Text("HEX") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
@@ -210,7 +212,7 @@ fun GradientColorPicker(
                 onClick = { onColorSelected(selectedColor.copy(alpha = alpha)) },
                 modifier = Modifier.weight(3f)
             ) {
-                Text("Apply")
+                Text(stringResource(R.string.apply), color = MaterialTheme.colorScheme.onPrimary)
             }
 
             OutlinedButton(
@@ -225,7 +227,7 @@ fun GradientColorPicker(
                 modifier = Modifier.weight(2f),
                 colors = AppObjectsColors.cancelButtonColors(MaterialTheme.colorScheme.surface)
             ) {
-                Text("Reset", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
             }
         }
     }

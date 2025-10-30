@@ -17,11 +17,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.StyledReminderDialogs
 import java.util.Calendar
 
@@ -75,7 +77,7 @@ fun ReminderPicker(onPicked: (ReminderOffset) -> Unit) {
             }
         ) {
             Text(
-                text = "Allow Notifications permission",
+                text = stringResource(R.string.allow_notif_perm),
                 color = MaterialTheme.colorScheme.onBackground
             )
         }

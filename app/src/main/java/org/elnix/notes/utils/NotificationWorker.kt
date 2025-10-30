@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import org.elnix.notes.R
 import kotlin.random.Random
 
 class NotificationWorker(
@@ -26,8 +27,10 @@ class NotificationWorker(
         )
         notificationManager.createNotificationChannel(channel)
 
+        val taskReminderText = applicationContext.getString(R.string.task_reminder)
+
         val notification = NotificationCompat.Builder(applicationContext, "tasks_channel")
-            .setContentTitle("Task Reminder")
+            .setContentTitle(taskReminderText)
             .setContentText(title)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .build()

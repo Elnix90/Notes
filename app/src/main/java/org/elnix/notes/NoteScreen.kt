@@ -36,13 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
-import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.SwipeActionSettings
 import org.elnix.notes.data.settings.SwipeActions
+import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.swipeActionColor
 import org.elnix.notes.data.settings.swipeActionIcon
@@ -77,7 +78,7 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "No notes yet.\nTap + to create one!",
+                text = stringResource(R.string.no_notes_yet),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
                 textAlign = TextAlign.Center
@@ -89,7 +90,7 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
         ){
             if (showNotesNumber) {
                 Text(
-                    text = "Note number : ${notes.size}",
+                    text = "${stringResource(R.string.note_number)} : ${notes.size}",
                     color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )

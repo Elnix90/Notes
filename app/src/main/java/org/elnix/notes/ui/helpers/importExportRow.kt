@@ -14,14 +14,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.elnix.notes.R
 import org.elnix.notes.data.LockSettings
+import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.data.settings.stores.LockSettingsStore
-import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.json.JSONObject
@@ -38,7 +40,7 @@ fun ExportImportRow(
     val importLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             if (uri == null) {
-                Toast.makeText(ctx, "No file selected", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, ctx.getString(R.string.no_file_selected), Toast.LENGTH_SHORT).show()
                 Log.w("ImportSettings", "User canceled file selection.")
                 return@rememberLauncherForActivityResult
             }
@@ -50,7 +52,7 @@ fun ExportImportRow(
                     }
 
                     if (json.isNullOrBlank()) {
-                        Toast.makeText(ctx, "Invalid or empty file", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(ctx, ctx.getString(R.string.invalid_or_empty_file), Toast.LENGTH_SHORT).show()
                         Log.e("ImportSettings", "JSON content was empty or null.")
                         return@launch
                     }
@@ -113,11 +115,11 @@ fun ExportImportRow(
                         }
                     }
 
-                    Toast.makeText(ctx, "Settings imported successfully", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, ctx.getString(R.string.settings_imported_successfully), Toast.LENGTH_LONG).show()
                     Log.i("ImportSettings", "Import completed successfully.")
                 } catch (e: Exception) {
                     Log.e("ImportSettings", "Error during import", e)
-                    Toast.makeText(ctx, "Import failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, "${ctx.getString(R.string.import_failed)}: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -126,7 +128,7 @@ fun ExportImportRow(
     val exportLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
             if (uri == null) {
-                Toast.makeText(ctx, "Export canceled", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, ctx.getString(R.string.export_cancelled), Toast.LENGTH_SHORT).show()
                 Log.w("ExportSettings", "User canceled export.")
                 return@rememberLauncherForActivityResult
             }
@@ -171,11 +173,11 @@ fun ExportImportRow(
                         }
                     }
 
-                    Toast.makeText(ctx, "Settings exported successfully", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, ctx.getString(R.string.settings_exported_successfully), Toast.LENGTH_LONG).show()
                     Log.i("ExportSettings", "Export completed successfully.")
                 } catch (e: Exception) {
                     Log.e("ExportSettings", "Error during export", e)
-                    Toast.makeText(ctx, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, "${ctx.getString(R.string.export_failed)}: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -196,7 +198,7 @@ fun ExportImportRow(
             },
             colors = AppObjectsColors.buttonColors()
         ) {
-            Text("Export Settings")
+            Text(stringResource(R.string.export_settings))
         }
 
         Button(
@@ -210,7 +212,7 @@ fun ExportImportRow(
             },
             colors = AppObjectsColors.buttonColors()
         ) {
-            Text("Import Settings")
+            Text(stringResource(R.string.import_settings))
         }
     }
 }

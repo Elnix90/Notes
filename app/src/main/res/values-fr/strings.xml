@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Notes</string>
+    <string name="settings_language_title">Langue de l\'application</string>
+    <string name="language_english">Anglais</string>
+    <string name="language_french">Français</string>
+    <string name="notes">Notes</string>
+    <string name="settings">Paramètres</string>
+    <string name="customistation">Customisation</string>
+    <string name="notification_reminders">Notifiactions / Rappels</string>
+    <string name="security_privacy">Sécurité / Confidentialité</string>
+    <string name="system_default">Défaut</string>
+    <string name="backup_restore">Sauvegardes / Restaurer</string>
+    <string name="debug">Debug</string>
+    <string name="source_code">Code Source</string>
+    <string name="not_yet_translated">Pas encore traduis</string>
+    <string name="check_for_update">Rechercher des mises à jour</string>
+    <string name="report_a_bug">Signaler un Problème</string>
+    <string name="version">Version</string>
+    <string name="are_you_sure">Êtes vous sûr?</string>
+    <string name="debug_mode_will_be_enabled">Le mode debuggage va être activé.\\nNe l\'activez que si vous savez ce que vous faites.</string>
+    <string name="coming_soon">Bientôt disponible...</string>
+</resources>

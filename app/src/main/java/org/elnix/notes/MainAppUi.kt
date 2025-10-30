@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavGraphBuilder
@@ -55,6 +56,7 @@ object Routes {
         const val SECURITY = "settings/security"
         const val BACKUP = "settings/backup"
         const val DEBUG = "settings/debug"
+        const val LANGUAGE = "settings/language"
 
         object DebugSub {
             const val REMINDERS = "settings/debug/reminders"
@@ -146,6 +148,7 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteV
         composable(Routes.Settings.REMINDER) { RemindersSettingsScreen(navController) }
         composable(Routes.Settings.SECURITY) { SecuritySettingsScreen(navController) }
         composable(Routes.Settings.BACKUP) { BackupSettingsScreen(navController) }
+        composable(Routes.Settings.LANGUAGE) { LanguageSettingsScreen(navController) }
 
         composable(Routes.Settings.DEBUG) { DebugSettingsScreen(navController) }
         // Debug sub-settings
@@ -163,8 +166,8 @@ fun BottomNav(navController: NavHostController) {
         .collectAsState(initial = ShowNavBarActions.ALWAYS)
 
     val items = listOf(
-        BottomNavItem(Routes.NOTES, "Notes", Icons.AutoMirrored.Filled.FormatListBulleted),
-        BottomNavItem(Routes.Settings.ROOT, "Settings", Icons.Default.Settings)
+        BottomNavItem(Routes.NOTES, stringResource(R.string.notes), Icons.AutoMirrored.Filled.FormatListBulleted),
+        BottomNavItem(Routes.Settings.ROOT, stringResource(R.string.settings), Icons.Default.Settings)
     )
 
     NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {

@@ -1,8 +1,13 @@
 package org.elnix.notes
 
 import android.R.attr.versionName
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
@@ -59,6 +65,7 @@ import org.elnix.notes.ui.settings.debug.DebugTab
 import org.elnix.notes.ui.settings.debug.NotesDebugTab
 import org.elnix.notes.ui.settings.debug.OtherDebugTab
 import org.elnix.notes.ui.settings.debug.RemindersDebugTab
+import org.elnix.notes.ui.settings.language.LanguageTab
 import org.elnix.notes.ui.settings.security.SecurityTab
 import org.elnix.notes.ui.theme.adjustBrightness
 
@@ -84,49 +91,53 @@ fun SettingsListScreen(navController: NavController) {
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        SettingsTitle(title = "Settings") {
+        SettingsTitle(title = stringResource(R.string.settings)) {
             navController.popBackStack()
         }
 
         SettingsItem(
-            title = "Appearance",
+            title = stringResource(R.string.settings),
             icon = Icons.Default.DarkMode
         ) { navController.navigate(Routes.Settings.APPEARANCE) }
 
         SettingsItem(
-            title = "Customisation",
+            title = stringResource(R.string.customistation),
             icon = Icons.Default.DashboardCustomize
         ) { navController.navigate(Routes.Settings.CUSTOMISATION) }
 
         SettingsItem(
-            title = "Notifications / Reminders",
+            title = stringResource(R.string.notification_reminders),
             icon = Icons.Default.Alarm
         ) { navController.navigate(Routes.Settings.REMINDER) }
 
         SettingsItem(
-            title = "Security",
+            title = stringResource(R.string.security_privacy),
             icon = Icons.Default.Shield
         ) { navController.navigate(Routes.Settings.SECURITY) }
 
         SettingsItem(
-            title = "Backup / Restore",
+            title = stringResource(R.string.backup_restore),
             icon = Icons.Default.Backup,
             enabled = false,
             comingSoon = true
         ) { navController.navigate(Routes.Settings.BACKUP) }
 
         SettingsItem(
-            title = "App language",
+            title = stringResource(R.string.settings_language_title),
             icon = Icons.Default.Language,
-            enabled = false,
-            comingSoon = true,
-            onClick = {}
+            onClick = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    openSystemLanguageSettings(ctx)
+                } else {
+                    navController.navigate(Routes.Settings.LANGUAGE)
+                }
+            }
         )
 
 
         if (isDebugModeEnabled) {
             SettingsItem(
-                title = "Debug",
+                title = stringResource(R.string.debug),
                 icon = Icons.Default.BugReport
             ) { navController.navigate(Routes.Settings.DEBUG) }
         }
@@ -143,7 +154,7 @@ fun SettingsListScreen(navController: NavController) {
         )
 
         SettingsItem(
-            title = "Source Code",
+            title = stringResource(R.string.source_code),
             icon = Icons.Default.Code,
         ) {
             val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -153,7 +164,7 @@ fun SettingsListScreen(navController: NavController) {
         }
 
         SettingsItem(
-            title = "Check for updates",
+            title = stringResource(R.string.check_for_update),
             icon = Icons.Default.Update
         ) {
             val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -163,7 +174,7 @@ fun SettingsListScreen(navController: NavController) {
         }
 
         SettingsItem(
-            title = "Report a problem",
+            title = stringResource(R.string.report_a_bug),
             icon = Icons.Default.ReportProblem
         ) {
             val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -177,7 +188,7 @@ fun SettingsListScreen(navController: NavController) {
 
 
         Text(
-            text = "Version $versionName",
+            text =  "${stringResource(R.string.version)} $versionName",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
@@ -188,7 +199,11 @@ fun SettingsListScreen(navController: NavController) {
 
                     when {
                         isDebugModeEnabled -> {
-                            toast = Toast.makeText(ctx, "Debug Mode is already enabled", Toast.LENGTH_SHORT)
+                            toast = Toast.makeText(
+                                ctx,
+                                "Debug Mode is already enabled",
+                                Toast.LENGTH_SHORT
+                            )
                             toast?.show()
                         }
 
@@ -212,8 +227,8 @@ fun SettingsListScreen(navController: NavController) {
 
     if (showDebugModeUserValidation) {
         UserValidation(
-            title = "Are you sure?",
-            message = "Debug Mode will be enabled.\nOnly enable this if you know what you're doing.",
+            title = stringResource(R.string.are_you_sure),
+            message = stringResource(R.string.debug_mode_will_be_enabled),
             onCancel = { showDebugModeUserValidation = false}
         ) {
             scope.launch{
@@ -260,7 +275,7 @@ fun SettingsItem(
             if (comingSoon) {
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = "Coming soon...",
+                    text = stringResource(R.string.coming_soon),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurface.adjustBrightness(0.5f)
                 )
@@ -297,19 +312,26 @@ fun RemindersSettingsScreen(navController: NavController) {
 }
 
 @Composable
-fun BackupSettingsScreen(navController: NavController) {
-    val ctx = LocalContext.current
-    BackupTab(ctx) {
-        navController.popBackStack()
-    }
-}
-@Composable
 fun SecuritySettingsScreen(navController: NavController) {
     SecurityTab {
         navController.popBackStack()
     }
 }
 
+@Composable
+fun BackupSettingsScreen(navController: NavController) {
+    val ctx = LocalContext.current
+    BackupTab(ctx) {
+        navController.popBackStack()
+    }
+}
+
+@Composable
+fun LanguageSettingsScreen(navController: NavController) {
+    LanguageTab {
+        navController.popBackStack()
+    }
+}
 
 @Composable
 fun CustomisationSettingsScreen(navController: NavController) {
@@ -348,4 +370,12 @@ fun OtherSettingsScreen(navController: NavController) {
     OtherDebugTab {
         navController.popBackStack()
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+private fun openSystemLanguageSettings(context: Context) {
+    val intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS).apply {
+        data = Uri.fromParts("package", context.packageName, null)
+    }
+    context.startActivity(intent)
 }

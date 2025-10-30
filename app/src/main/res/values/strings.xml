@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">Notes</string>
+    <string name="settings_language_title">App language</string>
+    <string name="language_english">English</string>
+    <string name="language_french">French</string>
+    <string name="notes">Notes</string>
+    <string name="settings">Settings</string>
+    <string name="customistation">Customistation</string>
+    <string name="notification_reminders">Notifications / Reminders</string>
+    <string name="security_privacy">Security / Privacy</string>
+    <string name="system_default">System Default</string>
+    <string name="backup_restore">Backup / Restore</string>
+    <string name="debug">Debug</string>
+    <string name="source_code">Source Code</string>
+    <string name="not_yet_translated">Not yet translated</string>
+    <string name="check_for_update">Check for update</string>
+    <string name="report_a_bug">Report a problem</string>
+    <string name="version">Version</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="debug_mode_will_be_enabled">Debug Mode will be enabled.\\nOnly enable this if you know what you\'re doing.</string>
+    <string name="coming_soon">Coming soon...</string>
 </resources>

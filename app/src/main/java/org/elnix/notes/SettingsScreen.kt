@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Backup
@@ -20,7 +22,10 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DashboardCustomize
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -75,7 +80,8 @@ fun SettingsListScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         SettingsTitle(title = "Settings") {
@@ -109,6 +115,15 @@ fun SettingsListScreen(navController: NavController) {
             comingSoon = true
         ) { navController.navigate(Routes.Settings.BACKUP) }
 
+        SettingsItem(
+            title = "App language",
+            icon = Icons.Default.Language,
+            enabled = false,
+            comingSoon = true,
+            onClick = {}
+        )
+
+
         if (isDebugModeEnabled) {
             SettingsItem(
                 title = "Debug",
@@ -136,6 +151,27 @@ fun SettingsListScreen(navController: NavController) {
             }
             ctx.startActivity(intent)
         }
+
+        SettingsItem(
+            title = "Check for updates",
+            icon = Icons.Default.Update
+        ) {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = "https://github.com/Elnix90/Notes/releases/latest".toUri()
+            }
+            ctx.startActivity(intent)
+        }
+
+        SettingsItem(
+            title = "Report a problem",
+            icon = Icons.Default.ReportProblem
+        ) {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = "https://github.com/Elnix90/Notes/issues/new".toUri()
+            }
+            ctx.startActivity(intent)
+        }
+
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -177,7 +213,7 @@ fun SettingsListScreen(navController: NavController) {
     if (showDebugModeUserValidation) {
         UserValidation(
             title = "Are you sure?",
-            message = "Debug Mode will be enabled?\n Only enable this if you know what you're doing",
+            message = "Debug Mode will be enabled.\nOnly enable this if you know what you're doing.",
             onCancel = { showDebugModeUserValidation = false}
         ) {
             scope.launch{

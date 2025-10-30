@@ -47,7 +47,7 @@ fun UserValidation(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        validateText,
+                        text = validateText,
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -77,9 +77,8 @@ fun UserValidation(
         text = {
             Text(
                 text = message,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(top = 8.dp)
             )
         },

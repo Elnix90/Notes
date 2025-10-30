@@ -49,9 +49,8 @@ fun AppearanceTab(
 
             SettingsItem(
                 title = "Color Selector",
-                icon = Icons.Default.ColorLens,
-                onClick = { navController.navigate("settings/appearance/colors") }
-            )
+                icon = Icons.Default.ColorLens
+            ) { navController.navigate("settings/appearance/colors") }
 
             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 

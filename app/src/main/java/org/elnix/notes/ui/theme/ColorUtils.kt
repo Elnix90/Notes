@@ -9,6 +9,8 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwitchColors
@@ -43,7 +45,7 @@ object AppObjectsColors {
     fun switchColors(): SwitchColors {
         val colors = MaterialTheme.colorScheme
         return SwitchDefaults.colors(
-            checkedThumbColor = colors.onSurface,
+            checkedThumbColor = colors.background,
             checkedTrackColor = colors.primary,
             checkedBorderColor = Color.Transparent,
             uncheckedThumbColor = colors.onSurface,
@@ -208,6 +210,17 @@ object AppObjectsColors {
             unfocusedSuffixColor = colors.onSurfaceVariant,
             disabledSuffixColor = colors.surfaceVariant,
             errorSuffixColor = colors.error
+        )
+    }
+
+    @Composable
+    fun radioButtonColors(): RadioButtonColors {
+        val colors = MaterialTheme.colorScheme
+        return RadioButtonDefaults.colors(
+            selectedColor = colors.primary,
+            unselectedColor = colors.onSurface,
+            disabledSelectedColor = colors.primary.adjustBrightness(0.5f),
+            disabledUnselectedColor = colors.onSurface.adjustBrightness(0.5f)
         )
     }
 }

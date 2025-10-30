@@ -1,4 +1,4 @@
-package org.elnix.notes.ui.helpers
+package org.elnix.notes.ui.helpers.colors
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
+import org.elnix.notes.ui.helpers.SliderWithLabel
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
 import kotlin.random.Random
@@ -121,17 +122,29 @@ fun SliderColorPicker(
         }
 
 
-        SliderWithLabel(label = "${stringResource(R.string.red)} :", value = red, color = Color.Red) {
+        SliderWithLabel(
+            label = "${stringResource(R.string.red)} :",
+            value = red,
+            color = Color.Red
+        ) {
             red = it
             pushCurrentColor()
             hexText = toHexWithAlpha(color)
         }
-        SliderWithLabel(label = "${stringResource(R.string.green)} :", value = green, color = Color.Green) {
+        SliderWithLabel(
+            label = "${stringResource(R.string.green)} :",
+            value = green,
+            color = Color.Green
+        ) {
             green = it
             pushCurrentColor()
             hexText = toHexWithAlpha(color)
         }
-        SliderWithLabel(label = "${stringResource(R.string.blue)} :", value = blue, color = Color.Blue) {
+        SliderWithLabel(
+            label = "${stringResource(R.string.blue)} :",
+            value = blue,
+            color = Color.Blue
+        ) {
             blue = it
             pushCurrentColor()
             hexText = toHexWithAlpha(color)

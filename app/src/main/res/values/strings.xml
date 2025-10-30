@@ -92,4 +92,5 @@
     <string name="sliders">Sliders</string>
     <string name="gradient">Gradient</string>
     <string name="timeout">Timeout</string>
+    <string name="default_text">Default</string>
 </resources>

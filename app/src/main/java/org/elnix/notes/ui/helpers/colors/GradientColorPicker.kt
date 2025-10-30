@@ -1,4 +1,4 @@
-package org.elnix.notes.ui.helpers
+package org.elnix.notes.ui.helpers.colors
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import org.elnix.notes.R
+import org.elnix.notes.ui.helpers.SliderWithLabel
 import org.elnix.notes.ui.theme.AppObjectsColors
 import android.graphics.Color as AndroidColor
 

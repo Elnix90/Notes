@@ -31,9 +31,9 @@ import org.elnix.notes.data.settings.applyDefaultThemeColors
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
-import org.elnix.notes.ui.helpers.ColorPickerRow
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.UserValidation
+import org.elnix.notes.ui.helpers.colors.ColorPickerRow
 import org.elnix.notes.ui.theme.AmoledDefault
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.LocalExtraColors

@@ -1,6 +1,5 @@
-package org.elnix.notes.ui.helpers
+package org.elnix.notes.ui.helpers.colors
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,6 +33,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.ColorPickerMode
+import org.elnix.notes.data.helpers.colorPickerText
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getColorPickerMode
 import org.elnix.notes.data.settings.stores.UiSettingsStore.setColorPickerMode
 import org.elnix.notes.ui.theme.adjustBrightness
@@ -117,25 +116,28 @@ private fun ColorPicker(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .clickable { changeSliderMode(ctx, scope, mode) },
+                .clip(RoundedCornerShape(8.dp)),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = stringResource(R.string.sliders),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Switch(
-                checked = mode == ColorPickerMode.GRADIENT,
-                onCheckedChange = { changeSliderMode(ctx, scope, mode) }
-            )
-            Text(
-                text = stringResource(R.string.gradient),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            ColorPickerMode.entries.forEach{ actualMode ->
+                Text(
+                    text = colorPickerText(actualMode),
+                    color = if (mode == actualMode) MaterialTheme.colorScheme.onSecondary
+                            else MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable {
+                            scope.launch { setColorPickerMode(ctx, actualMode) }
+                        }
+                        .background(
+                            if (mode == actualMode) MaterialTheme.colorScheme.secondary
+                            else MaterialTheme.colorScheme.surface
+                        )
+                        .padding(12.dp)
+                )
+            }
         }
 
 
@@ -147,6 +149,12 @@ private fun ColorPicker(
             )
 
             ColorPickerMode.GRADIENT -> GradientColorPicker(
+                initialColor = initialColor,
+                defaultColor = defaultColor,
+                onColorSelected = onColorSelected
+            )
+
+            ColorPickerMode.DEFAULTS -> DefaultColorPicker(
                 initialColor = initialColor,
                 defaultColor = defaultColor,
                 onColorSelected = onColorSelected
@@ -164,11 +172,4 @@ fun toHexWithAlpha(color: Color): String {
     val rgb = argb and 0xFFFFFF
     val alpha = (color.alpha * 255).toInt().coerceIn(0, 255)
     return "#${"%06X".format(rgb)}${"%02X".format(alpha)}"
-}
-
-
-private fun changeSliderMode(ctx: Context, scope: CoroutineScope, mode: ColorPickerMode) {
-    scope.launch{
-        setColorPickerMode(ctx, if (mode == ColorPickerMode.SLIDERS) ColorPickerMode.GRADIENT else ColorPickerMode.SLIDERS)
-    }
 }

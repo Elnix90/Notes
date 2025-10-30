@@ -165,7 +165,10 @@ fun NoteEditorScreen(
                         }
                     },
                     onDelete = {
-                        scope.launch { vm.deleteReminder(reminder) }
+                        scope.launch {
+                             vm.deleteReminder(reminder)
+                            cancelReminderNotification(context, reminder.id)
+                        }
                     }
                 )
             }

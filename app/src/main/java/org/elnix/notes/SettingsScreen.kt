@@ -1,6 +1,5 @@
 package org.elnix.notes
 
-import android.R.attr.versionName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -82,6 +81,8 @@ fun SettingsListScreen(navController: NavController) {
     var showDebugModeUserValidation by remember { mutableStateOf(false) }
 
     var toast by remember { mutableStateOf<Toast?>(null) }
+
+    val versionName = ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName
 
 
     Column(
@@ -207,11 +208,11 @@ fun SettingsListScreen(navController: NavController) {
                             toast?.show()
                         }
 
-                        timesClickedOnVersion < 7 -> {
+                        timesClickedOnVersion < 6 -> {
                             timesClickedOnVersion++
                             toast = Toast.makeText(
                                 ctx,
-                                "${8 - timesClickedOnVersion} more times to enable Debug Mode",
+                                "${7 - timesClickedOnVersion} more times to enable Debug Mode",
                                 Toast.LENGTH_SHORT
                             )
                             toast?.show()

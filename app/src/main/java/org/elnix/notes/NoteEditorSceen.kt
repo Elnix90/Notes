@@ -145,7 +145,7 @@ fun NoteEditorScreen(
             colors = AppObjectsColors.outlinedTextFieldColors()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
 
         val reminderText = stringResource(R.string.reminder)

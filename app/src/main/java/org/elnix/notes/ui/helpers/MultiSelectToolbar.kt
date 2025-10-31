@@ -21,7 +21,12 @@ fun MultiSelectToolbar(
     onGroupAction: (NotesActions) -> Unit,
     onCloseSelection: () -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
 
         IconButton(onClick = { onCloseSelection() }) {
             Icon(imageVector = Icons.Default.Close, contentDescription = "Cancel selection")

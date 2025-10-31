@@ -43,8 +43,10 @@ import org.elnix.notes.ui.theme.adjustBrightness
 fun ColorPickerRow(
     label: String,
     showLabel: Boolean = true,
+    enabled: Boolean = true,
     defaultColor: Color,
     currentColor: Int,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
     scope: CoroutineScope,
     onColorPicked: (Int) -> Unit
 ) {
@@ -53,9 +55,9 @@ fun ColorPickerRow(
     val modifier = if (showLabel) Modifier.fillMaxWidth() else Modifier.wrapContentWidth()
     Row(
        modifier = modifier
-            .clickable { showPicker = true }
+            .clickable(enabled) { showPicker = true }
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = backgroundColor.adjustBrightness(if (enabled) 1f else 0.5f),
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 16.dp, vertical = 14.dp),
@@ -66,7 +68,7 @@ fun ColorPickerRow(
         if(showLabel){
             Text(
                 text = label,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (enabled) 1f else 0.5f)
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -76,7 +78,7 @@ fun ColorPickerRow(
                     .background(Color(currentColor), shape = CircleShape)
                     .border(
                         1.dp,
-                        MaterialTheme.colorScheme.onSurface.adjustBrightness(0.3f),
+                        MaterialTheme.colorScheme.outline.adjustBrightness(if (enabled) 0.3f else 0.1f),
                         CircleShape
                     )
             )

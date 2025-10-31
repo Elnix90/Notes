@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -39,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -203,12 +203,145 @@ fun NoteEditorScreen(
 
         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
+        // --- Colors section above "completed" ---
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                // NOTE BACKGROUND COLOR PICKER
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val label = stringResource(R.string.note)
+                    Text(
+                        text = label,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                    Spacer(Modifier.height(4.dp))
+
+                    ColorPickerRow(
+                        label = label,
+                        showLabel = false,
+                        defaultColor = MaterialTheme.colorScheme.surface,
+                        currentColor = note?.bgColor?.toArgb()
+                            ?: MaterialTheme.colorScheme.surface.toArgb(),
+                        backgroundColor = MaterialTheme.colorScheme.background,
+                        scope = scope
+                    ) { pickedInt ->
+                        val pickedColor = Color(pickedInt)
+                        scope.launch {
+                            currentId?.let { id ->
+                                val n = vm.getById(id)
+                                if (n != null) {
+                                    // If auto text color enabled, compute best contrast color
+                                    val autoText = n.autoTextColor
+                                    val computedTextColor =
+                                        if (autoText) {
+                                            if (pickedColor.luminance() < 0.5f) Color.White else Color.Black
+                                        } else n.txtColor
+
+                                    val updated = n.copy(
+                                        bgColor = pickedColor,
+                                        txtColor = computedTextColor
+                                    )
+                                    vm.update(updated)
+                                    note = updated
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // TEXT COLOR PICKER
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val label = stringResource(R.string.text)
+                    Text(
+                        text = label,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                    Spacer(Modifier.height(4.dp))
+
+                    val autoTextColorEnabled = note?.autoTextColor ?: false
+
+                    ColorPickerRow(
+                        label = label,
+                        showLabel = false,
+                        defaultColor = MaterialTheme.colorScheme.onSurface,
+                        currentColor = note?.txtColor?.toArgb()
+                            ?: MaterialTheme.colorScheme.onSurface.toArgb(),
+                        scope = scope,
+                        enabled = !autoTextColorEnabled,
+                        backgroundColor = MaterialTheme.colorScheme.background,
+                    ) { pickedInt ->
+                        val pickedColor = Color(pickedInt)
+                        scope.launch {
+                            currentId?.let { id ->
+                                val n = vm.getById(id)
+                                if (n != null) {
+                                    val updated = n.copy(txtColor = pickedColor)
+                                    vm.update(updated)
+                                    note = updated
+                                }
+                            }
+                        }
+                    }
+
+                    // AUTO TEXT COLOR CHECKBOX
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Checkbox(
+                            checked = autoTextColorEnabled,
+                            onCheckedChange = { checked ->
+                                scope.launch {
+                                    currentId?.let { id ->
+                                        val n = vm.getById(id)
+                                        if (n != null) {
+                                            val computedTxt =
+                                                if (checked) {
+                                                    val bg = n.bgColor
+                                                    if (bg.luminance() < 0.5f) Color.White else Color.Black
+                                                } else n.txtColor
+                                            val updated = n.copy(
+                                                autoTextColor = checked,
+                                                txtColor = computedTxt
+                                            )
+                                            vm.update(updated)
+                                            note = updated
+                                        }
+                                    }
+                                }
+                            },
+                            colors = AppObjectsColors.checkboxColors()
+                        )
+                        Text(
+                            text = stringResource(R.string.auto_text_color),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            }
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+        }
+
+        // --- Completed checkbox after colors ---
         var isCompleted by remember { mutableStateOf(note?.isCompleted ?: false) }
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             Surface(
                 shape = RoundedCornerShape(16.dp),
                 color = MaterialTheme.colorScheme.surface
@@ -244,87 +377,10 @@ fun NoteEditorScreen(
                         onCheckedChange = null,
                         colors = AppObjectsColors.checkboxColors()
                     )
-
-                }
-            }
-
-            Spacer(Modifier.weight(1f))
-
-            Row (
-                modifier = Modifier.wrapContentSize()
-            ) {
-                Column(
-                    modifier = Modifier.wrapContentSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val label = stringResource(R.string.text)
-                    Text(
-                        text = label,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-
-                    Spacer(Modifier.width(3.dp))
-
-                    ColorPickerRow(
-                        label = label,
-                        showLabel = false,
-                        defaultColor = MaterialTheme.colorScheme.onSurface,
-                        currentColor = note?.txtColor?.toArgb()
-                            ?: MaterialTheme.colorScheme.onSurface.toArgb(),
-                        scope = scope
-                    ) { pickedInt ->
-                        val pickedColor = Color(pickedInt)
-                        scope.launch {
-                            currentId?.let { id ->
-                                val n = vm.getById(id)
-                                if (n != null) {
-                                    val updated = n.copy(txtColor = pickedColor)
-                                    vm.update(updated)
-                                    note = updated
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Spacer(Modifier.width(5.dp))
-
-                Column(
-                    modifier = Modifier.wrapContentSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val label = stringResource(R.string.note)
-                    Text(
-                        text = label,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-
-                    Spacer(Modifier.width(3.dp))
-                    ColorPickerRow(
-                        label = label,
-                        showLabel = false,
-                        defaultColor = MaterialTheme.colorScheme.surface,
-                        currentColor = note?.bgColor?.toArgb()
-                            ?: MaterialTheme.colorScheme.surface.toArgb(),
-                        scope = scope
-                    ) { pickedInt ->
-                        val pickedColor = Color(pickedInt)
-                        scope.launch {
-                            currentId?.let { id ->
-                                val n = vm.getById(id)
-                                if (n != null) {
-                                    val updated = n.copy(bgColor = pickedColor)
-                                    vm.update(updated)
-                                    note = updated
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }
+
 
         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 

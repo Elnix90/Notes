@@ -97,4 +97,5 @@
     <string name="notes_view_type">Notes view type</string>
     <string name="text">Text</string>
     <string name="note">Note</string>
+    <string name="auto_text_color">Auto text color</string>
 </resources>

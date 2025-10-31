@@ -98,4 +98,5 @@
     <string name="notes_view_type">Mode d\'affichage des notes</string>
     <string name="text">Texte</string>
     <string name="note">Note</string>
+    <string name="auto_text_color">Couleur du texte auto</string>
 </resources>

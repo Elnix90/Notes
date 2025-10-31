@@ -17,6 +17,7 @@ data class NoteEntity(
     val bgColor: Color = AmoledDefault.Surface,
     val txtColor: Color = AmoledDefault.OnSurface,
     val createdAt: Date = Date.from(Instant.now()),
+    val autoTextColor: Boolean = true,
     val isCompleted: Boolean = false,
     val type: NoteType = NoteType.TEXT
 )

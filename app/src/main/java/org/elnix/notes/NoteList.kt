@@ -172,6 +172,7 @@ fun SwipeableNoteCard(
             )
         }
 
+
         // Foreground Note Card
         NoteCard(
             note = note,

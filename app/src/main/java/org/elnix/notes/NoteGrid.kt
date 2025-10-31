@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.NoteEntity
 
@@ -76,7 +77,9 @@ fun NoteGridItem(
             Text(
                 text = note.title,
                 color = note.txtColor,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    textDecoration = if (note.isCompleted) TextDecoration.LineThrough else null
+                ),
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -84,7 +87,9 @@ fun NoteGridItem(
             Text(
                 text = note.desc,
                 color = note.txtColor,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall.copy(
+                    textDecoration = if (note.isCompleted) TextDecoration.LineThrough else null
+                ),
             )
         }
     }

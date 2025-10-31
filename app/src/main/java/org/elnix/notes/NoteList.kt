@@ -2,6 +2,7 @@ package org.elnix.notes
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -165,6 +166,7 @@ fun SwipeableNoteCard(
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
+                    .clickable {onNoteClick(note)}
                     .padding(start = 12.dp)
                     .size(26.dp)
             )
@@ -178,7 +180,6 @@ fun SwipeableNoteCard(
             onDeleteButtonClick = { onButtonClick(note) },
             modifier = Modifier
                 .offset(x = swipeOffset.dp + selectionOffset)
-//                .background(Color.Yellow/*note.color*/, RoundedCornerShape(12.dp))
-    )
+        )
     }
 }

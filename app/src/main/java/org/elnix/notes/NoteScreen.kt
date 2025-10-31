@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.HorizontalDivider
@@ -86,7 +86,8 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
         }
     } else {
         Column (
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(15.dp)
         ){
             if (showNotesNumber) {
                 Text(
@@ -94,10 +95,13 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
                     color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                HorizontalDivider(Modifier.padding(horizontal = 5.dp), color = MaterialTheme.colorScheme.outline)
             }
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 items(notes) { note ->
                     SwipeableNoteCard(
                         note = note,
@@ -163,8 +167,7 @@ fun SwipeableNoteCard(
                         swipeOffset > 0f -> swipeActionColor(actionSettings.rightAction)
                         swipeOffset < 0f -> swipeActionColor(actionSettings.leftAction)
                         else -> Color.Transparent
-                    },
-                    shape = RoundedCornerShape(12.dp)
+                    }
                 )
         )
 

@@ -1,25 +1,11 @@
 package org.elnix.notes
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,44 +13,80 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
-import org.elnix.notes.data.settings.SwipeActionSettings
-import org.elnix.notes.data.settings.SwipeActions
+import org.elnix.notes.data.helpers.NoteViewType
+import org.elnix.notes.data.settings.NoteActionSettings
+import org.elnix.notes.data.settings.NotesActions
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
-import org.elnix.notes.data.settings.swipeActionColor
-import org.elnix.notes.data.settings.swipeActionIcon
 import org.elnix.notes.ui.NoteViewModel
-import org.elnix.notes.ui.helpers.NoteCard
+import org.elnix.notes.ui.helpers.MultiSelectToolbar
 import org.elnix.notes.ui.theme.adjustBrightness
-
 
 @Stable
 enum class SwipeState { Default, LeftAction, RightAction }
 
 @Composable
-fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostController) {
+fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     val notes by vm.notes.collectAsState()
     val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
 
-    val actionSettings by ActionSettingsStore.getActionSettingsFlow(ctx).collectAsState(
-        initial = SwipeActionSettings()
-    )
+    var selectedNotes by remember { mutableStateOf<Set<NoteEntity>>(emptySet()) }
+    var isMultiSelectMode by remember { mutableStateOf(false) }
 
-    val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx).collectAsState(initial = true)
+    val actionSettings by ActionSettingsStore.getActionSettingsFlow(ctx)
+        .collectAsState(initial = NoteActionSettings())
+
+    val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx)
+        .collectAsState(initial = true)
+
+    val noteViewType by UiSettingsStore.getNoteViewType(ctx)
+        .collectAsState(initial = NoteViewType.LIST)
+
+    val onNoteLongClick: (NoteEntity) -> Unit = { note ->
+        isMultiSelectMode = true
+        selectedNotes = selectedNotes + note
+    }
+
+    val onNoteClick: (NoteEntity) -> Unit = { note ->
+        if (isMultiSelectMode) {
+            selectedNotes = if (note in selectedNotes) {
+                selectedNotes - note
+            } else {
+                selectedNotes + note
+            }
+        } else {
+            performAction(
+                actionSettings.clickAction,
+                vm, navController, note, scope,
+                onSelectStart = { isMultiSelectMode = true; selectedNotes += note }
+            )
+        }
+    }
+
+    val onGroupAction: (NotesActions) -> Unit = { action ->
+        scope.launch {
+            selectedNotes.forEach { note ->
+                performAction(action, vm, navController, note, scope)
+            }
+            selectedNotes = emptySet()
+            isMultiSelectMode = false
+        }
+    }
 
     LaunchedEffect(Unit) {
         vm.deleteAllEmptyNotes()
@@ -85,149 +107,74 @@ fun NotesScreen(vm: NoteViewModel, navController: androidx.navigation.NavHostCon
             )
         }
     } else {
-        Column (
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
-        ){
-            if (showNotesNumber) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            if (isMultiSelectMode) {
+                MultiSelectToolbar(onGroupAction = onGroupAction)
+            } else if (showNotesNumber) {
                 Text(
                     text = "${stringResource(R.string.note_number)} : ${notes.size}",
                     color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
-                HorizontalDivider(Modifier.padding(horizontal = 5.dp), color = MaterialTheme.colorScheme.outline)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
             }
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                items(notes) { note ->
-                    SwipeableNoteCard(
-                        note = note,
-                        vm = vm,
-                        navController = navController,
-                        actionSettings = actionSettings
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SwipeableNoteCard(
-    note: NoteEntity,
-    vm: NoteViewModel,
-    navController: androidx.navigation.NavHostController,
-    actionSettings: SwipeActionSettings
-) {
-    val scope = rememberCoroutineScope()
-
-    val maxSwipePx = 80f
-    var swipeOffset by remember { mutableFloatStateOf(0f) }
-    var swipeState by remember { mutableStateOf(SwipeState.Default) }
-
-    val draggableState = rememberDraggableState { delta ->
-        swipeOffset = (swipeOffset + delta).coerceIn(-maxSwipePx, maxSwipePx)
-        swipeState = when {
-            swipeOffset >= maxSwipePx - 20 -> SwipeState.RightAction
-            swipeOffset <= -maxSwipePx + 20 -> SwipeState.LeftAction
-            else -> SwipeState.Default
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .background(Color.Transparent)
-            .draggable(
-                state = draggableState,
-                orientation = Orientation.Horizontal,
-                onDragStopped = {
-                    if (swipeState == SwipeState.RightAction) {
+            when (noteViewType) {
+                NoteViewType.LIST -> NotesList(
+                    notes = notes,
+                    selectedNotes = selectedNotes,
+                    onNoteClick = onNoteClick,
+                    onNoteLongClick = onNoteLongClick,
+                    onRightAction = { note ->
                         performAction(actionSettings.rightAction, vm, navController, note, scope)
-                    } else if (swipeState == SwipeState.LeftAction) {
+                    },
+                    onLeftAction = { note ->
                         performAction(actionSettings.leftAction, vm, navController, note, scope)
-                    }
-
-                    // Instantly reset card after release
-                    swipeOffset = 0f
-                    swipeState = SwipeState.Default
-                }
-            )
-    ) {
-        // Background visible while dragging
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(
-                    color = when {
-                        swipeOffset > 0f -> swipeActionColor(actionSettings.rightAction)
-                        swipeOffset < 0f -> swipeActionColor(actionSettings.leftAction)
-                        else -> Color.Transparent
-                    }
+                    },
+                    onButtonCLick = { note ->
+                        scope.launch { vm.delete(note) }
+                    },
+                    actionSettings = actionSettings
                 )
-        )
 
-        // Action icon on respective side
-        if (swipeOffset != 0f) {
-            val isActionReady = swipeState != SwipeState.Default
-            Icon(
-                imageVector = when {
-                    swipeOffset > 0f -> swipeActionIcon(actionSettings.rightAction)
-                    swipeOffset < 0f -> swipeActionIcon(actionSettings.leftAction)
-                    else -> Icons.Default.Delete
-                },
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.outline,
-                modifier = Modifier
-                    .align(if (swipeOffset > 0f) Alignment.CenterStart else Alignment.CenterEnd)
-                    .padding(horizontal = 24.dp)
-                    .size(if (isActionReady) 30.dp else 24.dp)
-            )
+                NoteViewType.GRID -> NotesGrid(
+                    notes = notes,
+                    selectedNotes = selectedNotes,
+                    onNoteClick = onNoteClick,
+                    onNoteLongClick = onNoteLongClick
+                )
+            }
         }
-
-        // Foreground card (moves with swipe)
-        NoteCard(
-            note = note,
-            onClick = {
-                performAction(actionSettings.clickAction, vm, navController, note, scope)
-            },
-            onDeleteButtonClick = {
-                scope.launch {
-                    vm.delete(note)
-                }
-            },
-            modifier = Modifier.offset(x = swipeOffset.dp)
-        )
     }
 }
 
 
-private fun performAction(
-    action: SwipeActions,
+fun performAction(
+    action: NotesActions,
     vm: NoteViewModel,
-    navController: androidx.navigation.NavHostController,
+    navController: NavHostController,
     note: NoteEntity,
-    scope: kotlinx.coroutines.CoroutineScope
+    scope: CoroutineScope,
+    onSelectStart: (() -> Unit)? = null
 ) {
     when (action) {
-        SwipeActions.DELETE -> {
-            scope.launch {
-                vm.delete(note)
-            }
+        NotesActions.DELETE -> {
+            scope.launch { vm.delete(note) }
         }
 
-        SwipeActions.COMPLETE -> {
+        NotesActions.COMPLETE -> {
             scope.launch {
-                val isCompleted = note.isCompleted
-                if (isCompleted) vm.markUnCompleted(note)
+                if (note.isCompleted) vm.markUnCompleted(note)
                 else vm.markCompleted(note)
             }
         }
 
-        SwipeActions.EDIT -> navController.navigate("edit/${note.id}")
+        NotesActions.EDIT -> {
+            navController.navigate("edit/${note.id}")
+        }
+
+        NotesActions.SELECT -> {
+            onSelectStart?.invoke()
+        }
     }
 }

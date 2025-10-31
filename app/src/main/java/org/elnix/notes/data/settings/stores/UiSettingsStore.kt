@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.helpers.ColorPickerMode
+import org.elnix.notes.data.helpers.NoteViewType
 import org.elnix.notes.data.settings.ColorCustomisationMode
 import org.elnix.notes.data.settings.DefaultThemes
 import org.elnix.notes.data.settings.ShowNavBarActions
@@ -86,4 +87,15 @@ object UiSettingsStore {
         ctx.dataStore.edit { it[SHOW_DELETE_BUTTON] = state}
     }
 
+
+    private val NOTE_VIEW_TYPE = stringPreferencesKey("note_view_type")
+    fun getNoteViewType(ctx: Context): Flow<NoteViewType> =
+        ctx.dataStore.data.map { prefs ->
+            prefs[NOTE_VIEW_TYPE]?.let { NoteViewType.valueOf(it) }
+                ?: NoteViewType.LIST
+        }
+
+    suspend fun setNoteViewType(ctx: Context, state: NoteViewType) {
+        ctx.dataStore.edit { it[NOTE_VIEW_TYPE] = state.name }
+    }
 }

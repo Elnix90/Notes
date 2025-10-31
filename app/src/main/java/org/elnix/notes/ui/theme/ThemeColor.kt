@@ -19,4 +19,5 @@ interface ThemeColors {
     val Delete: Color
     val Edit: Color
     val Complete: Color
+    val Select: Color
 }

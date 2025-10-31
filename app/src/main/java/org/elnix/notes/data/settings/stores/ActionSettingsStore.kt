@@ -5,8 +5,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import org.elnix.notes.data.settings.SwipeActionSettings
-import org.elnix.notes.data.settings.SwipeActions
+import org.elnix.notes.data.settings.NoteActionSettings
+import org.elnix.notes.data.settings.NotesActions
 import org.elnix.notes.data.settings.dataStore
 
 object ActionSettingsStore {
@@ -15,28 +15,28 @@ object ActionSettingsStore {
     private val CLICK_ACTION = stringPreferencesKey("click_action")
 
     // --- Combined model
-    fun getActionSettingsFlow(ctx: Context): Flow<SwipeActionSettings> =
+    fun getActionSettingsFlow(ctx: Context): Flow<NoteActionSettings> =
         ctx.dataStore.data.map { prefs ->
-            SwipeActionSettings(
-                leftAction = prefs[SWIPE_LEFT_ACTION]?.let { SwipeActions.valueOf(it) }
-                    ?: SwipeActions.DELETE,
-                rightAction = prefs[SWIPE_RIGHT_ACTION]?.let { SwipeActions.valueOf(it) }
-                    ?: SwipeActions.EDIT,
-                clickAction = prefs[CLICK_ACTION]?.let { SwipeActions.valueOf(it) }
-                    ?: SwipeActions.COMPLETE
+            NoteActionSettings(
+                leftAction = prefs[SWIPE_LEFT_ACTION]?.let { NotesActions.valueOf(it) }
+                    ?: NotesActions.DELETE,
+                rightAction = prefs[SWIPE_RIGHT_ACTION]?.let { NotesActions.valueOf(it) }
+                    ?: NotesActions.EDIT,
+                clickAction = prefs[CLICK_ACTION]?.let { NotesActions.valueOf(it) }
+                    ?: NotesActions.COMPLETE
             )
         }
 
     // --- Individual setters
-    suspend fun setSwipeLeftAction(ctx: Context, action: SwipeActions) {
+    suspend fun setSwipeLeftAction(ctx: Context, action: NotesActions) {
         ctx.dataStore.edit { it[SWIPE_LEFT_ACTION] = action.name }
     }
 
-    suspend fun setSwipeRightAction(ctx: Context, action: SwipeActions) {
+    suspend fun setSwipeRightAction(ctx: Context, action: NotesActions) {
         ctx.dataStore.edit { it[SWIPE_RIGHT_ACTION] = action.name }
     }
 
-    suspend fun setClickAction(ctx: Context, action: SwipeActions) {
+    suspend fun setClickAction(ctx: Context, action: NotesActions) {
         ctx.dataStore.edit { it[CLICK_ACTION] = action.name }
     }
 }

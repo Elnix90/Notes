@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
-import org.elnix.notes.data.settings.SwipeActionSettings
-import org.elnix.notes.data.settings.SwipeActions
+import org.elnix.notes.data.settings.NoteActionSettings
+import org.elnix.notes.data.settings.NotesActions
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.getActionSettingsFlow
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setClickAction
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setSwipeLeftAction
@@ -30,7 +30,7 @@ import org.elnix.notes.ui.helpers.SwitchRow
 
 @Composable
 fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
-    val settings by getActionSettingsFlow(ctx).collectAsState(initial = SwipeActionSettings())
+    val settings by getActionSettingsFlow(ctx).collectAsState(initial = NoteActionSettings())
 
     val showNotesNumber by getShowNotesNumber(ctx).collectAsState(initial = true)
     val showDeleteButton by getShowDeleteButton(ctx).collectAsState(initial = true)
@@ -47,7 +47,7 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
         // --- Swipe Left ---
         ActionSelectorRow(
             label = stringResource(R.string.swipe_left_action),
-            options = SwipeActions.entries,
+            options = NotesActions.entries,
             selected = settings.leftAction,
             optionLabel = { it.name}
         ) {
@@ -57,7 +57,7 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
         // --- Swipe Right ---
         ActionSelectorRow(
             label = stringResource(R.string.swipe_right_action),
-            options = SwipeActions.entries,
+            options = NotesActions.entries,
             selected = settings.rightAction,
             optionLabel = { it.name}
         ) {
@@ -67,7 +67,7 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
         // --- Click Action ---
         ActionSelectorRow(
             label = stringResource(R.string.click_action),
-            options = SwipeActions.entries,
+            options = NotesActions.entries,
             selected = settings.clickAction,
             optionLabel = { it.name}
         ) {

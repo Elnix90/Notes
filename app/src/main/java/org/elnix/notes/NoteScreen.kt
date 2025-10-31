@@ -1,5 +1,6 @@
 package org.elnix.notes
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -69,6 +70,9 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             } else {
                 selectedNotes + note
             }
+            if (selectedNotes.isEmpty()) {
+                isMultiSelectMode = false
+            }
         } else {
             performAction(
                 actionSettings.clickAction,
@@ -77,6 +81,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             )
         }
     }
+
 
     val onGroupAction: (NotesActions) -> Unit = { action ->
         scope.launch {
@@ -107,9 +112,18 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             )
         }
     } else {
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
             if (isMultiSelectMode) {
-                MultiSelectToolbar(onGroupAction = onGroupAction)
+                MultiSelectToolbar(
+                    onGroupAction = onGroupAction,
+                    onCloseSelection = {
+                        selectedNotes = emptySet()
+                        isMultiSelectMode = false
+                    }
+                )
             } else if (showNotesNumber) {
                 Text(
                     text = "${stringResource(R.string.note_number)} : ${notes.size}",
@@ -123,6 +137,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 NoteViewType.LIST -> NotesList(
                     notes = notes,
                     selectedNotes = selectedNotes,
+                    isSelectMode = isMultiSelectMode,
                     onNoteClick = onNoteClick,
                     onNoteLongClick = onNoteLongClick,
                     onRightAction = { note ->
@@ -131,7 +146,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                     onLeftAction = { note ->
                         performAction(actionSettings.leftAction, vm, navController, note, scope)
                     },
-                    onButtonCLick = { note ->
+                    onButtonClick = { note ->
                         scope.launch { vm.delete(note) }
                     },
                     actionSettings = actionSettings

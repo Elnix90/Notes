@@ -18,7 +18,6 @@ import org.elnix.notes.data.NoteRepository
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.ReminderRepository
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
-import java.util.Date
 import kotlin.random.Random
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
@@ -34,7 +33,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- Notes ---
     suspend fun addNoteAndReturnId(title: String = "", desc: String = ""): Long {
-        val note = NoteEntity(title = title, desc = desc, createdAt = Date())
+        val note = NoteEntity(title = title, desc = desc)
         val id = noteRepo.upsert(note)
 
         val defaults = ReminderSettingsStore.getDefaultRemindersFlow(ctx).firstOrNull() ?: emptyList()

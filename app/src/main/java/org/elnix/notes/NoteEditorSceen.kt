@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -37,6 +38,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -44,6 +47,7 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.helpers.colors.ColorPickerRow
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderBubble
 import org.elnix.notes.utils.ReminderPicker
@@ -201,45 +205,128 @@ fun NoteEditorScreen(
 
         var isCompleted by remember { mutableStateOf(note?.isCompleted ?: false) }
 
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clickable {
-                        isCompleted = !isCompleted
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clickable {
+                            isCompleted = !isCompleted
+                            scope.launch {
+                                currentId?.let { id ->
+                                    val n = vm.getById(id)
+                                    if (n != null) {
+                                        val updated = n.copy(isCompleted = isCompleted)
+                                        vm.update(updated)
+                                        note = updated
+                                    }
+                                }
+                            }
+                        }
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.completed),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Checkbox(
+                        checked = isCompleted,
+                        onCheckedChange = null,
+                        colors = AppObjectsColors.checkboxColors()
+                    )
+
+                }
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            Row (
+                modifier = Modifier.wrapContentSize()
+            ) {
+                Column(
+                    modifier = Modifier.wrapContentSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val label = stringResource(R.string.text)
+                    Text(
+                        text = label,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+
+                    Spacer(Modifier.width(3.dp))
+
+                    ColorPickerRow(
+                        label = label,
+                        showLabel = false,
+                        defaultColor = MaterialTheme.colorScheme.onSurface,
+                        currentColor = note?.txtColor?.toArgb()
+                            ?: MaterialTheme.colorScheme.onSurface.toArgb(),
+                        scope = scope
+                    ) { pickedInt ->
+                        val pickedColor = Color(pickedInt)
                         scope.launch {
                             currentId?.let { id ->
                                 val n = vm.getById(id)
                                 if (n != null) {
-                                    val updated = n.copy(isCompleted = isCompleted)
+                                    val updated = n.copy(txtColor = pickedColor)
                                     vm.update(updated)
                                     note = updated
                                 }
                             }
                         }
                     }
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.completed),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                }
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(Modifier.width(5.dp))
 
-                Checkbox(
-                    checked = isCompleted,
-                    onCheckedChange = null,
-                    colors = AppObjectsColors.checkboxColors()
-                )
+                Column(
+                    modifier = Modifier.wrapContentSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val label = stringResource(R.string.note)
+                    Text(
+                        text = label,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.labelSmall
+                    )
 
+                    Spacer(Modifier.width(3.dp))
+                    ColorPickerRow(
+                        label = label,
+                        showLabel = false,
+                        defaultColor = MaterialTheme.colorScheme.surface,
+                        currentColor = note?.bgColor?.toArgb()
+                            ?: MaterialTheme.colorScheme.surface.toArgb(),
+                        scope = scope
+                    ) { pickedInt ->
+                        val pickedColor = Color(pickedInt)
+                        scope.launch {
+                            currentId?.let { id ->
+                                val n = vm.getById(id)
+                                if (n != null) {
+                                    val updated = n.copy(bgColor = pickedColor)
+                                    vm.update(updated)
+                                    note = updated
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
         Row(
             modifier = Modifier.fillMaxWidth(),

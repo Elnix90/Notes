@@ -67,15 +67,25 @@ fun NoteGridItem(
                 onLongClick = { onLongClick(note) },
                 onClick = { onClick(note) }
             )
-            .background(note.color, RoundedCornerShape(8.dp)),
+            .background(note.bgColor, RoundedCornerShape(8.dp)),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = note.color)
+        colors = CardDefaults.cardColors(containerColor = note.bgColor)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = note.title, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = note.title,
+                color = note.txtColor,
+                style = MaterialTheme.typography.bodyMedium
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = note.desc, style = MaterialTheme.typography.bodySmall)
+
+            Text(
+                text = note.desc,
+                color = note.txtColor,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }

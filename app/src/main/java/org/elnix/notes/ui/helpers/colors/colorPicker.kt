@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -39,12 +40,19 @@ import org.elnix.notes.data.settings.stores.UiSettingsStore.setColorPickerMode
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
-fun ColorPickerRow(label: String, defaultColor: Color, currentColor: Int, scope: CoroutineScope, onColorPicked: (Int) -> Unit) {
+fun ColorPickerRow(
+    label: String,
+    showLabel: Boolean = true,
+    defaultColor: Color,
+    currentColor: Int,
+    scope: CoroutineScope,
+    onColorPicked: (Int) -> Unit
+) {
     var showPicker by remember { mutableStateOf(false) }
 
+    val modifier = if (showLabel) Modifier.fillMaxWidth() else Modifier.wrapContentWidth()
     Row(
-        Modifier
-            .fillMaxWidth()
+       modifier = modifier
             .clickable { showPicker = true }
             .background(
                 color = MaterialTheme.colorScheme.surface,
@@ -55,10 +63,12 @@ fun ColorPickerRow(label: String, defaultColor: Color, currentColor: Int, scope:
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = label,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        if(showLabel){
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier

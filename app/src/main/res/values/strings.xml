@@ -94,4 +94,7 @@
     <string name="timeout">Timeout</string>
     <string name="default_text">Default</string>
     <string name="show_delete_button">Show delete button</string>
+    <string name="notes_view_type">Notes view type</string>
+    <string name="text">Text</string>
+    <string name="note">Note</string>
 </resources>

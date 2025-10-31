@@ -3,6 +3,7 @@ package org.elnix.notes.utils
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -75,7 +76,7 @@ object NotesBackupManager {
                 val noteDao = db.noteDao()
                 val reminderDao = db.reminderDao()
 
-                db.clearAllTables() // optional: clear before restore
+                db.clearAllTables()
 
                 val notesArray = obj.optJSONArray("notes") ?: JSONArray()
                 val oldToNewNoteIds = mutableMapOf<Long, Long>()
@@ -86,7 +87,6 @@ object NotesBackupManager {
                     if (oldId == -1L) continue
 
                     val note = NoteEntity(
-                        id = 0, // let Room assign new ID
                         title = n.optString("title", ""),
                         desc = n.optString("desc", ""),
                         createdAt = Date(n.optLong("createdAt", System.currentTimeMillis())),

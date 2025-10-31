@@ -14,14 +14,17 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
+import org.elnix.notes.data.helpers.NoteViewType
 import org.elnix.notes.data.settings.NoteActionSettings
 import org.elnix.notes.data.settings.NotesActions
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.getActionSettingsFlow
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setClickAction
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setSwipeLeftAction
 import org.elnix.notes.data.settings.stores.ActionSettingsStore.setSwipeRightAction
+import org.elnix.notes.data.settings.stores.UiSettingsStore.getNoteViewType
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowDeleteButton
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowNotesNumber
+import org.elnix.notes.data.settings.stores.UiSettingsStore.setNoteViewType
 import org.elnix.notes.data.settings.stores.UiSettingsStore.setShowDeleteButton
 import org.elnix.notes.data.settings.stores.UiSettingsStore.setShowNotesNumber
 import org.elnix.notes.ui.helpers.ActionSelectorRow
@@ -34,6 +37,7 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
 
     val showNotesNumber by getShowNotesNumber(ctx).collectAsState(initial = true)
     val showDeleteButton by getShowDeleteButton(ctx).collectAsState(initial = true)
+    val notesViewType by getNoteViewType(ctx).collectAsState(initial = NoteViewType.LIST)
 
 
     Column(
@@ -86,6 +90,15 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             stringResource(R.string.show_delete_button),
         ) {
             scope.launch { setShowDeleteButton(ctx, it) }
+        }
+
+        ActionSelectorRow(
+            label = stringResource(R.string.notes_view_type),
+            options = NoteViewType.entries,
+            selected = notesViewType,
+            optionLabel = { it.name}
+        ) {
+            scope.launch { setNoteViewType(ctx, it) }
         }
     }
 }

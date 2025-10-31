@@ -60,6 +60,7 @@ fun NotesTheme(
     customDelete: Int? = null,
     customEdit: Int? = null,
     customComplete: Int? = null,
+    customSelect: Int? = null,
     content: @Composable () -> Unit
 ) {
     val primary = customPrimary?.let { Color(it) } ?: AmoledDefault.Primary
@@ -85,8 +86,10 @@ fun NotesTheme(
     val delete = customDelete?.let { Color(it) } ?: AmoledDefault.Delete
     val edit = customEdit?.let { Color(it) } ?: AmoledDefault.Edit
     val complete = customComplete?.let { Color(it) } ?: AmoledDefault.Complete
+    val select = customSelect?.let { Color(it) } ?: AmoledDefault.Select
 
-    val extraColors = ExtraColors(delete, edit, complete)
+
+    val extraColors = ExtraColors(delete, edit, complete, select)
 
     val colorScheme = generateColorScheme(
         primary = primary,

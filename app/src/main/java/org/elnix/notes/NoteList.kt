@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,23 +42,28 @@ import org.elnix.notes.ui.helpers.NoteCard
 fun NotesList(
     notes: List<NoteEntity>,
     selectedNotes: Set<NoteEntity>,
+    isSelectMode: Boolean,
     onNoteClick: (NoteEntity) -> Unit,
     onNoteLongClick: (NoteEntity) -> Unit,
     onRightAction: (NoteEntity) -> Unit,
     onLeftAction: (NoteEntity) -> Unit,
-    onButtonCLick: (NoteEntity) -> Unit,
+    onButtonClick: (NoteEntity) -> Unit,
     actionSettings: NoteActionSettings
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         items(notes) { note ->
             SwipeableNoteCard(
                 note = note,
                 selected = selectedNotes.contains(note),
+                isSelectMode = isSelectMode,
                 onNoteClick = { onNoteClick(note) },
                 onNoteLongClick = { onNoteLongClick(note) },
                 onRightAction = { onRightAction(note) },
                 onLeftAction = { onLeftAction(note) },
-                onButtonCLick = { onButtonCLick(note) },
+                onButtonClick = { onButtonClick(note) },
                 actionSettings = actionSettings
             )
         }
@@ -67,11 +74,12 @@ fun NotesList(
 fun SwipeableNoteCard(
     note: NoteEntity,
     selected: Boolean,
+    isSelectMode: Boolean,
     onNoteClick: (NoteEntity) -> Unit,
     onNoteLongClick: (NoteEntity) -> Unit,
     onRightAction: (NoteEntity) -> Unit,
     onLeftAction: (NoteEntity) -> Unit,
-    onButtonCLick: (NoteEntity) -> Unit,
+    onButtonClick: (NoteEntity) -> Unit,
     actionSettings: NoteActionSettings
 ) {
     val maxSwipePx = 80f
@@ -87,30 +95,35 @@ fun SwipeableNoteCard(
         }
     }
 
-    // Animate selection offset
     val selectionOffset by animateDpAsState(
         targetValue = if (selected) 40.dp else 0.dp,
         label = "selectionOffset"
     )
 
+    // disable dragging when select mode is active
+    val dragModifier = if (!isSelectMode) {
+        Modifier.draggable(
+            state = draggableState,
+            orientation = Orientation.Horizontal,
+            onDragStopped = {
+                when (swipeState) {
+                    SwipeState.LeftAction -> onLeftAction(note)
+                    SwipeState.RightAction -> onRightAction(note)
+                    else -> {}
+                }
+                swipeOffset = 0f
+                swipeState = SwipeState.Default
+            }
+        )
+    } else {
+        Modifier
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(Color.Transparent)
-            .draggable(
-                state = draggableState,
-                orientation = Orientation.Horizontal,
-                onDragStopped = {
-                    when (swipeState) {
-                        SwipeState.LeftAction -> onLeftAction(note)
-                        SwipeState.RightAction -> onRightAction(note)
-                        else -> {}
-                    }
-                    swipeOffset = 0f
-                    swipeState = SwipeState.Default
-                }
-            )
+            .then(dragModifier)
     ) {
         // Swipe background
         Box(
@@ -144,28 +157,28 @@ fun SwipeableNoteCard(
             )
         }
 
-        // Selected icon on the left when selected
+        // Selected icon
         if (selected) {
             Icon(
-                imageVector = swipeActionIcon(actionSettings.selectAction),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = "Selected",
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
-                    .padding(start = 16.dp)
-                    .size(24.dp)
+                    .padding(start = 12.dp)
+                    .size(26.dp)
             )
         }
 
-        // Foreground Note card
+        // Foreground Note Card
         NoteCard(
             note = note,
             onClick = { onNoteClick(note) },
             onLongClick = { onNoteLongClick(note) },
-            onDeleteButtonClick = { onButtonCLick(note) },
+            onDeleteButtonClick = { onButtonClick(note) },
             modifier = Modifier
                 .offset(x = swipeOffset.dp + selectionOffset)
-                .background(note.color, RoundedCornerShape(12.dp))
-        )
+//                .background(Color.Yellow/*note.color*/, RoundedCornerShape(12.dp))
+    )
     }
 }

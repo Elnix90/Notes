@@ -48,7 +48,7 @@ fun NoteCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = note.bgColor
         ),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -63,18 +63,21 @@ fun NoteCard(
                 .padding(16.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
+
                 Text(
                     text = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(note.createdAt),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = note.txtColor.copy(alpha = 0.6f)
                 )
+
                 Spacer(Modifier.height(6.dp))
+
                 Text(
                     text = note.title,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         textDecoration = if (note.isCompleted) TextDecoration.LineThrough else null
                     ),
-                    color = MaterialTheme.colorScheme.onSurface.copy(
+                    color = note.txtColor.copy(
                         alpha = if (note.isCompleted) 0.5f else 1f
                     )
                 )

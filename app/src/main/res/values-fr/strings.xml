@@ -95,4 +95,7 @@
     <string name="timeout">Délai d\'attente</string>
     <string name="default_text">Defaut</string>
     <string name="show_delete_button">Afficher boutton supprimer</string>
+    <string name="notes_view_type">Mode d\'affichage des notes</string>
+    <string name="text">Texte</string>
+    <string name="note">Note</string>
 </resources>

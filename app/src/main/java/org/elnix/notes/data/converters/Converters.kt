@@ -1,5 +1,4 @@
-// file: org/elnix/notes/data/Converters.kt
-package org.elnix.notes.data
+package org.elnix.notes.data.converters
 
 import androidx.room.TypeConverter
 import java.util.Calendar

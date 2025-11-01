@@ -195,7 +195,11 @@ fun BottomNav(navController: NavHostController) {
 
             NavigationBarItem(
                 selected = current.startsWith(item.route),
-                onClick = { navController.navigate(item.route) { launchSingleTop = true } },
+                onClick = {
+                    if( current != item.route ) {
+                        navController.navigate(item.route) { launchSingleTop = true }
+                    }
+                },
                 icon = { Icon(item.icon, contentDescription = item.label) },
                 label = if (!showLabel) null else { { Text(item.label, color = MaterialTheme.colorScheme.onBackground) } },
                 colors = NavigationBarItemDefaults.colors(

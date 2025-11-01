@@ -416,7 +416,7 @@ fun NoteEditorScreen(
             ) {
                 Text(
                     text = stringResource(R.string.cancel),
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }

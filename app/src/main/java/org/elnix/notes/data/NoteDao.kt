@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
-    @Query("SELECT * FROM notes ORDER BY createdAt DESC")
+    @Query("SELECT * FROM notes ORDER BY lastEdit DESC")
     fun observeAll(): Flow<List<NoteEntity>>
 
-    @Query("SELECT * FROM notes ORDER BY createdAt DESC")
+    @Query("SELECT * FROM notes ORDER BY lastEdit DESC")
     suspend fun getAll(): List<NoteEntity>
 
 

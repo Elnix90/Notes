@@ -15,18 +15,18 @@ android {
         applicationId = "org.elnix.notes"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.4-alpha"
+        versionCode = 5
+        versionName = "0.5-alpha"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            isShrinkResources = false
-//            proguardFiles(
-//                getDefaultProguardFile("proguard-android-optimize.txt"),
-//                "proguard-rules.pro"
-//            )
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -60,14 +60,14 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
 
     // Compose UI
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.material.icons.extended)
 
 
-    implementation("com.google.android.material:material:1.13.0")
+    implementation(libs.material)
 
 
     // Navigation
@@ -78,36 +78,40 @@ dependencies {
 
     // Room
     implementation(libs.androidx.room.runtime)
-    implementation("androidx.room:room-ktx:2.8.3")
+    implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.appcompat)
-    ksp("androidx.room:room-compiler:2.8.3")
+    ksp(libs.androidx.room.compiler)
 
     // DataStore
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
+    implementation(libs.androidx.datastore.preferences)
+
+    // Gson
+    implementation(libs.gson)
+
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
     // WorkManager
-    implementation("androidx.work:work-runtime-ktx:2.11.0")
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Testing
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.3.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2025.10.01"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
     // Reorderable Lazy lists
-    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
+    implementation(libs.reorderable)
 
     // Debug tools
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Biometric API
-    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    implementation(libs.androidx.biometric)
 }
 

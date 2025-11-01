@@ -1,21 +1,23 @@
 [versions]
-agp = "8.13.0"
-kotlin = "2.2.21"
+biometric = "1.2.0-alpha05"
+gson = "2.13.2"
 composeBom = "2025.10.01"
-composeCompiler = "1.6.10"
 lifecycle = "2.9.4"
 activityCompose = "1.11.0"
+material = "1.13.0"
+reorderable = "0.9.6"
 room = "2.8.3"
 datastore = "1.1.7"
 coroutines = "1.10.2"
 navigation = "2.9.5"
-material3 = "1.4.0"
-ksp = "2.2.20-1.0.28"
 material3Version = "1.4.0"
-roomRuntime = "2.8.3"
 appcompat = "1.7.1"
 
 [libraries]
+androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
+androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version = "1.17.0" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
@@ -25,8 +27,6 @@ androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = 
 androidx-ui = { module = "androidx.compose.ui:ui" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
@@ -37,6 +37,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 
@@ -47,9 +48,5 @@ androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core",
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version = "2.11.0" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3Version" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-
-[plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version = "2.0.21-1.0.28" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+reorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "reorderable" }

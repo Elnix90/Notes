@@ -1,4 +1,4 @@
-package org.elnix.notes
+package org.elnix.notes.ui.editors
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.elnix.notes.R
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.ui.NoteViewModel

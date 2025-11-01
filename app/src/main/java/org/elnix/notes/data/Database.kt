@@ -6,11 +6,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import org.elnix.notes.data.converters.CheckListConverters
 import org.elnix.notes.data.converters.ColorConverter
 import org.elnix.notes.data.converters.Converters
 
-@Database(entities = [NoteEntity::class, ReminderEntity::class], version = 1)
-@TypeConverters(Converters::class,ColorConverter::class)
+@Database(entities = [NoteEntity::class, ReminderEntity::class], version = 2)
+@TypeConverters(Converters::class, ColorConverter::class, CheckListConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
     abstract fun reminderDao(): ReminderDao

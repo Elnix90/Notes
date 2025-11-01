@@ -98,4 +98,5 @@
     <string name="text">Text</string>
     <string name="note">Note</string>
     <string name="auto_text_color">Auto text color</string>
+    <string name="fullscreen_app">Fullscreen App</string>
 </resources>

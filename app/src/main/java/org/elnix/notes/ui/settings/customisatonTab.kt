@@ -17,27 +17,20 @@ import org.elnix.notes.R
 import org.elnix.notes.data.helpers.NoteViewType
 import org.elnix.notes.data.settings.NoteActionSettings
 import org.elnix.notes.data.settings.NotesActions
-import org.elnix.notes.data.settings.stores.ActionSettingsStore.getActionSettingsFlow
-import org.elnix.notes.data.settings.stores.ActionSettingsStore.setClickAction
-import org.elnix.notes.data.settings.stores.ActionSettingsStore.setSwipeLeftAction
-import org.elnix.notes.data.settings.stores.ActionSettingsStore.setSwipeRightAction
-import org.elnix.notes.data.settings.stores.UiSettingsStore.getNoteViewType
-import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowDeleteButton
-import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowNotesNumber
-import org.elnix.notes.data.settings.stores.UiSettingsStore.setNoteViewType
-import org.elnix.notes.data.settings.stores.UiSettingsStore.setShowDeleteButton
-import org.elnix.notes.data.settings.stores.UiSettingsStore.setShowNotesNumber
+import org.elnix.notes.data.settings.stores.ActionSettingsStore
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
 
 @Composable
 fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
-    val settings by getActionSettingsFlow(ctx).collectAsState(initial = NoteActionSettings())
+    val settings by ActionSettingsStore.getActionSettingsFlow(ctx).collectAsState(initial = NoteActionSettings())
 
-    val showNotesNumber by getShowNotesNumber(ctx).collectAsState(initial = true)
-    val showDeleteButton by getShowDeleteButton(ctx).collectAsState(initial = true)
-    val notesViewType by getNoteViewType(ctx).collectAsState(initial = NoteViewType.LIST)
+    val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx).collectAsState(initial = true)
+    val showDeleteButton by UiSettingsStore.getShowDeleteButton(ctx).collectAsState(initial = true)
+    val notesViewType by UiSettingsStore.getNoteViewType(ctx).collectAsState(initial = NoteViewType.LIST)
+    val fullscreenApp by UiSettingsStore.getFullscreen(ctx).collectAsState(initial = false)
 
 
     Column(
@@ -55,7 +48,7 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             selected = settings.leftAction,
             optionLabel = { it.name}
         ) {
-            scope.launch { setSwipeLeftAction(ctx, it) }
+            scope.launch { ActionSettingsStore.setSwipeLeftAction(ctx, it) }
         }
 
         // --- Swipe Right ---
@@ -65,7 +58,7 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             selected = settings.rightAction,
             optionLabel = { it.name}
         ) {
-            scope.launch { setSwipeRightAction(ctx, it) }
+            scope.launch { ActionSettingsStore.setSwipeRightAction(ctx, it) }
         }
 
         // --- Click Action ---
@@ -75,21 +68,21 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             selected = settings.clickAction,
             optionLabel = { it.name}
         ) {
-            scope.launch { setClickAction(ctx, it) }
+            scope.launch { ActionSettingsStore.setClickAction(ctx, it) }
         }
 
         SwitchRow(
             showNotesNumber,
             stringResource(R.string.show_notes_number),
         ) {
-            scope.launch { setShowNotesNumber(ctx, it) }
+            scope.launch { UiSettingsStore.setShowNotesNumber(ctx, it) }
         }
 
         SwitchRow(
             showDeleteButton,
             stringResource(R.string.show_delete_button),
         ) {
-            scope.launch { setShowDeleteButton(ctx, it) }
+            scope.launch { UiSettingsStore.setShowDeleteButton(ctx, it) }
         }
 
         ActionSelectorRow(
@@ -98,7 +91,14 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             selected = notesViewType,
             optionLabel = { it.name}
         ) {
-            scope.launch { setNoteViewType(ctx, it) }
+            scope.launch { UiSettingsStore.setNoteViewType(ctx, it) }
+        }
+
+        SwitchRow(
+            fullscreenApp,
+            stringResource(R.string.fullscreen_app),
+        ) {
+            scope.launch { UiSettingsStore.setFullscreen(ctx, it) }
         }
     }
 }

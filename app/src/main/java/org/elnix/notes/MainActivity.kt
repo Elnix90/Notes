@@ -3,13 +3,19 @@ package org.elnix.notes
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.NotesTheme
 
@@ -18,7 +24,31 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // Ensure system windows layout control
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+
+        lifecycleScope.launch {
+            UiSettingsStore.getFullscreen(this@MainActivity).collectLatest { enabled ->
+                if (enabled) {
+                    controller.hide(
+                        WindowInsetsCompat.Type.statusBars() or
+                                WindowInsetsCompat.Type.navigationBars()
+                    )
+                    controller.systemBarsBehavior =
+                        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                } else {
+                    controller.show(
+                        WindowInsetsCompat.Type.statusBars() or
+                                WindowInsetsCompat.Type.navigationBars()
+                    )
+                    controller.systemBarsBehavior =
+                        WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+                }
+            }
+        }
 
         setContent {
             val ctx = LocalContext.current

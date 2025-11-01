@@ -1,12 +1,9 @@
 package org.elnix.notes
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -24,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -35,9 +31,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.editors.ChecklistEditorScreen
+import org.elnix.notes.ui.editors.DrawingEditorScreen
+import org.elnix.notes.ui.editors.NoteEditorScreen
+import org.elnix.notes.ui.helpers.AddNoteFab
 import org.elnix.notes.ui.security.LockScreen
 import org.elnix.notes.ui.theme.adjustBrightness
 
@@ -80,19 +81,7 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
             bottomBar = { BottomNav(navController) },
             floatingActionButton = {
                 if (currentRoute == Routes.NOTES) {
-                    FloatingActionButton(
-                        onClick = {
-                            navController.navigate(Routes.CREATE) {
-                                launchSingleTop = true
-                                popUpTo(Routes.CREATE)
-                            }
-                        },
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(56.dp)
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = "Add")
-                    }
+                    AddNoteFab(navController)
                 }
             }
         ) { innerPadding ->
@@ -108,13 +97,35 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                 settingsNavGraph(navController, vm)
 
                 // CREATE NOTE
-                composable(Routes.CREATE) {
-                    NoteEditorScreen(
-                        vm = vm,
-                        noteId = null,
-                        onSaved = { navController.popBackStack() },
-                        onCancel = { navController.popBackStack() }
-                    )
+                composable(
+                    route = "${Routes.CREATE}?type={type}",
+                    arguments = listOf(navArgument("type") {
+                        type = NavType.StringType
+                        defaultValue = NoteType.TEXT.name
+                    })
+                ) { backStackEntry ->
+                    val typeArg = backStackEntry.arguments?.getString("type")
+                    val noteType = NoteType.valueOf(typeArg ?: NoteType.TEXT.name)
+
+                    when (noteType) {
+                        NoteType.TEXT -> NoteEditorScreen(
+                            vm,
+                            null,
+                            onSaved = { navController.popBackStack() },
+                            onCancel = { navController.popBackStack() })
+                        NoteType.CHECKLIST -> ChecklistEditorScreen(
+                            vm,
+                            null,
+                            onSaved = { navController.popBackStack() },
+                            onCancel = { navController.popBackStack() }
+                        )
+                        NoteType.DRAWING -> DrawingEditorScreen(
+                            vm,
+                            null,
+                            onSaved = { navController.popBackStack() },
+                            onCancel = { navController.popBackStack() }
+                        )
+                    }
                 }
 
                 // EDIT NOTE

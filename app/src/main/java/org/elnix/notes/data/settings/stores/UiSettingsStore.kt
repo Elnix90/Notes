@@ -82,7 +82,6 @@ object UiSettingsStore {
 
     private val SHOW_DELETE_BUTTON = booleanPreferencesKey("show_delete_button")
     fun getShowDeleteButton(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[SHOW_DELETE_BUTTON] ?: false }
-
     suspend fun setShowDeleteButton(ctx: Context, state: Boolean) {
         ctx.dataStore.edit { it[SHOW_DELETE_BUTTON] = state}
     }
@@ -94,8 +93,16 @@ object UiSettingsStore {
             prefs[NOTE_VIEW_TYPE]?.let { NoteViewType.valueOf(it) }
                 ?: NoteViewType.LIST
         }
-
     suspend fun setNoteViewType(ctx: Context, state: NoteViewType) {
         ctx.dataStore.edit { it[NOTE_VIEW_TYPE] = state.name }
+    }
+
+
+    // Fullscreen options
+    private val FULLSCREEN = booleanPreferencesKey("fullscreen")
+    fun getFullscreen(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[FULLSCREEN] ?: false }
+    suspend fun setFullscreen(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[FULLSCREEN] = enabled }
     }
 }

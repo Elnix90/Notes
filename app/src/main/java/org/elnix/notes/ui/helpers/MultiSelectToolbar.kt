@@ -12,10 +12,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.helpers.NotesActions
+import org.elnix.notes.data.helpers.noteActionColor
 
 @Composable
 fun MultiSelectToolbar(
@@ -31,23 +33,39 @@ fun MultiSelectToolbar(
     ) {
 
         IconButton(onClick = { onCloseSelection() }) {
-            Icon(imageVector = Icons.Default.Close, contentDescription = "Cancel selection")
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Cancel selection",
+                tint = MaterialTheme.colorScheme.outline
+            )
         }
 
         Spacer(Modifier.weight(1f))
 
         if (isSingleSelected) {
             IconButton(onClick = { onGroupAction(NotesActions.EDIT) }) {
-                Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit selected note")
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit selected note",
+                    tint = noteActionColor(NotesActions.EDIT)
+                )
             }
         }
 
         IconButton(onClick = { onGroupAction(NotesActions.DELETE) }) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Selected")
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete Selected",
+                tint = noteActionColor(NotesActions.DELETE)
+            )
         }
 
         IconButton(onClick = { onGroupAction(NotesActions.COMPLETE) }) {
-            Icon(imageVector = Icons.Default.CheckBox, contentDescription = "Mark Complete")
+            Icon(
+                imageVector = Icons.Default.CheckBox,
+                contentDescription = "Mark Complete",
+                tint = noteActionColor(NotesActions.COMPLETE)
+            )
         }
     }
 }

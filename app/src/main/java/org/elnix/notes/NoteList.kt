@@ -35,8 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.NoteActionSettings
-import org.elnix.notes.data.helpers.swipeActionColor
-import org.elnix.notes.data.helpers.swipeActionIcon
+import org.elnix.notes.data.helpers.noteActionColor
+import org.elnix.notes.data.helpers.noteActionIcon
 import org.elnix.notes.ui.helpers.NoteCard
 
 @Composable
@@ -133,14 +133,14 @@ fun SwipeableNoteCard(
                     .width((swipeOffset + 50).dp)
                     .fillMaxHeight()
                     .align(Alignment.CenterStart)
-                    .background(swipeActionColor(actionSettings.rightAction))
+                    .background(noteActionColor(actionSettings.rightAction))
             }
             swipeOffset < 0f -> {
                 Modifier
                     .width((-swipeOffset + 50).dp)
                     .fillMaxHeight()
                     .align(Alignment.CenterEnd)
-                    .background(swipeActionColor(actionSettings.leftAction))
+                    .background(noteActionColor(actionSettings.leftAction))
             }
             else -> Modifier
         }
@@ -153,8 +153,8 @@ fun SwipeableNoteCard(
             val isActionReady = swipeState != SwipeState.Default
             Icon(
                 imageVector = when {
-                    swipeOffset > 0f -> swipeActionIcon(actionSettings.rightAction)
-                    swipeOffset < 0f -> swipeActionIcon(actionSettings.leftAction)
+                    swipeOffset > 0f -> noteActionIcon(actionSettings.rightAction)
+                    swipeOffset < 0f -> noteActionIcon(actionSettings.leftAction)
                     else -> Icons.Default.Delete
                 },
                 contentDescription = null,

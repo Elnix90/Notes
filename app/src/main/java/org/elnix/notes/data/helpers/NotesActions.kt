@@ -20,7 +20,7 @@ data class NoteActionSettings(
 )
 
 @Composable
-fun swipeActionColor(action: NotesActions): Color {
+fun noteActionColor(action: NotesActions): Color {
     val extras = LocalExtraColors.current
     return when (action) {
         NotesActions.DELETE -> extras.delete
@@ -31,7 +31,7 @@ fun swipeActionColor(action: NotesActions): Color {
 }
 
 @Composable
-fun swipeActionIcon(action: NotesActions) = when (action) {
+fun noteActionIcon(action: NotesActions) = when (action) {
     NotesActions.DELETE -> Icons.Default.Delete
     NotesActions.EDIT -> Icons.Default.Edit
     NotesActions.COMPLETE -> Icons.Default.CheckBox

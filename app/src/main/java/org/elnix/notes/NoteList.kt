@@ -34,9 +34,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.NoteEntity
-import org.elnix.notes.data.settings.NoteActionSettings
-import org.elnix.notes.data.settings.swipeActionColor
-import org.elnix.notes.data.settings.swipeActionIcon
+import org.elnix.notes.data.helpers.NoteActionSettings
+import org.elnix.notes.data.helpers.swipeActionColor
+import org.elnix.notes.data.helpers.swipeActionIcon
 import org.elnix.notes.ui.helpers.NoteCard
 
 @Composable

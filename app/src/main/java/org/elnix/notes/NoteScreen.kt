@@ -29,8 +29,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.NoteViewType
-import org.elnix.notes.data.settings.NoteActionSettings
-import org.elnix.notes.data.settings.NotesActions
+import org.elnix.notes.data.helpers.NoteActionSettings
+import org.elnix.notes.data.helpers.NotesActions
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
@@ -186,7 +186,7 @@ fun performAction(
         }
 
         NotesActions.EDIT -> {
-            navController.navigate("edit/${note.id}")
+            navController.navigate("${Routes.EDIT}?type=${note.type.name}")
         }
 
         NotesActions.SELECT -> {

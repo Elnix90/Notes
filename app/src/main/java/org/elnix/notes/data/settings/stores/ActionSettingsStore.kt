@@ -5,8 +5,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import org.elnix.notes.data.settings.NoteActionSettings
-import org.elnix.notes.data.settings.NotesActions
+import org.elnix.notes.data.helpers.NoteActionSettings
+import org.elnix.notes.data.helpers.NotesActions
 import org.elnix.notes.data.settings.dataStore
 
 object ActionSettingsStore {

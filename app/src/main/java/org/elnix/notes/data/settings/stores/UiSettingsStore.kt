@@ -105,4 +105,11 @@ object UiSettingsStore {
     suspend fun setFullscreen(ctx: Context, enabled: Boolean) {
         ctx.dataStore.edit { it[FULLSCREEN] = enabled }
     }
+
+    private val SHOW_NOTE_TYPE_ICON = booleanPreferencesKey("show_note_type_icon")
+    fun getShowNoteTypeIcon(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[SHOW_NOTE_TYPE_ICON] ?: false }
+    suspend fun setShowNoteTypeIcon(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[SHOW_NOTE_TYPE_ICON] = enabled }
+    }
 }

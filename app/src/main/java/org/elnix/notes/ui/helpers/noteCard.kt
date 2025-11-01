@@ -1,13 +1,17 @@
 package org.elnix.notes.ui.helpers
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,11 +27,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.NoteEntity
+import org.elnix.notes.data.helpers.noteTypeColor
+import org.elnix.notes.data.helpers.noteTypeIcon
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowDeleteButton
+import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowNoteTypeIcon
+import org.elnix.notes.ui.theme.adjustBrightness
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -41,6 +51,7 @@ fun NoteCard(
 ) {
     val ctx = LocalContext.current
     val showDeleteButton by getShowDeleteButton(ctx).collectAsState(initial = true)
+    val showNoteTypeIcon by getShowNoteTypeIcon(ctx).collectAsState(initial = true)
 
 
     Card(
@@ -64,6 +75,25 @@ fun NoteCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (showNoteTypeIcon) {
+                val iconColor = noteTypeColor(note.type)
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Top)
+                        .clip(CircleShape)
+                        .background(note.bgColor.adjustBrightness(if(iconColor.luminance() > 0.5) 0.5f else 1.5f))
+                        .padding(5.dp)
+                ) {
+                    Icon(
+                        imageVector = noteTypeIcon(note.type),
+                        contentDescription = "Note icon",
+                        modifier = Modifier.size(25.dp),
+                        tint = iconColor,
+                    )
+                }
+            }
+            Spacer(Modifier.width(10.dp))
+
             Column(modifier = Modifier.weight(1f)) {
 
                 Text(

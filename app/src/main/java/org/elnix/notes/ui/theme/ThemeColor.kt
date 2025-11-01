@@ -20,4 +20,8 @@ interface ThemeColors {
     val Edit: Color
     val Complete: Color
     val Select: Color
+
+    val NoteTypeText : Color
+    val NoteTypeChecklist : Color
+    val NoteTypeDrawing : Color
 }

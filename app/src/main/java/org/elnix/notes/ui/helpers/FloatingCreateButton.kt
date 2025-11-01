@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import org.elnix.notes.Routes
 import org.elnix.notes.data.helpers.NoteType
+import org.elnix.notes.ui.theme.LocalExtraColors
 
 @Composable
 fun AddNoteFab(navController: NavHostController) {
@@ -56,7 +57,7 @@ fun AddNoteFab(navController: NavHostController) {
                 SmallFab(
                     icon = Icons.AutoMirrored.Filled.FormatListBulleted,
                     label = "Checklist",
-                    color = MaterialTheme.colorScheme.secondary
+                    color = LocalExtraColors.current.noteTypeChecklist
                 ) {
                     navController.navigate("${Routes.CREATE}?type=${NoteType.CHECKLIST.name}")
                     expanded = false
@@ -64,7 +65,7 @@ fun AddNoteFab(navController: NavHostController) {
                 SmallFab(
                     icon = Icons.Default.Brush,
                     label = "Drawing",
-                    color = MaterialTheme.colorScheme.tertiary
+                    color = LocalExtraColors.current.noteTypeDrawing
                 ) {
                     navController.navigate("${Routes.CREATE}?type=${NoteType.DRAWING.name}")
                     expanded = false
@@ -72,7 +73,7 @@ fun AddNoteFab(navController: NavHostController) {
                 SmallFab(
                     icon = Icons.Default.Edit,
                     label = "Text",
-                    color = MaterialTheme.colorScheme.primary
+                    color = LocalExtraColors.current.noteTypeText
                 ) {
                     navController.navigate("${Routes.CREATE}?type=${NoteType.TEXT.name}")
                     expanded = false

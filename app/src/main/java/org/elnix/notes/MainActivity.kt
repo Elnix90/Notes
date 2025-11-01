@@ -77,6 +77,10 @@ class MainActivity : AppCompatActivity() {
             val editColor by ColorSettingsStore.getEdit(ctx).collectAsState(initial = null)
             val completeColor by ColorSettingsStore.getComplete(ctx).collectAsState(initial = null)
 
+            val customSelect by ColorSettingsStore.getSelect(ctx).collectAsState(initial = null)
+            val customNoteTypeText by ColorSettingsStore.getNoteTypeText(ctx).collectAsState(initial = null)
+            val customNoteTypeChecklist by ColorSettingsStore.getNoteTypeChecklist(ctx).collectAsState(initial = null)
+            val customNoteTypeDrawing by ColorSettingsStore.getNoteTypeDrawing(ctx).collectAsState(initial = null)
 
             NotesTheme(
                 customPrimary = primary,
@@ -94,7 +98,11 @@ class MainActivity : AppCompatActivity() {
                 customOutline = outline,
                 customDelete = deleteColor,
                 customEdit = editColor,
-                customComplete = completeColor
+                customComplete = completeColor,
+                customSelect =customSelect,
+                customNoteTypeText = customNoteTypeText,
+                customNoteTypeCheckList = customNoteTypeChecklist,
+                customNoteTypeDrawing = customNoteTypeDrawing
             ) {
                 MainApp(vm, this)
             }

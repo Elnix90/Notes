@@ -15,7 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.elnix.notes.data.settings.NotesActions
+import org.elnix.notes.data.helpers.NotesActions
 
 @Composable
 fun MultiSelectToolbar(

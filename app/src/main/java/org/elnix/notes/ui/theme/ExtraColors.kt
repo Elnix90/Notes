@@ -7,7 +7,12 @@ data class ExtraColors(
     val delete: Color,
     val edit: Color,
     val complete: Color,
-    val select: Color
+    val select: Color,
+
+    val noteTypeText : Color,
+    val noteTypeChecklist : Color,
+    val noteTypeDrawing : Color,
+
 )
 
 // default fallback values
@@ -16,6 +21,9 @@ val LocalExtraColors = staticCompositionLocalOf {
         delete = AmoledDefault.Delete,
         edit = AmoledDefault.Edit,
         complete = AmoledDefault.Complete,
-        select = AmoledDefault.Select
+        select = AmoledDefault.Select,
+        noteTypeText = AmoledDefault.NoteTypeText,
+        noteTypeChecklist = AmoledDefault.NoteTypeChecklist,
+        noteTypeDrawing = AmoledDefault.NoteTypeDrawing,
     )
 }

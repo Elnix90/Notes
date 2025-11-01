@@ -99,4 +99,8 @@
     <string name="note">Note</string>
     <string name="auto_text_color">Auto text color</string>
     <string name="fullscreen_app">Fullscreen App</string>
+    <string name="show_note_type_icon">Show note type icon</string>
+    <string name="note_type_text">Note type text</string>
+    <string name="note_type_checklist">Note type checklist</string>
+    <string name="note_type_drawing">Note type drawing</string>
 </resources>

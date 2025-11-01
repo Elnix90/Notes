@@ -14,6 +14,9 @@ import org.elnix.notes.data.settings.stores.ColorSettingsStore.setComplete
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setDelete
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setEdit
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setError
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setNoteTypeChecklist
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setNoteTypeDrawing
+import org.elnix.notes.data.settings.stores.ColorSettingsStore.setNoteTypeText
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setOnBackground
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setOnError
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setOnPrimary
@@ -51,7 +54,10 @@ object ColorSettingsStore {
     private val DELETE_COLOR = intPreferencesKey("delete_color")
     private val EDIT_COLOR = intPreferencesKey("edit_color")
     private val COMPLETE_COLOR = intPreferencesKey("complete_color")
-
+    private val SELECT_COLOR = intPreferencesKey("select_color")
+    private val NOTE_TYPE_CHECKLIST= intPreferencesKey("note_type_checklist")
+    private val NOTE_TYPE_TEXT = intPreferencesKey("note_type_text")
+    private val NOTE_TYPE_DRAWING = intPreferencesKey("note_type_drawing")
 
 
 
@@ -138,6 +144,28 @@ object ColorSettingsStore {
         ctx.dataStore.edit { it[COMPLETE_COLOR] = color }
     }
 
+    fun getSelect(ctx: Context) = ctx.dataStore.data.map { it[SELECT_COLOR] }
+    suspend fun setSelect(ctx: Context, color: Int) {
+        ctx.dataStore.edit { it[SELECT_COLOR] = color }
+    }
+
+    fun getNoteTypeText(ctx: Context) = ctx.dataStore.data.map { it[NOTE_TYPE_TEXT] }
+    suspend fun setNoteTypeText(ctx: Context, color: Int) {
+        ctx.dataStore.edit { it[NOTE_TYPE_TEXT] = color }
+    }
+
+    fun getNoteTypeChecklist(ctx: Context) = ctx.dataStore.data.map { it[NOTE_TYPE_CHECKLIST] }
+    suspend fun setNoteTypeChecklist(ctx: Context, color: Int) {
+        ctx.dataStore.edit { it[NOTE_TYPE_CHECKLIST] = color }
+    }
+
+    fun getNoteTypeDrawing(ctx: Context) = ctx.dataStore.data.map { it[NOTE_TYPE_DRAWING] }
+    suspend fun setNoteTypeDrawing(ctx: Context, color: Int) {
+        ctx.dataStore.edit { it[NOTE_TYPE_DRAWING] = color }
+    }
+
+
+
     suspend fun resetColors(
         ctx: Context,
         selectedColorCustomisationMode: ColorCustomisationMode,
@@ -176,4 +204,7 @@ private suspend fun applyThemeColors(ctx: Context, colors: ThemeColors) {
     setDelete(ctx, colors.Delete.toArgb())
     setEdit(ctx, colors.Edit.toArgb())
     setComplete(ctx, colors.Complete.toArgb())
+    setNoteTypeText(ctx,colors.NoteTypeText.toArgb())
+    setNoteTypeChecklist(ctx,colors.NoteTypeChecklist.toArgb())
+    setNoteTypeDrawing(ctx,colors.NoteTypeDrawing.toArgb())
 }

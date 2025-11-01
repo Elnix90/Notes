@@ -72,6 +72,10 @@ fun ColorSelectorTab(
     val edit by ColorSettingsStore.getEdit(ctx).collectAsState(initial = null)
     val complete by ColorSettingsStore.getComplete(ctx).collectAsState(initial = null)
 
+    val noteTypeText by ColorSettingsStore.getNoteTypeText(ctx).collectAsState(initial = null)
+    val noteTypeChecklist by ColorSettingsStore.getNoteTypeChecklist(ctx).collectAsState(initial = null)
+    val noteTypeDrawing by ColorSettingsStore.getNoteTypeDrawing(ctx).collectAsState(initial = null)
+
 
     val colorCustomisationMode by UiSettingsStore.getColorCustomisationMode(ctx).collectAsState(initial = ColorCustomisationMode.DEFAULT)
     val selectedDefaultTheme by UiSettingsStore.getDefaultTheme(ctx).collectAsState(initial = DefaultThemes.DARK)
@@ -229,6 +233,28 @@ fun ColorSelectorTab(
                         currentColor = complete ?: LocalExtraColors.current.complete.toArgb(),
                         scope = scope,
                     ) { scope.launch { ColorSettingsStore.setComplete(ctx, it) } }
+
+                    ColorPickerRow(
+                        label = stringResource(R.string.note_type_text),
+                        defaultColor = AmoledDefault.NoteTypeText,
+                        currentColor = noteTypeText ?: LocalExtraColors.current.noteTypeText.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setNoteTypeText(ctx, it) } }
+
+                    ColorPickerRow(
+                        label = stringResource(R.string.note_type_checklist),
+                        defaultColor = AmoledDefault.NoteTypeChecklist,
+                        currentColor = noteTypeChecklist ?: LocalExtraColors.current.noteTypeChecklist.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setNoteTypeChecklist(ctx, it) } }
+
+                    ColorPickerRow(
+                        label = stringResource(R.string.note_type_drawing),
+                        defaultColor = AmoledDefault.NoteTypeDrawing,
+                        currentColor = noteTypeDrawing ?: LocalExtraColors.current.noteTypeDrawing.toArgb(),
+                        scope = scope,
+                    ) { scope.launch { ColorSettingsStore.setNoteTypeDrawing(ctx, it) } }
+
                 }
             }
 

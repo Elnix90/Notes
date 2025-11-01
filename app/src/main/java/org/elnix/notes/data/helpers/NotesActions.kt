@@ -1,4 +1,4 @@
-package org.elnix.notes.data.settings
+package org.elnix.notes.data.helpers
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckBox

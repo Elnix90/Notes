@@ -15,8 +15,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.NoteViewType
-import org.elnix.notes.data.settings.NoteActionSettings
-import org.elnix.notes.data.settings.NotesActions
+import org.elnix.notes.data.helpers.NoteActionSettings
+import org.elnix.notes.data.helpers.NotesActions
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
@@ -31,6 +31,7 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
     val showDeleteButton by UiSettingsStore.getShowDeleteButton(ctx).collectAsState(initial = true)
     val notesViewType by UiSettingsStore.getNoteViewType(ctx).collectAsState(initial = NoteViewType.LIST)
     val fullscreenApp by UiSettingsStore.getFullscreen(ctx).collectAsState(initial = false)
+    val showNoteTypeIcon by UiSettingsStore.getShowNoteTypeIcon(ctx).collectAsState(initial = false)
 
 
     Column(
@@ -99,6 +100,13 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             stringResource(R.string.fullscreen_app),
         ) {
             scope.launch { UiSettingsStore.setFullscreen(ctx, it) }
+        }
+
+        SwitchRow(
+            showNoteTypeIcon,
+            stringResource(R.string.show_note_type_icon),
+        ) {
+            scope.launch { UiSettingsStore.setShowNoteTypeIcon(ctx, it) }
         }
     }
 }

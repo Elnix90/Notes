@@ -1,6 +1,5 @@
 package org.elnix.notes.ui.editors
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +26,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -94,32 +92,32 @@ fun NoteEditorScreen(
     }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
 
     // Auto-delete empty new note when leaving the screen
-    DisposableEffect(Unit) {
-        onDispose {
-            if (createdNoteId != null) {
-                scope.launch {
-                    val n = vm.getById(createdNoteId!!)
-                    if (n != null && n.title.isBlank() && n.desc.isBlank()) {
-                        vm.delete(n)
-                    }
-                }
-            }
-        }
-    }
-
-    // Handle system back press just like cancel
-    BackHandler {
-        scope.launch {
-            val id = note?.id ?: createdNoteId
-            if (id != null) {
-                val n = vm.getById(id)
-                if (n != null && n.title.isBlank() && n.desc.isBlank()) {
-                    vm.delete(n)
-                }
-            }
-            onCancel()
-        }
-    }
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            if (createdNoteId != null) {
+//                scope.launch {
+//                    val n = vm.getById(createdNoteId!!)
+//                    if (n != null && n.title.isBlank() && n.desc.isBlank()) {
+//                        vm.delete(n)
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    // Handle system back press just like cancel
+//    BackHandler {
+//        scope.launch {
+//            val id = note?.id ?: createdNoteId
+//            if (id != null) {
+//                val n = vm.getById(id)
+//                if (n != null && n.title.isBlank() && n.desc.isBlank()) {
+//                    vm.delete(n)
+//                }
+//            }
+//            onCancel()
+//        }
+//    }
 
 
     Column(

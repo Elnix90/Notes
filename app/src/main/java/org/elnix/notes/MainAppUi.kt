@@ -131,15 +131,34 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                 // EDIT NOTE
                 composable(
                     route = Routes.EDIT,
-                    arguments = listOf(navArgument("noteId") { type = NavType.LongType })
+                    arguments = listOf(navArgument("type") {
+                        type = NavType.StringType
+                        defaultValue = NoteType.TEXT.name
+                    })
                 ) { backStackEntry ->
                     val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
-                    NoteEditorScreen(
-                        vm = vm,
-                        noteId = noteId,
-                        onSaved = { navController.popBackStack() },
-                        onCancel = { navController.popBackStack() }
-                    )
+                    val typeArg = backStackEntry.arguments?.getString("type")
+                    val noteType = NoteType.valueOf(typeArg ?: NoteType.TEXT.name)
+
+                    when (noteType) {
+                        NoteType.TEXT -> NoteEditorScreen(
+                            vm,
+                            noteId,
+                            onSaved = { navController.popBackStack() },
+                            onCancel = { navController.popBackStack() })
+                        NoteType.CHECKLIST -> ChecklistEditorScreen(
+                            vm,
+                            noteId,
+                            onSaved = { navController.popBackStack() },
+                            onCancel = { navController.popBackStack() }
+                        )
+                        NoteType.DRAWING -> DrawingEditorScreen(
+                            vm,
+                            noteId,
+                            onSaved = { navController.popBackStack() },
+                            onCancel = { navController.popBackStack() }
+                        )
+                    }
                 }
             }
         }

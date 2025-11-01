@@ -21,6 +21,10 @@ object AmoledDefault : ThemeColors {
     override val Edit = Color(0xFF0019D3)
     override val Complete = Color(0xFF388E3C)
     override val Select = Color(0xFF0F7AC5)
+
+    override val NoteTypeText = Color(0xFF05609D)
+    override val NoteTypeChecklist = Color(0xFF6318A4)
+    override val NoteTypeDrawing = Color(0xFFFD0990)
 }
 
 object DarkDefault : ThemeColors {
@@ -48,6 +52,10 @@ object DarkDefault : ThemeColors {
     override val Edit = Color(0xFF64B5F6)
     override val Complete = Color(0xFF81C784)
     override val Select = Color(0xFF0F7AC5)
+
+    override val NoteTypeText = Color(0xFF05609D)
+    override val NoteTypeChecklist = Color(0xFF6318A4)
+    override val NoteTypeDrawing = Color(0xFFFD0990)
 }
 
 
@@ -69,5 +77,9 @@ object LightDefault : ThemeColors {
     override val Edit = Color(0xFF0020FF)
     override val Complete = Color(0xFF388E3C)
     override val Select = Color(0xFF0F7AC5)
+
+    override val NoteTypeText = Color(0xFF05609D)
+    override val NoteTypeChecklist = Color(0xFF6318A4)
+    override val NoteTypeDrawing = Color(0xFFFD0990)
 }
 

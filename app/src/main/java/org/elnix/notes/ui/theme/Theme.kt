@@ -61,6 +61,9 @@ fun NotesTheme(
     customEdit: Int? = null,
     customComplete: Int? = null,
     customSelect: Int? = null,
+    customNoteTypeText: Int? = null,
+    customNoteTypeCheckList: Int? = null,
+    customNoteTypeDrawing: Int? = null,
     content: @Composable () -> Unit
 ) {
     val primary = customPrimary?.let { Color(it) } ?: AmoledDefault.Primary
@@ -88,8 +91,19 @@ fun NotesTheme(
     val complete = customComplete?.let { Color(it) } ?: AmoledDefault.Complete
     val select = customSelect?.let { Color(it) } ?: AmoledDefault.Select
 
+    val noteTypeText = customNoteTypeText?.let { Color(it) } ?: AmoledDefault.NoteTypeText
+    val noteTypeChecklist = customNoteTypeCheckList?.let { Color(it) } ?: AmoledDefault.NoteTypeChecklist
+    val noteTypeDrawing = customNoteTypeDrawing?.let { Color(it) } ?: AmoledDefault.NoteTypeDrawing
 
-    val extraColors = ExtraColors(delete, edit, complete, select)
+    val extraColors = ExtraColors(
+        delete,
+        edit,
+        complete,
+        select,
+        noteTypeText,
+        noteTypeChecklist,
+        noteTypeDrawing
+    )
 
     val colorScheme = generateColorScheme(
         primary = primary,
@@ -104,7 +118,7 @@ fun NotesTheme(
         onSurface = onSurface,
         error = error,
         onError = onError,
-        outline = outline
+        outline = outline,
     )
 
     CompositionLocalProvider(LocalExtraColors provides extraColors) {

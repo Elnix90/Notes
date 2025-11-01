@@ -103,4 +103,5 @@
     <string name="note_type_text">Note type text</string>
     <string name="note_type_checklist">Note type checklist</string>
     <string name="note_type_drawing">Note type drawing</string>
+    <string name="quick_actions">Quick Actions</string>
 </resources>

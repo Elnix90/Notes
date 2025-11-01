@@ -130,11 +130,14 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
 
                 // EDIT NOTE
                 composable(
-                    route = Routes.EDIT,
-                    arguments = listOf(navArgument("type") {
-                        type = NavType.StringType
-                        defaultValue = NoteType.TEXT.name
-                    })
+                    route = "${Routes.EDIT}?type={type}",
+                    arguments = listOf(
+                        navArgument("noteId") { type = NavType.LongType },
+                        navArgument("type") {
+                            type = NavType.StringType
+                            defaultValue = NoteType.TEXT.name
+                        }
+                    )
                 ) { backStackEntry ->
                     val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
                     val typeArg = backStackEntry.arguments?.getString("type")

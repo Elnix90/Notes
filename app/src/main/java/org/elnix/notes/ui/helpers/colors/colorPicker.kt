@@ -78,7 +78,7 @@ fun ColorPickerRow(
                     .background(Color(currentColor), shape = CircleShape)
                     .border(
                         1.dp,
-                        MaterialTheme.colorScheme.outline.adjustBrightness(if (enabled) 0.3f else 0.1f),
+                        MaterialTheme.colorScheme.outline,
                         CircleShape
                     )
             )

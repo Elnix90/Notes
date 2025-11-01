@@ -1,6 +1,7 @@
 package org.elnix.notes.ui.editors
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -35,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
@@ -46,6 +47,7 @@ import org.elnix.notes.R
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.colors.ColorPickerRow
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderBubble
@@ -91,34 +93,6 @@ fun NoteEditorScreen(
         if (currentId != null) vm.remindersFor(currentId) else null
     }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
 
-    // Auto-delete empty new note when leaving the screen
-//    DisposableEffect(Unit) {
-//        onDispose {
-//            if (createdNoteId != null) {
-//                scope.launch {
-//                    val n = vm.getById(createdNoteId!!)
-//                    if (n != null && n.title.isBlank() && n.desc.isBlank()) {
-//                        vm.delete(n)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    // Handle system back press just like cancel
-//    BackHandler {
-//        scope.launch {
-//            val id = note?.id ?: createdNoteId
-//            if (id != null) {
-//                val n = vm.getById(id)
-//                if (n != null && n.title.isBlank() && n.desc.isBlank()) {
-//                    vm.delete(n)
-//                }
-//            }
-//            onCancel()
-//        }
-//    }
-
 
     Column(
         modifier = Modifier
@@ -144,14 +118,14 @@ fun NoteEditorScreen(
             colors = AppObjectsColors.outlinedTextFieldColors()
         )
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-
-
         val reminderText = stringResource(R.string.reminder)
+
+        TextDivider(reminderText)
 
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            itemVerticalAlignment = Alignment.CenterVertically
         ) {
             reminders.forEach { reminder ->
                 ReminderBubble(
@@ -200,12 +174,16 @@ fun NoteEditorScreen(
             }
         }
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+        TextDivider(stringResource(R.string.color_text_literal))
 
-        // --- Colors section above "completed" ---
+
+        // --- Colors section  ---
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -229,7 +207,6 @@ fun NoteEditorScreen(
                         defaultColor = MaterialTheme.colorScheme.surface,
                         currentColor = note?.bgColor?.toArgb()
                             ?: MaterialTheme.colorScheme.surface.toArgb(),
-                        backgroundColor = MaterialTheme.colorScheme.background,
                         scope = scope
                     ) { pickedInt ->
                         val pickedColor = Color(pickedInt)
@@ -278,7 +255,6 @@ fun NoteEditorScreen(
                             ?: MaterialTheme.colorScheme.onSurface.toArgb(),
                         scope = scope,
                         enabled = !autoTextColorEnabled,
-                        backgroundColor = MaterialTheme.colorScheme.background,
                     ) { pickedInt ->
                         val pickedColor = Color(pickedInt)
                         scope.launch {
@@ -308,7 +284,7 @@ fun NoteEditorScreen(
                                             val computedTxt =
                                                 if (checked) {
                                                     val bg = n.bgColor
-                                                    if (bg.luminance() < 0.5f) Color.White else Color.Black
+                                                    if (bg.luminance() < 0.4f) Color.White else Color.Black
                                                 } else n.txtColor
                                             val updated = n.copy(
                                                 autoTextColor = checked,
@@ -330,14 +306,17 @@ fun NoteEditorScreen(
                     }
                 }
             }
-
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
         }
+
+        TextDivider(stringResource(R.string.quick_actions))
 
         // --- Completed checkbox after colors ---
         var isCompleted by remember { mutableStateOf(note?.isCompleted ?: false) }
 
         Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surface),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -381,7 +360,7 @@ fun NoteEditorScreen(
         }
 
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+        TextDivider("${stringResource(R.string.save)} / ${stringResource(R.string.cancel)} ")
 
         Row(
             modifier = Modifier.fillMaxWidth(),

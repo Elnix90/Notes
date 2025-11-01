@@ -1,11 +1,11 @@
 package org.elnix.notes.ui.settings.debug
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.AppDatabase
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
 fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
-    var showConfirmCreate1000Notes by remember { mutableStateOf(false) }
     var showConfirmDeleteAllNotes by remember { mutableStateOf(false) }
 
     val ctx = LocalContext.current
@@ -45,44 +45,25 @@ fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
                 modifier = Modifier.fillMaxWidth(),
                 colors = AppObjectsColors.buttonColors()
             ) {
-                Text("Create 10 fake notes", color = MaterialTheme.colorScheme.onBackground)
+                Text("Create 10 fake notes", color = MaterialTheme.colorScheme.onPrimary)
             }
 
-            OutlinedButton(
-                onClick = { vm.createFakeNotes(100) },
-                modifier = Modifier.fillMaxWidth(),
-                colors = AppObjectsColors.cancelButtonColors()
-            ) {
-                Text("Create 100 fake notes", color = MaterialTheme.colorScheme.error)
-            }
+            TextDivider(
+                text = "Danger Zone",
+                color = MaterialTheme.colorScheme.error,
+                textColor = MaterialTheme.colorScheme.error
+            )
 
-            OutlinedButton(
-                onClick = { vm.createFakeNotes(1000) },
-                modifier = Modifier.fillMaxWidth(),
-                colors = AppObjectsColors.cancelButtonColors()
-            ) {
-                Text("Create 1000 fake notes", color = MaterialTheme.colorScheme.error)
-            }
+            RequestCreateManyNotesButon(100, vm)
 
+            RequestCreateManyNotesButon(1000, vm)
 
-
-
-            OutlinedButton(
-                onClick = { showConfirmCreate1000Notes = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = AppObjectsColors.cancelButtonColors()
-            ) {
-                Text(
-                    text = "Create 100 000 fake notes",
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+            RequestCreateManyNotesButon(100000, vm)
 
             OutlinedButton(
                 onClick = { showConfirmDeleteAllNotes = true },
                 modifier = Modifier.fillMaxWidth(),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
                 colors = AppObjectsColors.cancelButtonColors()
             ) {
                 Text(
@@ -94,17 +75,7 @@ fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
     }
 
 
-    if (showConfirmCreate1000Notes) {
-        UserValidation(
-            message = "You are about to create 100 000 fake notes.\nThis may crash your device.",
-            title = "Are you sure?",
-            onCancel = { showConfirmCreate1000Notes = false },
-            onAgree = {
-                showConfirmCreate1000Notes = false
-                vm.createFakeNotes(100_000)
-            }
-        )
-    }
+
 
 
     if (showConfirmDeleteAllNotes) {

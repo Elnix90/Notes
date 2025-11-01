@@ -1,13 +1,17 @@
 package org.elnix.notes.ui.helpers
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Brush
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -30,42 +34,60 @@ import org.elnix.notes.data.helpers.NoteType
 fun AddNoteFab(navController: NavHostController) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(horizontalAlignment = Alignment.End) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        // Transparent overlay to detect clicks outside FABs
         if (expanded) {
-            SmallFab(
-                icon = Icons.AutoMirrored.Filled.FormatListBulleted,
-                label = "Checklist",
-                color = MaterialTheme.colorScheme.secondary
-            ) {
-                navController.navigate("${Routes.CREATE}?type=${NoteType.CHECKLIST.name}")
-                expanded = false
-            }
-            SmallFab(
-                icon = Icons.Default.Brush,
-                label = "Drawing",
-                color = MaterialTheme.colorScheme.tertiary
-            ) {
-                navController.navigate("${Routes.CREATE}?type=${NoteType.DRAWING.name}")
-                expanded = false
-            }
-            SmallFab(
-                icon = Icons.Default.Edit,
-                label = "Text",
-                color = MaterialTheme.colorScheme.primary
-            ) {
-                navController.navigate("${Routes.CREATE}?type=${NoteType.TEXT.name}")
-                expanded = false
-            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable { expanded = false }
+            )
         }
 
-        FloatingActionButton(
-            onClick = { expanded = !expanded },
-            containerColor = MaterialTheme.colorScheme.primary
+        Column(
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier.padding(16.dp)
         ) {
-            Icon(
-                imageVector = if (expanded) Icons.Default.Close else Icons.Default.Add,
-                contentDescription = "Add note"
-            )
+            if (expanded) {
+                SmallFab(
+                    icon = Icons.AutoMirrored.Filled.FormatListBulleted,
+                    label = "Checklist",
+                    color = MaterialTheme.colorScheme.secondary
+                ) {
+                    navController.navigate("${Routes.CREATE}?type=${NoteType.CHECKLIST.name}")
+                    expanded = false
+                }
+                SmallFab(
+                    icon = Icons.Default.Brush,
+                    label = "Drawing",
+                    color = MaterialTheme.colorScheme.tertiary
+                ) {
+                    navController.navigate("${Routes.CREATE}?type=${NoteType.DRAWING.name}")
+                    expanded = false
+                }
+                SmallFab(
+                    icon = Icons.Default.Edit,
+                    label = "Text",
+                    color = MaterialTheme.colorScheme.primary
+                ) {
+                    navController.navigate("${Routes.CREATE}?type=${NoteType.TEXT.name}")
+                    expanded = false
+                }
+            } else {
+                FloatingActionButton(
+                    onClick = { expanded = !expanded },
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add note"
+                    )
+                }
+            }
         }
     }
 }
@@ -73,11 +95,6 @@ fun AddNoteFab(navController: NavHostController) {
 @Composable
 private fun SmallFab(icon: ImageVector, label: String, color: Color, onClick: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-//        Text(
-//            text = label,
-//            color = MaterialTheme.colorScheme.onSurface,
-//            modifier = Modifier.padding(end = 8.dp)
-//        )
         FloatingActionButton(
             onClick = onClick,
             containerColor = color,

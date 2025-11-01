@@ -121,3 +121,33 @@ fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
     }
 }
 
+
+@Composable
+fun RequestCreateManyNotesButon(noteNumber: Int, vm: NoteViewModel) {
+    var showConfirm by remember { mutableStateOf(false) }
+
+    OutlinedButton(
+        onClick = { showConfirm = true },
+        modifier = Modifier.fillMaxWidth(),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+        colors = AppObjectsColors.cancelButtonColors()
+    ) {
+        Text(
+            text = "Create $noteNumber notes",
+            color = MaterialTheme.colorScheme.error
+        )
+    }
+
+
+    if (showConfirm) {
+        UserValidation(
+            message = "You are about to create $noteNumber fake notes.\nThis may crash your device.",
+            title = "Are you sure?",
+            onCancel = { showConfirm = false },
+            onAgree = {
+                showConfirm = false
+                vm.createFakeNotes(noteNumber)
+            }
+        )
+    }
+}

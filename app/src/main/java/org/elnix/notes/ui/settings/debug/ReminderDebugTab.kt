@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
 fun RemindersDebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, onBack: (() -> Unit)) {
@@ -30,40 +31,44 @@ fun RemindersDebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, on
 
             Button(
                 onClick = { scope.launch { vm.disableAllReminders() } },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppObjectsColors.buttonColors()
             ) {
                 Text(
                     text ="Disable All Reminders",
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
             Button(
                 onClick = { scope.launch { vm.enableAllReminders() } },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppObjectsColors.buttonColors()
             ) {
                 Text(
                     text = "Enable All Reminders",
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
             Button(
                 onClick = { scope.launch { vm.deleteAllReminders() } },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppObjectsColors.buttonColors()
             ) {
                 Text(
                     text = "Delete All Reminders",
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
             Button(
                 onClick = { vm.cancelAllPendingNotifications(ctx) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppObjectsColors.buttonColors()
             ) {
                 Text(text = "Cancel All Pending Notifications",
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

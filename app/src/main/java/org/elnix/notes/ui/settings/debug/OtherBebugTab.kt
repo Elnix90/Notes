@@ -1,5 +1,6 @@
 package org.elnix.notes.ui.settings.debug
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ fun OtherDebugTab(onBack: (() -> Unit)) {
             OutlinedButton(
                 onClick = { error("Crash Application") },
                 modifier = Modifier.fillMaxWidth(),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
                 colors = AppObjectsColors.cancelButtonColors()
             ) {
                 Text(

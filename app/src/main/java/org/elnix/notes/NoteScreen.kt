@@ -119,7 +119,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             if (isMultiSelectMode) {
                 MultiSelectToolbar(
                     onGroupAction = onGroupAction,
-                    isSingleSelected = selectedNotes.size > 1,
+                    isSingleSelected = selectedNotes.size == 1,
                     onCloseSelection = {
                         selectedNotes = emptySet()
                         isMultiSelectMode = false

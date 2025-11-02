@@ -111,7 +111,7 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                         NoteType.TEXT -> NoteEditorScreen(
                             vm,
                             null,
-                            onSaved = { navController.popBackStack() },
+                            onSaved = { navController.popBackStack()},
                             onCancel = { navController.popBackStack() })
                         NoteType.CHECKLIST -> ChecklistEditorScreen(
                             vm,

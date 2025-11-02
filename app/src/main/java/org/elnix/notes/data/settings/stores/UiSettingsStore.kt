@@ -112,4 +112,27 @@ object UiSettingsStore {
     suspend fun setShowNoteTypeIcon(ctx: Context, enabled: Boolean) {
         ctx.dataStore.edit { it[SHOW_NOTE_TYPE_ICON] = enabled }
     }
+
+    private val SHOW_COLOR_DROPDOWN_EDITORS = booleanPreferencesKey("show_color_dropdown_editors")
+    fun getShowColorDropdownEditor(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[SHOW_COLOR_DROPDOWN_EDITORS] ?: false }
+    suspend fun setShowColorDropdownEditor(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[SHOW_COLOR_DROPDOWN_EDITORS] = enabled }
+    }
+
+    private val SHOW_REMINDER_DROPDOWN_EDITORS = booleanPreferencesKey("show_reminder_dropdown_editors")
+    fun getShowReminderDropdownEditor(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[SHOW_REMINDER_DROPDOWN_EDITORS] ?: false }
+    suspend fun setShowReminderDropdownEditor(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[SHOW_REMINDER_DROPDOWN_EDITORS] = enabled }
+    }
+
+    private val SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS = booleanPreferencesKey("show_quick_actions_dropdown_editors")
+    fun getShowQuickActionsDropdownEditor(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS] ?: false }
+    suspend fun setShowQuickActionsDropdownEditor(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS] = enabled }
+    }
+
+
 }

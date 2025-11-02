@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.ui.theme.AmoledDefault
 import java.time.Instant
+import java.util.Calendar
 import java.util.Date
 
 @Entity(tableName = "notes")
@@ -14,14 +15,18 @@ data class NoteEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String = "",
     val desc: String = "",
+    val checklist: List<ChecklistItem> = emptyList(),
+
     val bgColor: Color = AmoledDefault.Surface,
     val txtColor: Color = AmoledDefault.OnSurface,
-    val createdAt: Date = Date.from(Instant.now()),
     val autoTextColor: Boolean = true,
+
     val isCompleted: Boolean = false,
     val type: NoteType = NoteType.TEXT,
-    val lastEdit: Long = System.currentTimeMillis(),
-    val checklist: List<ChecklistItem>? = null
+
+    val dueDateTime: Calendar? = null,
+    val createdAt: Date = Date.from(Instant.now()),
+    val lastEdit: Long = System.currentTimeMillis()
 )
 
 data class ChecklistItem(

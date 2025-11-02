@@ -121,4 +121,6 @@
     <string name="reminders">Rappels</string>
     <string name="note_color">Couleur de la note</string>
     <string name="random_note_color">Couleur aléatoir</string>
+    <string name="expand">Etendre</string>
+    <string name="colors_text_literal">Couleurs</string>
 </resources>

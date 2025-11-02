@@ -69,7 +69,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun deleteAllEmptyNotes() {
         val allNotes = noteRepo.observeAll().first() // get current list
         allNotes
-            .filter { it.title.isBlank() && it.desc.isBlank() }
+            .filter { it.title.isBlank() && it.desc.isBlank() && it.checklist.isEmpty() }
             .forEach { noteRepo.delete(it) }
     }
 

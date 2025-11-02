@@ -1,5 +1,6 @@
 package org.elnix.notes.ui.editors
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,8 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -24,25 +23,33 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.elnix.notes.R
 import org.elnix.notes.data.ChecklistItem
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.NoteType
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.helpers.ExpandableSection
 import org.elnix.notes.ui.helpers.RemindersSection
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.ValidateCancelButtons
@@ -52,6 +59,7 @@ import org.elnix.notes.ui.helpers.colors.toggleAutoColor
 import org.elnix.notes.ui.helpers.colors.updateNoteBgColor
 import org.elnix.notes.ui.helpers.colors.updateNoteTextColor
 import org.elnix.notes.ui.theme.AppObjectsColors
+import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
 fun ChecklistEditorScreen(
@@ -60,28 +68,80 @@ fun ChecklistEditorScreen(
     onSaved: () -> Unit,
     onCancel: () -> Unit
 ) {
+    val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
+
     var note by remember { mutableStateOf<NoteEntity?>(null) }
+    var title by rememberSaveable { mutableStateOf("") }
     var createdNoteId by remember { mutableStateOf<Long?>(null) }
+    var hasExited by remember { mutableStateOf(false) }
+
+    val checklist = remember { mutableStateListOf<ChecklistItem>() }
+    var pseudoText by remember { mutableStateOf("") }
 
     LaunchedEffect(noteId) {
         if (noteId != null) {
-            note = vm.getById(noteId)
+            vm.getById(noteId)?.let {
+                note = it
+                title = it.title
+                checklist.clear()
+                checklist.addAll(it.checklist)
+            }
         } else if (createdNoteId == null) {
             val id = vm.addNoteAndReturnId(type = NoteType.CHECKLIST)
             createdNoteId = id
-            note = vm.getById(id)
+            vm.getById(id)?.let {
+                note = it
+                title = it.title
+                checklist.clear()
+                checklist.addAll(it.checklist)
+            }
         }
     }
 
     val currentId = note?.id ?: createdNoteId
 
-    val reminderText = stringResource(R.string.reminder)
+    fun handleExit() {
+        if (hasExited) return
+        hasExited = true
+
+        scope.launch {
+            val id = note?.id ?: createdNoteId ?: return@launch
+            val n = withContext(Dispatchers.IO) { vm.getById(id) } ?: return@launch
+
+            val cleanedChecklist = checklist.map { it.copy(text = it.text.trim()) }.filter { it.text.isNotBlank() }
+
+            val result = when {
+                title.isBlank() && cleanedChecklist.isEmpty() -> {
+                    withContext(Dispatchers.IO) { vm.delete(n) }
+                    "cancel"
+                }
+                else -> {
+                    withContext(Dispatchers.IO) {
+                        vm.update(n.copy(
+                            title = title.trim(),
+                            checklist = cleanedChecklist
+                        ))
+                    }
+                    "saved"
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                if (result == "saved") onSaved() else onCancel()
+            }
+        }
+    }
+
+    DisposableEffect(Unit) { onDispose { handleExit() } }
+    BackHandler { handleExit() }
 
     val reminders by remember(currentId) {
         if (currentId != null) vm.remindersFor(currentId) else null
     }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
 
+    val showColorDropdownEditor by UiSettingsStore.getShowColorDropdownEditor(ctx).collectAsState(initial = false)
+    val showReminderDropdownEditor by UiSettingsStore.getShowReminderDropdownEditor(ctx).collectAsState(initial = false)
 
     LazyColumn(
         modifier = Modifier
@@ -89,19 +149,18 @@ fun ChecklistEditorScreen(
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Title
         item {
             OutlinedTextField(
-                value = note?.title ?: "",
-                onValueChange = { t -> note = note?.copy(title = t) },
+                value = title,
+                onValueChange = { title = it },
                 label = { Text(stringResource(R.string.title)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppObjectsColors.outlinedTextFieldColors()
             )
         }
 
         item { TextDivider(stringResource(R.string.checklist)) }
 
-        // Checklist inside rounded surface
         item {
             Surface(
                 shape = RoundedCornerShape(12.dp),
@@ -112,97 +171,58 @@ fun ChecklistEditorScreen(
                     modifier = Modifier.padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    val list = note?.checklist ?: emptyList()
-                    val realItems = list.filter { it.text.isNotEmpty() }
-                    var pseudoText by remember { mutableStateOf("") }
-
-
-                    realItems.forEachIndexed { i, item ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
+                    checklist.forEachIndexed { index, item ->
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                             Checkbox(
                                 checked = item.checked,
-                                onCheckedChange = { checked ->
-                                    note = note?.copy(
-                                        checklist = list.toMutableList().apply {
-                                            val index = indexOf(item)
-                                            if(index >= 0) this[index] = item.copy(checked = checked)
-                                        }
-                                    )
-                                },
+                                onCheckedChange = { checklist[index] = item.copy(checked = it) },
                                 colors = AppObjectsColors.checkboxColors()
                             )
 
                             TextField(
                                 value = item.text,
-                                onValueChange = { txt ->
-                                    note = note?.copy(
-                                        checklist = list.toMutableList().apply {
-                                            val index = indexOf(item)
-                                            if(index >= 0) this[index] = item.copy(text = txt)
-                                        }
-                                    )
-                                },
+                                onValueChange = { checklist[index] = item.copy(text = it) },
                                 modifier = Modifier.weight(1f),
+                                singleLine = true,
                                 colors = AppObjectsColors.outlinedTextFieldColors(
                                     backgroundColor = MaterialTheme.colorScheme.surface,
-                                    onBackgroundColor = MaterialTheme.colorScheme.onSurface
+                                    onBackgroundColor = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (item.checked) 0.5f else 1f)
                                 )
                             )
 
-                            IconButton(onClick = {
-                                note = note?.copy(
-                                    checklist = list.toMutableList().apply { remove(item) }
-                                )
-                            }) {
+                            IconButton(onClick = { checklist.removeAt(index) }) {
                                 Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.remove))
                             }
                         }
                     }
 
-
-                    // Shared function inside your Composable
-                    fun addPseudoItem() {
-                        if (pseudoText.isNotBlank()) {
-                            note = note?.copy(
-                                checklist = (note?.checklist ?: emptyList()).toMutableList().apply {
-                                    add(ChecklistItem(pseudoText, false))
-                                }
-                            )
-                            pseudoText = "" // reset for next entry
-                        }
-                    }
-
-
-                    // Pseudo item
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                         TextField(
                             value = pseudoText,
-                            onValueChange = { txt -> pseudoText = txt },
+                            onValueChange = { pseudoText = it },
                             label = { Text(stringResource(R.string.new_entry)) },
                             modifier = Modifier.weight(1f),
-                            colors = AppObjectsColors.outlinedTextFieldColors(
-                                backgroundColor = MaterialTheme.colorScheme.surface,
-                                onBackgroundColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            enabled = true,
                             singleLine = true,
-                            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                            keyboardActions = KeyboardActions(
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                            keyboardActions = androidx.compose.foundation.text.KeyboardActions(
                                 onDone = {
-                                    addPseudoItem()
+                                    if (pseudoText.isNotBlank()) {
+                                        checklist.add(ChecklistItem(pseudoText, false))
+                                        pseudoText = ""
+                                    }
                                 }
+                            ),
+                            colors = AppObjectsColors.outlinedTextFieldColors(
+                                backgroundColor = MaterialTheme.colorScheme.surface
                             )
                         )
-
                         IconButton(
-                            onClick = { addPseudoItem() },
+                            onClick = {
+                                if (pseudoText.isNotBlank()) {
+                                    checklist.add(ChecklistItem(pseudoText, false))
+                                    pseudoText = ""
+                                }
+                            },
                             enabled = pseudoText.isNotBlank()
                         ) {
                             Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_item))
@@ -212,76 +232,51 @@ fun ChecklistEditorScreen(
             }
         }
 
-        item { TextDivider(stringResource(R.string.color_text_literal)) }
-
         item {
-            NotesColorPickerSection(
-                note = note,
-                scope = scope,
-                onBgColorPicked = { pickedInt ->
-                    val pickedColor = Color(pickedInt)
-                    scope.launch {
-                        val updated = updateNoteBgColor(currentId, vm, pickedColor)
-                        if (updated != null) note = updated
+            ExpandableSection(
+                title = stringResource(R.string.colors_text_literal),
+                expanded = showColorDropdownEditor,
+                onExpand = { scope.launch { UiSettingsStore.setShowColorDropdownEditor(ctx, it) } }
+            ) {
+                NotesColorPickerSection(
+                    note,
+                    scope,
+                    onBgColorPicked = { colorInt ->
+                        scope.launch { updateNoteBgColor(currentId, vm, Color(colorInt))?.let { note = it } }
+                    },
+                    onTextColorPicked = { colorInt ->
+                        scope.launch { updateNoteTextColor(currentId, vm, Color(colorInt))?.let { note = it } }
+                    },
+                    onAutoSwitchToggle = { checked ->
+                        scope.launch { toggleAutoColor(currentId, vm, checked)?.let { note = it } }
+                    },
+                    onRandomColorClick = {
+                        scope.launch { setRandomColor(currentId, vm)?.let { note = it } }
                     }
-                },
-                onTextColorPicked = { pickedInt ->
-                    val pickedColor = Color(pickedInt)
-                    scope.launch {
-                        val updated = updateNoteTextColor(currentId, vm, pickedColor)
-                        if (updated != null) note = updated
-                    }
-                },
-                onAutoSwitchToggle = { checked ->
-                    scope.launch {
-                        val updated = toggleAutoColor(currentId, vm, checked)
-                        if (updated != null) note = updated
-                    }
-                },
-                onRandomColorClick = {
-                    scope.launch {
-                        val updated = setRandomColor(currentId, vm)
-                        if (updated != null) note = updated
-                    }
-                }
-            )
+                )
+            }
         }
 
-
         item {
-            TextDivider(reminderText)
-
-            RemindersSection(
-                reminders = reminders,
-                currentId = currentId,
-                title = note?.title ?: stringResource(R.string.reminders),
-                vm = vm
-            )
+            ExpandableSection(
+                title = stringResource(R.string.reminders),
+                expanded = showReminderDropdownEditor,
+                horizontalAlignment = Alignment.Start,
+                onExpand = { scope.launch { UiSettingsStore.setShowReminderDropdownEditor(ctx, it) } }
+            ) {
+                RemindersSection(reminders, currentId, title, vm)
+            }
         }
 
-        item { Spacer(Modifier.height(15.dp)) }
-
         item {
+            Spacer(Modifier.height(15.dp))
             ValidateCancelButtons(
-                onValidate = {
-                    scope.launch {
-                        note?.let {
-                            val cleanedChecklist = (it.checklist ?: emptyList())
-                                .map { ci -> ci.copy(text = ci.text.trim()) }
-                                .filter { ci -> ci.text.isNotEmpty() }
-                            vm.update(it.copy(
-                                title = it.title.trim(),
-                                checklist = cleanedChecklist,
-                                lastEdit = System.currentTimeMillis()
-                            ))
-                        }
-                        onSaved()
-                    }
-                },
+                onValidate = { handleExit() },
                 onCancel = {
                     scope.launch {
-                        note?.let {
-                            if (it.title.isBlank() && it.desc.isBlank()) vm.delete(it)
+                        val cleanedChecklist = checklist.map { it.text.trim() }.filter { it.isNotBlank() }
+                        if (title.isBlank() && cleanedChecklist.isEmpty()) {
+                            note?.let { vm.delete(it) }
                         }
                         onCancel()
                     }
@@ -290,3 +285,4 @@ fun ChecklistEditorScreen(
         }
     }
 }
+

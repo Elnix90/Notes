@@ -50,7 +50,7 @@ fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
 
             TextDivider(
                 text = "Danger Zone",
-                color = MaterialTheme.colorScheme.error,
+                lineColor = MaterialTheme.colorScheme.error,
                 textColor = MaterialTheme.colorScheme.error
             )
 

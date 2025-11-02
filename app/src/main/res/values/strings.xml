@@ -120,4 +120,6 @@
     <string name="reminders">Reminders</string>
     <string name="note_color">Note color</string>
     <string name="random_note_color">Random color</string>
+    <string name="expand">Expand</string>
+    <string name="colors_text_literal">Colors</string>
 </resources>

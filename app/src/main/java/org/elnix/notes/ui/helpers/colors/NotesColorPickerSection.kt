@@ -53,7 +53,8 @@ fun NotesColorPickerSection(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-            val label = stringResource(R.string.note_color)
+                val label = stringResource(R.string.note_color)
+
                 Text(
                     text = label,
                     color = MaterialTheme.colorScheme.onBackground,
@@ -69,8 +70,6 @@ fun NotesColorPickerSection(
                         ?: MaterialTheme.colorScheme.surface.toArgb(),
                     scope = scope
                 ) { onBgColorPicked(it) }
-
-
 
                 // RANDOM NOTE COLOR BUTTON
                 Row(
@@ -124,7 +123,7 @@ fun NotesColorPickerSection(
                 ) {
                     Checkbox(
                         checked = autoTextColorEnabled,
-                        onCheckedChange = { onAutoSwitchToggle(autoTextColorEnabled) },
+                        onCheckedChange = { onAutoSwitchToggle(it) },
                         colors = AppObjectsColors.checkboxColors()
                     )
                     Text(

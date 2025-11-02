@@ -176,48 +176,48 @@ fun SettingsListScreen(navController: NavController) {
                 }
                 ctx.startActivity(intent)
             }
+        }
 
 
-            Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(1f))
 
 
-            Text(
-                text = "${stringResource(R.string.version)} $versionName",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 8.dp, bottom = 16.dp)
-                    .clickable {
-                        toast?.cancel()
+        Text(
+            text = "${stringResource(R.string.version)} $versionName",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 8.dp, bottom = 16.dp)
+                .clickable {
+                    toast?.cancel()
 
-                        when {
-                            isDebugModeEnabled -> {
-                                toast = Toast.makeText(
-                                    ctx,
-                                    "Debug Mode is already enabled",
-                                    Toast.LENGTH_SHORT
-                                )
-                                toast?.show()
-                            }
+                    when {
+                        isDebugModeEnabled -> {
+                            toast = Toast.makeText(
+                                ctx,
+                                "Debug Mode is already enabled",
+                                Toast.LENGTH_SHORT
+                            )
+                            toast?.show()
+                        }
 
-                            timesClickedOnVersion < 6 -> {
-                                timesClickedOnVersion++
-                                toast = Toast.makeText(
-                                    ctx,
-                                    "${7 - timesClickedOnVersion} more times to enable Debug Mode",
-                                    Toast.LENGTH_SHORT
-                                )
-                                toast?.show()
-                            }
+                        timesClickedOnVersion < 6 -> {
+                            timesClickedOnVersion++
+                            toast = Toast.makeText(
+                                ctx,
+                                "${7 - timesClickedOnVersion} more times to enable Debug Mode",
+                                Toast.LENGTH_SHORT
+                            )
+                            toast?.show()
+                        }
 
-                            else -> {
-                                showDebugModeUserValidation = true
-                            }
+                        else -> {
+                            showDebugModeUserValidation = true
                         }
                     }
-            )
-        }
+                }
+        )
     }
 
     if (showDebugModeUserValidation) {

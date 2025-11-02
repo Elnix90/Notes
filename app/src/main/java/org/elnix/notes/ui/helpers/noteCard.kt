@@ -124,8 +124,6 @@ fun NoteCard(
 
             if(showDeleteButton) {
 
-                Spacer(Modifier.weight(1f))
-
                 IconButton(
                     onClick = { onDeleteButtonClick() },
                     shape = CircleShape

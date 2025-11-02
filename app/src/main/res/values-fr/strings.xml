@@ -123,4 +123,18 @@
     <string name="random_note_color">Couleur aléatoir</string>
     <string name="expand">Etendre</string>
     <string name="colors_text_literal">Couleurs</string>
+    <string name="tags">Tags</string>
+    <string name="pick_a_tag">Choisissez un Tag</string>
+    <string name="close">Fermer</string>
+    <string name="create_new_tag">Créer un nouveau Tag</string>
+    <string name="edit_tag">Editer le tag</string>
+    <string name="tag_name">Nom du Tag</string>
+    <string name="tag">Tag</string>
+    <string name="delete_tag">Supprimer le tag</string>
+    <string name="tag_deletion_confirm">ëtes vous sûr de vouloir supprimer le tag</string>
+    <string name="tag_selector_position_bottom">Tag selecteur en bas</string>
+    <string name="tag_selector_position_top">Tag selecteur en haut</string>
+    <string name="show_tag_selector">Afficher le selecteur de tags</string>
+    <string name="show_tags_in_notes">Afficher les tags dans les notes</string>
+    <string name="filtered_bote_number">Nombre de notes filtrées</string>
 </resources>

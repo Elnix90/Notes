@@ -31,10 +31,12 @@ import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.NoteViewType
 import org.elnix.notes.data.helpers.NotesActions
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
+import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.MultiSelectToolbar
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.tags.TagSelectingRow
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Stable
@@ -57,6 +59,26 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
 
     val noteViewType by UiSettingsStore.getNoteViewType(ctx)
         .collectAsState(initial = NoteViewType.LIST)
+
+
+    val showColorTagSelector by UiSettingsStore.getShowColorTagSelector(ctx).collectAsState(initial = false)
+    val tagSelectorPositionBottom by UiSettingsStore.getTagSelectorPositionBottom(ctx).collectAsState(initial = false)
+
+    val allTags by TagsSettingsStore.getTags(ctx).collectAsState(initial = emptyList())
+
+
+    val enabledTagIds = allTags.filter { it.component4() }.map { it.id }.toSet()
+
+    val notesToShow = if (enabledTagIds.size == allTags.size || !showColorTagSelector) {
+        notes // no filter, show all notes
+    } else {
+        notes.filter { note ->
+            note.tagIds.any { tagId -> enabledTagIds.contains(tagId) }
+        }
+    }
+
+
+
 
     val onNoteLongClick: (NoteEntity) -> Unit = { note ->
         isMultiSelectMode = true
@@ -127,13 +149,27 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 )
             }
 
+
+            // --- If selector is on top and enabled ---
+            if (showColorTagSelector && !tagSelectorPositionBottom) {
+                TagSelectingRow(
+                    ctx = ctx,
+                    allTags = allTags,
+                    scope = scope
+                )
+            }
+
             if (showNotesNumber) {
-                TextDivider("${stringResource(R.string.note_number)} : ${notes.size}")
+                var text = "${stringResource(R.string.note_number)} : ${notes.size}"
+                if (notesToShow.size != notes.size) {
+                    text += " • ${stringResource(R.string.filtered_bote_number)} : ${notesToShow.size}"
+                }
+                TextDivider(text)
             }
 
             when (noteViewType) {
                 NoteViewType.LIST -> NotesList(
-                    notes = notes,
+                    notes = notesToShow,
                     selectedNotes = selectedNotes,
                     isSelectMode = isMultiSelectMode,
                     onNoteClick = onNoteClick,
@@ -154,10 +190,20 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 )
 
                 NoteViewType.GRID -> NotesGrid(
-                    notes = notes,
+                    notes = notesToShow,
                     selectedNotes = selectedNotes,
                     onNoteClick = onNoteClick,
                     onNoteLongClick = onNoteLongClick
+                )
+            }
+
+
+            // --- If selector is on bottom and enabled ---
+            if (showColorTagSelector && tagSelectorPositionBottom) {
+                TagSelectingRow(
+                    ctx = ctx,
+                    allTags = allTags,
+                    scope = scope
                 )
             }
         }

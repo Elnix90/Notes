@@ -211,7 +211,7 @@ fun GradientColorPicker(
         ) {
             Button(
                 onClick = { onColorSelected(selectedColor.copy(alpha = alpha)) },
-                modifier = Modifier.weight(3f)
+                modifier = Modifier.weight(1f)
             ) {
                 Text(stringResource(R.string.apply), color = MaterialTheme.colorScheme.onPrimary)
             }
@@ -220,15 +220,15 @@ fun GradientColorPicker(
                 onClick = {
                     selectedColor = defaultColor
                     alpha = defaultColor.alpha
-                    hue = 0f
-                    sat = 1f
-                    value = 1f
+                    hue = hsvArray[0]
+                    sat = hsvArray[1]
+                    value = hsvArray[2]
                     hexText = toHexWithAlpha(defaultColor)
                 },
-                modifier = Modifier.weight(2f),
+                modifier = Modifier.weight(1f),
                 colors = AppObjectsColors.cancelButtonColors(MaterialTheme.colorScheme.surface)
             ) {
-                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.reset), color = MaterialTheme.colorScheme.error)
             }
         }
     }

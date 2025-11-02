@@ -1,8 +1,9 @@
-package org.elnix.notes.utils
+package org.elnix.notes.ui.helpers.reminders
 
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -25,6 +26,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.StyledReminderDialogs
+import org.elnix.notes.utils.ReminderOffset
 import java.util.Calendar
 
 @Composable
@@ -36,7 +38,7 @@ fun ReminderPicker(onPicked: (ReminderOffset) -> Unit) {
     fun checkPermission(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-                    android.content.pm.PackageManager.PERMISSION_GRANTED
+                    PackageManager.PERMISSION_GRANTED
         } else {
             // Older devices: check if notifications are enabled globally
             NotificationManagerCompat.from(context).areNotificationsEnabled()

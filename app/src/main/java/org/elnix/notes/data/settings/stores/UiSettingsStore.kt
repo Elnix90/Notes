@@ -134,5 +134,34 @@ object UiSettingsStore {
         ctx.dataStore.edit { it[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS] = enabled }
     }
 
+    private val SHOW_TAGS_DROPDOWN_EDITORS = booleanPreferencesKey("show_tags_dropdown_editors")
+    fun getShowTagsDropdownEditor(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[SHOW_TAGS_DROPDOWN_EDITORS] ?: false }
+    suspend fun setShowTagsDropdownEditor(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[SHOW_TAGS_DROPDOWN_EDITORS] = enabled }
+    }
+
+
+    private val SHOW_COLOR_TAG_SELECTOR = booleanPreferencesKey("show_color_tag_selector")
+    fun getShowColorTagSelector(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[SHOW_COLOR_TAG_SELECTOR] ?: false }
+    suspend fun setShowColorTagSelector(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[SHOW_COLOR_TAG_SELECTOR] = enabled }
+    }
+
+    private val SHOW_TAGS_IN_NOTES = booleanPreferencesKey("show_tags_in_notes")
+    fun getShowTagsInNotes(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[SHOW_TAGS_IN_NOTES] ?: false }
+    suspend fun setShowTagsInNotes(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[SHOW_TAGS_IN_NOTES] = enabled }
+    }
+
+    private val TAG_SELECTOR_POSITION_BOTTOM = booleanPreferencesKey("tag_selector_position_bottom")
+    fun getTagSelectorPositionBottom(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[TAG_SELECTOR_POSITION_BOTTOM] ?: false }
+    suspend fun setTagSelectorPositionBottom(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[TAG_SELECTOR_POSITION_BOTTOM] = enabled }
+    }
+
 
 }

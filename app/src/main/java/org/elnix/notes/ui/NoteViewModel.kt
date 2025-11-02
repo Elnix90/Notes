@@ -18,6 +18,7 @@ import org.elnix.notes.data.NoteRepository
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.ReminderRepository
 import org.elnix.notes.data.helpers.NoteType
+import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import kotlin.random.Random
 
@@ -62,6 +63,27 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.update(reminder) }
     fun deleteReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.delete(reminder) }
+
+
+
+    // --- Tags ---
+    // Helper: resolve tags by ID
+    fun resolveTags(note: NoteEntity, allTags: List<TagItem>): List<TagItem> {
+        return allTags.filter { note.tagIds.contains(it.id) }
+    }
+
+    // Add a tag to note
+    fun addTagToNote(note: NoteEntity, tag: TagItem) = viewModelScope.launch {
+        val updated = note.copy(tagIds = note.tagIds + tag.id)
+        noteRepo.upsert(updated)
+    }
+
+    // Remove tag from note
+    fun deleteTagFromNote(note: NoteEntity, tag: TagItem) = viewModelScope.launch {
+        val updated = note.copy(tagIds = note.tagIds.filterNot { it == tag.id })
+        noteRepo.upsert(updated)
+    }
+
 
 
 

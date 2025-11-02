@@ -1,4 +1,4 @@
-package org.elnix.notes.ui.helpers
+package org.elnix.notes.ui.helpers.reminders
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -13,8 +13,6 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.ui.NoteViewModel
-import org.elnix.notes.utils.ReminderBubble
-import org.elnix.notes.utils.ReminderPicker
 import org.elnix.notes.utils.cancelReminderNotification
 import org.elnix.notes.utils.scheduleReminderNotification
 

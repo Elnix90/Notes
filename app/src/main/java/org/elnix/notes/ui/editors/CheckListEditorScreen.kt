@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -39,6 +41,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,7 +54,6 @@ import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.ExpandableSection
-import org.elnix.notes.ui.helpers.RemindersSection
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.ValidateCancelButtons
 import org.elnix.notes.ui.helpers.colors.NotesColorPickerSection
@@ -58,6 +61,7 @@ import org.elnix.notes.ui.helpers.colors.setRandomColor
 import org.elnix.notes.ui.helpers.colors.toggleAutoColor
 import org.elnix.notes.ui.helpers.colors.updateNoteBgColor
 import org.elnix.notes.ui.helpers.colors.updateNoteTextColor
+import org.elnix.notes.ui.helpers.reminders.RemindersSection
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
 
@@ -183,7 +187,11 @@ fun ChecklistEditorScreen(
                                 value = item.text,
                                 onValueChange = { checklist[index] = item.copy(text = it) },
                                 modifier = Modifier.weight(1f),
-                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(
+                                    capitalization = KeyboardCapitalization.Sentences,
+                                    autoCorrectEnabled = true,
+                                    keyboardType = KeyboardType.Unspecified
+                                ),
                                 colors = AppObjectsColors.outlinedTextFieldColors(
                                     backgroundColor = MaterialTheme.colorScheme.surface,
                                     onBackgroundColor = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (item.checked) 0.5f else 1f)
@@ -203,8 +211,13 @@ fun ChecklistEditorScreen(
                             label = { Text(stringResource(R.string.new_entry)) },
                             modifier = Modifier.weight(1f),
                             singleLine = true,
-                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                            keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Sentences,
+                                autoCorrectEnabled = true,
+                                keyboardType = KeyboardType.Unspecified,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
                                 onDone = {
                                     if (pseudoText.isNotBlank()) {
                                         checklist.add(ChecklistItem(pseudoText, false))
@@ -251,7 +264,7 @@ fun ChecklistEditorScreen(
                         scope.launch { toggleAutoColor(currentId, vm, checked)?.let { note = it } }
                     },
                     onRandomColorClick = {
-                        scope.launch { setRandomColor(currentId, vm)?.let { note = it } }
+                        scope.launch { setRandomColor(currentId, vm, note?.autoTextColor ?: true)?.let { note = it } }
                     }
                 )
             }
@@ -264,7 +277,7 @@ fun ChecklistEditorScreen(
                 horizontalAlignment = Alignment.Start,
                 onExpand = { scope.launch { UiSettingsStore.setShowReminderDropdownEditor(ctx, it) } }
             ) {
-                RemindersSection(reminders, currentId, title, vm)
+                    RemindersSection(reminders, currentId, title, vm)
             }
         }
 

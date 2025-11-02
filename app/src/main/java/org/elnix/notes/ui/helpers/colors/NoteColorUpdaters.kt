@@ -62,6 +62,7 @@ suspend fun toggleAutoColor(
 suspend fun setRandomColor(
     currentId: Long?,
     vm: NoteViewModel,
+    autoTextColor: Boolean
 ): NoteEntity? {
     currentId ?: return null
     val n = vm.getById(currentId) ?: return null
@@ -71,9 +72,16 @@ suspend fun setRandomColor(
         blue = Random.nextFloat()
     )
 
+    val computedTxt = if (autoTextColor) {
+        val bg = n.bgColor
+        if (bg.luminance() < 0.4f) Color.White else Color.Black
+    } else n.txtColor
+
     val updated = n.copy(
-        bgColor = color
+        bgColor = color,
+        txtColor = computedTxt
     )
+
     vm.update(updated)
     return updated
 }

@@ -35,17 +35,19 @@ import kotlinx.coroutines.withContext
 import org.elnix.notes.R
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.NoteType
+import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.CompletionToggle
 import org.elnix.notes.ui.helpers.ExpandableSection
-import org.elnix.notes.ui.helpers.RemindersSection
 import org.elnix.notes.ui.helpers.ValidateCancelButtons
 import org.elnix.notes.ui.helpers.colors.NotesColorPickerSection
 import org.elnix.notes.ui.helpers.colors.setRandomColor
 import org.elnix.notes.ui.helpers.colors.toggleAutoColor
 import org.elnix.notes.ui.helpers.colors.updateNoteBgColor
 import org.elnix.notes.ui.helpers.colors.updateNoteTextColor
+import org.elnix.notes.ui.helpers.reminders.RemindersSection
+import org.elnix.notes.ui.helpers.tags.TagsSection
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
@@ -57,76 +59,77 @@ fun NoteEditorScreen(
 ) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
+    val scroll = rememberScrollState()
 
+    // --- States ---
     var note by remember { mutableStateOf<NoteEntity?>(null) }
     var title by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
-    var createdNoteId by remember { mutableStateOf<Long?>(null) }
+    var tagIds by remember { mutableStateOf<List<Long>>(emptyList()) }
     var hasExited by rememberSaveable { mutableStateOf(false) }
 
-    // Load or create note
+    // --- Load Note ---
     LaunchedEffect(noteId) {
-        if (noteId != null) {
-            vm.getById(noteId)?.let {
-                note = it
-                title = it.title
-                desc = it.desc
-            }
-        } else if (createdNoteId == null) {
-            val id = vm.addNoteAndReturnId(type = NoteType.TEXT)
-            createdNoteId = id
-            note = vm.getById(id)
+        val n = withContext(Dispatchers.IO) {
+            if (noteId != null) vm.getById(noteId) else null
+        }
+
+        val ensuredNote = n ?: run {
+            val newId = vm.addNoteAndReturnId(type = NoteType.TEXT)
+            withContext(Dispatchers.IO) { vm.getById(newId) }
+        }
+
+        ensuredNote?.let {
+            note = it
+            title = it.title
+            desc = it.desc
+            tagIds = it.tagIds
         }
     }
 
-    val currentId = note?.id ?: createdNoteId
+    val currentNote = note ?: return
+    val allTags by TagsSettingsStore.getTags(ctx).collectAsState(initial = emptyList())
 
-
+    // --- Save or Exit ---
     fun handleExit() {
         if (hasExited) return
         hasExited = true
+
         scope.launch {
-            val id = note?.id ?: createdNoteId
-            val result = withContext(Dispatchers.IO) {
-                val n = id?.let { vm.getById(it) }
-                when {
-                    n == null -> "cancel"
-                    title.isBlank() && desc.isBlank() -> {
-                        vm.delete(n)
-                        "cancel"
-                    }
-                    else -> {
-                        vm.update(
-                            n.copy(
-                                title = title.trim(),
-                                desc = desc.trim()
-                            )
+            withContext(Dispatchers.IO) {
+                if (title.isBlank() && desc.isBlank() && tagIds.isEmpty()) {
+                    vm.delete(currentNote)
+                } else {
+                    vm.update(
+                        currentNote.copy(
+                            title = title.trim(),
+                            desc = desc.trim(),
+                            tagIds = tagIds
                         )
-                        "saved"
-                    }
+                    )
                 }
             }
-            if (result == "saved") onSaved() else onCancel()
+            if (title.isBlank() && desc.isBlank() && tagIds.isEmpty()) onCancel()
+            else onSaved()
         }
     }
 
-    // Call same handler on dispose and on back press
-    DisposableEffect(Unit) {
-        onDispose { handleExit() }
-    }
+    DisposableEffect(Unit) { onDispose { handleExit() } }
     BackHandler { handleExit() }
 
-    // --- UI ---
+    // --- Reminders ---
+    val reminders by vm.remindersFor(currentNote.id).collectAsState(initial = emptyList())
 
+    // --- UI ---
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(scrollState)
+            .verticalScroll(scroll)
             .imePadding(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Title
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
@@ -135,6 +138,7 @@ fun NoteEditorScreen(
             colors = AppObjectsColors.outlinedTextFieldColors()
         )
 
+        // Description
         OutlinedTextField(
             value = desc,
             onValueChange = { desc = it },
@@ -143,71 +147,87 @@ fun NoteEditorScreen(
             colors = AppObjectsColors.outlinedTextFieldColors()
         )
 
-        val reminders by remember(currentId) {
-            if (currentId != null) vm.remindersFor(currentId) else null
-        }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
+        // --- Colors ---
+        val showColors by UiSettingsStore.getShowColorDropdownEditor(ctx)
+            .collectAsState(initial = false)
+        ExpandableSection(
+            title = stringResource(R.string.colors_text_literal),
+            expanded = showColors,
+            onExpand = { scope.launch { UiSettingsStore.setShowColorDropdownEditor(ctx, it) } }
+        ) {
+            NotesColorPickerSection(
+                note = currentNote,
+                scope = scope,
+                onBgColorPicked = { c ->
+                    scope.launch { updateNoteBgColor(currentNote.id, vm, Color(c))?.let { note = it } }
+                },
+                onTextColorPicked = { c ->
+                    scope.launch { updateNoteTextColor(currentNote.id, vm, Color(c))?.let { note = it } }
+                },
+                onAutoSwitchToggle = { checked ->
+                    scope.launch { toggleAutoColor(currentNote.id, vm, checked)?.let { note = it } }
+                },
+                onRandomColorClick = {
+                    scope.launch { setRandomColor(currentNote.id, vm, currentNote.autoTextColor)?.let { note = it } }
+                }
+            )
+        }
 
-
-
-        val showColorDropdownEditor by UiSettingsStore.getShowColorDropdownEditor(ctx)
+        // --- Reminders ---
+        val showReminders by UiSettingsStore.getShowReminderDropdownEditor(ctx)
             .collectAsState(initial = false)
 
         ExpandableSection(
-            title = stringResource(R.string.colors_text_literal),
-            expanded = showColorDropdownEditor,
-            onExpand = {
-                scope.launch { UiSettingsStore.setShowColorDropdownEditor(ctx, it) }
-            }
+            title = stringResource(R.string.reminders),
+            expanded = showReminders,
+            horizontalAlignment = Alignment.Start,
+            onExpand = { scope.launch { UiSettingsStore.setShowReminderDropdownEditor(ctx, it) } }
         ) {
-            NotesColorPickerSection(
-                note,
-                scope,
-                onBgColorPicked = { c ->
-                    scope.launch {
-                        updateNoteBgColor(currentId, vm, Color(c))?.let { note = it }
+            RemindersSection(reminders, currentNote.id, title, vm)
+        }
+
+        // --- Tags ---
+        val showTags by UiSettingsStore.getShowTagsDropdownEditor(ctx)
+            .collectAsState(initial = false)
+
+        ExpandableSection(
+            title = stringResource(R.string.tags),
+            expanded = showTags,
+            horizontalAlignment = Alignment.Start,
+            onExpand = { scope.launch { UiSettingsStore.setShowTagsDropdownEditor(ctx, it) } }
+        ) {
+            TagsSection(
+                allTags = allTags,
+                noteTagIds = tagIds,
+                scope = scope,
+                onAddTagToNote = { tag ->
+                    if (!tagIds.contains(tag.id)) {
+                        tagIds = tagIds + tag.id
+                        scope.launch(Dispatchers.IO) {
+                            vm.update(currentNote.copy(tagIds = tagIds))
+                        }
                     }
                 },
-                onTextColorPicked = { c ->
-                    scope.launch {
-                        updateNoteTextColor(currentId, vm, Color(c))?.let { note = it }
+                onRemoveTagFromNote = { tag ->
+                    tagIds = tagIds.filterNot { it == tag.id }
+                    scope.launch(Dispatchers.IO) {
+                        vm.update(currentNote.copy(tagIds = tagIds))
                     }
-                },
-                onAutoSwitchToggle = { checked ->
-                    scope.launch { toggleAutoColor(currentId, vm, checked)?.let { note = it } }
-                },
-                onRandomColorClick = {
-                    scope.launch { setRandomColor(currentId, vm)?.let { note = it } }
                 }
             )
         }
 
 
-        val showReminderDropdownEditor by UiSettingsStore.getShowReminderDropdownEditor(ctx)
+        // --- Quick Actions ---
+        val showQuick by UiSettingsStore.getShowQuickActionsDropdownEditor(ctx)
             .collectAsState(initial = false)
-
-        ExpandableSection(
-            title = stringResource(R.string.reminders),
-            expanded = showReminderDropdownEditor,
-            horizontalAlignment = Alignment.Start,
-            onExpand = {
-                scope.launch { UiSettingsStore.setShowReminderDropdownEditor(ctx, it) }
-            }
-        ) {
-            RemindersSection(reminders, currentId, title, vm)
-        }
-
-
-        val showQuickActionsDropdownEditor by UiSettingsStore.getShowQuickActionsDropdownEditor(ctx)
-            .collectAsState(initial = false)
-
         ExpandableSection(
             title = stringResource(R.string.quick_actions),
-            expanded = showQuickActionsDropdownEditor,
-            onExpand = {
-                scope.launch { UiSettingsStore.setShowQuickActionsDropdownEditor(ctx, it) }
-            }
+            expanded = showQuick,
+            horizontalAlignment = Alignment.Start,
+            onExpand = { scope.launch { UiSettingsStore.setShowQuickActionsDropdownEditor(ctx, it) } }
         ) {
-            CompletionToggle(note, currentId, vm) { note = it }
+            CompletionToggle(currentNote, currentNote.id, vm) { note = it }
         }
 
         Spacer(Modifier.height(15.dp))
@@ -216,9 +236,8 @@ fun NoteEditorScreen(
             onValidate = { handleExit() },
             onCancel = {
                 scope.launch {
-                    note?.let {
-                        if (title.isBlank() && desc.isBlank()) vm.delete(it)
-                    }
+                    if (title.isBlank() && desc.isBlank() && tagIds.isEmpty())
+                        vm.delete(currentNote)
                     onCancel()
                 }
             }

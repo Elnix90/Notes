@@ -122,4 +122,19 @@
     <string name="random_note_color">Random color</string>
     <string name="expand">Expand</string>
     <string name="colors_text_literal">Colors</string>
+    <string name="tags">Tags</string>
+    <string name="pick_a_tag">Pick a Tag</string>
+    <string name="close">Close</string>
+    <string name="create_new_tag">Create new Tag</string>
+    <string name="edit_tag">Edit Tag</string>
+    <string name="tag_name">Tag name</string>
+    <string name="tag">Tag</string>
+    <string name="delete_tag">Delete Tag</string>
+    <string name="tag_deletion_confirm">Are you sure you want to delete the tag</string>
+    <string name="tag_selector_position_bottom">Tag selector bottom</string>
+    <string name="tag_selector_position_top">Tag selector top</string>
+    <string name="show_tag_selector">Show Tag selector</string>
+    <string name="show_tags_in_notes">Show Tags in notes</string>
+    <string name="filtered_bote_number">Filtered note number</string>
+    <string name="reset_filter">Reset filter</string>
 </resources>

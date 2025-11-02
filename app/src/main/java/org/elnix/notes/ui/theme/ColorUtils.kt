@@ -7,6 +7,8 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButtonColors
@@ -219,8 +221,19 @@ object AppObjectsColors {
         return RadioButtonDefaults.colors(
             selectedColor = colors.primary,
             unselectedColor = colors.onSurface,
-            disabledSelectedColor = colors.primary.adjustBrightness(0.5f),
-            disabledUnselectedColor = colors.onSurface.adjustBrightness(0.5f)
+            disabledSelectedColor = colors.primary.copy(0.5f),
+            disabledUnselectedColor = colors.onSurface.copy(0.5f)
+        )
+    }
+
+    @Composable
+    fun iconButtonColors(): IconButtonColors {
+        val colors = MaterialTheme.colorScheme
+        return IconButtonDefaults.iconButtonColors(
+            containerColor = colors.primary,
+            contentColor = colors.outline,
+            disabledContainerColor = colors.primary.copy(0.5f),
+            disabledContentColor = colors.outline.copy(0.5f)
         )
     }
 }

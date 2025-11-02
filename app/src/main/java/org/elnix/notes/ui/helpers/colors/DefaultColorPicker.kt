@@ -120,11 +120,11 @@ fun DefaultColorPicker(
         // === Buttons ===
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             Button(
                 onClick = { onColorSelected(selectedColor) },
-                modifier = Modifier.weight(3f),
+                modifier = Modifier.weight(1f),
                 colors = AppObjectsColors.buttonColors()
             ) {
                 Text(
@@ -134,10 +134,8 @@ fun DefaultColorPicker(
             }
 
             OutlinedButton(
-                onClick = {
-                    selectedColor = defaultColor
-                },
-                modifier = Modifier.weight(2f),
+                onClick = { selectedColor = defaultColor },
+                modifier = Modifier.weight(1f),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
                 colors = AppObjectsColors.cancelButtonColors(MaterialTheme.colorScheme.surface)
             ) {

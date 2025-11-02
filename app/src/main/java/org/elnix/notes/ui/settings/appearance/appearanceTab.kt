@@ -91,6 +91,7 @@ fun AppearanceTab(
                 label = stringResource(R.string.notes_view_type),
                 options = NoteViewType.entries,
                 selected = notesViewType,
+                enabled = false,
                 optionLabel = { it.name}
             ) {
                 scope.launch { UiSettingsStore.setNoteViewType(ctx, it) }

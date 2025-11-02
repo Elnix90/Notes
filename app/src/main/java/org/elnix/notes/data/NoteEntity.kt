@@ -16,6 +16,7 @@ data class NoteEntity(
     val title: String = "",
     val desc: String = "",
     val checklist: List<ChecklistItem> = emptyList(),
+    val tagIds: List<Long> = emptyList(),
 
     val bgColor: Color = AmoledDefault.Surface,
     val txtColor: Color = AmoledDefault.OnSurface,
@@ -28,6 +29,7 @@ data class NoteEntity(
     val createdAt: Date = Date.from(Instant.now()),
     val lastEdit: Long = System.currentTimeMillis()
 )
+
 
 data class ChecklistItem(
     val text: String,

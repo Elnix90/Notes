@@ -44,6 +44,7 @@ fun NotesList(
     notes: List<NoteEntity>,
     selectedNotes: Set<NoteEntity>,
     isSelectMode: Boolean,
+
     onNoteClick: (NoteEntity) -> Unit,
     onNoteLongClick: (NoteEntity) -> Unit,
     onRightAction: (NoteEntity) -> Unit,
@@ -69,6 +70,7 @@ fun NotesList(
                 onTypeButtonClick = { onTypeButtonClick(note) },
                 actionSettings = actionSettings
             )
+
         }
     }
 }

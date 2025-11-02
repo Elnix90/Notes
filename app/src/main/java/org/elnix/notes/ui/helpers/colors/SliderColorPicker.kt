@@ -169,7 +169,7 @@ fun SliderColorPicker(
         ){
             Button(
                 onClick = { onColorSelected(color) },
-                modifier = Modifier.weight(3f),
+                modifier = Modifier.weight(1f),
                 colors = AppObjectsColors.buttonColors()
             ) {
                 Text(
@@ -186,7 +186,7 @@ fun SliderColorPicker(
                     blue = defaultColor.blue
                     alpha = defaultColor.alpha
                 },
-                modifier = Modifier.weight(2f),
+                modifier = Modifier.weight(1f),
                 colors = AppObjectsColors.cancelButtonColors(MaterialTheme.colorScheme.surface)
             ) {
                 Text(

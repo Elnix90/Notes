@@ -33,6 +33,10 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
     val showDeleteButton by UiSettingsStore.getShowDeleteButton(ctx).collectAsState(initial = true)
     val showNoteTypeIcon by UiSettingsStore.getShowNoteTypeIcon(ctx).collectAsState(initial = false)
 
+    val showColorTagSelector by UiSettingsStore.getShowColorTagSelector(ctx).collectAsState(initial = false)
+    val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx).collectAsState(initial = false)
+    val tagSelectorPositionBottom by UiSettingsStore.getTagSelectorPositionBottom(ctx).collectAsState(initial = false)
+
 
     Column(
         modifier = Modifier
@@ -111,6 +115,30 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             stringResource(R.string.show_delete_button),
         ) {
             scope.launch { UiSettingsStore.setShowDeleteButton(ctx, it) }
+        }
+
+        // New Tags Category
+        TextDivider(stringResource(R.string.tags))
+
+        SwitchRow(
+            showColorTagSelector,
+            stringResource(R.string.show_tag_selector),
+        ) {
+            scope.launch { UiSettingsStore.setShowColorTagSelector(ctx, it) }
+        }
+
+        SwitchRow(
+            showTagsInNotes,
+            stringResource(R.string.show_tags_in_notes),
+        ) {
+            scope.launch { UiSettingsStore.setShowTagsInNotes(ctx, it) }
+        }
+
+        SwitchRow(
+            tagSelectorPositionBottom,
+            if (tagSelectorPositionBottom) stringResource(R.string.tag_selector_position_bottom) else stringResource(R.string.tag_selector_position_top),
+        ) {
+            scope.launch { UiSettingsStore.setTagSelectorPositionBottom(ctx, it) }
         }
     }
 }

@@ -11,6 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -60,7 +62,12 @@ fun SettingsOutlinedField(
             }
         },
         label = { Text(label) },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Unspecified,
+            autoCorrectEnabled = false,
+            keyboardType = keyboardType,
+            imeAction = ImeAction.Done
+        ),
         isError = isError,
         singleLine = true,
         colors = AppObjectsColors.outlinedTextFieldColors(MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f))

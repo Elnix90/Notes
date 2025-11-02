@@ -6,6 +6,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,8 +38,11 @@ import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.noteTypeColor
 import org.elnix.notes.data.helpers.noteTypeIcon
+import org.elnix.notes.data.settings.stores.TagsSettingsStore.getTags
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowDeleteButton
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowNoteTypeIcon
+import org.elnix.notes.ui.helpers.tags.TagBubble
 import org.elnix.notes.ui.theme.adjustBrightness
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -51,10 +56,18 @@ fun NoteCard(
     onTypeIconClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     val ctx = LocalContext.current
+
     val showDeleteButton by getShowDeleteButton(ctx).collectAsState(initial = true)
     val showNoteTypeIcon by getShowNoteTypeIcon(ctx).collectAsState(initial = true)
 
+    val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx).collectAsState(initial = false)
+    val allTags by getTags(ctx).collectAsState(initial = emptyList())
+
+    val noteTags = remember(allTags, note.tagIds) {
+        allTags.filter { note.tagIds.contains(it.id) }
+    }
 
     Card(
         modifier = modifier
@@ -120,6 +133,18 @@ fun NoteCard(
                         alpha = if (note.isCompleted) 0.5f else 1f
                     )
                 )
+
+
+                if(showTagsInNotes) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        noteTags.forEach { tag ->
+                            TagBubble(
+                                tag = tag,
+                                ghostMode = true
+                            )
+                        }
+                    }
+                }
             }
 
             if(showDeleteButton) {

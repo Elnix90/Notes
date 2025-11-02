@@ -17,6 +17,7 @@ import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.NoteRepository
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.ReminderRepository
+import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import kotlin.random.Random
 
@@ -32,8 +33,8 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // --- Notes ---
-    suspend fun addNoteAndReturnId(title: String = "", desc: String = ""): Long {
-        val note = NoteEntity(title = title, desc = desc)
+    suspend fun addNoteAndReturnId(title: String = "", desc: String = "", type: NoteType): Long {
+        val note = NoteEntity(title = title, desc = desc, type = type)
         val id = noteRepo.upsert(note)
 
         val defaults = ReminderSettingsStore.getDefaultRemindersFlow(ctx).firstOrNull() ?: emptyList()
@@ -112,7 +113,8 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
                 val id = Random.nextLong().toString()
                 val title = "Fake Note $id"
                 val description = "This is a description for fake note $id."
-                addNoteAndReturnId(title, description)
+                val possibleTypes = listOf(NoteType.CHECKLIST, NoteType.TEXT)
+                addNoteAndReturnId(title, description, type = possibleTypes.random())
             }
         }
     }

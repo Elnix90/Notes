@@ -146,8 +146,8 @@ object AppObjectsColors {
             uncheckedColor = colors.outline,
             checkmarkColor = colors.onPrimary,
             disabledCheckedColor = colors.primary.copy(alpha = 0.5f),
-            disabledUncheckedColor = colors.outline,
-            disabledIndeterminateColor = colors.onSurface,
+            disabledUncheckedColor = colors.outline.copy(alpha = 0.5f),
+            disabledIndeterminateColor = colors.onSurface.copy(alpha = 0.5f),
         )
     }
 

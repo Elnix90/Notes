@@ -3,6 +3,7 @@ package org.elnix.notes.ui.helpers
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,6 +48,7 @@ fun NoteCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     onDeleteButtonClick: () -> Unit,
+    onTypeIconClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val ctx = LocalContext.current
@@ -73,15 +75,18 @@ fun NoteCard(
                     onClick = { onClick() }
                 )
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             if (showNoteTypeIcon) {
                 val iconColor = noteTypeColor(note.type)
+
                 Box(
                     modifier = Modifier
-                        .align(Alignment.Top)
+                        .align(Alignment.CenterVertically)
                         .clip(CircleShape)
-                        .background(note.bgColor.adjustBrightness(if(iconColor.luminance() > 0.5) 0.5f else 1.5f))
+                        .clickable { onTypeIconClick() }
+                        .background(note.bgColor.adjustBrightness(if (iconColor.luminance() > 0.5) 0.5f else 1.5f))
                         .padding(5.dp)
                 ) {
                     Icon(
@@ -91,8 +96,10 @@ fun NoteCard(
                         tint = iconColor,
                     )
                 }
+
+                VerticalDivider(color = MaterialTheme.colorScheme.outline)
+
             }
-            Spacer(Modifier.width(10.dp))
 
             Column(modifier = Modifier.weight(1f)) {
 

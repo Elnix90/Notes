@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +34,7 @@ import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.MultiSelectToolbar
+import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Stable
@@ -125,13 +125,10 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         isMultiSelectMode = false
                     }
                 )
-            } else if (showNotesNumber) {
-                Text(
-                    text = "${stringResource(R.string.note_number)} : ${notes.size}",
-                    color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+            }
+
+            if (showNotesNumber) {
+                TextDivider("${stringResource(R.string.note_number)} : ${notes.size}")
             }
 
             when (noteViewType) {
@@ -149,6 +146,9 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                     },
                     onButtonClick = { note ->
                         scope.launch { vm.delete(note) }
+                    },
+                    onTypeButtonClick = { note ->
+                        performAction(actionSettings.typeButtonAction, vm, navController, note, scope)
                     },
                     actionSettings = actionSettings
                 )

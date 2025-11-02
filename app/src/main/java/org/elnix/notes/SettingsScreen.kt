@@ -30,7 +30,6 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Update
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -54,6 +53,7 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.settings.BackupTab
 import org.elnix.notes.ui.settings.CustomisationTab
@@ -90,140 +90,134 @@ fun SettingsListScreen(navController: NavController) {
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 16.dp)
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         SettingsTitle(title = stringResource(R.string.settings)) {
             navController.popBackStack()
         }
 
-        SettingsItem(
-            title = stringResource(R.string.appearance),
-            icon = Icons.Default.DarkMode
-        ) { navController.navigate(Routes.Settings.APPEARANCE) }
-
-        SettingsItem(
-            title = stringResource(R.string.customisation),
-            icon = Icons.Default.DashboardCustomize
-        ) { navController.navigate(Routes.Settings.CUSTOMISATION) }
-
-        SettingsItem(
-            title = stringResource(R.string.notification_reminders),
-            icon = Icons.Default.Alarm
-        ) { navController.navigate(Routes.Settings.REMINDER) }
-
-        SettingsItem(
-            title = stringResource(R.string.security_privacy),
-            icon = Icons.Default.Shield
-        ) { navController.navigate(Routes.Settings.SECURITY) }
-
-        SettingsItem(
-            title = stringResource(R.string.backup_restore),
-            icon = Icons.Default.Backup,
-            enabled = false,
-            comingSoon = true
-        ) { navController.navigate(Routes.Settings.BACKUP) }
-
-        SettingsItem(
-            title = stringResource(R.string.settings_language_title),
-            icon = Icons.Default.Language,
-            onClick = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    openSystemLanguageSettings(ctx)
-                } else {
-                    navController.navigate(Routes.Settings.LANGUAGE)
-                }
-            }
-        )
-
-
-        if (isDebugModeEnabled) {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             SettingsItem(
-                title = stringResource(R.string.debug),
-                icon = Icons.Default.BugReport
-            ) { navController.navigate(Routes.Settings.DEBUG) }
-        }
+                title = stringResource(R.string.appearance),
+                icon = Icons.Default.DarkMode
+            ) { navController.navigate(Routes.Settings.APPEARANCE) }
 
+            SettingsItem(
+                title = stringResource(R.string.customisation),
+                icon = Icons.Default.DashboardCustomize
+            ) { navController.navigate(Routes.Settings.CUSTOMISATION) }
 
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+            SettingsItem(
+                title = stringResource(R.string.notification_reminders),
+                icon = Icons.Default.Alarm
+            ) { navController.navigate(Routes.Settings.REMINDER) }
 
-        // Divider or Section Label
-        Text(
-            text = "About",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(top = 8.dp)
-        )
+            SettingsItem(
+                title = stringResource(R.string.security_privacy),
+                icon = Icons.Default.Shield
+            ) { navController.navigate(Routes.Settings.SECURITY) }
 
-        SettingsItem(
-            title = stringResource(R.string.source_code),
-            icon = Icons.Default.Code,
-        ) {
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = "https://github.com/Elnix90/Notes".toUri()
-            }
-            ctx.startActivity(intent)
-        }
+            SettingsItem(
+                title = stringResource(R.string.backup_restore),
+                icon = Icons.Default.Backup,
+                enabled = false,
+                comingSoon = true
+            ) { navController.navigate(Routes.Settings.BACKUP) }
 
-        SettingsItem(
-            title = stringResource(R.string.check_for_update),
-            icon = Icons.Default.Update
-        ) {
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = "https://github.com/Elnix90/Notes/releases/latest".toUri()
-            }
-            ctx.startActivity(intent)
-        }
-
-        SettingsItem(
-            title = stringResource(R.string.report_a_bug),
-            icon = Icons.Default.ReportProblem
-        ) {
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = "https://github.com/Elnix90/Notes/issues/new".toUri()
-            }
-            ctx.startActivity(intent)
-        }
-
-
-        Spacer(modifier = Modifier.weight(1f))
-
-
-        Text(
-            text =  "${stringResource(R.string.version)} $versionName",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = 8.dp, bottom = 16.dp)
-                .clickable {
-                    toast?.cancel()
-
-                    when {
-                        isDebugModeEnabled -> {
-                            toast = Toast.makeText(
-                                ctx,
-                                "Debug Mode is already enabled",
-                                Toast.LENGTH_SHORT
-                            )
-                            toast?.show()
-                        }
-
-                        timesClickedOnVersion < 6 -> {
-                            timesClickedOnVersion++
-                            toast = Toast.makeText(
-                                ctx,
-                                "${7 - timesClickedOnVersion} more times to enable Debug Mode",
-                                Toast.LENGTH_SHORT
-                            )
-                            toast?.show()
-                        }
-
-                        else -> {
-                            showDebugModeUserValidation = true
-                        }
+            SettingsItem(
+                title = stringResource(R.string.settings_language_title),
+                icon = Icons.Default.Language,
+                onClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        openSystemLanguageSettings(ctx)
+                    } else {
+                        navController.navigate(Routes.Settings.LANGUAGE)
                     }
                 }
-        )
+            )
+
+
+            if (isDebugModeEnabled) {
+                SettingsItem(
+                    title = stringResource(R.string.debug),
+                    icon = Icons.Default.BugReport
+                ) { navController.navigate(Routes.Settings.DEBUG) }
+            }
+
+
+            TextDivider(stringResource(R.string.about))
+
+            SettingsItem(
+                title = stringResource(R.string.source_code),
+                icon = Icons.Default.Code,
+            ) {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = "https://github.com/Elnix90/Notes".toUri()
+                }
+                ctx.startActivity(intent)
+            }
+
+            SettingsItem(
+                title = stringResource(R.string.check_for_update),
+                icon = Icons.Default.Update
+            ) {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = "https://github.com/Elnix90/Notes/releases/latest".toUri()
+                }
+                ctx.startActivity(intent)
+            }
+
+            SettingsItem(
+                title = stringResource(R.string.report_a_bug),
+                icon = Icons.Default.ReportProblem
+            ) {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = "https://github.com/Elnix90/Notes/issues/new".toUri()
+                }
+                ctx.startActivity(intent)
+            }
+
+
+            Spacer(modifier = Modifier.weight(1f))
+
+
+            Text(
+                text = "${stringResource(R.string.version)} $versionName",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 8.dp, bottom = 16.dp)
+                    .clickable {
+                        toast?.cancel()
+
+                        when {
+                            isDebugModeEnabled -> {
+                                toast = Toast.makeText(
+                                    ctx,
+                                    "Debug Mode is already enabled",
+                                    Toast.LENGTH_SHORT
+                                )
+                                toast?.show()
+                            }
+
+                            timesClickedOnVersion < 6 -> {
+                                timesClickedOnVersion++
+                                toast = Toast.makeText(
+                                    ctx,
+                                    "${7 - timesClickedOnVersion} more times to enable Debug Mode",
+                                    Toast.LENGTH_SHORT
+                                )
+                                toast?.show()
+                            }
+
+                            else -> {
+                                showDebugModeUserValidation = true
+                            }
+                        }
+                    }
+            )
+        }
     }
 
     if (showDebugModeUserValidation) {

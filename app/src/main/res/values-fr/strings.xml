@@ -79,7 +79,7 @@
     <string name="import_notes">Importer les notes</string>
     <string name="add_reminder">Ajouter un rappel</string>
     <string name="next">Suivant</string>
-    <string name="previous">Précédent</string>
+    <string name="previous">re</string>
     <string name="select_time">Sélectionner l’heure</string>
     <string name="no_file_selected">Aucun fichier sélectionné</string>
     <string name="invalid_or_empty_file">Fichier invalide ou vide</string>
@@ -100,4 +100,25 @@
     <string name="note">Note</string>
     <string name="auto_text_color">Couleur du texte auto</string>
     <string name="fullscreen_app">Application en plein écran</string>
+    <string name="note_type_drawing">Dessin</string>
+    <string name="quick_actions">Actions Rapides</string>
+    <string name="show_note_type_icon">Afficher le type de note</string>
+    <string name="note_type_text">Note Textuelle</string>
+    <string name="note_type_checklist">Note Checklist</string>
+    <string name="checklist">Liste de actions</string>
+    <string name="item">Objet</string>
+    <string name="remove">Retirer</string>
+    <string name="new_entry">Nouvelle entrée</string>
+    <string name="add_item">Ajouter objet</string>
+    <string name="long_click_action">Action d\'appui prolongé</string>
+    <string name="type_button_action">Action d\'appui du bouton type</string>
+    <string name="note_actions">Action des notes</string>
+    <string name="notes_display">Affichage des notes</string>
+    <string name="buttons_display">Affichage des boutons</string>
+    <string name="app_display">Affichage dans l\'application</string>
+    <string name="debug_categories">Catégories de debug</string>
+    <string name="about">A propos</string>
+    <string name="reminders">Rappels</string>
+    <string name="note_color">Couleur de la note</string>
+    <string name="random_note_color">Couleur aléatoir</string>
 </resources>

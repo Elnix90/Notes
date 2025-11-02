@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,10 +19,13 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.Routes
 import org.elnix.notes.SettingsItem
+import org.elnix.notes.data.helpers.NoteViewType
 import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.SwitchRow
+import org.elnix.notes.ui.helpers.TextDivider
 
 @Composable
 fun AppearanceTab(
@@ -36,6 +37,9 @@ fun AppearanceTab(
     val showNavbarLabel by UiSettingsStore.getShowBottomNavLabelsFlow(ctx)
         .collectAsState(initial = ShowNavBarActions.ALWAYS)
 
+    val fullscreenApp by UiSettingsStore.getFullscreen(ctx).collectAsState(initial = false)
+    val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx).collectAsState(initial = true)
+    val notesViewType by UiSettingsStore.getNoteViewType(ctx).collectAsState(initial = NoteViewType.LIST)
 
     Column(
         modifier = Modifier
@@ -55,7 +59,7 @@ fun AppearanceTab(
                 icon = Icons.Default.ColorLens
             ) { navController.navigate(Routes.Settings.COLORS) }
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+            TextDivider(stringResource(R.string.app_display))
 
             ActionSelectorRow(
                 label = stringResource(R.string.show_navigation_bar_labels),
@@ -64,6 +68,32 @@ fun AppearanceTab(
                 optionLabel = { it.name}
             ) {
                 scope.launch { UiSettingsStore.setShowBottomNavLabelsFlow(ctx, it) }
+            }
+
+            SwitchRow(
+                fullscreenApp,
+                stringResource(R.string.fullscreen_app),
+            ) {
+                scope.launch { UiSettingsStore.setFullscreen(ctx, it) }
+            }
+
+
+            SwitchRow(
+                showNotesNumber,
+                stringResource(R.string.show_notes_number),
+            ) {
+                scope.launch { UiSettingsStore.setShowNotesNumber(ctx, it) }
+            }
+
+            TextDivider(stringResource(R.string.notes_display))
+
+            ActionSelectorRow(
+                label = stringResource(R.string.notes_view_type),
+                options = NoteViewType.entries,
+                selected = notesViewType,
+                optionLabel = { it.name}
+            ) {
+                scope.launch { UiSettingsStore.setNoteViewType(ctx, it) }
             }
         }
     }

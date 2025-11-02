@@ -16,7 +16,7 @@ object AmoledDefault : ThemeColors {
     override val OnSurface = OnBackground
     override val Error = Color.Red
     override val OnError = OnPrimary
-    override val Outline = Color.White
+    override val Outline = OnPrimary
     override val Delete = Color.Red
     override val Edit = Color(0xFF0019D3)
     override val Complete = Color(0xFF388E3C)
@@ -46,7 +46,7 @@ object DarkDefault : ThemeColors {
     override val Error = Color(0xFFCF6679)
     override val OnError = OnPrimary
 
-    override val Outline = Color.White
+    override val Outline = Color.White.copy(alpha = 0.8f)
 
     override val Delete = Color(0xFFD32F2F)
     override val Edit = Color(0xFF64B5F6)
@@ -72,7 +72,7 @@ object LightDefault : ThemeColors {
     override val OnSurface = OnPrimary
     override val Error = Color.Red
     override val OnError = OnPrimary
-    override val Outline = Color.Black
+    override val Outline = Color.Black.copy(alpha = 0.8f)
     override val Delete = Color.Red
     override val Edit = Color(0xFF0020FF)
     override val Complete = Color(0xFF388E3C)

@@ -16,7 +16,7 @@ data class NoteActionSettings(
     val rightAction: NotesActions = NotesActions.EDIT,
     val clickAction: NotesActions = NotesActions.COMPLETE,
     val longClickAction: NotesActions = NotesActions.SELECT,
-    val selectAction: NotesActions = NotesActions.SELECT,
+    val typeButtonAction: NotesActions = NotesActions.EDIT,
 )
 
 @Composable

@@ -8,22 +8,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import org.elnix.notes.R
 import org.elnix.notes.Routes
 import org.elnix.notes.SettingsItem
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
+import org.elnix.notes.ui.helpers.TextDivider
 
 @Composable
 fun DebugTab(navController: NavController, onBack: (() -> Unit)) {
@@ -40,20 +41,21 @@ fun DebugTab(navController: NavController, onBack: (() -> Unit)) {
     ) {
         SettingsTitle(title = "Debug", onBack = onBack)
 
-        SwitchRow(
-            state = isDebugModeEnabled,
-            text = "Activate Debug Mode",
-            defaultValue = true
-        ) {
-            scope.launch{
-                UiSettingsStore.setDebugMode(ctx, false)
-            }
-            navController.popBackStack()
-        }
-
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
+            SwitchRow(
+                state = isDebugModeEnabled,
+                text = "Activate Debug Mode",
+                defaultValue = true
+            ) {
+                scope.launch{
+                    UiSettingsStore.setDebugMode(ctx, false)
+                }
+                navController.popBackStack()
+            }
+
+            TextDivider(stringResource(R.string.debug_categories))
+
 
             SettingsItem(
                 title = "Reminders",

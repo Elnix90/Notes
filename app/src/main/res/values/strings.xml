@@ -100,8 +100,24 @@
     <string name="auto_text_color">Auto text color</string>
     <string name="fullscreen_app">Fullscreen App</string>
     <string name="show_note_type_icon">Show note type icon</string>
-    <string name="note_type_text">Note type text</string>
+    <string name="note_type_text">Textual note</string>
     <string name="note_type_checklist">Note type checklist</string>
-    <string name="note_type_drawing">Note type drawing</string>
+    <string name="note_type_drawing">Drawing</string>
     <string name="quick_actions">Quick Actions</string>
+    <string name="checklist">Checklist</string>
+    <string name="item">Item</string>
+    <string name="remove">Remove</string>
+    <string name="new_entry">New entry</string>
+    <string name="add_item">Add item</string>
+    <string name="long_click_action">Long click action</string>
+    <string name="type_button_action">Type button action</string>
+    <string name="note_actions">Note Actions</string>
+    <string name="notes_display">Notes display</string>
+    <string name="buttons_display">Buttons display</string>
+    <string name="app_display">App display</string>
+    <string name="debug_categories">Debug categories</string>
+    <string name="about">About</string>
+    <string name="reminders">Reminders</string>
+    <string name="note_color">Note color</string>
+    <string name="random_note_color">Random color</string>
 </resources>

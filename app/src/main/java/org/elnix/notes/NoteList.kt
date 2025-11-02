@@ -49,6 +49,7 @@ fun NotesList(
     onRightAction: (NoteEntity) -> Unit,
     onLeftAction: (NoteEntity) -> Unit,
     onButtonClick: (NoteEntity) -> Unit,
+    onTypeButtonClick: (NoteEntity) -> Unit,
     actionSettings: NoteActionSettings
 ) {
     LazyColumn(
@@ -65,6 +66,7 @@ fun NotesList(
                 onRightAction = { onRightAction(note) },
                 onLeftAction = { onLeftAction(note) },
                 onButtonClick = { onButtonClick(note) },
+                onTypeButtonClick = { onTypeButtonClick(note) },
                 actionSettings = actionSettings
             )
         }
@@ -81,6 +83,7 @@ fun SwipeableNoteCard(
     onRightAction: (NoteEntity) -> Unit,
     onLeftAction: (NoteEntity) -> Unit,
     onButtonClick: (NoteEntity) -> Unit,
+    onTypeButtonClick: (NoteEntity) -> Unit,
     actionSettings: NoteActionSettings
 ) {
     val maxSwipePx = 80f
@@ -186,6 +189,7 @@ fun SwipeableNoteCard(
             onClick = { onNoteClick(note) },
             onLongClick = { onNoteLongClick(note) },
             onDeleteButtonClick = { onButtonClick(note) },
+            onTypeIconClick = { onTypeButtonClick(note) },
             modifier = Modifier.offset(x = swipeOffset.dp + selectionOffset)
         )
     }

@@ -1,29 +1,17 @@
 package org.elnix.notes.ui.editors
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,27 +21,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.NoteEntity
-import org.elnix.notes.data.ReminderEntity
+import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.helpers.CompletionToggle
+import org.elnix.notes.ui.helpers.RemindersSection
 import org.elnix.notes.ui.helpers.TextDivider
-import org.elnix.notes.ui.helpers.colors.ColorPickerRow
+import org.elnix.notes.ui.helpers.ValidateCancelButtons
+import org.elnix.notes.ui.helpers.colors.NotesColorPickerSection
+import org.elnix.notes.ui.helpers.colors.setRandomColor
+import org.elnix.notes.ui.helpers.colors.toggleAutoColor
+import org.elnix.notes.ui.helpers.colors.updateNoteBgColor
+import org.elnix.notes.ui.helpers.colors.updateNoteTextColor
 import org.elnix.notes.ui.theme.AppObjectsColors
-import org.elnix.notes.utils.ReminderBubble
-import org.elnix.notes.utils.ReminderPicker
-import org.elnix.notes.utils.cancelReminderNotification
-import org.elnix.notes.utils.scheduleReminderNotification
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -64,7 +50,6 @@ fun NoteEditorScreen(
     onCancel: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
 
 
@@ -81,7 +66,7 @@ fun NoteEditorScreen(
             title = loaded?.title ?: ""
             desc = loaded?.desc ?: ""
         } else if (createdNoteId == null) {
-            val id = vm.addNoteAndReturnId()
+            val id = vm.addNoteAndReturnId(type = NoteType.TEXT)
             createdNoteId = id
             note = vm.getById(id)
         }
@@ -89,9 +74,6 @@ fun NoteEditorScreen(
 
     val currentId = note?.id ?: createdNoteId
 
-    val reminders by remember(currentId) {
-        if (currentId != null) vm.remindersFor(currentId) else null
-    }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
 
 
     Column(
@@ -118,311 +100,86 @@ fun NoteEditorScreen(
             colors = AppObjectsColors.outlinedTextFieldColors()
         )
 
-        val reminderText = stringResource(R.string.reminder)
+        val reminderText = stringResource(R.string.reminders)
+
+        val reminders by remember(currentId) {
+            if (currentId != null) vm.remindersFor(currentId) else null
+        }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
+
 
         TextDivider(reminderText)
 
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            itemVerticalAlignment = Alignment.CenterVertically
-        ) {
-            reminders.forEach { reminder ->
-                ReminderBubble(
-                    reminder = reminder,
-                    onToggle = { enabled ->
-                        scope.launch {
-                            val updatedReminder = reminder.copy(enabled = enabled)
-                            vm.updateReminder(updatedReminder)
-                            if (enabled) {
-                                scheduleReminderNotification(
-                                    context,
-                                    updatedReminder,
-                                    title = title.ifBlank { reminderText }
-                                )
-                            } else {
-                                cancelReminderNotification(context, reminder.id)
-                            }
-                        }
-                    },
-                    onDelete = {
-                        scope.launch {
-                             vm.deleteReminder(reminder)
-                            cancelReminderNotification(context, reminder.id)
-                        }
-                    }
-                )
-            }
-
-            ReminderPicker { picked ->
-                currentId?.let { noteId ->
-                    val reminderEntity = ReminderEntity(
-                        noteId = noteId,
-                        dueDateTime = picked.toCalendar(),
-                        enabled = true
-                    )
-                    scope.launch {
-                        val id = vm.addReminder(reminderEntity)
-
-                        scheduleReminderNotification(
-                            context,
-                            reminderEntity.copy(id = id),
-                            title = title.ifBlank { reminderText }
-                        )
-                    }
-                }
-            }
-        }
+        RemindersSection(
+            reminders = reminders,
+            currentId = currentId,
+            title = title,
+            vm = vm
+        )
 
         TextDivider(stringResource(R.string.color_text_literal))
 
 
-        // --- Colors section  ---
-        Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                // NOTE BACKGROUND COLOR PICKER
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val label = stringResource(R.string.note)
-                    Text(
-                        text = label,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                    Spacer(Modifier.height(4.dp))
-
-                    ColorPickerRow(
-                        label = label,
-                        showLabel = false,
-                        defaultColor = MaterialTheme.colorScheme.surface,
-                        currentColor = note?.bgColor?.toArgb()
-                            ?: MaterialTheme.colorScheme.surface.toArgb(),
-                        scope = scope
-                    ) { pickedInt ->
-                        val pickedColor = Color(pickedInt)
-                        scope.launch {
-                            currentId?.let { id ->
-                                val n = vm.getById(id)
-                                if (n != null) {
-                                    // If auto text color enabled, compute best contrast color
-                                    val autoText = n.autoTextColor
-                                    val computedTextColor =
-                                        if (autoText) {
-                                            if (pickedColor.luminance() < 0.5f) Color.White else Color.Black
-                                        } else n.txtColor
-
-                                    val updated = n.copy(
-                                        bgColor = pickedColor,
-                                        txtColor = computedTextColor
-                                    )
-                                    vm.update(updated)
-                                    note = updated
-                                }
-                            }
-                        }
-                    }
+        NotesColorPickerSection(
+            note,
+            scope,
+            onBgColorPicked = { pickedInt ->
+                val pickedColor = Color(pickedInt)
+                scope.launch {
+                    val updated = updateNoteBgColor(currentId, vm, pickedColor)
+                    if (updated != null) note = updated
                 }
-
-                // TEXT COLOR PICKER
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val label = stringResource(R.string.text)
-                    Text(
-                        text = label,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                    Spacer(Modifier.height(4.dp))
-
-                    val autoTextColorEnabled = note?.autoTextColor ?: false
-
-                    ColorPickerRow(
-                        label = label,
-                        showLabel = false,
-                        defaultColor = MaterialTheme.colorScheme.onSurface,
-                        currentColor = note?.txtColor?.toArgb()
-                            ?: MaterialTheme.colorScheme.onSurface.toArgb(),
-                        scope = scope,
-                        enabled = !autoTextColorEnabled,
-                    ) { pickedInt ->
-                        val pickedColor = Color(pickedInt)
-                        scope.launch {
-                            currentId?.let { id ->
-                                val n = vm.getById(id)
-                                if (n != null) {
-                                    val updated = n.copy(txtColor = pickedColor)
-                                    vm.update(updated)
-                                    note = updated
-                                }
-                            }
-                        }
-                    }
-
-                    // AUTO TEXT COLOR CHECKBOX
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Checkbox(
-                            checked = autoTextColorEnabled,
-                            onCheckedChange = { checked ->
-                                scope.launch {
-                                    currentId?.let { id ->
-                                        val n = vm.getById(id)
-                                        if (n != null) {
-                                            val computedTxt =
-                                                if (checked) {
-                                                    val bg = n.bgColor
-                                                    if (bg.luminance() < 0.4f) Color.White else Color.Black
-                                                } else n.txtColor
-                                            val updated = n.copy(
-                                                autoTextColor = checked,
-                                                txtColor = computedTxt
-                                            )
-                                            vm.update(updated)
-                                            note = updated
-                                        }
-                                    }
-                                }
-                            },
-                            colors = AppObjectsColors.checkboxColors()
-                        )
-                        Text(
-                            text = stringResource(R.string.auto_text_color),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
+            },
+            onTextColorPicked = { pickedInt ->
+                val pickedColor = Color(pickedInt)
+                scope.launch {
+                    val updated = updateNoteTextColor(currentId, vm, pickedColor)
+                    if (updated != null) note = updated
+                }
+            },
+            onAutoSwitchToggle = { checked ->
+                scope.launch {
+                    val updated = toggleAutoColor(currentId, vm, checked)
+                    if (updated != null) note = updated
+                }
+            },
+            onRandomColorClick = {
+                scope.launch {
+                    val updated = setRandomColor(currentId, vm)
+                    if (updated != null) note = updated
                 }
             }
-        }
+        )
+
 
         TextDivider(stringResource(R.string.quick_actions))
 
-        // --- Completed checkbox after colors ---
-        var isCompleted by remember { mutableStateOf(note?.isCompleted ?: false) }
+        CompletionToggle(
+            note = note,
+            currentId = currentId,
+            vm = vm,
+            onUpdated = { note = it }
+        )
 
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surface),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surface
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clickable {
-                            isCompleted = !isCompleted
-                            scope.launch {
-                                currentId?.let { id ->
-                                    val n = vm.getById(id)
-                                    if (n != null) {
-                                        val updated = n.copy(isCompleted = isCompleted)
-                                        vm.update(updated)
-                                        note = updated
-                                    }
-                                }
-                            }
+        Spacer(Modifier.height(15.dp))
+
+        ValidateCancelButtons(
+            onValidate = {
+                scope.launch {
+                    note?.let { vm.update(it.copy(title = title.trim(), desc = desc.trim(), lastEdit = System.currentTimeMillis())) }
+                    onSaved()
+                }
+            },
+            onCancel = {
+                scope.launch {
+                    note?.let {
+                        if (it.title.isBlank() && it.desc.isBlank()) {
+                            vm.delete(it)
                         }
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.completed),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Checkbox(
-                        checked = isCompleted,
-                        onCheckedChange = null,
-                        colors = AppObjectsColors.checkboxColors()
-                    )
+                    }
+                    onCancel()
                 }
             }
-        }
+        )
 
-
-        TextDivider("${stringResource(R.string.save)} / ${stringResource(R.string.cancel)} ")
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(
-                onClick = {
-                    scope.launch {
-                        currentId?.let { id ->
-                            val n = vm.getById(id)
-                            if (n != null) {
-                                val updated = n.copy(
-                                    title = title.trim(),
-                                    desc = desc.trim()
-                                )
-                                if (updated.title.isBlank() && updated.desc.isBlank()) {
-                                    vm.delete(updated)
-                                    onCancel()
-                                } else {
-                                    vm.update(updated)
-                                    onSaved()
-                                }
-                            }
-                        }
-                    }
-                },
-                colors = AppObjectsColors.buttonColors(),
-                modifier = Modifier.weight(1.5f)
-            ) {
-                Text(
-                    text = stringResource(R.string.save),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            OutlinedButton(
-                onClick = {
-                    scope.launch {
-                        currentId?.let {
-                            val n = vm.getById(it)
-                            if (n != null && n.title.isBlank() && n.desc.isBlank()) {
-                                vm.delete(n)
-                            }
-                        }
-                        onCancel()
-                    }
-                },
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                colors = AppObjectsColors.cancelButtonColors(),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = stringResource(R.string.cancel),
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
     }
 }
-
-
-
-

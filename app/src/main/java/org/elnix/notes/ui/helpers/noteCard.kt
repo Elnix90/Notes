@@ -62,7 +62,7 @@ fun NoteCard(
     val showDeleteButton by getShowDeleteButton(ctx).collectAsState(initial = true)
     val showNoteTypeIcon by getShowNoteTypeIcon(ctx).collectAsState(initial = true)
 
-    val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx).collectAsState(initial = false)
+    val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx).collectAsState(initial = true)
     val allTags by getTags(ctx).collectAsState(initial = emptyList())
 
     val noteTags = remember(allTags, note.tagIds) {

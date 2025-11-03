@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,25 +61,18 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     val noteViewType by UiSettingsStore.getNoteViewType(ctx)
         .collectAsState(initial = NoteViewType.LIST)
 
-
-    val showColorTagSelector by UiSettingsStore.getShowColorTagSelector(ctx).collectAsState(initial = false)
+    val showTagSelector by UiSettingsStore.getShowTagSelector(ctx).collectAsState(initial = false)
     val tagSelectorPositionBottom by UiSettingsStore.getTagSelectorPositionBottom(ctx).collectAsState(initial = false)
+    val multiSelectToolbarPositionBottom by UiSettingsStore.getMultiSelectToolbarPositionBottom(ctx).collectAsState(initial = true)
 
     val allTags by TagsSettingsStore.getTags(ctx).collectAsState(initial = emptyList())
-
-
     val enabledTagIds = allTags.filter { it.component4() }.map { it.id }.toSet()
 
-    val notesToShow = if (enabledTagIds.size == allTags.size || !showColorTagSelector) {
-        notes // no filter, show all notes
+    val notesToShow = if (enabledTagIds.size == allTags.size || !showTagSelector) {
+        notes
     } else {
-        notes.filter { note ->
-            note.tagIds.any { tagId -> enabledTagIds.contains(tagId) }
-        }
+        notes.filter { note -> note.tagIds.any { it in enabledTagIds } }
     }
-
-
-
 
     val onNoteLongClick: (NoteEntity) -> Unit = { note ->
         isMultiSelectMode = true
@@ -87,124 +81,132 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
 
     val onNoteClick: (NoteEntity) -> Unit = { note ->
         if (isMultiSelectMode) {
-            selectedNotes = if (note in selectedNotes) {
-                selectedNotes - note
-            } else {
-                selectedNotes + note
-            }
-            if (selectedNotes.isEmpty()) {
-                isMultiSelectMode = false
-            }
+            selectedNotes = if (note in selectedNotes) selectedNotes - note else selectedNotes + note
+            if (selectedNotes.isEmpty()) isMultiSelectMode = false
         } else {
             performAction(
-                actionSettings.clickAction,
-                vm, navController, note, scope,
+                actionSettings.clickAction, vm, navController, note, scope,
                 onSelectStart = { isMultiSelectMode = true; selectedNotes += note }
             )
         }
     }
 
-
     val onGroupAction: (NotesActions) -> Unit = { action ->
         scope.launch {
-            selectedNotes.forEach { note ->
-                performAction(action, vm, navController, note, scope)
-            }
+            selectedNotes.forEach { note -> performAction(action, vm, navController, note, scope) }
             selectedNotes = emptySet()
             isMultiSelectMode = false
         }
     }
 
-    LaunchedEffect(Unit) {
-        vm.deleteAllEmptyNotes()
+    LaunchedEffect(Unit) { vm.deleteAllEmptyNotes() }
+
+    // --- Decide toolbar & selector positions ---
+    val topBars = mutableListOf<@Composable () -> Unit>()
+    val bottomBars = mutableListOf<@Composable () -> Unit>()
+
+    if (showTagSelector) {
+        val tagSelectorComposable: @Composable () -> Unit = {
+            TagSelectingRow(ctx = ctx, allTags = allTags, scope = scope)
+        }
+        if (tagSelectorPositionBottom) bottomBars.add(tagSelectorComposable)
+        else topBars.add(tagSelectorComposable)
     }
 
-    if (notes.isEmpty()) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.no_notes_yet),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
-                textAlign = TextAlign.Center
+    if (isMultiSelectMode) {
+        val multiSelectComposable: @Composable () -> Unit = {
+            MultiSelectToolbar(
+                onGroupAction = onGroupAction,
+                isSingleSelected = selectedNotes.size == 1,
+                onCloseSelection = {
+                    selectedNotes = emptySet()
+                    isMultiSelectMode = false
+                }
             )
         }
-    } else {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            if (isMultiSelectMode) {
-                MultiSelectToolbar(
-                    onGroupAction = onGroupAction,
-                    isSingleSelected = selectedNotes.size == 1,
-                    onCloseSelection = {
-                        selectedNotes = emptySet()
-                        isMultiSelectMode = false
+
+        if (multiSelectToolbarPositionBottom) {
+            if (showTagSelector && tagSelectorPositionBottom) {
+                // both bottom: multi-select below selector
+                bottomBars.add(multiSelectComposable)
+            } else bottomBars.add(0, multiSelectComposable)
+        } else {
+            if (showTagSelector && !tagSelectorPositionBottom) {
+                // both top: multi-select above selector
+                topBars.add(0, multiSelectComposable)
+            } else topBars.add(multiSelectComposable)
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            if(!topBars.isEmpty()) {
+                Column { topBars.forEach { it() } }
+            }
+        },
+        bottomBar = {
+            if (!bottomBars.isEmpty()) {
+                Column { bottomBars.forEach { it() } }
+            }
+        }
+    ) { innerPadding ->
+        if (notes.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(32.dp)
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.no_notes_yet),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(innerPadding),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                if (showNotesNumber) {
+                    var text = "${stringResource(R.string.note_number)} : ${notes.size}"
+                    if (notesToShow.size != notes.size) {
+                        text += " • ${stringResource(R.string.filtered_bote_number)} : ${notesToShow.size}"
                     }
-                )
-            }
-
-
-            // --- If selector is on top and enabled ---
-            if (showColorTagSelector && !tagSelectorPositionBottom) {
-                TagSelectingRow(
-                    ctx = ctx,
-                    allTags = allTags,
-                    scope = scope
-                )
-            }
-
-            if (showNotesNumber) {
-                var text = "${stringResource(R.string.note_number)} : ${notes.size}"
-                if (notesToShow.size != notes.size) {
-                    text += " • ${stringResource(R.string.filtered_bote_number)} : ${notesToShow.size}"
+                    TextDivider(text)
                 }
-                TextDivider(text)
-            }
 
-            when (noteViewType) {
-                NoteViewType.LIST -> NotesList(
-                    notes = notesToShow,
-                    selectedNotes = selectedNotes,
-                    isSelectMode = isMultiSelectMode,
-                    onNoteClick = onNoteClick,
-                    onNoteLongClick = onNoteLongClick,
-                    onRightAction = { note ->
-                        performAction(actionSettings.rightAction, vm, navController, note, scope)
-                    },
-                    onLeftAction = { note ->
-                        performAction(actionSettings.leftAction, vm, navController, note, scope)
-                    },
-                    onButtonClick = { note ->
-                        scope.launch { vm.delete(note) }
-                    },
-                    onTypeButtonClick = { note ->
-                        performAction(actionSettings.typeButtonAction, vm, navController, note, scope)
-                    },
-                    actionSettings = actionSettings
-                )
+                when (noteViewType) {
+                    NoteViewType.LIST -> NotesList(
+                        notes = notesToShow,
+                        selectedNotes = selectedNotes,
+                        isSelectMode = isMultiSelectMode,
+                        onNoteClick = onNoteClick,
+                        onNoteLongClick = onNoteLongClick,
+                        onRightAction = { note ->
+                            performAction(actionSettings.rightAction, vm, navController, note, scope)
+                        },
+                        onLeftAction = { note ->
+                            performAction(actionSettings.leftAction, vm, navController, note, scope)
+                        },
+                        onButtonClick = { note -> scope.launch { vm.delete(note) } },
+                        onTypeButtonClick = { note ->
+                            performAction(actionSettings.typeButtonAction, vm, navController, note, scope)
+                        },
+                        actionSettings = actionSettings
+                    )
 
-                NoteViewType.GRID -> NotesGrid(
-                    notes = notesToShow,
-                    selectedNotes = selectedNotes,
-                    onNoteClick = onNoteClick,
-                    onNoteLongClick = onNoteLongClick
-                )
-            }
-
-
-            // --- If selector is on bottom and enabled ---
-            if (showColorTagSelector && tagSelectorPositionBottom) {
-                TagSelectingRow(
-                    ctx = ctx,
-                    allTags = allTags,
-                    scope = scope
-                )
+                    NoteViewType.GRID -> NotesGrid(
+                        notes = notesToShow,
+                        selectedNotes = selectedNotes,
+                        onNoteClick = onNoteClick,
+                        onNoteLongClick = onNoteLongClick
+                    )
+                }
             }
         }
     }
@@ -220,23 +222,12 @@ fun performAction(
     onSelectStart: (() -> Unit)? = null
 ) {
     when (action) {
-        NotesActions.DELETE -> {
-            scope.launch { vm.delete(note) }
+        NotesActions.DELETE -> scope.launch { vm.delete(note) }
+        NotesActions.COMPLETE -> scope.launch {
+            if (note.isCompleted) vm.markUnCompleted(note)
+            else vm.markCompleted(note)
         }
-
-        NotesActions.COMPLETE -> {
-            scope.launch {
-                if (note.isCompleted) vm.markUnCompleted(note)
-                else vm.markCompleted(note)
-            }
-        }
-
-        NotesActions.EDIT -> {
-            navController.navigate("edit/${note.id}?type=${note.type.name}")
-        }
-
-        NotesActions.SELECT -> {
-            onSelectStart?.invoke()
-        }
+        NotesActions.EDIT -> navController.navigate("edit/${note.id}?type=${note.type.name}")
+        NotesActions.SELECT -> onSelectStart?.invoke()
     }
 }

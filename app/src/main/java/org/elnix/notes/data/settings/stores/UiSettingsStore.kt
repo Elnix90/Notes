@@ -81,7 +81,7 @@ object UiSettingsStore {
 
 
     private val SHOW_DELETE_BUTTON = booleanPreferencesKey("show_delete_button")
-    fun getShowDeleteButton(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[SHOW_DELETE_BUTTON] ?: false }
+    fun getShowDeleteButton(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[SHOW_DELETE_BUTTON] ?: true }
     suspend fun setShowDeleteButton(ctx: Context, state: Boolean) {
         ctx.dataStore.edit { it[SHOW_DELETE_BUTTON] = state}
     }
@@ -108,7 +108,7 @@ object UiSettingsStore {
 
     private val SHOW_NOTE_TYPE_ICON = booleanPreferencesKey("show_note_type_icon")
     fun getShowNoteTypeIcon(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW_NOTE_TYPE_ICON] ?: false }
+        ctx.dataStore.data.map { it[SHOW_NOTE_TYPE_ICON] ?: true }
     suspend fun setShowNoteTypeIcon(ctx: Context, enabled: Boolean) {
         ctx.dataStore.edit { it[SHOW_NOTE_TYPE_ICON] = enabled }
     }
@@ -142,26 +142,36 @@ object UiSettingsStore {
     }
 
 
-    private val SHOW_COLOR_TAG_SELECTOR = booleanPreferencesKey("show_color_tag_selector")
-    fun getShowColorTagSelector(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW_COLOR_TAG_SELECTOR] ?: false }
-    suspend fun setShowColorTagSelector(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[SHOW_COLOR_TAG_SELECTOR] = enabled }
+    private val SHOW__TAG_SELECTOR = booleanPreferencesKey("show_tag_selector")
+    fun getShowTagSelector(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[SHOW__TAG_SELECTOR] ?: true }
+    suspend fun setShowTagSelector(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[SHOW__TAG_SELECTOR] = enabled }
     }
 
     private val SHOW_TAGS_IN_NOTES = booleanPreferencesKey("show_tags_in_notes")
     fun getShowTagsInNotes(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW_TAGS_IN_NOTES] ?: false }
+        ctx.dataStore.data.map { it[SHOW_TAGS_IN_NOTES] ?: true }
     suspend fun setShowTagsInNotes(ctx: Context, enabled: Boolean) {
         ctx.dataStore.edit { it[SHOW_TAGS_IN_NOTES] = enabled }
     }
 
     private val TAG_SELECTOR_POSITION_BOTTOM = booleanPreferencesKey("tag_selector_position_bottom")
     fun getTagSelectorPositionBottom(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[TAG_SELECTOR_POSITION_BOTTOM] ?: false }
+        ctx.dataStore.data.map { it[TAG_SELECTOR_POSITION_BOTTOM] ?: true }
     suspend fun setTagSelectorPositionBottom(ctx: Context, enabled: Boolean) {
         ctx.dataStore.edit { it[TAG_SELECTOR_POSITION_BOTTOM] = enabled }
     }
 
+
+    private val MULTI_SELECT_TOOLBAR_POSITION_BOTTOM = booleanPreferencesKey("multi_select_toolbar_position_bottom")
+
+    val getMultiSelectToolbarPositionBottom = { ctx: Context ->
+        ctx.dataStore.data.map { it[MULTI_SELECT_TOOLBAR_POSITION_BOTTOM] ?: true }
+    }
+
+    suspend fun setMultiSelectToolbarPositionBottom(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[MULTI_SELECT_TOOLBAR_POSITION_BOTTOM] = enabled }
+    }
 
 }

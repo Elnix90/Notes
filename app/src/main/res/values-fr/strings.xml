@@ -137,4 +137,9 @@
     <string name="show_tag_selector">Afficher le selecteur de tags</string>
     <string name="show_tags_in_notes">Afficher les tags dans les notes</string>
     <string name="filtered_bote_number">Nombre de notes filtrées</string>
+    <string name="reset_filter">Réinitialiser les filtres</string>
+    <string name="multi_select_toolbar_bottom">Barre de selection en bas</string>
+    <string name="multi_select_toolbar_top">Barre de selection en haut</string>
+    <string name="toolbars">Boîtes à outils</string>
+    <string name="add_tag">Ajouter un tag</string>
 </resources>

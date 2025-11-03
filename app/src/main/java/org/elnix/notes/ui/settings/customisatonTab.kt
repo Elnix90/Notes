@@ -31,11 +31,12 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
 
 
     val showDeleteButton by UiSettingsStore.getShowDeleteButton(ctx).collectAsState(initial = true)
-    val showNoteTypeIcon by UiSettingsStore.getShowNoteTypeIcon(ctx).collectAsState(initial = false)
+    val showNoteTypeIcon by UiSettingsStore.getShowNoteTypeIcon(ctx).collectAsState(initial = true)
 
-    val showColorTagSelector by UiSettingsStore.getShowColorTagSelector(ctx).collectAsState(initial = false)
-    val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx).collectAsState(initial = false)
-    val tagSelectorPositionBottom by UiSettingsStore.getTagSelectorPositionBottom(ctx).collectAsState(initial = false)
+    val showTagSelector by UiSettingsStore.getShowTagSelector(ctx).collectAsState(initial = true)
+    val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx).collectAsState(initial = true)
+    val tagSelectorPositionBottom by UiSettingsStore.getTagSelectorPositionBottom(ctx).collectAsState(initial = true)
+    val multiSelectToolbarPositionBottom by UiSettingsStore.getMultiSelectToolbarPositionBottom(ctx).collectAsState(initial = true)
 
 
     Column(
@@ -121,10 +122,10 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
         TextDivider(stringResource(R.string.tags))
 
         SwitchRow(
-            showColorTagSelector,
+            showTagSelector,
             stringResource(R.string.show_tag_selector),
         ) {
-            scope.launch { UiSettingsStore.setShowColorTagSelector(ctx, it) }
+            scope.launch { UiSettingsStore.setShowTagSelector(ctx, it) }
         }
 
         SwitchRow(
@@ -134,11 +135,20 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             scope.launch { UiSettingsStore.setShowTagsInNotes(ctx, it) }
         }
 
+        TextDivider(stringResource(R.string.toolbars))
+
         SwitchRow(
             tagSelectorPositionBottom,
             if (tagSelectorPositionBottom) stringResource(R.string.tag_selector_position_bottom) else stringResource(R.string.tag_selector_position_top),
         ) {
             scope.launch { UiSettingsStore.setTagSelectorPositionBottom(ctx, it) }
+        }
+
+        SwitchRow(
+            multiSelectToolbarPositionBottom,
+            if (multiSelectToolbarPositionBottom) stringResource(R.string.multi_select_toolbar_bottom) else stringResource(R.string.multi_select_toolbar_top),
+        ) {
+            scope.launch { UiSettingsStore.setMultiSelectToolbarPositionBottom(ctx, it) }
         }
     }
 }

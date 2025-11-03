@@ -142,4 +142,8 @@
     <string name="multi_select_toolbar_top">Barre de selection en haut</string>
     <string name="toolbars">Boîtes à outils</string>
     <string name="add_tag">Ajouter un tag</string>
+    <string name="delete">Suprimer</string>
+    <string name="edit">Editer</string>
+    <string name="complete">Compléter</string>
+    <string name="select">Select</string>
 </resources>

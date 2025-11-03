@@ -141,4 +141,14 @@
     <string name="multi_select_toolbar_top">Select toolbar top</string>
     <string name="toolbars">Toolbars</string>
     <string name="add_tag">Add tag</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="complete">Complete</string>
+    <string name="select">Select</string>
+    <string name="search">Search</string>
+    <string name="sort">Sort</string>
+    <string name="deselect_all">Deselect</string>
+    <string name="add_note">Add_note</string>
+    <string name="reorder">Reorder</string>
+    <string name="reorder_handle">Reorder Handle</string>
 </resources>

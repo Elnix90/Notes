@@ -1,5 +1,6 @@
 package org.elnix.notes.data.helpers
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.CheckCircle
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import org.elnix.notes.R
 import org.elnix.notes.ui.theme.LocalExtraColors
 
 enum class NotesActions { DELETE, COMPLETE, EDIT, SELECT }
@@ -27,6 +29,16 @@ fun noteActionColor(action: NotesActions): Color {
         NotesActions.EDIT -> extras.edit
         NotesActions.COMPLETE -> extras.complete
         NotesActions.SELECT -> extras.select
+    }
+}
+
+
+fun noteActionName(ctx: Context, action: NotesActions): String {
+    return when (action) {
+        NotesActions.DELETE -> ctx.getString(R.string.delete)
+        NotesActions.EDIT -> ctx.getString(R.string.edit)
+        NotesActions.COMPLETE -> ctx.getString(R.string.complete)
+        NotesActions.SELECT -> ctx.getString(R.string.select)
     }
 }
 

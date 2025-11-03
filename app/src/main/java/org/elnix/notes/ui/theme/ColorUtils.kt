@@ -61,7 +61,7 @@ object AppObjectsColors {
         val colors = MaterialTheme.colorScheme
         return ButtonDefaults.buttonColors(
             containerColor = colors.primary,
-            contentColor =   colors.onBackground
+            contentColor =   colors.onPrimary
         )
     }
 

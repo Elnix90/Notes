@@ -40,6 +40,7 @@ fun AppearanceTab(
     val fullscreenApp by UiSettingsStore.getFullscreen(ctx).collectAsState(initial = false)
     val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx).collectAsState(initial = true)
     val notesViewType by UiSettingsStore.getNoteViewType(ctx).collectAsState(initial = NoteViewType.LIST)
+    val showSearchText by UiSettingsStore.getShowSearchText(ctx).collectAsState(initial = true)
 
     Column(
         modifier = Modifier
@@ -95,6 +96,13 @@ fun AppearanceTab(
                 optionLabel = { it.name}
             ) {
                 scope.launch { UiSettingsStore.setNoteViewType(ctx, it) }
+            }
+
+            SwitchRow(
+                showSearchText,
+                stringResource(R.string.show_search_text),
+            ) {
+                scope.launch { UiSettingsStore.setShowSearchText(ctx, it) }
             }
         }
     }

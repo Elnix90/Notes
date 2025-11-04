@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,16 +29,30 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
+import org.elnix.notes.data.helpers.GlobalNotesActions
+import org.elnix.notes.data.helpers.GlobalNotesActions.ADD_NOTE
+import org.elnix.notes.data.helpers.GlobalNotesActions.COMPLETE_NOTE
+import org.elnix.notes.data.helpers.GlobalNotesActions.DELETE_NOTE
+import org.elnix.notes.data.helpers.GlobalNotesActions.DESELECT_ALL
+import org.elnix.notes.data.helpers.GlobalNotesActions.EDIT_NOTE
+import org.elnix.notes.data.helpers.GlobalNotesActions.REORDER
+import org.elnix.notes.data.helpers.GlobalNotesActions.SEARCH
+import org.elnix.notes.data.helpers.GlobalNotesActions.SETTINGS
+import org.elnix.notes.data.helpers.GlobalNotesActions.SORT
 import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.NoteViewType
 import org.elnix.notes.data.helpers.NotesActions
+import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
+import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
-import org.elnix.notes.ui.helpers.MultiSelectToolbar
+import org.elnix.notes.ui.helpers.AddNoteFab
 import org.elnix.notes.ui.helpers.TextDivider
-import org.elnix.notes.ui.helpers.tags.TagSelectingRow
+import org.elnix.notes.ui.helpers.toolbars.QuickActionsToolbar
+import org.elnix.notes.ui.helpers.toolbars.SelectToolbar
+import org.elnix.notes.ui.helpers.toolbars.TagSelectingRow
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Stable
@@ -45,41 +60,32 @@ enum class SwipeState { Default, LeftAction, RightAction }
 
 @Composable
 fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
-    val notes by vm.notes.collectAsState()
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-
-    var selectedNotes by remember { mutableStateOf<Set<NoteEntity>>(emptySet()) }
-    var isMultiSelectMode by remember { mutableStateOf(false) }
-
-    val actionSettings by ActionSettingsStore.getActionSettingsFlow(ctx)
-        .collectAsState(initial = NoteActionSettings())
-
-    val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx)
-        .collectAsState(initial = true)
-
-    val noteViewType by UiSettingsStore.getNoteViewType(ctx)
-        .collectAsState(initial = NoteViewType.LIST)
-
-    val showTagSelector by UiSettingsStore.getShowTagSelector(ctx).collectAsState(initial = false)
-    val tagSelectorPositionBottom by UiSettingsStore.getTagSelectorPositionBottom(ctx).collectAsState(initial = false)
-    val multiSelectToolbarPositionBottom by UiSettingsStore.getMultiSelectToolbarPositionBottom(ctx).collectAsState(initial = true)
-
+    val notes by vm.notes.collectAsState()
+    val actionSettings by ActionSettingsStore.getActionSettingsFlow(ctx).collectAsState(initial = NoteActionSettings())
+    val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx).collectAsState(initial = true)
+    val noteViewType by UiSettingsStore.getNoteViewType(ctx).collectAsState(initial = NoteViewType.LIST)
+    val toolbars by ToolbarsSettingsStore.getToolbarsFlow(ctx).collectAsState(initial = ToolbarsSettingsStore.defaultList)
     val allTags by TagsSettingsStore.getTags(ctx).collectAsState(initial = emptyList())
     val enabledTagIds = allTags.filter { it.component4() }.map { it.id }.toSet()
 
-    val notesToShow = if (enabledTagIds.size == allTags.size || !showTagSelector) {
-        notes
-    } else {
-        notes.filter { note -> note.tagIds.any { it in enabledTagIds } }
-    }
+    // Manage selection state
+    var selectedNotes by remember { mutableStateOf<Set<NoteEntity>>(emptySet()) }
+    var isMultiSelectMode by remember { mutableStateOf(false) }
+    var showAddNoteMenu by remember { mutableStateOf(false) }
 
-    val onNoteLongClick: (NoteEntity) -> Unit = { note ->
+    // Which notes to show is dependent on tag selector
+    val showTagSelector = toolbars.any { it.toolbar == ToolBars.TAGS && it.enabled }
+    val notesToShow = if (enabledTagIds.size == allTags.size || !showTagSelector) notes
+    else notes.filter { note -> note.tagIds.any { it in enabledTagIds } }
+
+    // User actions
+    fun onNoteLongClick(note: NoteEntity) {
         isMultiSelectMode = true
         selectedNotes = selectedNotes + note
     }
-
-    val onNoteClick: (NoteEntity) -> Unit = { note ->
+    fun onNoteClick(note: NoteEntity) {
         if (isMultiSelectMode) {
             selectedNotes = if (note in selectedNotes) selectedNotes - note else selectedNotes + note
             if (selectedNotes.isEmpty()) isMultiSelectMode = false
@@ -90,8 +96,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             )
         }
     }
-
-    val onGroupAction: (NotesActions) -> Unit = { action ->
+    fun onGroupAction(action: NotesActions) {
         scope.launch {
             selectedNotes.forEach { note -> performAction(action, vm, navController, note, scope) }
             selectedNotes = emptySet()
@@ -99,56 +104,61 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    LaunchedEffect(Unit) { vm.deleteAllEmptyNotes() }
-
-    // --- Decide toolbar & selector positions ---
-    val topBars = mutableListOf<@Composable () -> Unit>()
-    val bottomBars = mutableListOf<@Composable () -> Unit>()
-
-    if (showTagSelector) {
-        val tagSelectorComposable: @Composable () -> Unit = {
-            TagSelectingRow(ctx = ctx, allTags = allTags, scope = scope)
+    fun onGlobalToolbarAction(action: GlobalNotesActions) {
+        when (action) {
+            ADD_NOTE -> showAddNoteMenu = true
+            else -> performGlobalAction(action, vm, navController, selectedNotes.firstOrNull() ?: return, scope)
         }
-        if (tagSelectorPositionBottom) bottomBars.add(tagSelectorComposable)
-        else topBars.add(tagSelectorComposable)
     }
 
-    if (isMultiSelectMode) {
-        val multiSelectComposable: @Composable () -> Unit = {
-            MultiSelectToolbar(
-                onGroupAction = onGroupAction,
-                isSingleSelected = selectedNotes.size == 1,
-                onCloseSelection = {
-                    selectedNotes = emptySet()
-                    isMultiSelectMode = false
-                }
-            )
-        }
+    if (showAddNoteMenu) {
+        AddNoteFab(
+            navController = navController,
+            onDismiss = { showAddNoteMenu = false }
+        )
+    }
 
-        if (multiSelectToolbarPositionBottom) {
-            if (showTagSelector && tagSelectorPositionBottom) {
-                // both bottom: multi-select below selector
-                bottomBars.add(multiSelectComposable)
-            } else bottomBars.add(0, multiSelectComposable)
-        } else {
-            if (showTagSelector && !tagSelectorPositionBottom) {
-                // both top: multi-select above selector
-                topBars.add(0, multiSelectComposable)
-            } else topBars.add(multiSelectComposable)
+    LaunchedEffect(Unit) { vm.deleteAllEmptyNotes() }
+
+    // ----- DYNAMIC TOOLBARS POSITIONING -----
+    val topBars = mutableListOf<@Composable () -> Unit>()
+    val bottomBars = mutableListOf<@Composable () -> Unit>()
+    var reachedSeparator = false
+
+    toolbars.filter { it.enabled }.forEach { bar ->
+        if (bar.toolbar == ToolBars.SEPARATOR) {
+            reachedSeparator = true
+        }
+        val toolbarComposable: (@Composable () -> Unit)? = when (bar.toolbar) {
+            ToolBars.SELECT -> if (isMultiSelectMode) {
+                {
+                    SelectToolbar(ctx, rememberScrollState()) { action ->
+                        when (action) {
+                            // Provide group logic as appropriate
+                            EDIT_NOTE -> onGroupAction(NotesActions.EDIT)
+                            DELETE_NOTE -> onGroupAction(NotesActions.DELETE)
+                            COMPLETE_NOTE -> onGroupAction(NotesActions.COMPLETE)
+                            else -> {}
+                        }
+                    }
+                }
+            }  else null
+
+            ToolBars.TAGS -> { { TagSelectingRow(ctx, allTags, scope) } }
+            ToolBars.QUICK_ACTIONS -> {
+                { QuickActionsToolbar(ctx, rememberScrollState()) { action -> onGlobalToolbarAction(action) } }
+            }
+            ToolBars.SEPARATOR -> null
+        }
+        if (toolbarComposable != null) {
+            if (reachedSeparator) bottomBars.add(toolbarComposable)
+            else topBars.add(toolbarComposable)
         }
     }
 
     Scaffold(
-        topBar = {
-            if(!topBars.isEmpty()) {
-                Column { topBars.forEach { it() } }
-            }
-        },
-        bottomBar = {
-            if (!bottomBars.isEmpty()) {
-                Column { bottomBars.forEach { it() } }
-            }
-        }
+        topBar = { if (topBars.isNotEmpty()) Column { topBars.forEach { it() } } },
+        bottomBar = { if (bottomBars.isNotEmpty()) Column { bottomBars.forEach { it() } } }
     ) { innerPadding ->
         if (notes.isEmpty()) {
             Box(
@@ -179,14 +189,13 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                     }
                     TextDivider(text)
                 }
-
                 when (noteViewType) {
                     NoteViewType.LIST -> NotesList(
                         notes = notesToShow,
                         selectedNotes = selectedNotes,
                         isSelectMode = isMultiSelectMode,
-                        onNoteClick = onNoteClick,
-                        onNoteLongClick = onNoteLongClick,
+                        onNoteClick = ::onNoteClick,
+                        onNoteLongClick = ::onNoteLongClick,
                         onRightAction = { note ->
                             performAction(actionSettings.rightAction, vm, navController, note, scope)
                         },
@@ -199,18 +208,18 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         },
                         actionSettings = actionSettings
                     )
-
                     NoteViewType.GRID -> NotesGrid(
                         notes = notesToShow,
                         selectedNotes = selectedNotes,
-                        onNoteClick = onNoteClick,
-                        onNoteLongClick = onNoteLongClick
+                        onNoteClick = ::onNoteClick,
+                        onNoteLongClick = ::onNoteLongClick
                     )
                 }
             }
         }
     }
 }
+
 
 
 fun performAction(
@@ -229,5 +238,32 @@ fun performAction(
         }
         NotesActions.EDIT -> navController.navigate("edit/${note.id}?type=${note.type.name}")
         NotesActions.SELECT -> onSelectStart?.invoke()
+    }
+}
+
+
+fun performGlobalAction(
+    action: GlobalNotesActions,
+    vm: NoteViewModel,
+    navController: NavHostController,
+    note: NoteEntity,
+    scope: CoroutineScope
+) {
+    when (action) {
+        SEARCH -> TODO()
+        SORT -> TODO()
+        SETTINGS -> navController.navigate(Routes.Settings)
+        DESELECT_ALL -> scope.launch {
+            if (note.isCompleted) vm.markUnCompleted(note)
+            else vm.markCompleted(note)
+        }
+        REORDER -> TODO()
+        EDIT_NOTE -> navController.navigate("edit/${note.id}?type=${note.type.name}")
+        DELETE_NOTE -> scope.launch { vm.delete(note) }
+        COMPLETE_NOTE -> scope.launch {
+            if (note.isCompleted) vm.markUnCompleted(note)
+            else vm.markCompleted(note)
+        }
+        else -> return
     }
 }

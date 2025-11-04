@@ -1,4 +1,4 @@
-package org.elnix.notes.ui.helpers
+package org.elnix.notes.ui.helpers.toolbars
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

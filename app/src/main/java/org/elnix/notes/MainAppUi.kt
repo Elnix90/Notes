@@ -1,6 +1,5 @@
 package org.elnix.notes
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Settings
@@ -9,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -38,7 +35,6 @@ import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.editors.ChecklistEditorScreen
 import org.elnix.notes.ui.editors.DrawingEditorScreen
 import org.elnix.notes.ui.editors.NoteEditorScreen
-import org.elnix.notes.ui.helpers.AddNoteFab
 import org.elnix.notes.ui.security.LockScreen
 import org.elnix.notes.ui.theme.adjustBrightness
 
@@ -77,91 +73,82 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
     if (!unlocked) {
         LockScreen(activity) { unlocked = true }
     } else {
-        Scaffold(
-            bottomBar = { BottomNav(navController) },
-            floatingActionButton = {
-                if (currentRoute == Routes.NOTES) {
-                    AddNoteFab(navController)
+
+        NavHost(
+            navController = navController,
+            startDestination = Routes.NOTES
+        ) {
+            // NOTES
+            composable(Routes.NOTES) { NotesScreen(vm, navController) }
+
+            // SETTINGS NAV GRAPH
+            settingsNavGraph(navController, vm)
+
+            // CREATE NOTE
+            composable(
+                route = "${Routes.CREATE}?type={type}",
+                arguments = listOf(navArgument("type") {
+                    type = NavType.StringType
+                    defaultValue = NoteType.TEXT.name
+                })
+            ) { backStackEntry ->
+                val typeArg = backStackEntry.arguments?.getString("type")
+                val noteType = NoteType.valueOf(typeArg ?: NoteType.TEXT.name)
+
+                when (noteType) {
+                    NoteType.TEXT -> NoteEditorScreen(
+                        vm,
+                        null,
+                        onSaved = { navController.popBackStack()},
+                        onCancel = { navController.popBackStack() })
+                    NoteType.CHECKLIST -> ChecklistEditorScreen(
+                        vm,
+                        null,
+                        onSaved = { navController.popBackStack() },
+                        onCancel = { navController.popBackStack() }
+                    )
+                    NoteType.DRAWING -> DrawingEditorScreen(
+                        vm,
+                        null,
+                        onSaved = { navController.popBackStack() },
+                        onCancel = { navController.popBackStack() }
+                    )
                 }
             }
-        ) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = Routes.NOTES,
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                // NOTES
-                composable(Routes.NOTES) { NotesScreen(vm, navController) }
 
-                // SETTINGS NAV GRAPH
-                settingsNavGraph(navController, vm)
-
-                // CREATE NOTE
-                composable(
-                    route = "${Routes.CREATE}?type={type}",
-                    arguments = listOf(navArgument("type") {
+            // EDIT NOTE
+            composable(
+                route = "${Routes.EDIT}?type={type}",
+                arguments = listOf(
+                    navArgument("noteId") { type = NavType.LongType },
+                    navArgument("type") {
                         type = NavType.StringType
                         defaultValue = NoteType.TEXT.name
-                    })
-                ) { backStackEntry ->
-                    val typeArg = backStackEntry.arguments?.getString("type")
-                    val noteType = NoteType.valueOf(typeArg ?: NoteType.TEXT.name)
-
-                    when (noteType) {
-                        NoteType.TEXT -> NoteEditorScreen(
-                            vm,
-                            null,
-                            onSaved = { navController.popBackStack()},
-                            onCancel = { navController.popBackStack() })
-                        NoteType.CHECKLIST -> ChecklistEditorScreen(
-                            vm,
-                            null,
-                            onSaved = { navController.popBackStack() },
-                            onCancel = { navController.popBackStack() }
-                        )
-                        NoteType.DRAWING -> DrawingEditorScreen(
-                            vm,
-                            null,
-                            onSaved = { navController.popBackStack() },
-                            onCancel = { navController.popBackStack() }
-                        )
                     }
-                }
+                )
+            ) { backStackEntry ->
+                val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
+                val typeArg = backStackEntry.arguments?.getString("type")
+                val noteType = NoteType.valueOf(typeArg ?: NoteType.TEXT.name)
 
-                // EDIT NOTE
-                composable(
-                    route = "${Routes.EDIT}?type={type}",
-                    arguments = listOf(
-                        navArgument("noteId") { type = NavType.LongType },
-                        navArgument("type") {
-                            type = NavType.StringType
-                            defaultValue = NoteType.TEXT.name
-                        }
+                when (noteType) {
+                    NoteType.TEXT -> NoteEditorScreen(
+                        vm,
+                        noteId,
+                        onSaved = { navController.popBackStack() },
+                        onCancel = { navController.popBackStack() })
+                    NoteType.CHECKLIST -> ChecklistEditorScreen(
+                        vm,
+                        noteId,
+                        onSaved = { navController.popBackStack() },
+                        onCancel = { navController.popBackStack() }
                     )
-                ) { backStackEntry ->
-                    val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
-                    val typeArg = backStackEntry.arguments?.getString("type")
-                    val noteType = NoteType.valueOf(typeArg ?: NoteType.TEXT.name)
-
-                    when (noteType) {
-                        NoteType.TEXT -> NoteEditorScreen(
-                            vm,
-                            noteId,
-                            onSaved = { navController.popBackStack() },
-                            onCancel = { navController.popBackStack() })
-                        NoteType.CHECKLIST -> ChecklistEditorScreen(
-                            vm,
-                            noteId,
-                            onSaved = { navController.popBackStack() },
-                            onCancel = { navController.popBackStack() }
-                        )
-                        NoteType.DRAWING -> DrawingEditorScreen(
-                            vm,
-                            noteId,
-                            onSaved = { navController.popBackStack() },
-                            onCancel = { navController.popBackStack() }
-                        )
-                    }
+                    NoteType.DRAWING -> DrawingEditorScreen(
+                        vm,
+                        noteId,
+                        onSaved = { navController.popBackStack() },
+                        onCancel = { navController.popBackStack() }
+                    )
                 }
             }
         }

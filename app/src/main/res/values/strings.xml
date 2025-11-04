@@ -151,4 +151,6 @@
     <string name="add_note">Add_note</string>
     <string name="reorder">Reorder</string>
     <string name="reorder_handle">Reorder Handle</string>
+    <string name="spacer">Spacer</string>
+    <string name="show_search_text">Show Search text</string>
 </resources>

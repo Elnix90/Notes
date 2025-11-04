@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ReorderableItem
@@ -39,12 +40,15 @@ import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
+import org.elnix.notes.R
 import org.elnix.notes.data.helpers.GlobalNotesActions
 import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.helpers.globalActionColor
 import org.elnix.notes.data.helpers.globalActionIcon
 import org.elnix.notes.data.helpers.globalActionName
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
+import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.theme.adjustBrightness
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
@@ -125,6 +129,14 @@ fun ToolbarItemsEditor(
                     items(allItems.size, key = { allItems[it].name }) { index ->
                         val action = allItems[index]
                         val isChecked = items.contains(action)
+
+                        val isEnabled = when(toolbar) {
+                            ToolBars.SELECT -> action != GlobalNotesActions.DESELECT_ALL
+                            ToolBars.SEPARATOR -> false
+                            ToolBars.TAGS -> false
+                            ToolBars.QUICK_ACTIONS -> action != GlobalNotesActions.SETTINGS
+                        }
+
                         ReorderableItem(state = reorderState, key = action.name) { isDragging ->
                             val scale by animateFloatAsState(if (isDragging) 1.03f else 1f)
                             val elevation by animateDpAsState(if (isDragging) 16.dp else 0.dp)
@@ -146,31 +158,40 @@ fun ToolbarItemsEditor(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                                 ) {
-                                    Checkbox(
-                                        checked = isChecked,
-                                        onCheckedChange = { checked ->
-                                            items = items.toMutableList().apply {
-                                                if (checked && !contains(action)) add(action)
-                                                else if (!checked) remove(action)
+                                    if (action != GlobalNotesActions.SPACER) {
+                                        Checkbox(
+                                            checked = isChecked,
+                                            enabled = isEnabled,
+                                            onCheckedChange = { checked ->
+                                                items = items.toMutableList().apply {
+                                                    if (checked && !contains(action)) add(action)
+                                                    else if (!checked) remove(action)
+                                                }
                                             }
-                                        }
-                                    )
-                                    Icon(
-                                        imageVector = globalActionIcon(action),
-                                        contentDescription = "",
-                                        tint = globalActionColor(action),
-                                        modifier = Modifier.padding(end = 8.dp)
-                                    )
-                                    Text(
-                                        text = globalActionName(ctx, action),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Default.DragHandle,
-                                        contentDescription = "Drag handle",
-                                        modifier = Modifier.detectReorder(reorderState)
-                                    )
+                                        )
+                                        Icon(
+                                            imageVector = globalActionIcon(action),
+                                            contentDescription = "",
+                                            tint = globalActionColor(action),
+                                            modifier = Modifier.padding(end = 8.dp)
+                                        )
+                                        Text(
+                                            text = globalActionName(ctx, action),
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        Icon(
+                                            imageVector = Icons.Default.DragHandle,
+                                            contentDescription = "Drag handle",
+                                            modifier = Modifier.detectReorder(reorderState)
+                                        )
+                                    } else {
+                                        TextDivider(
+                                            stringResource(R.string.spacer),
+                                            backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
+                                            thickness = 5.dp
+                                        )
+                                    }
                                 }
                             }
                         }

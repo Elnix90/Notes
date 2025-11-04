@@ -1,4 +1,4 @@
-package org.elnix.notes.ui.helpers.tags
+package org.elnix.notes.ui.helpers.toolbars
 
 import android.content.Context
 import androidx.compose.foundation.background
@@ -39,6 +39,8 @@ import org.elnix.notes.R
 import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.ui.helpers.UserValidation
+import org.elnix.notes.ui.helpers.tags.TagBubble
+import org.elnix.notes.ui.helpers.tags.TagEditorDialog
 import org.elnix.notes.ui.theme.LocalExtraColors
 
 @Composable

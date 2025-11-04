@@ -142,7 +142,7 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
 
         ToolbarItemsEditor(ctx, toolbar = ToolBars.SELECT)
 
-        ToolbarItemsEditor(ctx, toolbar = ToolBars.TAGS)
+//        ToolbarItemsEditor(ctx, toolbar = ToolBars.TAGS)
 
         ToolbarItemsEditor(ctx, toolbar = ToolBars.QUICK_ACTIONS)
     }

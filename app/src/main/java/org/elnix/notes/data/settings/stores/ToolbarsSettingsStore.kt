@@ -19,7 +19,7 @@ object ToolbarsSettingsStore {
     private val TOOLBARS_KEY = stringPreferencesKey("toolbars_settings")
     private val gson = Gson()
 
-    private val defaultList = listOf(
+    val defaultList = listOf(
         ToolbarSetting(ToolBars.SELECT, true),
         ToolbarSetting(ToolBars.SEPARATOR, true),
         ToolbarSetting(ToolBars.TAGS, true),

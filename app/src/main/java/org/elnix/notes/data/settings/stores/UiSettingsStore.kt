@@ -156,22 +156,10 @@ object UiSettingsStore {
         ctx.dataStore.edit { it[SHOW_TAGS_IN_NOTES] = enabled }
     }
 
-    private val TAG_SELECTOR_POSITION_BOTTOM = booleanPreferencesKey("tag_selector_position_bottom")
-    fun getTagSelectorPositionBottom(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[TAG_SELECTOR_POSITION_BOTTOM] ?: true }
-    suspend fun setTagSelectorPositionBottom(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[TAG_SELECTOR_POSITION_BOTTOM] = enabled }
+    private val SHOW_SEARCH_TEXT = booleanPreferencesKey("show_search_text")
+    fun getShowSearchText(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[SHOW_SEARCH_TEXT] ?: true }
+    suspend fun setShowSearchText(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[SHOW_SEARCH_TEXT] = enabled }
     }
-
-
-    private val MULTI_SELECT_TOOLBAR_POSITION_BOTTOM = booleanPreferencesKey("multi_select_toolbar_position_bottom")
-
-    val getMultiSelectToolbarPositionBottom = { ctx: Context ->
-        ctx.dataStore.data.map { it[MULTI_SELECT_TOOLBAR_POSITION_BOTTOM] ?: true }
-    }
-
-    suspend fun setMultiSelectToolbarPositionBottom(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[MULTI_SELECT_TOOLBAR_POSITION_BOTTOM] = enabled }
-    }
-
 }

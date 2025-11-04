@@ -18,12 +18,15 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.NotesActions
+import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.toolbars.ToolbarItemsEditor
+import org.elnix.notes.ui.helpers.toolbars.ToolbarsSettingsRow
 
 @Composable
 fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
@@ -35,8 +38,6 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
 
     val showTagSelector by UiSettingsStore.getShowTagSelector(ctx).collectAsState(initial = true)
     val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx).collectAsState(initial = true)
-    val tagSelectorPositionBottom by UiSettingsStore.getTagSelectorPositionBottom(ctx).collectAsState(initial = true)
-    val multiSelectToolbarPositionBottom by UiSettingsStore.getMultiSelectToolbarPositionBottom(ctx).collectAsState(initial = true)
 
 
     Column(
@@ -137,18 +138,12 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
 
         TextDivider(stringResource(R.string.toolbars))
 
-        SwitchRow(
-            tagSelectorPositionBottom,
-            if (tagSelectorPositionBottom) stringResource(R.string.tag_selector_position_bottom) else stringResource(R.string.tag_selector_position_top),
-        ) {
-            scope.launch { UiSettingsStore.setTagSelectorPositionBottom(ctx, it) }
-        }
+        ToolbarsSettingsRow(ctx)
 
-        SwitchRow(
-            multiSelectToolbarPositionBottom,
-            if (multiSelectToolbarPositionBottom) stringResource(R.string.multi_select_toolbar_bottom) else stringResource(R.string.multi_select_toolbar_top),
-        ) {
-            scope.launch { UiSettingsStore.setMultiSelectToolbarPositionBottom(ctx, it) }
-        }
+        ToolbarItemsEditor(ctx, toolbar = ToolBars.SELECT)
+
+        ToolbarItemsEditor(ctx, toolbar = ToolBars.TAGS)
+
+        ToolbarItemsEditor(ctx, toolbar = ToolBars.QUICK_ACTIONS)
     }
 }

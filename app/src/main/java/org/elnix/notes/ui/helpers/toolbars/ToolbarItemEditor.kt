@@ -1,5 +1,6 @@
 package org.elnix.notes.ui.helpers.toolbars
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -45,6 +46,7 @@ import org.elnix.notes.data.helpers.globalActionIcon
 import org.elnix.notes.data.helpers.globalActionName
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun ToolbarItemsEditor(
     ctx: Context,
@@ -54,8 +56,6 @@ fun ToolbarItemsEditor(
     onDismiss: (() -> Unit)? = null
 ) {
     val scope = rememberCoroutineScope()
-
-    val allActions = GlobalNotesActions.entries
 
 
     val selectedItemsFlow = remember { ToolbarItemsSettingsStore.getToolbarItemsFlow(ctx, toolbar) }
@@ -68,9 +68,11 @@ fun ToolbarItemsEditor(
         items = selectedItems
     }
 
+    var allItems by remember { mutableStateOf(GlobalNotesActions.entries.toMutableList()) }
+
     val reorderState = rememberReorderableLazyListState(
         onMove = { from, to ->
-            items = items.toMutableList().apply {
+            allItems = allItems.toMutableList().apply {
                 add(to.index, removeAt(from.index))
             }
         }
@@ -120,8 +122,8 @@ fun ToolbarItemsEditor(
                         .reorderable(reorderState)
                         .detectReorderAfterLongPress(reorderState)
                 ) {
-                    items(allActions.size, key = { allActions[it].name }) { index ->
-                        val action = allActions[index]
+                    items(allItems.size, key = { allItems[it].name }) { index ->
+                        val action = allItems[index]
                         val isChecked = items.contains(action)
                         ReorderableItem(state = reorderState, key = action.name) { isDragging ->
                             val scale by animateFloatAsState(if (isDragging) 1.03f else 1f)
@@ -148,7 +150,8 @@ fun ToolbarItemsEditor(
                                         checked = isChecked,
                                         onCheckedChange = { checked ->
                                             items = items.toMutableList().apply {
-                                                if (!checked) removeAt(index)
+                                                if (checked && !contains(action)) add(action)
+                                                else if (!checked) remove(action)
                                             }
                                         }
                                     )

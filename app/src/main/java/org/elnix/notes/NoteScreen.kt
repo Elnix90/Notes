@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
@@ -216,8 +217,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    val topBarHeight = (56 * topBars.size).dp
-    val bottomBarHeight = (56 * bottomBars.size).dp
+    val topBarHeight = (90 * topBars.size).dp
+    val bottomBarHeight = (90 * bottomBars.size).dp
 
     Box(
         modifier = Modifier
@@ -285,6 +286,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
+                .height(topBarHeight)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             topBars.forEach { it() }
@@ -294,6 +296,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .height(bottomBarHeight)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             bottomBars.forEach { it() }

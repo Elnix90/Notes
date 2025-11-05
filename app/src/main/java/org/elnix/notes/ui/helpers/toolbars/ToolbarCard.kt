@@ -35,7 +35,7 @@ fun ToolbarCard(
     scale: Float,
     onActionClick: (GlobalNotesActions) -> Unit
 ) {
-    val searchExpanded by UiSettingsStore.getShowSearchText(ctx).collectAsState(initial = true)
+    val showButtonLabel by UiSettingsStore.getShowSearchText(ctx).collectAsState(initial = true)
 
 
     Card(
@@ -62,7 +62,7 @@ fun ToolbarCard(
         ) {
 
             actions.forEach { action ->
-                if (action == GlobalNotesActions.SPACER) {
+                if (action == GlobalNotesActions.SPACER1 || action == GlobalNotesActions.SPACER2 || action == GlobalNotesActions.SPACER3) {
                     Spacer(modifier = Modifier.weight(1f))
                 } else {
                     GlobalActionIcon(
@@ -70,9 +70,10 @@ fun ToolbarCard(
                         action = action,
                         ghosted = ghosted,
                         scale = scale,
-                        searchExpanded = searchExpanded,
-                        onClick = onActionClick
-                    )
+                        showButtonLabel = showButtonLabel,
+                    ) {
+                        onActionClick(it)
+                    }
                 }
             }
         }

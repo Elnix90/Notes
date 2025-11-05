@@ -125,8 +125,8 @@ fun TagSelectingRow(
                     .wrapContentSize()
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary)
-                    .padding(8.dp)
-                    .clickable { showEditor = true },
+                    .clickable { showEditor = true }
+                    .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Row(

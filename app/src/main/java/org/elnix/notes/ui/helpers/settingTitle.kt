@@ -36,7 +36,8 @@ fun SettingsTitle(
             contentDescription = "Back",
             modifier = Modifier
                 .clickable { onBack() }
-                .padding(4.dp)
+                .padding(4.dp),
+            tint = MaterialTheme.colorScheme.outline
         )
 
         Text(

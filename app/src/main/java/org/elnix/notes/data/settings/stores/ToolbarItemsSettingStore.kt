@@ -14,6 +14,11 @@ import org.elnix.notes.data.helpers.defaultToolbarItems
 // Extension property to create DataStore instance in Context
 private val Context.dataStore by preferencesDataStore(name = "toolbar_items_prefs")
 
+data class ToolbarItemState(
+    val action: GlobalNotesActions,
+    val enabled: Boolean
+)
+
 object ToolbarItemsSettingsStore {
 
     private fun prefsKeyForToolbar(toolbar: ToolBars): Preferences.Key<Set<String>> =

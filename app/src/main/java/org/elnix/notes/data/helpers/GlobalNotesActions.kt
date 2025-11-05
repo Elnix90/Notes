@@ -1,9 +1,7 @@
 package org.elnix.notes.data.helpers
 
-import android.app.ProgressDialog.show
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,16 +19,17 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.Reorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.SpaceBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -41,7 +39,7 @@ import org.elnix.notes.R
 import org.elnix.notes.ui.theme.LocalExtraColors
 
 enum class GlobalNotesActions {
-    SEARCH, SORT, SETTINGS, DESELECT_ALL, ADD_NOTE, REORDER, EDIT_NOTE, DELETE_NOTE, COMPLETE_NOTE, SPACER
+    SEARCH, SORT, SETTINGS, DESELECT_ALL, ADD_NOTE, REORDER, EDIT_NOTE, DELETE_NOTE, COMPLETE_NOTE, SPACER1, SPACER2, SPACER3
 }
 
 @Composable
@@ -55,7 +53,7 @@ fun globalActionIcon(action: GlobalNotesActions): ImageVector = when (action) {
     GlobalNotesActions.EDIT_NOTE -> Icons.Default.Edit
     GlobalNotesActions.DELETE_NOTE -> Icons.Default.Delete
     GlobalNotesActions.COMPLETE_NOTE -> Icons.Default.CheckCircle
-    GlobalNotesActions.SPACER -> Icons.Default.SpaceBar
+    else -> Icons.Default.QuestionMark
 }
 
 @Composable
@@ -71,7 +69,7 @@ fun globalActionColor(action: GlobalNotesActions): Color {
         GlobalNotesActions.EDIT_NOTE -> extras.edit
         GlobalNotesActions.DELETE_NOTE -> extras.delete
         GlobalNotesActions.COMPLETE_NOTE -> extras.complete
-        GlobalNotesActions.SPACER -> Color.White
+        else -> MaterialTheme.colorScheme.outline
     }
 }
 
@@ -85,7 +83,7 @@ fun globalActionName(ctx: Context, action: GlobalNotesActions): String = when (a
     GlobalNotesActions.EDIT_NOTE -> ctx.getString(R.string.edit)
     GlobalNotesActions.DELETE_NOTE -> ctx.getString(R.string.delete)
     GlobalNotesActions.COMPLETE_NOTE -> ctx.getString(R.string.complete)
-    GlobalNotesActions.SPACER -> ctx.getString(R.string.spacer)
+    else -> ctx.getString(R.string.spacer)
 }
 
 
@@ -95,7 +93,7 @@ fun GlobalActionIcon(
     action: GlobalNotesActions,
     ghosted: Boolean = false,
     scale: Float = 1f,
-    searchExpanded: Boolean = true,
+    showButtonLabel: Boolean = true,
     onClick: (GlobalNotesActions) -> Unit
 ) {
     val icon = globalActionIcon(action)
@@ -115,34 +113,26 @@ fun GlobalActionIcon(
     // Determine visual mode: minimal if scale < 1f
     val minimalMode = scale < 1f
 
-    TODO( modifiy this to show the fake text if minimal mode)
-    if (minimalMode) {
-        // Just a circle representing the icon
-        Box(
-            modifier = Modifier
-                .size(16.dp)
-                .background(onColor.copy(alpha = 0.4f), shape = CircleShape)
-                .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f))
-        )
-    } else if (action == GlobalNotesActions.SEARCH && searchExpanded) {
+    Box(
+        modifier = Modifier
+            .graphicsLayer { this.scaleX = scale; this.scaleY = scale }
+            .clip(CircleShape)
+            .background(bgColor.copy(alpha = 0.4f))
+            .then(clickModifier)
+            .padding(8.dp)
+    ) {
         Row(
-            modifier = Modifier
-                .graphicsLayer { this.scaleX = scale; this.scaleY = scale }
-                .background(
-                    color = bgColor.copy(alpha = if (ghosted) 0.4f else 1f),
-                    shape = CircleShape
-                )
-                .then(clickModifier)
-                .padding(horizontal = 10.dp, vertical = 6.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = onColor
-            )
-            if (action == GlobalNotesActions.SEARCH && searchExpanded) {
+            if (!minimalMode) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = label,
+                    tint = onColor
+                )
+            }
+            if (showButtonLabel){
                 Spacer(Modifier.width(6.dp))
                 if (minimalMode) {
                     // Simple horizontal bar as placeholder for text
@@ -169,12 +159,7 @@ fun GlobalActionIcon(
                     }
                 }
             }
+
         }
-    } else {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = onColor
-        )
     }
 }

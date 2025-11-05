@@ -6,9 +6,11 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -46,6 +48,7 @@ import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.helpers.globalActionColor
 import org.elnix.notes.data.helpers.globalActionIcon
 import org.elnix.notes.data.helpers.globalActionName
+import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.theme.adjustBrightness
@@ -64,23 +67,34 @@ fun ToolbarItemsEditor(
 
     val selectedItemsFlow = remember { ToolbarItemsSettingsStore.getToolbarItemsFlow(ctx, toolbar) }
     val selectedItems by selectedItemsFlow.collectAsState(initial = emptyList())
-    var items by remember { mutableStateOf(selectedItems) }
-
     var showDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(selectedItems) {
-        items = selectedItems
+    val allActions = GlobalNotesActions.entries.toList()
+    val selectedActions = selectedItems.toSet()
+
+    var toolbarItems by remember {
+        mutableStateOf(
+            allActions.map { action ->
+                ToolbarItemState(action, action in selectedActions)
+            }.toMutableList()
+        )
     }
 
-    var allItems by remember { mutableStateOf(GlobalNotesActions.entries.toMutableList()) }
+    LaunchedEffect(selectedItems) {
+        toolbarItems = allActions.map { action ->
+            ToolbarItemState(action, action in selectedItems)
+        }.toMutableList()
+    }
+
 
     val reorderState = rememberReorderableLazyListState(
         onMove = { from, to ->
-            allItems = allItems.toMutableList().apply {
+            toolbarItems = toolbarItems.toMutableList().apply {
                 add(to.index, removeAt(from.index))
             }
         }
     )
+
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -109,9 +123,12 @@ fun ToolbarItemsEditor(
                 TextButton(
                     onClick = {
                         scope.launch {
-                            ToolbarItemsSettingsStore.setToolbarItems(ctx, toolbar, items)
+                            ToolbarItemsSettingsStore.setToolbarItems(
+                                ctx,
+                                toolbar,
+                                toolbarItems.filter { it.enabled }.map { it.action }
+                            )
                         }
-                        showDialog = false
                         onDismiss?.invoke()
                     }
                 ) {
@@ -123,12 +140,12 @@ fun ToolbarItemsEditor(
                 LazyColumn(
                     state = reorderState.listState,
                     modifier = Modifier
-                        .reorderable(reorderState)
                         .detectReorderAfterLongPress(reorderState)
+                        .reorderable(reorderState)
                 ) {
-                    items(allItems.size, key = { allItems[it].name }) { index ->
-                        val action = allItems[index]
-                        val isChecked = items.contains(action)
+                    items(toolbarItems.size, key = { toolbarItems[it].action.name }) { index ->
+                        val item = toolbarItems[index]
+                        val action = item.action
 
                         val isEnabled = when(toolbar) {
                             ToolBars.SELECT -> action != GlobalNotesActions.DESELECT_ALL
@@ -149,26 +166,26 @@ fun ToolbarItemsEditor(
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp)
                                     .scale(scale)
-                                    .background(bgColor, RoundedCornerShape(12.dp))
-                                    .detectReorder(reorderState),
+                                    .background(bgColor, RoundedCornerShape(12.dp)),
                                 elevation = androidx.compose.material3.CardDefaults.elevatedCardElevation(elevation),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
                                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                                 ) {
-                                    if (action != GlobalNotesActions.SPACER) {
-                                        Checkbox(
-                                            checked = isChecked,
-                                            enabled = isEnabled,
-                                            onCheckedChange = { checked ->
-                                                items = items.toMutableList().apply {
-                                                    if (checked && !contains(action)) add(action)
-                                                    else if (!checked) remove(action)
-                                                }
+                                    Checkbox(
+                                        enabled = isEnabled,
+                                        checked = item.enabled,
+                                        onCheckedChange = { checked ->
+                                            toolbarItems = toolbarItems.toMutableList().apply {
+                                                this[index] = this[index].copy(enabled = checked)
                                             }
-                                        )
+                                        }
+                                    )
+                                    if (action != GlobalNotesActions.SPACER1 && action != GlobalNotesActions.SPACER2 && action != GlobalNotesActions.SPACER3) {
+
                                         Icon(
                                             imageVector = globalActionIcon(action),
                                             contentDescription = "",
@@ -185,12 +202,29 @@ fun ToolbarItemsEditor(
                                             contentDescription = "Drag handle",
                                             modifier = Modifier.detectReorder(reorderState)
                                         )
+
                                     } else {
-                                        TextDivider(
-                                            stringResource(R.string.spacer),
-                                            backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
-                                            thickness = 5.dp
-                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                                        ){
+                                            TextDivider(
+                                                stringResource(R.string.spacer),
+                                                backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(
+                                                    0.7f
+                                                ),
+                                                thickness = 5.dp
+                                            )
+                                            Icon(
+                                                imageVector = Icons.Default.DragHandle,
+                                                contentDescription = "Drag handle",
+                                                modifier = Modifier
+                                                    .detectReorder(reorderState)
+                                                    .size(24.dp)
+                                                    .padding(start = 8.dp),
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                            )
+                                        }
                                     }
                                 }
                             }

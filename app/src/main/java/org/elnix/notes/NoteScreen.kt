@@ -1,5 +1,6 @@
 package org.elnix.notes
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -107,7 +108,15 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     fun onGlobalToolbarAction(action: GlobalNotesActions) {
         when (action) {
             ADD_NOTE -> showAddNoteMenu = true
-            else -> performGlobalAction(action, vm, navController, selectedNotes.firstOrNull() ?: return, scope)
+            SEARCH -> TODO()
+            SORT -> TODO()
+            SETTINGS -> navController.navigate(Routes.Settings.ROOT)
+            DESELECT_ALL -> onGroupAction(NotesActions.SELECT)
+            REORDER -> TODO()
+            EDIT_NOTE -> onGroupAction(NotesActions.EDIT)
+            DELETE_NOTE -> onGroupAction(NotesActions.DELETE)
+            COMPLETE_NOTE -> onGroupAction(NotesActions.COMPLETE)
+            else -> return
         }
     }
 
@@ -119,6 +128,17 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     }
 
     LaunchedEffect(Unit) { vm.deleteAllEmptyNotes() }
+
+    BackHandler {
+        when {
+            showAddNoteMenu -> showAddNoteMenu = false
+            isMultiSelectMode -> {
+                selectedNotes = emptySet()
+                isMultiSelectMode = false
+            }
+            else -> navController.popBackStack()
+        }
+    }
 
     // ----- DYNAMIC TOOLBARS POSITIONING -----
     val topBars = mutableListOf<@Composable () -> Unit>()
@@ -138,7 +158,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                             EDIT_NOTE -> onGroupAction(NotesActions.EDIT)
                             DELETE_NOTE -> onGroupAction(NotesActions.DELETE)
                             COMPLETE_NOTE -> onGroupAction(NotesActions.COMPLETE)
-                            else -> {}
+                            else -> { onGlobalToolbarAction(action) }
                         }
                     }
                 }
@@ -238,32 +258,5 @@ fun performAction(
         }
         NotesActions.EDIT -> navController.navigate("edit/${note.id}?type=${note.type.name}")
         NotesActions.SELECT -> onSelectStart?.invoke()
-    }
-}
-
-
-fun performGlobalAction(
-    action: GlobalNotesActions,
-    vm: NoteViewModel,
-    navController: NavHostController,
-    note: NoteEntity,
-    scope: CoroutineScope
-) {
-    when (action) {
-        SEARCH -> TODO()
-        SORT -> TODO()
-        SETTINGS -> navController.navigate(Routes.Settings)
-        DESELECT_ALL -> scope.launch {
-            if (note.isCompleted) vm.markUnCompleted(note)
-            else vm.markCompleted(note)
-        }
-        REORDER -> TODO()
-        EDIT_NOTE -> navController.navigate("edit/${note.id}?type=${note.type.name}")
-        DELETE_NOTE -> scope.launch { vm.delete(note) }
-        COMPLETE_NOTE -> scope.launch {
-            if (note.isCompleted) vm.markUnCompleted(note)
-            else vm.markCompleted(note)
-        }
-        else -> return
     }
 }

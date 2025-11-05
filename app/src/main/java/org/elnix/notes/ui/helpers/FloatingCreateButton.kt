@@ -11,17 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -37,69 +33,54 @@ import org.elnix.notes.ui.theme.LocalExtraColors
 
 @Composable
 fun AddNoteFab(navController: NavHostController, onDismiss: () -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         // Transparent overlay to detect clicks outside FABs
-        if (expanded) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        expanded = false
-                        onDismiss()
-                    }
-            )
-        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    onDismiss()
+                }
+        )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.padding(16.dp)
         ) {
-            if (expanded) {
-                SmallFab(
-                    icon = Icons.AutoMirrored.Filled.FormatListBulleted,
-                    label = "Checklist",
-                    color = LocalExtraColors.current.noteTypeChecklist
-                ) {
-                    navController.navigate("${Routes.CREATE}?type=${NoteType.CHECKLIST.name}")
-                    expanded = false
-                }
-                SmallFab(
-                    icon = Icons.Default.Brush,
-                    label = "Drawing",
-                    color = LocalExtraColors.current.noteTypeDrawing,
-                    enabled = false,
-                    comingSoon = true
-                ) {
-                    navController.navigate("${Routes.CREATE}?type=${NoteType.DRAWING.name}")
-                    expanded = false
-                }
-                SmallFab(
-                    icon = Icons.Default.Edit,
-                    label = "Text",
-                    color = LocalExtraColors.current.noteTypeText
-                ) {
-                    navController.navigate("${Routes.CREATE}?type=${NoteType.TEXT.name}")
-                    expanded = false
-                }
-            } else {
-                FloatingActionButton(
-                    onClick = { expanded = !expanded },
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add note"
-                    )
-                }
+            SmallFab(
+                icon = Icons.AutoMirrored.Filled.FormatListBulleted,
+                label = "Checklist",
+                color = LocalExtraColors.current.noteTypeChecklist
+            ) {
+                navController.navigate("${Routes.CREATE}?type=${NoteType.CHECKLIST.name}")
+                onDismiss()
+            }
+            SmallFab(
+                icon = Icons.Default.Brush,
+                label = "Drawing",
+                color = LocalExtraColors.current.noteTypeDrawing,
+                enabled = false,
+                comingSoon = true
+            ) {
+                navController.navigate("${Routes.CREATE}?type=${NoteType.DRAWING.name}")
+                onDismiss()
+            }
+            SmallFab(
+                icon = Icons.Default.Edit,
+                label = "Text",
+                color = LocalExtraColors.current.noteTypeText
+            ) {
+                navController.navigate("${Routes.CREATE}?type=${NoteType.TEXT.name}")
+                onDismiss()
             }
         }
     }

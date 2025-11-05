@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CardDefaults.elevatedCardElevation
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -99,7 +100,7 @@ fun ToolbarsSettingsRow(
                     },
                     colors = AppObjectsColors.buttonColors()
                 ) {
-                    Text(text = "OK")
+                    Text(text = stringResource(R.string.ok))
                 }
             },
             title = { Text(text = "Toolbars order") },
@@ -117,7 +118,7 @@ fun ToolbarsSettingsRow(
                             val scale by animateFloatAsState(if (isDragging) 1.03f else 1f)
                             val elevation by animateDpAsState(if (isDragging) 16.dp else 0.dp)
                             val bgColor =
-                                if (isDragging) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                                if (isDragging) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                                 else MaterialTheme.colorScheme.surfaceVariant
 
                             ElevatedCard(
@@ -128,7 +129,7 @@ fun ToolbarsSettingsRow(
                                     .background(bgColor, RoundedCornerShape(12.dp))
                                     .detectReorder(reorderState),
                                 shape = RoundedCornerShape(12.dp),
-                                elevation = androidx.compose.material3.CardDefaults.elevatedCardElevation(elevation)
+                                elevation = elevatedCardElevation(elevation)
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -179,7 +180,8 @@ fun ToolbarsSettingsRow(
                     }
                 }
             },
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(16.dp)
         )
     }
 }

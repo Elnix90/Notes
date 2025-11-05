@@ -29,7 +29,7 @@ fun QuickActionsToolbar(
 
     ToolbarCard(
         ctx = ctx,
-        actions = quickToolbarItems,
+        items = quickToolbarItems,
         scrollState = scrollState,
         color = color,
         ghosted = ghosted,

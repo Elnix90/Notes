@@ -1,5 +1,7 @@
 package org.elnix.notes.data.helpers
 
+import org.elnix.notes.data.settings.stores.ToolbarItemState
+
 enum class ToolBars {
     SELECT,
     SEPARATOR,
@@ -7,7 +9,7 @@ enum class ToolBars {
     QUICK_ACTIONS
 }
 
-fun defaultToolbarItems(toolbar: ToolBars): List<GlobalNotesActions> = when (toolbar) {
+fun defaultEnabledItems (toolbar: ToolBars): List<GlobalNotesActions> = when (toolbar) {
     ToolBars.SELECT -> listOf(
         GlobalNotesActions.DESELECT_ALL,
         GlobalNotesActions.SPACER1,
@@ -15,8 +17,6 @@ fun defaultToolbarItems(toolbar: ToolBars): List<GlobalNotesActions> = when (too
         GlobalNotesActions.COMPLETE_NOTE,
         GlobalNotesActions.DELETE_NOTE
     )
-    ToolBars.SEPARATOR -> emptyList()
-    ToolBars.TAGS -> emptyList()
     ToolBars.QUICK_ACTIONS -> listOf(
         GlobalNotesActions.SEARCH,
         GlobalNotesActions.SPACER1,
@@ -26,5 +26,21 @@ fun defaultToolbarItems(toolbar: ToolBars): List<GlobalNotesActions> = when (too
         GlobalNotesActions.REORDER,
         GlobalNotesActions.SETTINGS
     )
+    ToolBars.SEPARATOR -> emptyList()
+    ToolBars.TAGS -> emptyList()
 }
 
+
+fun defaultShowLabelItems (toolbar: ToolBars): List<GlobalNotesActions> = when (toolbar) {
+    ToolBars.SELECT -> emptyList()
+    ToolBars.QUICK_ACTIONS -> listOf(GlobalNotesActions.SEARCH)
+    ToolBars.SEPARATOR -> emptyList()
+    ToolBars.TAGS -> emptyList()
+}
+fun defaultToolbarItems(toolbar: ToolBars): List<ToolbarItemState> {
+    val enabledItems = defaultEnabledItems(toolbar)
+    val showLabelItems = defaultShowLabelItems(toolbar)
+    return GlobalNotesActions.entries.map { action ->
+        ToolbarItemState(action, enabledItems.contains(action), showLabelItems.contains(action))
+    }
+}

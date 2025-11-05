@@ -29,7 +29,7 @@ fun TagsToolbar(
 
     ToolbarCard(
         ctx = ctx,
-        actions = tagsToolbarItems,
+        items = tagsToolbarItems,
         scrollState = scrollState,
         color = color,
         ghosted = ghosted,

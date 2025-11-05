@@ -29,7 +29,7 @@ fun SelectToolbar(
 
     ToolbarCard(
         ctx = ctx,
-        actions = selectToolbarItems,
+        items = selectToolbarItems,
         scrollState = scrollState,
         color = color,
         ghosted = ghosted,

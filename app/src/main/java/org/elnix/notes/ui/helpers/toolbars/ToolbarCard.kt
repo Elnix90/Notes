@@ -12,8 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -22,22 +20,19 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.helpers.GlobalActionIcon
 import org.elnix.notes.data.helpers.GlobalNotesActions
-import org.elnix.notes.data.settings.stores.UiSettingsStore
+import org.elnix.notes.data.settings.stores.ToolbarItemState
 
 
 @Composable
 fun ToolbarCard(
     ctx: Context,
-    actions: List<GlobalNotesActions>,
+    items: List<ToolbarItemState>,
     scrollState: ScrollState,
     color: Color,
     ghosted: Boolean,
     scale: Float,
     onActionClick: (GlobalNotesActions) -> Unit
 ) {
-    val showButtonLabel by UiSettingsStore.getShowSearchText(ctx).collectAsState(initial = true)
-
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -61,7 +56,8 @@ fun ToolbarCard(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            actions.forEach { action ->
+            items.filter { it.enabled }.forEach { item ->
+                val action = item.action
                 if (action == GlobalNotesActions.SPACER1 || action == GlobalNotesActions.SPACER2 || action == GlobalNotesActions.SPACER3) {
                     Spacer(modifier = Modifier.weight(1f))
                 } else {
@@ -70,7 +66,7 @@ fun ToolbarCard(
                         action = action,
                         ghosted = ghosted,
                         scale = scale,
-                        showButtonLabel = showButtonLabel,
+                        showButtonLabel = item.showLabel,
                     ) {
                         onActionClick(it)
                     }

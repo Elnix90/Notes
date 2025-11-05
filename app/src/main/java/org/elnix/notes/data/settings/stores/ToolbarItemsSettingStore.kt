@@ -3,8 +3,10 @@ package org.elnix.notes.data.settings.stores
 import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.helpers.GlobalNotesActions
@@ -16,29 +18,36 @@ private val Context.dataStore by preferencesDataStore(name = "toolbar_items_pref
 
 data class ToolbarItemState(
     val action: GlobalNotesActions,
-    val enabled: Boolean
+    val enabled: Boolean = false,
+    val showLabel: Boolean = false
 )
 
 object ToolbarItemsSettingsStore {
 
-    private fun prefsKeyForToolbar(toolbar: ToolBars): Preferences.Key<Set<String>> =
-        stringSetPreferencesKey("toolbar_items_${toolbar.name}")
+    private fun prefsKeyForToolbar(toolbar: ToolBars): Preferences.Key<String> =
+        stringPreferencesKey("toolbar_items_${toolbar.name}")
 
-    fun getToolbarItemsFlow(ctx: Context, toolbar: ToolBars): Flow<List<GlobalNotesActions>> {
+    private val gson = Gson()
+    private val listType = object : TypeToken<List<ToolbarItemState>>() {}.type
+
+    fun getToolbarItemsFlow(ctx: Context, toolbar: ToolBars): Flow<List<ToolbarItemState>> {
         val key = prefsKeyForToolbar(toolbar)
         return ctx.dataStore.data.map { prefs ->
-            val stored = prefs[key]?.mapNotNull { actionName ->
-                GlobalNotesActions.entries.find { it.name == actionName }
+            val raw = prefs[key]
+            if (raw.isNullOrEmpty()) {
+                defaultToolbarItems(toolbar)
+            } else {
+                runCatching { gson.fromJson<List<ToolbarItemState>>(raw, listType) }
+                    .getOrDefault(defaultToolbarItems(toolbar))
             }
-            stored?.takeIf { it.isNotEmpty() } ?: defaultToolbarItems(toolbar)
         }
     }
 
-
-    suspend fun setToolbarItems(ctx: Context, toolbar: ToolBars, newItems: List<GlobalNotesActions>) {
+    suspend fun setToolbarItems(ctx: Context, toolbar: ToolBars, newItems: List<ToolbarItemState>) {
         val key = prefsKeyForToolbar(toolbar)
         ctx.dataStore.edit { prefs ->
-            prefs[key] = newItems.map { it.name }.toSet()
+            prefs[key] = gson.toJson(newItems)
         }
     }
+
 }

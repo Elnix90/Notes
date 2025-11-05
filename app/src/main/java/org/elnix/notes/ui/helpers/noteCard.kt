@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -164,7 +165,9 @@ fun NoteCard(
             }
 
             Box(
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier
+                    .requiredSize(40.dp),
+                contentAlignment = Alignment.Center
             ) {
                 if (isReorderMode) {
                     Icon(
@@ -175,19 +178,19 @@ fun NoteCard(
                         else
                             MaterialTheme.colorScheme.outline,
                         modifier = Modifier
-                            .padding(8.dp)
+                            .size(24.dp)
                             .detectReorder(reorderState)
                     )
                 } else if (showDeleteButton) {
-
                     IconButton(
                         onClick = { onDeleteButtonClick() },
-                        shape = CircleShape
+                        modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = stringResource(R.string.delete),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }

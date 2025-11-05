@@ -7,7 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import org.elnix.notes.data.helpers.ClickType
 import org.elnix.notes.data.helpers.GlobalNotesActions
+import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.helpers.defaultToolbarItems
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
@@ -19,7 +21,7 @@ fun TagsToolbar(
     color: Color = MaterialTheme.colorScheme.surface,
     ghosted: Boolean = false,
     scale: Float = 1f,
-    onActionCLick: (GlobalNotesActions) -> Unit
+    onActionClick: (GlobalNotesActions, ClickType, TagItem?) -> Unit
 ) {
     val tagsToolbarItemsState = remember { ToolbarItemsSettingsStore.getToolbarItemsFlow(ctx, ToolBars.TAGS) }
         .collectAsState(initial = defaultToolbarItems(ToolBars.TAGS))
@@ -34,5 +36,7 @@ fun TagsToolbar(
         color = color,
         ghosted = ghosted,
         scale = scale
-    ) { onActionCLick(it) }
+    ) { action, clickType, tagItem ->
+        onActionClick(action, clickType, tagItem)
+    }
 }

@@ -2,7 +2,7 @@ package org.elnix.notes.data.helpers
 
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.Reorder
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,13 +40,13 @@ import org.elnix.notes.R
 import org.elnix.notes.ui.theme.LocalExtraColors
 
 enum class GlobalNotesActions {
-    SEARCH, SORT, SETTINGS, DESELECT_ALL, ADD_NOTE, REORDER, EDIT_NOTE, DELETE_NOTE, COMPLETE_NOTE, SPACER1, SPACER2, SPACER3
+    SEARCH, SETTINGS, DESELECT_ALL, ADD_NOTE, REORDER, EDIT_NOTE, DELETE_NOTE, COMPLETE_NOTE, TAG_FILTER, ADD_TAG, TAGS, SPACER1, SPACER2, SPACER3
 }
 
 @Composable
 fun globalActionIcon(action: GlobalNotesActions): ImageVector = when (action) {
     GlobalNotesActions.SEARCH -> Icons.Default.Search
-    GlobalNotesActions.SORT -> Icons.AutoMirrored.Filled.Sort
+//    GlobalNotesActions.SORT -> Icons.AutoMirrored.Filled.Sort
     GlobalNotesActions.SETTINGS -> Icons.Default.Settings
     GlobalNotesActions.DESELECT_ALL -> Icons.Default.Close
     GlobalNotesActions.ADD_NOTE -> Icons.Default.Add
@@ -53,6 +54,8 @@ fun globalActionIcon(action: GlobalNotesActions): ImageVector = when (action) {
     GlobalNotesActions.EDIT_NOTE -> Icons.Default.Edit
     GlobalNotesActions.DELETE_NOTE -> Icons.Default.Delete
     GlobalNotesActions.COMPLETE_NOTE -> Icons.Default.CheckCircle
+    GlobalNotesActions.TAG_FILTER -> Icons.Default.SelectAll
+    GlobalNotesActions.ADD_TAG -> Icons.Default.AddCircle
     else -> Icons.Default.QuestionMark
 }
 
@@ -61,7 +64,7 @@ fun globalActionColor(action: GlobalNotesActions): Color {
     val extras = LocalExtraColors.current
     return when (action) {
         GlobalNotesActions.SEARCH -> extras.edit
-        GlobalNotesActions.SORT -> extras.complete
+//        GlobalNotesActions.SORT -> extras.complete
         GlobalNotesActions.SETTINGS -> extras.select
         GlobalNotesActions.DESELECT_ALL -> extras.delete
         GlobalNotesActions.ADD_NOTE -> extras.complete
@@ -69,13 +72,15 @@ fun globalActionColor(action: GlobalNotesActions): Color {
         GlobalNotesActions.EDIT_NOTE -> extras.edit
         GlobalNotesActions.DELETE_NOTE -> extras.delete
         GlobalNotesActions.COMPLETE_NOTE -> extras.complete
+        GlobalNotesActions.TAG_FILTER -> extras.select
+        GlobalNotesActions.ADD_TAG -> extras.edit
         else -> MaterialTheme.colorScheme.outline
     }
 }
 
 fun globalActionName(ctx: Context, action: GlobalNotesActions): String = when (action) {
     GlobalNotesActions.SEARCH -> ctx.getString(R.string.search)
-    GlobalNotesActions.SORT -> ctx.getString(R.string.sort)
+//    GlobalNotesActions.SORT -> ctx.getString(R.string.sort)
     GlobalNotesActions.SETTINGS -> ctx.getString(R.string.settings)
     GlobalNotesActions.DESELECT_ALL -> ctx.getString(R.string.deselect_all)
     GlobalNotesActions.ADD_NOTE -> ctx.getString(R.string.add_note)
@@ -83,6 +88,8 @@ fun globalActionName(ctx: Context, action: GlobalNotesActions): String = when (a
     GlobalNotesActions.EDIT_NOTE -> ctx.getString(R.string.edit)
     GlobalNotesActions.DELETE_NOTE -> ctx.getString(R.string.delete)
     GlobalNotesActions.COMPLETE_NOTE -> ctx.getString(R.string.complete)
+    GlobalNotesActions.TAG_FILTER -> ctx.getString(R.string.reset_filter)
+    GlobalNotesActions.ADD_TAG -> ctx.getString(R.string.add_tag)
     else -> ctx.getString(R.string.spacer)
 }
 
@@ -94,6 +101,8 @@ fun GlobalActionIcon(
     ghosted: Boolean = false,
     scale: Float = 1f,
     showButtonLabel: Boolean = true,
+    onLongClick: ((GlobalNotesActions) -> Unit)? = null,
+    onDoubleClick: ((GlobalNotesActions) -> Unit)? = null,
     onClick: (GlobalNotesActions) -> Unit
 ) {
     val icon = globalActionIcon(action)
@@ -107,7 +116,11 @@ fun GlobalActionIcon(
     val clickModifier = if (ghosted) {
         Modifier.pointerInput(Unit) {}
     } else {
-        Modifier.clickable { onClick(action) }
+        Modifier.combinedClickable(
+            onClick = { onClick(action) },
+            onLongClick = {onLongClick?.invoke(action)},
+            onDoubleClick = {onDoubleClick?.invoke(action)}
+        )
     }
 
     // Determine visual mode: minimal if scale < 1f
@@ -159,7 +172,6 @@ fun GlobalActionIcon(
                     }
                 }
             }
-
         }
     }
 }

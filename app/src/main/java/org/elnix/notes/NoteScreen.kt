@@ -1,6 +1,7 @@
 package org.elnix.notes
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,19 +30,12 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
+import org.elnix.notes.data.helpers.ClickType
 import org.elnix.notes.data.helpers.GlobalNotesActions
-import org.elnix.notes.data.helpers.GlobalNotesActions.ADD_NOTE
-import org.elnix.notes.data.helpers.GlobalNotesActions.COMPLETE_NOTE
-import org.elnix.notes.data.helpers.GlobalNotesActions.DELETE_NOTE
-import org.elnix.notes.data.helpers.GlobalNotesActions.DESELECT_ALL
-import org.elnix.notes.data.helpers.GlobalNotesActions.EDIT_NOTE
-import org.elnix.notes.data.helpers.GlobalNotesActions.REORDER
-import org.elnix.notes.data.helpers.GlobalNotesActions.SEARCH
-import org.elnix.notes.data.helpers.GlobalNotesActions.SETTINGS
-import org.elnix.notes.data.helpers.GlobalNotesActions.SORT
 import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.NoteViewType
 import org.elnix.notes.data.helpers.NotesActions
+import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
@@ -51,9 +44,11 @@ import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.AddNoteFab
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.UserValidation
+import org.elnix.notes.ui.helpers.tags.TagEditorDialog
 import org.elnix.notes.ui.helpers.toolbars.QuickActionsToolbar
 import org.elnix.notes.ui.helpers.toolbars.SelectToolbar
-import org.elnix.notes.ui.helpers.toolbars.TagSelectingRow
+import org.elnix.notes.ui.helpers.toolbars.TagsToolbar
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Stable
@@ -74,12 +69,23 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     // Manage selection state
     var selectedNotes by remember { mutableStateOf<Set<NoteEntity>>(emptySet()) }
     var isMultiSelectMode by remember { mutableStateOf(false) }
+    var isReorderMode by remember { mutableStateOf(false) }
     var showAddNoteMenu by remember { mutableStateOf(false) }
 
     // Which notes to show is dependent on tag selector
     val showTagSelector = toolbars.any { it.toolbar == ToolBars.TAGS && it.enabled }
-    val notesToShow = if (enabledTagIds.size == allTags.size || !showTagSelector) notes
-    else notes.filter { note -> note.tagIds.any { it in enabledTagIds } }
+    val notesToShow =
+        if (enabledTagIds.size == allTags.size || !showTagSelector) notes
+        else notes.filter { note -> note.tagIds.any { it in enabledTagIds } }
+
+    // Tags things
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+    var editTag by remember { mutableStateOf<TagItem?>(null) }
+    var showEditor by remember { mutableStateOf(false) }
+    var showCreator by remember { mutableStateOf(false) }
+    var initialTag by remember { mutableStateOf<TagItem?>(null) }
+
+
 
     // User actions
     fun onNoteLongClick(note: NoteEntity) {
@@ -105,26 +111,51 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    fun onGlobalToolbarAction(action: GlobalNotesActions) {
+    fun onGlobalToolbarAction(action: GlobalNotesActions, clickType: ClickType, tagItem: TagItem?) {
         when (action) {
-            ADD_NOTE -> showAddNoteMenu = true
-            SEARCH -> TODO()
-            SORT -> TODO()
-            SETTINGS -> navController.navigate(Routes.Settings.ROOT)
-            DESELECT_ALL -> onGroupAction(NotesActions.SELECT)
-            REORDER -> TODO()
-            EDIT_NOTE -> onGroupAction(NotesActions.EDIT)
-            DELETE_NOTE -> onGroupAction(NotesActions.DELETE)
-            COMPLETE_NOTE -> onGroupAction(NotesActions.COMPLETE)
-            else -> return
-        }
-    }
+            GlobalNotesActions.ADD_NOTE -> showAddNoteMenu = true
+            GlobalNotesActions.SEARCH -> TODO()
+//            GlobalNotesActions.SORT -> TODO()
+            GlobalNotesActions.SETTINGS -> navController.navigate(Routes.Settings.ROOT)
+            GlobalNotesActions.DESELECT_ALL -> onGroupAction(NotesActions.SELECT)
+            GlobalNotesActions.REORDER -> isReorderMode = !isReorderMode
+            GlobalNotesActions.EDIT_NOTE -> onGroupAction(NotesActions.EDIT)
+            GlobalNotesActions.DELETE_NOTE -> onGroupAction(NotesActions.DELETE)
+            GlobalNotesActions.COMPLETE_NOTE -> onGroupAction(NotesActions.COMPLETE)
+            GlobalNotesActions.TAG_FILTER -> when (clickType) {
+                ClickType.NORMAL ->  scope.launch {
+                    TagsSettingsStore.setAllTagsSelected(ctx, true)
+                }
+                ClickType.LONG -> scope.launch {
+                    TagsSettingsStore.setAllTagsSelected(ctx, false)
+                }
+                else -> return
+            }
 
-    if (showAddNoteMenu) {
-        AddNoteFab(
-            navController = navController,
-            onDismiss = { showAddNoteMenu = false }
-        )
+            GlobalNotesActions.ADD_TAG ->  showCreator = true
+            GlobalNotesActions.TAGS -> {
+                val tag = tagItem!!
+                when (clickType) {
+
+                    ClickType.NORMAL -> scope.launch {
+                        TagsSettingsStore.updateTag(ctx, tag.copy(selected = !tag.selected))
+                    }
+
+                    ClickType.LONG -> {
+                        editTag = tag
+                        showEditor = true
+                    }
+
+                    ClickType.DOUBLE -> {
+                        editTag = tag
+                        showDeleteConfirm = true
+                    }
+                }
+            }
+            GlobalNotesActions.SPACER1,
+            GlobalNotesActions.SPACER2,
+            GlobalNotesActions.SPACER3 -> return
+        }
     }
 
     LaunchedEffect(Unit) { vm.deleteAllEmptyNotes() }
@@ -136,6 +167,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 selectedNotes = emptySet()
                 isMultiSelectMode = false
             }
+            isReorderMode -> isReorderMode = false
             else -> navController.popBackStack()
         }
     }
@@ -152,21 +184,29 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         val toolbarComposable: (@Composable () -> Unit)? = when (bar.toolbar) {
             ToolBars.SELECT -> if (isMultiSelectMode) {
                 {
-                    SelectToolbar(ctx, rememberScrollState()) { action ->
-                        when (action) {
-                            // Provide group logic as appropriate
-                            EDIT_NOTE -> onGroupAction(NotesActions.EDIT)
-                            DELETE_NOTE -> onGroupAction(NotesActions.DELETE)
-                            COMPLETE_NOTE -> onGroupAction(NotesActions.COMPLETE)
-                            else -> { onGlobalToolbarAction(action) }
-                        }
-                    }
+                    SelectToolbar(
+                        ctx,
+                        scrollState = rememberScrollState()
+                    ) { action, clickType, tagItem -> onGlobalToolbarAction(action, clickType, tagItem) }
                 }
             }  else null
 
-            ToolBars.TAGS -> { { TagSelectingRow(ctx, allTags, scope) } }
+            ToolBars.TAGS -> {
+                {
+                    TagsToolbar(
+                        ctx = ctx,
+                        scrollState = rememberScrollState()
+                    ) { action, clickType, tagItem -> onGlobalToolbarAction(action, clickType, tagItem) }
+                }
+            }
+
             ToolBars.QUICK_ACTIONS -> {
-                { QuickActionsToolbar(ctx, rememberScrollState()) { action -> onGlobalToolbarAction(action) } }
+                {
+                    QuickActionsToolbar(
+                        ctx = ctx,
+                        scrollState = rememberScrollState()
+                    ) { action, clickType, tagItem -> onGlobalToolbarAction(action, clickType, tagItem) }
+                }
             }
             ToolBars.SEPARATOR -> null
         }
@@ -176,16 +216,17 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    Scaffold(
-        topBar = { if (topBars.isNotEmpty()) Column { topBars.forEach { it() } } },
-        bottomBar = { if (bottomBars.isNotEmpty()) Column { bottomBars.forEach { it() } } }
-    ) { innerPadding ->
+    val topBarHeight = (56 * topBars.size).dp
+    val bottomBarHeight = (56 * bottomBars.size).dp
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         if (notes.isEmpty()) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp)
-                    .padding(innerPadding),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -199,7 +240,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(innerPadding),
+                    .padding(top = topBarHeight, bottom = bottomBarHeight),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 if (showNotesNumber) {
@@ -214,6 +255,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         notes = notesToShow,
                         selectedNotes = selectedNotes,
                         isSelectMode = isMultiSelectMode,
+                        isReorderMode = isReorderMode,
                         onNoteClick = ::onNoteClick,
                         onNoteLongClick = ::onNoteLongClick,
                         onRightAction = { note ->
@@ -226,6 +268,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         onTypeButtonClick = { note ->
                             performAction(actionSettings.typeButtonAction, vm, navController, note, scope)
                         },
+                        onOrderChanged = { newList -> vm.reorderNotes(newList) },
                         actionSettings = actionSettings
                     )
                     NoteViewType.GRID -> NotesGrid(
@@ -237,6 +280,62 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 }
             }
         }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            topBars.forEach { it() }
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            bottomBars.forEach { it() }
+        }
+
+        if (showAddNoteMenu) {
+            AddNoteFab(
+                navController = navController,
+                toolbarsOnBottom = bottomBars.size,
+                onDismiss = { showAddNoteMenu = false }
+            )
+        }
+    }
+
+    // --- Tags Dialogs ---
+    if (showEditor) {
+        TagEditorDialog(
+            initialTag = initialTag,
+            scope = scope,
+            onDismiss = { showEditor = false }
+        )
+    }
+
+    if (showCreator) {
+        TagEditorDialog(
+            initialTag = null,
+            scope = scope,
+            onDismiss = { showCreator = false }
+        )
+    }
+
+    if (showDeleteConfirm && editTag != null) {
+        val tagToDelete = editTag!!
+        UserValidation(
+            title = stringResource(R.string.delete_tag),
+            message = "${stringResource(R.string.tag_deletion_confirm)} '${tagToDelete.name}'?",
+            onCancel = { showDeleteConfirm = false },
+            onAgree = {
+                showDeleteConfirm = false
+                scope.launch { TagsSettingsStore.deleteTag(ctx, tagToDelete) }
+            }
+        )
     }
 }
 

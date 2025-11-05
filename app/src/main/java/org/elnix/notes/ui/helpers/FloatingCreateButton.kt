@@ -3,15 +3,15 @@ package org.elnix.notes.ui.helpers
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
-import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,11 +32,11 @@ import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.ui.theme.LocalExtraColors
 
 @Composable
-fun AddNoteFab(navController: NavHostController, onDismiss: () -> Unit) {
+fun AddNoteFab(navController: NavHostController, toolbarsOnBottom: Int, onDismiss: () -> Unit) {
+
 
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
     ) {
         // Transparent overlay to detect clicks outside FABs
 
@@ -52,9 +52,9 @@ fun AddNoteFab(navController: NavHostController, onDismiss: () -> Unit) {
         )
 
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = (100 * toolbarsOnBottom).dp)
         ) {
             SmallFab(
                 icon = Icons.AutoMirrored.Filled.FormatListBulleted,
@@ -64,16 +64,22 @@ fun AddNoteFab(navController: NavHostController, onDismiss: () -> Unit) {
                 navController.navigate("${Routes.CREATE}?type=${NoteType.CHECKLIST.name}")
                 onDismiss()
             }
-            SmallFab(
-                icon = Icons.Default.Brush,
-                label = "Drawing",
-                color = LocalExtraColors.current.noteTypeDrawing,
-                enabled = false,
-                comingSoon = true
-            ) {
-                navController.navigate("${Routes.CREATE}?type=${NoteType.DRAWING.name}")
-                onDismiss()
-            }
+
+//            Spacer(Modifier.width(10.dp))
+//
+//            SmallFab(
+//                icon = Icons.Default.Brush,
+//                label = "Drawing",
+//                color = LocalExtraColors.current.noteTypeDrawing,
+//                enabled = false,
+//                comingSoon = true
+//            ) {
+//                navController.navigate("${Routes.CREATE}?type=${NoteType.DRAWING.name}")
+//                onDismiss()
+//            }
+
+            Spacer(Modifier.width(10.dp))
+
             SmallFab(
                 icon = Icons.Default.Edit,
                 label = "Text",

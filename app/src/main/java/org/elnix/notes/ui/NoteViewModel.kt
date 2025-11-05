@@ -35,7 +35,8 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- Notes ---
     suspend fun addNoteAndReturnId(title: String = "", desc: String = "", type: NoteType): Long {
-        val note = NoteEntity(title = title, desc = desc, type = type)
+        val currentNotes = noteRepo.observeAll().firstOrNull() ?: emptyList()
+        val note = NoteEntity(title = title, desc = desc, type = type, orderIndex = currentNotes.size)
         val id = noteRepo.upsert(note)
 
         val defaults = ReminderSettingsStore.getDefaultRemindersFlow(ctx).firstOrNull() ?: emptyList()
@@ -45,6 +46,18 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         }
         return id
     }
+
+    fun reorderNotes(newList: List<NoteEntity>) {
+        viewModelScope.launch {
+            newList.forEachIndexed { index, note ->
+                // only update if needed
+                if (note.orderIndex != index) {
+                    noteRepo.upsert(note.copy(orderIndex = index))
+                }
+            }
+        }
+    }
+
 
     fun update(note: NoteEntity) = viewModelScope.launch { noteRepo.upsert(note) }
     fun delete(note: NoteEntity) = viewModelScope.launch { noteRepo.delete(note) }

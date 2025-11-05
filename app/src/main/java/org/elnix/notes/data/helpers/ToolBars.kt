@@ -18,16 +18,21 @@ fun defaultEnabledItems (toolbar: ToolBars): List<GlobalNotesActions>? = when (t
         GlobalNotesActions.DELETE_NOTE
     )
     ToolBars.QUICK_ACTIONS -> listOf(
-        GlobalNotesActions.SEARCH,
-        GlobalNotesActions.SPACER1,
+        GlobalNotesActions.REORDER,
+//        GlobalNotesActions.SEARCH,
+//        GlobalNotesActions.SPACER1,
         GlobalNotesActions.ADD_NOTE,
         GlobalNotesActions.SPACER2,
-        GlobalNotesActions.SORT,
-        GlobalNotesActions.REORDER,
+//        GlobalNotesActions.SORT,
         GlobalNotesActions.SETTINGS
     )
+
+    ToolBars.TAGS -> listOf(
+        GlobalNotesActions.TAG_FILTER,
+        GlobalNotesActions.TAGS,
+        GlobalNotesActions.ADD_TAG
+    )
     ToolBars.SEPARATOR -> null
-    ToolBars.TAGS -> null
 }
 
 
@@ -35,7 +40,7 @@ fun defaultShowLabelItems (toolbar: ToolBars): List<GlobalNotesActions>? = when 
     ToolBars.SELECT -> null
     ToolBars.QUICK_ACTIONS -> listOf(GlobalNotesActions.SEARCH)
     ToolBars.SEPARATOR -> null
-    ToolBars.TAGS -> null
+    ToolBars.TAGS -> listOf(GlobalNotesActions.ADD_TAG)
 }
 fun defaultToolbarItems(toolbar: ToolBars): List<ToolbarItemState> {
     val enabledItems = defaultEnabledItems(toolbar)

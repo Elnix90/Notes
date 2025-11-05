@@ -17,8 +17,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,10 +32,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.burnoutcrew.reorderable.ReorderableLazyListState
+import org.burnoutcrew.reorderable.detectReorder
+import org.elnix.notes.R
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.noteTypeColor
 import org.elnix.notes.data.helpers.noteTypeIcon
@@ -43,13 +50,19 @@ import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowDeleteButton
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowNoteTypeIcon
 import org.elnix.notes.ui.helpers.tags.TagBubble
-import org.elnix.notes.ui.theme.adjustBrightness
+import org.elnix.notes.ui.theme.LocalExtraColors
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
 fun NoteCard(
     note: NoteEntity,
+    isReorderMode: Boolean,
+    scale: Float,
+    elevation: Dp,
+    bgColor: Color,
+    isDragging: Boolean,
+    reorderState: ReorderableLazyListState,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     onDeleteButtonClick: () -> Unit,
@@ -69,23 +82,26 @@ fun NoteCard(
         allTags.filter { note.tagIds.contains(it.id) }
     }
 
-    Card(
+    ElevatedCard(
         modifier = modifier
+//            .then(if (isReorderMode) Modifier.detectReorder(reorderState) else Modifier)
             .padding(horizontal = 12.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .scale(scale)
+            .background(bgColor, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = note.bgColor
-        ),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(elevation)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onClick() }
-                .combinedClickable(
-                    onLongClick = { onLongClick() },
-                    onClick = { onClick() }
+                .then(
+                    if (!isReorderMode) {
+                        Modifier.combinedClickable(
+                            onLongClick = { onLongClick() },
+                            onClick = { onClick() }
+                        )
+                    } else Modifier
                 )
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -99,14 +115,14 @@ fun NoteCard(
                         .align(Alignment.CenterVertically)
                         .clip(CircleShape)
                         .clickable { onTypeIconClick() }
-                        .background(note.bgColor.adjustBrightness(if (iconColor.luminance() > 0.5) 0.5f else 1.5f))
+                        .background(iconColor)
                         .padding(5.dp)
                 ) {
                     Icon(
                         imageVector = noteTypeIcon(note.type),
                         contentDescription = "Note icon",
                         modifier = Modifier.size(25.dp),
-                        tint = iconColor,
+                        tint = MaterialTheme.colorScheme.outline,
                     )
                 }
 
@@ -147,17 +163,33 @@ fun NoteCard(
                 }
             }
 
-            if(showDeleteButton) {
-
-                IconButton(
-                    onClick = { onDeleteButtonClick() },
-                    shape = CircleShape
-                ) {
+            Box(
+                modifier = Modifier.size(30.dp)
+            ) {
+                if (isReorderMode) {
                     Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
-                        tint = MaterialTheme.colorScheme.primary
+                        imageVector = Icons.Default.DragHandle,
+                        contentDescription = stringResource(R.string.reorder),
+                        tint = if (isDragging)
+                            LocalExtraColors.current.select
+                        else
+                            MaterialTheme.colorScheme.outline,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .detectReorder(reorderState)
                     )
+                } else if (showDeleteButton) {
+
+                    IconButton(
+                        onClick = { onDeleteButtonClick() },
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(R.string.delete),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }

@@ -177,27 +177,16 @@ fun ToolbarItemsEditor(
                                     Spacer(Modifier.weight(1f))
                                     if (action != GlobalNotesActions.SPACER1 && action != GlobalNotesActions.SPACER2 && action != GlobalNotesActions.SPACER3) {
 
-//                                        Icon(
-//                                            imageVector = globalActionIcon(action),
-//                                            contentDescription = "",
-//                                            tint = globalActionColor(action),
-//                                            modifier = Modifier.padding(end = 8.dp)
-//                                        )
                                         GlobalActionIcon(
                                             ctx = ctx,
                                             action = action,
-                                            showButtonLabel = item.showLabel
-                                        ) { checked ->
-                                            toolbarItems = toolbarItems.toMutableList().apply {
-                                                set(index, this[index].copy(showLabel = !item.showLabel))
+                                            showButtonLabel = item.showLabel,
+                                            onClick = {
+                                                toolbarItems = toolbarItems.toMutableList().apply {
+                                                    set(index, this[index].copy(showLabel = !item.showLabel))
+                                                }
                                             }
-                                        }
-
-//                                        Text(
-//                                            text = globalActionName(ctx, action),
-//                                            style = MaterialTheme.typography.bodyLarge,
-//                                            modifier = Modifier.weight(1f)
-//                                        )
+                                        )
                                     } else {
                                         Box(
                                             contentAlignment = Alignment.Center,

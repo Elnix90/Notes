@@ -27,7 +27,9 @@ data class NoteEntity(
 
     val dueDateTime: Calendar? = null,
     val createdAt: Date = Date.from(Instant.now()),
-    val lastEdit: Long = System.currentTimeMillis()
+    val lastEdit: Long = System.currentTimeMillis(),
+
+    val orderIndex: Int = 0
 )
 
 

@@ -1,6 +1,8 @@
 package org.elnix.notes
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -18,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
@@ -32,45 +33,93 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.ReorderableLazyListState
+import org.burnoutcrew.reorderable.detectReorderAfterLongPress
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.noteActionColor
 import org.elnix.notes.data.helpers.noteActionIcon
 import org.elnix.notes.ui.helpers.NoteCard
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun NotesList(
     notes: List<NoteEntity>,
     selectedNotes: Set<NoteEntity>,
     isSelectMode: Boolean,
-
+    isReorderMode: Boolean,
     onNoteClick: (NoteEntity) -> Unit,
     onNoteLongClick: (NoteEntity) -> Unit,
     onRightAction: (NoteEntity) -> Unit,
     onLeftAction: (NoteEntity) -> Unit,
     onButtonClick: (NoteEntity) -> Unit,
     onTypeButtonClick: (NoteEntity) -> Unit,
+    onOrderChanged: (List<NoteEntity>) -> Unit,
     actionSettings: NoteActionSettings
 ) {
+
+    var notesList by remember { mutableStateOf(notes.toMutableList()) }
+
+    val reorderState = rememberReorderableLazyListState(
+        onMove = { from, to ->
+            notesList = notesList.toMutableList().apply {
+                add(to.index, removeAt(from.index))
+            }
+            onOrderChanged(notesList)
+        }
+    )
+
+
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        state = reorderState.listState,
+        modifier = Modifier
+            .fillMaxSize()
+            .then(
+                if (isReorderMode)
+                    Modifier
+                        .reorderable(reorderState)
+                        .detectReorderAfterLongPress(reorderState)
+                else Modifier
+            ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(notes) { note ->
-            SwipeableNoteCard(
-                note = note,
-                selected = selectedNotes.contains(note),
-                isSelectMode = isSelectMode,
-                onNoteClick = { onNoteClick(note) },
-                onNoteLongClick = { onNoteLongClick(note) },
-                onRightAction = { onRightAction(note) },
-                onLeftAction = { onLeftAction(note) },
-                onButtonClick = { onButtonClick(note) },
-                onTypeButtonClick = { onTypeButtonClick(note) },
-                actionSettings = actionSettings
-            )
+        items(notesList.size, key = { notesList[it].id }) { index ->
+            val note = notesList[index]
 
+            ReorderableItem(state = reorderState, key = note.id) { isDragging ->
+                val scale by animateFloatAsState(if (isDragging) 1.03f else 1f)
+                val elevation by animateDpAsState(if (isDragging) 16.dp else 4.dp)
+                val bgColor =
+                    if (isDragging) note.bgColor.copy(alpha = 0.2f)
+                    else note.bgColor
+
+
+
+                SwipeableNoteCard(
+                    note = note,
+                    selected = selectedNotes.contains(note),
+                    isSelectMode = isSelectMode,
+                    isReorderMode = isReorderMode,
+                    reorderState = reorderState,
+                    scale = scale,
+                    elevation = elevation,
+                    bgColor = bgColor,
+                    isDragging = isDragging,
+                    onNoteClick = { onNoteClick(note) },
+                    onNoteLongClick = { onNoteLongClick(note) },
+                    onRightAction = { onRightAction(note) },
+                    onLeftAction = { onLeftAction(note) },
+                    onButtonClick = { onButtonClick(note) },
+                    onTypeButtonClick = { onTypeButtonClick(note) },
+                    actionSettings = actionSettings
+                )
+            }
         }
     }
 }
@@ -80,6 +129,12 @@ fun SwipeableNoteCard(
     note: NoteEntity,
     selected: Boolean,
     isSelectMode: Boolean,
+    isReorderMode: Boolean,
+    scale: Float,
+    elevation: Dp,
+    bgColor: Color,
+    isDragging: Boolean,
+    reorderState: ReorderableLazyListState,
     onNoteClick: (NoteEntity) -> Unit,
     onNoteLongClick: (NoteEntity) -> Unit,
     onRightAction: (NoteEntity) -> Unit,
@@ -107,7 +162,7 @@ fun SwipeableNoteCard(
     )
 
     // disable dragging when select mode is active
-    val dragModifier = if (!isSelectMode) {
+    val dragModifier = if (!isSelectMode && !isReorderMode) {
         Modifier.draggable(
             state = draggableState,
             orientation = Orientation.Horizontal,
@@ -121,9 +176,9 @@ fun SwipeableNoteCard(
                 swipeState = SwipeState.Default
             }
         )
-    } else {
-        Modifier
-    }
+//    } else if (isReorderMode){
+//        Modifier.detectReorder(reorderState)
+    } else Modifier
 
     Box(
         modifier = Modifier
@@ -188,6 +243,12 @@ fun SwipeableNoteCard(
         // Foreground Note Card
         NoteCard(
             note = note,
+            isReorderMode = isReorderMode,
+            scale = scale,
+            elevation = elevation,
+            bgColor = bgColor,
+            isDragging = isDragging,
+            reorderState = reorderState,
             onClick = { onNoteClick(note) },
             onLongClick = { onNoteLongClick(note) },
             onDeleteButtonClick = { onButtonClick(note) },

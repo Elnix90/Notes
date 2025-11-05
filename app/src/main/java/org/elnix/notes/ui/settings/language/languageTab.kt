@@ -1,6 +1,7 @@
 package org.elnix.notes.ui.settings.language
 
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,7 +52,8 @@ fun LanguageTab(onBack: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         SettingsTitle(title = stringResource(R.string.settings_language_title), onBack = onBack)
@@ -58,7 +61,6 @@ fun LanguageTab(onBack: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize(),
-//                .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 

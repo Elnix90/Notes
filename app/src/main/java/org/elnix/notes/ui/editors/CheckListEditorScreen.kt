@@ -1,6 +1,7 @@
 package org.elnix.notes.ui.editors
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,6 +52,7 @@ import org.elnix.notes.R
 import org.elnix.notes.data.ChecklistItem
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.NoteType
+import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.ExpandableSection
@@ -62,6 +64,7 @@ import org.elnix.notes.ui.helpers.colors.toggleAutoColor
 import org.elnix.notes.ui.helpers.colors.updateNoteBgColor
 import org.elnix.notes.ui.helpers.colors.updateNoteTextColor
 import org.elnix.notes.ui.helpers.reminders.RemindersSection
+import org.elnix.notes.ui.helpers.tags.TagsSection
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
 
@@ -78,6 +81,7 @@ fun ChecklistEditorScreen(
     var note by remember { mutableStateOf<NoteEntity?>(null) }
     var title by rememberSaveable { mutableStateOf("") }
     var createdNoteId by remember { mutableStateOf<Long?>(null) }
+    var tagIds by remember { mutableStateOf<List<Long>>(emptyList()) }
     var hasExited by remember { mutableStateOf(false) }
 
     val checklist = remember { mutableStateListOf<ChecklistItem>() }
@@ -90,6 +94,7 @@ fun ChecklistEditorScreen(
                 title = it.title
                 checklist.clear()
                 checklist.addAll(it.checklist)
+                tagIds = it.tagIds
             }
         } else if (createdNoteId == null) {
             val id = vm.addNoteAndReturnId(type = NoteType.CHECKLIST)
@@ -99,11 +104,13 @@ fun ChecklistEditorScreen(
                 title = it.title
                 checklist.clear()
                 checklist.addAll(it.checklist)
+                tagIds = it.tagIds
             }
         }
     }
 
-    val currentId = note?.id ?: createdNoteId
+    val currentNote = note ?: return
+    val allTags by TagsSettingsStore.getTags(ctx).collectAsState(initial = emptyList())
 
     fun handleExit() {
         if (hasExited) return
@@ -140,9 +147,9 @@ fun ChecklistEditorScreen(
     DisposableEffect(Unit) { onDispose { handleExit() } }
     BackHandler { handleExit() }
 
-    val reminders by remember(currentId) {
-        if (currentId != null) vm.remindersFor(currentId) else null
-    }?.collectAsState(initial = emptyList()) ?: remember { mutableStateOf(emptyList()) }
+    val reminders by remember(currentNote) {
+        vm.remindersFor(currentNote.id)
+    }.collectAsState(initial = emptyList())
 
     val showColorDropdownEditor by UiSettingsStore.getShowColorDropdownEditor(ctx).collectAsState(initial = false)
     val showReminderDropdownEditor by UiSettingsStore.getShowReminderDropdownEditor(ctx).collectAsState(initial = false)
@@ -150,7 +157,8 @@ fun ChecklistEditorScreen(
     LazyColumn(
         modifier = Modifier
             .padding(16.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
@@ -255,16 +263,16 @@ fun ChecklistEditorScreen(
                     note,
                     scope,
                     onBgColorPicked = { colorInt ->
-                        scope.launch { updateNoteBgColor(currentId, vm, Color(colorInt))?.let { note = it } }
+                        scope.launch { updateNoteBgColor(currentNote.id, vm, Color(colorInt))?.let { note = it } }
                     },
                     onTextColorPicked = { colorInt ->
-                        scope.launch { updateNoteTextColor(currentId, vm, Color(colorInt))?.let { note = it } }
+                        scope.launch { updateNoteTextColor(currentNote.id, vm, Color(colorInt))?.let { note = it } }
                     },
                     onAutoSwitchToggle = { checked ->
-                        scope.launch { toggleAutoColor(currentId, vm, checked)?.let { note = it } }
+                        scope.launch { toggleAutoColor(currentNote.id, vm, checked)?.let { note = it } }
                     },
                     onRandomColorClick = {
-                        scope.launch { setRandomColor(currentId, vm, note?.autoTextColor ?: true)?.let { note = it } }
+                        scope.launch { setRandomColor(currentNote.id, vm, note?.autoTextColor ?: true)?.let { note = it } }
                     }
                 )
             }
@@ -277,7 +285,40 @@ fun ChecklistEditorScreen(
                 horizontalAlignment = Alignment.Start,
                 onExpand = { scope.launch { UiSettingsStore.setShowReminderDropdownEditor(ctx, it) } }
             ) {
-                    RemindersSection(reminders, currentId, title, vm)
+                    RemindersSection(reminders, currentNote.id, title, vm)
+            }
+        }
+
+        item {
+            // --- Tags ---
+            val showTags by UiSettingsStore.getShowTagsDropdownEditor(ctx)
+                .collectAsState(initial = false)
+
+            ExpandableSection(
+                title = stringResource(R.string.tags),
+                expanded = showTags,
+                horizontalAlignment = Alignment.Start,
+                onExpand = { scope.launch { UiSettingsStore.setShowTagsDropdownEditor(ctx, it) } }
+            ) {
+                TagsSection(
+                    allTags = allTags,
+                    noteTagIds = tagIds,
+                    scope = scope,
+                    onAddTagToNote = { tag ->
+                        if (!tagIds.contains(tag.id)) {
+                            tagIds = tagIds + tag.id
+                            scope.launch(Dispatchers.IO) {
+                                vm.update(currentNote.copy(tagIds = tagIds))
+                            }
+                        }
+                    },
+                    onRemoveTagFromNote = { tag ->
+                        tagIds = tagIds.filterNot { it == tag.id }
+                        scope.launch(Dispatchers.IO) {
+                            vm.update(currentNote.copy(tagIds = tagIds))
+                        }
+                    }
+                )
             }
         }
 

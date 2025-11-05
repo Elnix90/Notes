@@ -36,8 +36,8 @@ import org.elnix.notes.R
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore.getDefaultRemindersFlow
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore.setDefaultReminders
-import org.elnix.notes.ui.helpers.reminders.ReminderBubble
 import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.reminders.ReminderBubble
 import org.elnix.notes.ui.helpers.reminders.ReminderPicker
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
@@ -50,8 +50,9 @@ fun RemindersTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         Row(

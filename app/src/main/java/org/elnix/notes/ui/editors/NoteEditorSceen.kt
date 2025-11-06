@@ -125,8 +125,8 @@ fun NoteEditorScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(scroll),
-//            .imePadding(),
+            .verticalScroll(scroll)
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Title

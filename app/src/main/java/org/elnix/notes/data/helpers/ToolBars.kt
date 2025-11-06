@@ -45,7 +45,25 @@ fun defaultShowLabelItems (toolbar: ToolBars): List<GlobalNotesActions>? = when 
 fun defaultToolbarItems(toolbar: ToolBars): List<ToolbarItemState> {
     val enabledItems = defaultEnabledItems(toolbar)
     val showLabelItems = defaultShowLabelItems(toolbar)
-    return GlobalNotesActions.entries.map { action ->
-        ToolbarItemState(action, enabledItems?.contains(action) ?: false, showLabelItems?.contains(action) ?: false)
+    val unsorted = GlobalNotesActions.entries.map { action ->
+        ToolbarItemState(
+            action,
+            enabledItems?.contains(action) ?: false,
+            showLabelItems?.contains(action) ?: false
+        )
     }
+    // Custom sort:
+    return unsorted.sortedWith(compareBy<ToolbarItemState> {
+        // Enabled items first
+        !it.enabled
+    }.thenComparator { a, b ->
+        when {
+            // If both are enabled, sort within enabled by the order in enabledItems
+            a.enabled && b.enabled && enabledItems != null -> {
+                enabledItems.indexOf(a.action) - enabledItems.indexOf(b.action)
+            }
+            else -> 0 // Otherwise, keep current relative order
+        }
+    })
 }
+

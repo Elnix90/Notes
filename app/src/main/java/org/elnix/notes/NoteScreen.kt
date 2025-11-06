@@ -115,8 +115,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     fun onGlobalToolbarAction(action: GlobalNotesActions, clickType: ClickType, tagItem: TagItem?) {
         when (action) {
             GlobalNotesActions.ADD_NOTE -> showAddNoteMenu = true
-            GlobalNotesActions.SEARCH -> TODO()
-//            GlobalNotesActions.SORT -> TODO()
+            GlobalNotesActions.SEARCH -> return // TODO()
+            GlobalNotesActions.SORT -> return //TODO()
             GlobalNotesActions.SETTINGS -> navController.navigate(Routes.Settings.ROOT)
             GlobalNotesActions.DESELECT_ALL -> onGroupAction(NotesActions.SELECT)
             GlobalNotesActions.REORDER -> isReorderMode = !isReorderMode

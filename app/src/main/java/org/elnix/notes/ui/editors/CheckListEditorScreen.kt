@@ -156,9 +156,9 @@ fun ChecklistEditorScreen(
 
     LazyColumn(
         modifier = Modifier
-            .padding(16.dp)
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {

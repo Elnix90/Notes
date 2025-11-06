@@ -54,6 +54,8 @@ fun NotesList(
     selectedNotes: Set<NoteEntity>,
     isSelectMode: Boolean,
     isReorderMode: Boolean,
+    topBarsHeight: Dp,
+    bottomBarsHeight: Dp,
     onNoteClick: (NoteEntity) -> Unit,
     onNoteLongClick: (NoteEntity) -> Unit,
     onRightAction: (NoteEntity) -> Unit,
@@ -89,6 +91,15 @@ fun NotesList(
             ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // Dummy box to allow scroll until notes aren't under the floating toolbars
+        item {
+            Box(
+                Modifier
+                    .height(topBarsHeight)
+//                    .background(Color.White)
+            )
+        }
+
         items(notesList.size, key = { notesList[it].id }) { index ->
             val note = notesList[index]
 
@@ -120,6 +131,12 @@ fun NotesList(
                     actionSettings = actionSettings
                 )
             }
+        }
+        item { Box(
+            Modifier
+                .height(bottomBarsHeight)
+//                .background(Color.White)
+            )
         }
     }
 }

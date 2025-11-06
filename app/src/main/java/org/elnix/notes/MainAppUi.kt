@@ -99,19 +99,19 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                     NoteType.TEXT -> NoteEditorScreen(
                         vm,
                         null,
-                        onSaved = { navController.popBackStack()},
-                        onCancel = { navController.popBackStack() })
+                        onSaved = { navController.navigateUp()},
+                        onCancel = { navController.navigateUp() })
                     NoteType.CHECKLIST -> ChecklistEditorScreen(
                         vm,
                         null,
-                        onSaved = { navController.popBackStack() },
-                        onCancel = { navController.popBackStack() }
+                        onSaved = { navController.navigateUp() },
+                        onCancel = { navController.navigateUp() }
                     )
                     NoteType.DRAWING -> DrawingEditorScreen(
                         vm,
                         null,
-                        onSaved = { navController.popBackStack() },
-                        onCancel = { navController.popBackStack() }
+                        onSaved = { navController.navigateUp() },
+                        onCancel = { navController.navigateUp() }
                     )
                 }
             }
@@ -135,19 +135,19 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                     NoteType.TEXT -> NoteEditorScreen(
                         vm,
                         noteId,
-                        onSaved = { navController.popBackStack() },
-                        onCancel = { navController.popBackStack() })
+                        onSaved = { navController.navigateUp() },
+                        onCancel = { navController.navigateUp() })
                     NoteType.CHECKLIST -> ChecklistEditorScreen(
                         vm,
                         noteId,
-                        onSaved = { navController.popBackStack() },
-                        onCancel = { navController.popBackStack() }
+                        onSaved = { navController.navigateUp() },
+                        onCancel = { navController.navigateUp() }
                     )
                     NoteType.DRAWING -> DrawingEditorScreen(
                         vm,
                         noteId,
-                        onSaved = { navController.popBackStack() },
-                        onCancel = { navController.popBackStack() }
+                        onSaved = { navController.navigateUp() },
+                        onCancel = { navController.navigateUp() }
                     )
                 }
             }

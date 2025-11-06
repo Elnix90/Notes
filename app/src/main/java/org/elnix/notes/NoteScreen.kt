@@ -239,9 +239,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             }
         } else {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = topBarHeight, bottom = bottomBarHeight),
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 if (showNotesNumber) {
@@ -249,7 +247,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                     if (notesToShow.size != notes.size) {
                         text += " • ${stringResource(R.string.filtered_bote_number)} : ${notesToShow.size}"
                     }
-                    TextDivider(text)
+                    TextDivider(text, Modifier.padding(horizontal = 16.dp))
                 }
                 when (noteViewType) {
                     NoteViewType.LIST -> NotesList(
@@ -257,6 +255,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         selectedNotes = selectedNotes,
                         isSelectMode = isMultiSelectMode,
                         isReorderMode = isReorderMode,
+                        topBarsHeight = topBarHeight,
+                        bottomBarsHeight = bottomBarHeight,
                         onNoteClick = ::onNoteClick,
                         onNoteLongClick = ::onNoteLongClick,
                         onRightAction = { note ->

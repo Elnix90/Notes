@@ -4,9 +4,12 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,7 +28,11 @@ fun RemindersDebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, on
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(
+                WindowInsets.systemBars
+                    .asPaddingValues()
+            )
+            .padding(horizontal = 16.dp, vertical = 5.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         SettingsTitle(title = "Debug -> Reminders", onBack = onBack)

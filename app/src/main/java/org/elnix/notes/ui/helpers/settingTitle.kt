@@ -1,12 +1,10 @@
 package org.elnix.notes.ui.helpers
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
@@ -17,7 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import org.elnix.notes.R
 
 
 @Composable
@@ -34,14 +34,15 @@ fun SettingsTitle(
             .background(MaterialTheme.colorScheme.background)
     ) {
 
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Back",
-            modifier = Modifier
-                .clickable { onBack() }
-                .padding(4.dp),
-            tint = MaterialTheme.colorScheme.outline
-        )
+        IconButton(
+            onClick = { onBack() },
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.back),
+                tint = MaterialTheme.colorScheme.outline
+            )
+        }
 
         Text(
             text = title,
@@ -57,7 +58,7 @@ fun SettingsTitle(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Help,
-                    contentDescription = "Help about reminders",
+                    contentDescription = stringResource(R.string.reminders_help),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

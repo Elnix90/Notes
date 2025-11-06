@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -52,22 +54,23 @@ fun RemindersTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
+            .padding(
+                WindowInsets.systemBars
+                    .asPaddingValues()
+            )
+            .padding(horizontal = 16.dp, vertical = 5.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Row(
-            Modifier.background(MaterialTheme.colorScheme.background)
-        ) {
-            SettingsTitle(
-                title = stringResource(R.string.notification_reminders),
-                helpIcon = { showHelpDialog = true },
-                onBack = onBack
-            )
 
-        }
+        SettingsTitle(
+            title = stringResource(R.string.notification_reminders),
+            helpIcon = { showHelpDialog = true },
+            onBack = onBack
+        )
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

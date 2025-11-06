@@ -323,6 +323,20 @@ fun ChecklistEditorScreen(
         }
 
         item {
+            // --- Quick Actions ---
+            val showQuick by UiSettingsStore.getShowQuickActionsDropdownEditor(ctx)
+                .collectAsState(initial = false)
+            ExpandableSection(
+                title = stringResource(R.string.quick_actions),
+                expanded = showQuick,
+                horizontalAlignment = Alignment.Start,
+                onExpand = { scope.launch { UiSettingsStore.setShowQuickActionsDropdownEditor(ctx, it) } }
+            ) {
+                CompletionToggle(currentNote, currentNote.id, vm) { note = it }
+            }
+        }
+
+        item {
             Spacer(Modifier.height(15.dp))
             ValidateCancelButtons(
                 onValidate = { handleExit() },

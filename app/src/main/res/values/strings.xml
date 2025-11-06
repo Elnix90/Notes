@@ -153,4 +153,5 @@
     <string name="reorder_handle">Reorder Handle</string>
     <string name="spacer">Spacer</string>
     <string name="show_search_text">Show Search text</string>
+    <string name="floating_toolbars">Floating Toolbars</string>
 </resources>

@@ -21,6 +21,7 @@ fun SelectToolbar(
     color: Color = MaterialTheme.colorScheme.surface,
     ghosted: Boolean = false,
     scale: Float = 1f,
+    floatingToolbar: Boolean,
     onActionClick: (GlobalNotesActions, ClickType, TagItem?) -> Unit
 ) {
     val selectToolbarItemsState = remember { ToolbarItemsSettingsStore.getToolbarItemsFlow(ctx, ToolBars.SELECT) }
@@ -35,7 +36,8 @@ fun SelectToolbar(
         scrollState = scrollState,
         color = color,
         ghosted = ghosted,
-        scale = scale
+        scale = scale,
+        floatingToolbar = floatingToolbar
     ) { action, clickType, tagItem ->
         onActionClick(action, clickType, tagItem)
     }

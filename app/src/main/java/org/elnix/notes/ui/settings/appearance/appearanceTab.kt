@@ -43,7 +43,7 @@ fun AppearanceTab(
     val fullscreenApp by UiSettingsStore.getFullscreen(ctx).collectAsState(initial = false)
     val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx).collectAsState(initial = true)
     val notesViewType by UiSettingsStore.getNoteViewType(ctx).collectAsState(initial = NoteViewType.LIST)
-    val showSearchText by UiSettingsStore.getShowSearchText(ctx).collectAsState(initial = true)
+    val floatingToolbars by UiSettingsStore.getFloatingToolbars(ctx).collectAsState(initial = true)
 
     Column(
         modifier = Modifier
@@ -103,10 +103,10 @@ fun AppearanceTab(
             }
 
             SwitchRow(
-                showSearchText,
-                stringResource(R.string.show_search_text),
+                floatingToolbars,
+                stringResource(R.string.floating_toolbars),
             ) {
-                scope.launch { UiSettingsStore.setShowSearchText(ctx, it) }
+                scope.launch { UiSettingsStore.setFloatingToolbars(ctx, it) }
             }
         }
     }

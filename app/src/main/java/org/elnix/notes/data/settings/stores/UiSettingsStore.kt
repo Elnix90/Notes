@@ -156,10 +156,10 @@ object UiSettingsStore {
         ctx.dataStore.edit { it[SHOW_TAGS_IN_NOTES] = enabled }
     }
 
-    private val SHOW_SEARCH_TEXT = booleanPreferencesKey("show_search_text")
-    fun getShowSearchText(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW_SEARCH_TEXT] ?: true }
-    suspend fun setShowSearchText(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[SHOW_SEARCH_TEXT] = enabled }
+    private val FLOATING_TOOLBARS = booleanPreferencesKey("floating_toolbars")
+    fun getFloatingToolbars(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[FLOATING_TOOLBARS] ?: true }
+    suspend fun setFloatingToolbars(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[FLOATING_TOOLBARS] = enabled }
     }
 }

@@ -86,6 +86,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     var showCreator by remember { mutableStateOf(false) }
     var initialTag by remember { mutableStateOf<TagItem?>(null) }
 
+    // other options
+    val floatingToolbars by UiSettingsStore.getFloatingToolbars(ctx).collectAsState(initial = true)
 
 
     // User actions
@@ -187,7 +189,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 {
                     SelectToolbar(
                         ctx,
-                        scrollState = rememberScrollState()
+                        scrollState = rememberScrollState(),
+                        floatingToolbar = floatingToolbars
                     ) { action, clickType, tagItem -> onGlobalToolbarAction(action, clickType, tagItem) }
                 }
             }  else null
@@ -196,7 +199,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 {
                     TagsToolbar(
                         ctx = ctx,
-                        scrollState = rememberScrollState()
+                        scrollState = rememberScrollState(),
+                        floatingToolbar = floatingToolbars
                     ) { action, clickType, tagItem -> onGlobalToolbarAction(action, clickType, tagItem) }
                 }
             }
@@ -205,7 +209,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 {
                     QuickActionsToolbar(
                         ctx = ctx,
-                        scrollState = rememberScrollState()
+                        scrollState = rememberScrollState(),
+                        floatingToolbar = floatingToolbars
                     ) { action, clickType, tagItem -> onGlobalToolbarAction(action, clickType, tagItem) }
                 }
             }
@@ -284,20 +289,31 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
 
         Column(
             modifier = Modifier
+                .height(topBarHeight)
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
-                .height(topBarHeight)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .then(
+                    if (floatingToolbars) {
+                        Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    } else Modifier
+                )
+            ,
+            verticalArrangement = Arrangement.Top
         ) {
             topBars.forEach { it() }
         }
 
         Column(
             modifier = Modifier
+                .height(bottomBarHeight)
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(bottomBarHeight)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .then(
+                    if (floatingToolbars) {
+                        Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    } else Modifier
+                ),
+            verticalArrangement = Arrangement.Bottom
         ) {
             bottomBars.forEach { it() }
         }

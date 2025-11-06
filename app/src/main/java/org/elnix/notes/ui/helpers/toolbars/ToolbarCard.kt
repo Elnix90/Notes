@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -48,6 +49,7 @@ fun ToolbarCard(
     color: Color,
     ghosted: Boolean,
     scale: Float,
+    floatingToolbar: Boolean,
     onActionClick: (GlobalNotesActions, ClickType, TagItem?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -67,8 +69,12 @@ fun ToolbarCard(
                 this.scaleY = scale
             }
             .alpha(if (ghosted) 0.6f else 1f)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        shape = CircleShape,
+            .then(
+                if (floatingToolbar) {
+                    Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                } else Modifier
+            ),
+        shape = if (floatingToolbar) { CircleShape } else  RectangleShape,
         colors = CardDefaults.cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
     ) {
@@ -76,7 +82,11 @@ fun ToolbarCard(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
-                .clip(CircleShape)
+                .then(
+                    if (floatingToolbar) {
+                        Modifier.clip(CircleShape)
+                    } else Modifier
+                )
                 .horizontalScroll(scrollState)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,

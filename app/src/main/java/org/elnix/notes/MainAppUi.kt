@@ -67,7 +67,6 @@ object Routes {
 @Composable
 fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
     val navController = rememberNavController()
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route.orEmpty()
     var unlocked by remember { mutableStateOf(false) }
 
     if (!unlocked) {

@@ -55,6 +55,7 @@ import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.helpers.CompletionToggle
 import org.elnix.notes.ui.helpers.ExpandableSection
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.ValidateCancelButtons
@@ -119,7 +120,7 @@ fun ChecklistEditorScreen(
         if (pseudoText.isNotBlank()) {
             checklist.add(ChecklistItem(pseudoText, false))
         }
-        
+
         scope.launch {
             val id = note?.id ?: createdNoteId ?: return@launch
             val n = withContext(Dispatchers.IO) { vm.getById(id) } ?: return@launch

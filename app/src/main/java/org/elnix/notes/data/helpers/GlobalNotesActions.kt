@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.CheckCircle
@@ -41,12 +42,13 @@ import org.elnix.notes.R
 import org.elnix.notes.ui.theme.LocalExtraColors
 
 enum class GlobalNotesActions {
-    SEARCH, SETTINGS, DESELECT_ALL, ADD_NOTE, REORDER, EDIT_NOTE, DELETE_NOTE, COMPLETE_NOTE, TAG_FILTER, ADD_TAG, TAGS, SPACER1, SPACER2, SPACER3
+    SEARCH, SORT, SETTINGS, DESELECT_ALL, ADD_NOTE, REORDER, EDIT_NOTE, DELETE_NOTE, COMPLETE_NOTE, TAG_FILTER, ADD_TAG, TAGS, SPACER1, SPACER2, SPACER3
 }
 
 
 fun neededCLickTypeForAction (action: GlobalNotesActions): List<ClickType>? = when (action)  {
     GlobalNotesActions.SEARCH -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.SORT -> listOf(ClickType.NORMAL)
     GlobalNotesActions.SETTINGS -> listOf(ClickType.NORMAL)
     GlobalNotesActions.DESELECT_ALL -> listOf(ClickType.NORMAL, ClickType.LONG)
     GlobalNotesActions.ADD_NOTE -> listOf(ClickType.NORMAL)
@@ -64,7 +66,7 @@ fun neededCLickTypeForAction (action: GlobalNotesActions): List<ClickType>? = wh
 @Composable
 fun globalActionIcon(action: GlobalNotesActions): ImageVector = when (action) {
     GlobalNotesActions.SEARCH -> Icons.Default.Search
-//    GlobalNotesActions.SORT -> Icons.AutoMirrored.Filled.Sort
+    GlobalNotesActions.SORT -> Icons.AutoMirrored.Filled.Sort
     GlobalNotesActions.SETTINGS -> Icons.Default.Settings
     GlobalNotesActions.DESELECT_ALL -> Icons.Default.Close
     GlobalNotesActions.ADD_NOTE -> Icons.Default.Add
@@ -82,7 +84,7 @@ fun globalActionColor(action: GlobalNotesActions): Color {
     val extras = LocalExtraColors.current
     return when (action) {
         GlobalNotesActions.SEARCH -> extras.edit
-//        GlobalNotesActions.SORT -> extras.complete
+        GlobalNotesActions.SORT -> extras.complete
         GlobalNotesActions.SETTINGS -> extras.select
         GlobalNotesActions.DESELECT_ALL -> extras.delete
         GlobalNotesActions.ADD_NOTE -> extras.complete
@@ -98,7 +100,7 @@ fun globalActionColor(action: GlobalNotesActions): Color {
 
 fun globalActionName(ctx: Context, action: GlobalNotesActions): String = when (action) {
     GlobalNotesActions.SEARCH -> ctx.getString(R.string.search)
-//    GlobalNotesActions.SORT -> ctx.getString(R.string.sort)
+    GlobalNotesActions.SORT -> ctx.getString(R.string.sort)
     GlobalNotesActions.SETTINGS -> ctx.getString(R.string.settings)
     GlobalNotesActions.DESELECT_ALL -> ctx.getString(R.string.deselect_all)
     GlobalNotesActions.ADD_NOTE -> ctx.getString(R.string.add_note)

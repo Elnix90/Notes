@@ -108,9 +108,14 @@ fun ToolbarCard(
                             scale = scale,
                             showButtonLabel = item.showLabel,
                             onClick = { onActionClick(action, ClickType.NORMAL, null) },
-                            onLongClick = { onActionClick(action, ClickType.LONG, null) },
-                            onDoubleClick =  { onActionClick(action, ClickType.DOUBLE, null) },
+                            onLongClick = if (ClickType.LONG in neededClickTypes) {
+                                { onActionClick(action, ClickType.LONG, null) }
+                            } else null,
+                            onDoubleClick = if (ClickType.DOUBLE in neededClickTypes) {
+                                { onActionClick(action, ClickType.DOUBLE, null) }
+                            } else null,
                         )
+
                     }
                 }
             }

@@ -2,6 +2,7 @@ package org.elnix.notes.data.helpers
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +44,23 @@ enum class GlobalNotesActions {
     SEARCH, SETTINGS, DESELECT_ALL, ADD_NOTE, REORDER, EDIT_NOTE, DELETE_NOTE, COMPLETE_NOTE, TAG_FILTER, ADD_TAG, TAGS, SPACER1, SPACER2, SPACER3
 }
 
+
+fun neededCLickTypeForAction (action: GlobalNotesActions): List<ClickType>? = when (action)  {
+    GlobalNotesActions.SEARCH -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.SETTINGS -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.DESELECT_ALL -> listOf(ClickType.NORMAL, ClickType.LONG)
+    GlobalNotesActions.ADD_NOTE -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.REORDER -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.EDIT_NOTE -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.DELETE_NOTE -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.COMPLETE_NOTE -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.TAG_FILTER -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.ADD_TAG -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.TAGS -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.SPACER1,
+    GlobalNotesActions.SPACER2,
+    GlobalNotesActions.SPACER3 -> null
+}
 @Composable
 fun globalActionIcon(action: GlobalNotesActions): ImageVector = when (action) {
     GlobalNotesActions.SEARCH -> Icons.Default.Search
@@ -116,11 +134,23 @@ fun GlobalActionIcon(
     val clickModifier = if (ghosted) {
         Modifier.pointerInput(Unit) {}
     } else {
-        Modifier.combinedClickable(
-            onClick = { onClick(action) },
-            onLongClick = {onLongClick?.invoke(action)},
-            onDoubleClick = {onDoubleClick?.invoke(action)}
-        )
+         when {
+            onDoubleClick != null && onLongClick != null -> Modifier.combinedClickable(
+                onClick = { onClick(action) },
+                onLongClick = { onLongClick(action) },
+                onDoubleClick = { onDoubleClick(action) }
+            )
+            onDoubleClick != null -> Modifier.combinedClickable(
+                onClick = { onClick(action) },
+                onDoubleClick = { onDoubleClick(action) }
+            )
+            onLongClick != null -> Modifier.combinedClickable(
+                onClick = { onClick(action) },
+                onLongClick = { onLongClick(action) }
+            )
+            else -> Modifier.clickable { onClick(action) }
+        }
+
     }
 
     // Determine visual mode: minimal if scale < 1f

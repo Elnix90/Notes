@@ -32,6 +32,7 @@ import org.elnix.notes.data.helpers.ClickType
 import org.elnix.notes.data.helpers.GlobalActionIcon
 import org.elnix.notes.data.helpers.GlobalNotesActions
 import org.elnix.notes.data.helpers.TagItem
+import org.elnix.notes.data.helpers.neededCLickTypeForAction
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.ui.helpers.UserValidation
@@ -84,6 +85,7 @@ fun ToolbarCard(
 
             items.filter { it.enabled }.forEach { item ->
                 val action = item.action
+                val neededClickTypes = neededCLickTypeForAction(action) ?: emptyList()
                 when (action) {
                     GlobalNotesActions.SPACER1, GlobalNotesActions.SPACER2, GlobalNotesActions.SPACER3 -> {
                         Spacer(modifier = Modifier.weight(1f))

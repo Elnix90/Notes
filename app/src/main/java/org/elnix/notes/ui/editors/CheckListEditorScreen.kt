@@ -116,6 +116,10 @@ fun ChecklistEditorScreen(
         if (hasExited) return
         hasExited = true
 
+        if (pseudoText.isNotBlank()) {
+            checklist.add(ChecklistItem(pseudoText, false))
+        }
+        
         scope.launch {
             val id = note?.id ?: createdNoteId ?: return@launch
             val n = withContext(Dispatchers.IO) { vm.getById(id) } ?: return@launch

@@ -85,7 +85,6 @@ fun NoteCard(
 
     ElevatedCard(
         modifier = modifier
-//            .then(if (isReorderMode) Modifier.detectReorder(reorderState) else Modifier)
             .padding(horizontal = 12.dp)
             .fillMaxWidth()
             .scale(scale)

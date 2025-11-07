@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -32,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -143,6 +146,11 @@ fun NoteEditorScreen(
             onValueChange = { title = it },
             label = { Text(stringResource(R.string.title)) },
             modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                autoCorrectEnabled = true,
+                keyboardType = KeyboardType.Unspecified
+            ),
             colors = AppObjectsColors.outlinedTextFieldColors()
         )
 
@@ -152,6 +160,11 @@ fun NoteEditorScreen(
             onValueChange = { desc = it },
             label = { Text(stringResource(R.string.description)) },
             modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                autoCorrectEnabled = true,
+                keyboardType = KeyboardType.Unspecified
+            ),
             colors = AppObjectsColors.outlinedTextFieldColors()
         )
 

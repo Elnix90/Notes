@@ -179,6 +179,11 @@ fun ChecklistEditorScreen(
                 onValueChange = { title = it },
                 label = { Text(stringResource(R.string.title)) },
                 modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    autoCorrectEnabled = true,
+                    keyboardType = KeyboardType.Unspecified
+                ),
                 colors = AppObjectsColors.outlinedTextFieldColors()
             )
         }

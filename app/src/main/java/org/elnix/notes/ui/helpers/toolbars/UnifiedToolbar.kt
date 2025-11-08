@@ -25,6 +25,7 @@ fun UnifiedToolbar(
     ghosted: Boolean = false,
     scale: Float = 1f,
     floatingToolbar: Boolean,
+    onSearchChange: ((String) -> Unit)? = null,
     onActionClick: (GlobalNotesActions, ClickType, TagItem?, ToolBars) -> Unit
 ) {
     val toolbarItemsState = remember { ToolbarItemsSettingsStore.getToolbarItemsFlow(ctx, toolBars) }
@@ -38,11 +39,12 @@ fun UnifiedToolbar(
         items = toolbarItems,
         scrollState = scrollState,
         isSearchExpanded = isSearchExpanded,
-        height = 75.dp,
+        height = 80.dp,
         color = color,
         ghosted = ghosted,
         scale = scale,
-        floatingToolbar = floatingToolbar
+        floatingToolbar = floatingToolbar,
+        onSearchChange = { onSearchChange?.invoke(it) }
     ) { action, clickType, tagItem ->
         onActionClick(action, clickType, tagItem, toolBars)
     }

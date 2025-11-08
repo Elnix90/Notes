@@ -21,18 +21,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.elnix.notes.R
 import org.elnix.notes.data.LockSettings
-import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.data.settings.stores.LockSettingsStore
-import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.json.JSONObject
 import java.io.OutputStreamWriter
 
 @Composable
-fun ExportImportRow(
-    showNavBarLabels: ShowNavBarActions
-) {
+fun ExportImportRow() {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
 
@@ -91,15 +87,7 @@ fun ExportImportRow(
                         applyColor("edit", ColorSettingsStore::setEdit)
                         applyColor("complete", ColorSettingsStore::setComplete)
 
-                        // UI setting
-                        obj.optString("showNavLabels").takeIf { it.isNotBlank() }?.let {
-                            try {
-                                UiSettingsStore.setShowBottomNavLabelsFlow(ctx, ShowNavBarActions.valueOf(it))
-                                Log.d("ImportSettings", "Set showNavLabels = $it")
-                            } catch (e: Exception) {
-                                Log.e("ImportSettings", "Invalid showNavLabels value: $it", e)
-                            }
-                        }
+
 
                         // Lock settings
                         if (obj.has("lock")) {
@@ -155,7 +143,6 @@ fun ExportImportRow(
                             put("delete", ColorSettingsStore.getDelete(ctx).first())
                             put("edit", ColorSettingsStore.getEdit(ctx).first())
                             put("complete", ColorSettingsStore.getComplete(ctx).first())
-                            put("showNavLabels", showNavBarLabels.name)
                             put("lock", JSONObject().apply {
                                 put("useBiometrics", lock.useBiometrics)
                                 put("useDeviceCredential", lock.useDeviceCredential)

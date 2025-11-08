@@ -58,7 +58,6 @@
     <string name="show_notes_number">Afficher le nombre de notes</string>
     <string name="verification">Vérification</string>
     <string name="appearance">Apparence</string>
-    <string name="show_navigation_bar_labels">Afficher les libellés de la barre de navigation</string>
     <string name="color_selector">Sélecteur de couleur</string>
     <string name="color_custom_mode">Mode de personnalisation des couleurs</string>
     <string name="reset_to_default_colors">Réinitialiser les couleurs par défaut</string>

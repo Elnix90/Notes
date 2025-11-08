@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.settings.stores.PluginsSettingsStore
+import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
@@ -29,6 +30,8 @@ import org.elnix.notes.ui.helpers.TextDivider
 @Composable
 fun PluginsTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
     val allowAlphaLMAccess by PluginsSettingsStore.getAllowAlphaLMAccess(ctx).collectAsState(initial = false)
+
+    val activity = ctx as androidx.fragment.app.FragmentActivity
 
     Column(
         modifier = Modifier
@@ -51,8 +54,23 @@ fun PluginsTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
             state = allowAlphaLMAccess,
             text = stringResource(R.string.alphallm_app),
             onCheck = { newState ->
-                scope.launch {
-                    PluginsSettingsStore.setAllowAlphaLMAccess(ctx, newState)
+                if (newState) {
+                    scope.launch {
+                        BiometricManagerHelper.authenticateUser(
+                            activity = activity,
+                            useBiometrics = true,
+                            useDeviceCredential = true,
+                            title = "Verification",
+                            onSuccess = {
+                                scope.launch {
+                                    PluginsSettingsStore.setAllowAlphaLMAccess(ctx, true)
+                                }
+                            },
+                            onFailure = {}
+                        )
+                    }
+                } else scope.launch {
+                    PluginsSettingsStore.setAllowAlphaLMAccess(ctx, false)
                 }
             }
         )

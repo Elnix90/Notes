@@ -80,7 +80,6 @@ fun SecurityTab(onBack: (() -> Unit)) {
                     },
                     onFailure = {}
                 )
-
             }
         }
 

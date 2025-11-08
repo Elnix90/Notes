@@ -4,16 +4,13 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.database.Cursor
-import android.database.MatrixCursor
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import org.elnix.notes.data.NoteDao
+import kotlinx.coroutines.runBlocking
 import org.elnix.notes.data.AppDatabase
 import org.elnix.notes.data.NoteRepository
-import kotlinx.coroutines.runBlocking
 
 /**
  * ContentProvider for sharing notes with other apps (specifically AlphaLM)
@@ -140,7 +137,7 @@ class NotesContentProvider : ContentProvider() {
      * Check if user has allowed AlphaLM access
      */
     private fun isAccessAllowed(): Boolean {
-        return prefs?.getBoolean("allow_alphallm_access", true) ?: true
+        return prefs?.getBoolean("allow_alphallm_access", false) ?: false
     }
 
     /**

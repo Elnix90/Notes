@@ -4,19 +4,19 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -66,7 +66,6 @@ fun NoteEditorScreen(
 ) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    val scroll = rememberScrollState()
 
     // --- States ---
     var note by remember { mutableStateOf<NoteEntity?>(null) }
@@ -96,6 +95,12 @@ fun NoteEditorScreen(
 
     val currentNote = note ?: return
     val allTags by TagsSettingsStore.getTags(ctx).collectAsState(initial = emptyList())
+
+
+    val showColors by UiSettingsStore.getShowColorDropdownEditor(ctx).collectAsState(initial = false)
+    val showReminders by UiSettingsStore.getShowReminderDropdownEditor(ctx).collectAsState(initial = false)
+    val showTags by UiSettingsStore.getShowTagsDropdownEditor(ctx).collectAsState(initial = false)
+    val showQuick by UiSettingsStore.getShowQuickActionsDropdownEditor(ctx).collectAsState(initial = false)
 
     // --- Save or Exit ---
     fun handleExit() {
@@ -132,136 +137,196 @@ fun NoteEditorScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(scroll)
-            .padding(
-                WindowInsets.systemBars
-                    .asPaddingValues()
-            )
-            .padding(horizontal = 16.dp, vertical = 5.dp),
+            .padding(WindowInsets.systemBars.asPaddingValues())
+            .imePadding(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Title
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text(stringResource(R.string.title)) },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                autoCorrectEnabled = true,
-                keyboardType = KeyboardType.Unspecified
-            ),
-            colors = AppObjectsColors.outlinedTextFieldColors()
-        )
-
-        // Description
-        OutlinedTextField(
-            value = desc,
-            onValueChange = { desc = it },
-            label = { Text(stringResource(R.string.description)) },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                autoCorrectEnabled = true,
-                keyboardType = KeyboardType.Unspecified
-            ),
-            colors = AppObjectsColors.outlinedTextFieldColors()
-        )
-
-        // --- Colors ---
-        val showColors by UiSettingsStore.getShowColorDropdownEditor(ctx)
-            .collectAsState(initial = false)
-        ExpandableSection(
-            title = stringResource(R.string.colors_text_literal),
-            expanded = showColors,
-            onExpand = { scope.launch { UiSettingsStore.setShowColorDropdownEditor(ctx, it) } }
+        LazyColumn (
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 5.dp)
         ) {
-            NotesColorPickerSection(
-                note = currentNote,
-                scope = scope,
-                onBgColorPicked = { c ->
-                    scope.launch { updateNoteBgColor(currentNote.id, vm, Color(c))?.let { note = it } }
-                },
-                onTextColorPicked = { c ->
-                    scope.launch { updateNoteTextColor(currentNote.id, vm, Color(c))?.let { note = it } }
-                },
-                onAutoSwitchToggle = { checked ->
-                    scope.launch { toggleAutoColor(currentNote.id, vm, checked)?.let { note = it } }
-                },
-                onRandomColorClick = {
-                    scope.launch { setRandomColor(currentNote.id, vm, currentNote.autoTextColor)?.let { note = it } }
-                }
-            )
-        }
+            item {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text(stringResource(R.string.title)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        autoCorrectEnabled = true,
+                        keyboardType = KeyboardType.Unspecified
+                    ),
+                    colors = AppObjectsColors.outlinedTextFieldColors()
+                )
+            }
 
-        // --- Reminders ---
-        val showReminders by UiSettingsStore.getShowReminderDropdownEditor(ctx)
-            .collectAsState(initial = false)
+            // Description
+            item {
+                OutlinedTextField(
+                    value = desc,
+                    onValueChange = { desc = it },
+                    label = { Text(stringResource(R.string.description)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        autoCorrectEnabled = true,
+                        keyboardType = KeyboardType.Unspecified
+                    ),
+                    colors = AppObjectsColors.outlinedTextFieldColors()
+                )
+            }
 
-        ExpandableSection(
-            title = stringResource(R.string.reminders),
-            expanded = showReminders,
-            horizontalAlignment = Alignment.Start,
-            onExpand = { scope.launch { UiSettingsStore.setShowReminderDropdownEditor(ctx, it) } }
-        ) {
-            RemindersSection(reminders, currentNote.id, title, vm)
-        }
+            item {// --- Colors ---
 
-        // --- Tags ---
-        val showTags by UiSettingsStore.getShowTagsDropdownEditor(ctx)
-            .collectAsState(initial = false)
-
-        ExpandableSection(
-            title = stringResource(R.string.tags),
-            expanded = showTags,
-            horizontalAlignment = Alignment.Start,
-            onExpand = { scope.launch { UiSettingsStore.setShowTagsDropdownEditor(ctx, it) } }
-        ) {
-            TagsSection(
-                allTags = allTags,
-                noteTagIds = tagIds,
-                scope = scope,
-                onAddTagToNote = { tag ->
-                    if (!tagIds.contains(tag.id)) {
-                        tagIds = tagIds + tag.id
-                        scope.launch(Dispatchers.IO) {
-                            vm.update(currentNote.copy(tagIds = tagIds))
+                ExpandableSection(
+                    title = stringResource(R.string.colors_text_literal),
+                    expanded = showColors,
+                    onExpand = {
+                        scope.launch {
+                            UiSettingsStore.setShowColorDropdownEditor(
+                                ctx,
+                                it
+                            )
                         }
                     }
-                },
-                onRemoveTagFromNote = { tag ->
-                    tagIds = tagIds.filterNot { it == tag.id }
-                    scope.launch(Dispatchers.IO) {
-                        vm.update(currentNote.copy(tagIds = tagIds))
+                ) {
+                    NotesColorPickerSection(
+                        note = currentNote,
+                        scope = scope,
+                        onBgColorPicked = { c ->
+                            scope.launch {
+                                updateNoteBgColor(currentNote.id, vm, Color(c))?.let {
+                                    note = it
+                                }
+                            }
+                        },
+                        onTextColorPicked = { c ->
+                            scope.launch {
+                                updateNoteTextColor(
+                                    currentNote.id,
+                                    vm,
+                                    Color(c)
+                                )?.let { note = it }
+                            }
+                        },
+                        onAutoSwitchToggle = { checked ->
+                            scope.launch {
+                                toggleAutoColor(currentNote.id, vm, checked)?.let {
+                                    note = it
+                                }
+                            }
+                        },
+                        onRandomColorClick = {
+                            scope.launch {
+                                setRandomColor(
+                                    currentNote.id,
+                                    vm,
+                                    currentNote.autoTextColor
+                                )?.let { note = it }
+                            }
+                        }
+                    )
+                }
+            }
+
+            // --- Reminders ---
+
+            item {
+                ExpandableSection(
+                    title = stringResource(R.string.reminders),
+                    expanded = showReminders,
+                    horizontalAlignment = Alignment.Start,
+                    onExpand = {
+                        scope.launch {
+                            UiSettingsStore.setShowReminderDropdownEditor(
+                                ctx,
+                                it
+                            )
+                        }
+                    }
+                ) {
+                    RemindersSection(reminders, currentNote.id, title, vm)
+                }
+            }
+
+            // --- Tags ---
+
+            item {
+                ExpandableSection(
+                    title = stringResource(R.string.tags),
+                    expanded = showTags,
+                    horizontalAlignment = Alignment.Start,
+                    onExpand = {
+                        scope.launch {
+                            UiSettingsStore.setShowTagsDropdownEditor(
+                                ctx,
+                                it
+                            )
+                        }
+                    }
+                ) {
+                    TagsSection(
+                        allTags = allTags,
+                        noteTagIds = tagIds,
+                        scope = scope,
+                        onAddTagToNote = { tag ->
+                            if (!tagIds.contains(tag.id)) {
+                                tagIds = tagIds + tag.id
+                                scope.launch(Dispatchers.IO) {
+                                    vm.update(currentNote.copy(tagIds = tagIds))
+                                }
+                            }
+                        },
+                        onRemoveTagFromNote = { tag ->
+                            tagIds = tagIds.filterNot { it == tag.id }
+                            scope.launch(Dispatchers.IO) {
+                                vm.update(currentNote.copy(tagIds = tagIds))
+                            }
+                        }
+                    )
+                }
+            }
+
+
+            // --- Quick Actions ---
+
+            item {
+                ExpandableSection(
+                    title = stringResource(R.string.quick_actions),
+                    expanded = showQuick,
+                    horizontalAlignment = Alignment.Start,
+                    onExpand = {
+                        scope.launch {
+                            UiSettingsStore.setShowQuickActionsDropdownEditor(
+                                ctx,
+                                it
+                            )
+                        }
+                    }
+                ) {
+                    CompletionToggle(currentNote, currentNote.id, vm) { note = it }
+                }
+            }
+        }
+
+
+        Surface(
+            color = MaterialTheme.colorScheme.background,
+            tonalElevation = 3.dp
+        ) {
+            ValidateCancelButtons(
+                onValidate = { handleExit() },
+                onCancel = {
+                    scope.launch {
+                        if (title.isBlank() && desc.isBlank() && tagIds.isEmpty())
+                            vm.delete(currentNote)
+                        onCancel()
                     }
                 }
             )
         }
-
-
-        // --- Quick Actions ---
-        val showQuick by UiSettingsStore.getShowQuickActionsDropdownEditor(ctx)
-            .collectAsState(initial = false)
-        ExpandableSection(
-            title = stringResource(R.string.quick_actions),
-            expanded = showQuick,
-            horizontalAlignment = Alignment.Start,
-            onExpand = { scope.launch { UiSettingsStore.setShowQuickActionsDropdownEditor(ctx, it) } }
-        ) {
-            CompletionToggle(currentNote, currentNote.id, vm) { note = it }
-        }
-
-        Spacer(Modifier.height(15.dp))
-
-        ValidateCancelButtons(
-            onValidate = { handleExit() },
-            onCancel = {
-                scope.launch {
-                    if (title.isBlank() && desc.isBlank() && tagIds.isEmpty())
-                        vm.delete(currentNote)
-                    onCancel()
-                }
-            }
-        )
     }
 }

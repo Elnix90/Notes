@@ -4,13 +4,13 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
@@ -155,211 +155,285 @@ fun ChecklistEditorScreen(
     DisposableEffect(Unit) { onDispose { handleExit() } }
     BackHandler { handleExit() }
 
-    val reminders by remember(currentNote) {
-        vm.remindersFor(currentNote.id)
-    }.collectAsState(initial = emptyList())
+    val reminders by vm.remindersFor(currentNote.id).collectAsState(initial = emptyList())
 
     val showColorDropdownEditor by UiSettingsStore.getShowColorDropdownEditor(ctx).collectAsState(initial = false)
     val showReminderDropdownEditor by UiSettingsStore.getShowReminderDropdownEditor(ctx).collectAsState(initial = false)
+    val showQuick by UiSettingsStore.getShowQuickActionsDropdownEditor(ctx).collectAsState(initial = false)
+    val showTags by UiSettingsStore.getShowTagsDropdownEditor(ctx).collectAsState(initial = false)
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(
-                WindowInsets.systemBars
-                    .asPaddingValues()
-            )
-            .padding(horizontal = 16.dp, vertical = 5.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(WindowInsets.systemBars.asPaddingValues())
+            .imePadding()
     ) {
-        item {
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text(stringResource(R.string.title)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    autoCorrectEnabled = true,
-                    keyboardType = KeyboardType.Unspecified
-                ),
-                colors = AppObjectsColors.outlinedTextFieldColors()
-            )
-        }
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 5.dp)
+        ) {
+            item {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text(stringResource(R.string.title)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        autoCorrectEnabled = true,
+                        keyboardType = KeyboardType.Unspecified
+                    ),
+                    colors = AppObjectsColors.outlinedTextFieldColors()
+                )
+            }
 
-        item { TextDivider(stringResource(R.string.checklist)) }
+            item { TextDivider(stringResource(R.string.checklist)) }
 
-        item {
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = MaterialTheme.colorScheme.surface,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+            item {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    checklist.forEachIndexed { index, item ->
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                            Checkbox(
-                                checked = item.checked,
-                                onCheckedChange = { checklist[index] = item.copy(checked = it) },
-                                colors = AppObjectsColors.checkboxColors()
-                            )
+                    Column(
+                        modifier = Modifier.padding(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        checklist.forEachIndexed { index, item ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Checkbox(
+                                    checked = item.checked,
+                                    onCheckedChange = {
+                                        checklist[index] = item.copy(checked = it)
+                                    },
+                                    colors = AppObjectsColors.checkboxColors()
+                                )
 
+                                TextField(
+                                    value = item.text,
+                                    onValueChange = { checklist[index] = item.copy(text = it) },
+                                    modifier = Modifier.weight(1f),
+                                    keyboardOptions = KeyboardOptions(
+                                        capitalization = KeyboardCapitalization.Sentences,
+                                        autoCorrectEnabled = true,
+                                        keyboardType = KeyboardType.Unspecified
+                                    ),
+                                    colors = AppObjectsColors.outlinedTextFieldColors(
+                                        backgroundColor = MaterialTheme.colorScheme.surface,
+                                        onBackgroundColor = MaterialTheme.colorScheme.onSurface.adjustBrightness(
+                                            if (item.checked) 0.5f else 1f
+                                        )
+                                    )
+                                )
+
+                                IconButton(onClick = { checklist.removeAt(index) }) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = stringResource(R.string.remove)
+                                    )
+                                }
+                            }
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             TextField(
-                                value = item.text,
-                                onValueChange = { checklist[index] = item.copy(text = it) },
+                                value = pseudoText,
+                                onValueChange = { pseudoText = it },
+                                label = { Text(stringResource(R.string.new_entry)) },
                                 modifier = Modifier.weight(1f),
+                                singleLine = true,
                                 keyboardOptions = KeyboardOptions(
                                     capitalization = KeyboardCapitalization.Sentences,
                                     autoCorrectEnabled = true,
-                                    keyboardType = KeyboardType.Unspecified
+                                    keyboardType = KeyboardType.Unspecified,
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        if (pseudoText.isNotBlank()) {
+                                            checklist.add(ChecklistItem(pseudoText, false))
+                                            pseudoText = ""
+                                        }
+                                    }
                                 ),
                                 colors = AppObjectsColors.outlinedTextFieldColors(
-                                    backgroundColor = MaterialTheme.colorScheme.surface,
-                                    onBackgroundColor = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (item.checked) 0.5f else 1f)
+                                    backgroundColor = MaterialTheme.colorScheme.surface
                                 )
                             )
-
-                            IconButton(onClick = { checklist.removeAt(index) }) {
-                                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.remove))
-                            }
-                        }
-                    }
-
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                        TextField(
-                            value = pseudoText,
-                            onValueChange = { pseudoText = it },
-                            label = { Text(stringResource(R.string.new_entry)) },
-                            modifier = Modifier.weight(1f),
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(
-                                capitalization = KeyboardCapitalization.Sentences,
-                                autoCorrectEnabled = true,
-                                keyboardType = KeyboardType.Unspecified,
-                                imeAction = ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
+                            IconButton(
+                                onClick = {
                                     if (pseudoText.isNotBlank()) {
                                         checklist.add(ChecklistItem(pseudoText, false))
                                         pseudoText = ""
                                     }
-                                }
-                            ),
-                            colors = AppObjectsColors.outlinedTextFieldColors(
-                                backgroundColor = MaterialTheme.colorScheme.surface
-                            )
-                        )
-                        IconButton(
-                            onClick = {
-                                if (pseudoText.isNotBlank()) {
-                                    checklist.add(ChecklistItem(pseudoText, false))
-                                    pseudoText = ""
-                                }
-                            },
-                            enabled = pseudoText.isNotBlank()
-                        ) {
-                            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_item))
+                                },
+                                enabled = pseudoText.isNotBlank()
+                            ) {
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = stringResource(R.string.add_item)
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
 
-        item {
-            ExpandableSection(
-                title = stringResource(R.string.colors_text_literal),
-                expanded = showColorDropdownEditor,
-                onExpand = { scope.launch { UiSettingsStore.setShowColorDropdownEditor(ctx, it) } }
-            ) {
-                NotesColorPickerSection(
-                    note,
-                    scope,
-                    onBgColorPicked = { colorInt ->
-                        scope.launch { updateNoteBgColor(currentNote.id, vm, Color(colorInt))?.let { note = it } }
-                    },
-                    onTextColorPicked = { colorInt ->
-                        scope.launch { updateNoteTextColor(currentNote.id, vm, Color(colorInt))?.let { note = it } }
-                    },
-                    onAutoSwitchToggle = { checked ->
-                        scope.launch { toggleAutoColor(currentNote.id, vm, checked)?.let { note = it } }
-                    },
-                    onRandomColorClick = {
-                        scope.launch { setRandomColor(currentNote.id, vm, note?.autoTextColor ?: true)?.let { note = it } }
+            item {
+                ExpandableSection(
+                    title = stringResource(R.string.colors_text_literal),
+                    expanded = showColorDropdownEditor,
+                    onExpand = {
+                        scope.launch {
+                            UiSettingsStore.setShowColorDropdownEditor(
+                                ctx,
+                                it
+                            )
+                        }
                     }
-                )
+                ) {
+                    NotesColorPickerSection(
+                        note,
+                        scope,
+                        onBgColorPicked = { colorInt ->
+                            scope.launch {
+                                updateNoteBgColor(
+                                    currentNote.id,
+                                    vm,
+                                    Color(colorInt)
+                                )?.let { note = it }
+                            }
+                        },
+                        onTextColorPicked = { colorInt ->
+                            scope.launch {
+                                updateNoteTextColor(
+                                    currentNote.id,
+                                    vm,
+                                    Color(colorInt)
+                                )?.let { note = it }
+                            }
+                        },
+                        onAutoSwitchToggle = { checked ->
+                            scope.launch {
+                                toggleAutoColor(
+                                    currentNote.id,
+                                    vm,
+                                    checked
+                                )?.let { note = it }
+                            }
+                        },
+                        onRandomColorClick = {
+                            scope.launch {
+                                setRandomColor(
+                                    currentNote.id,
+                                    vm,
+                                    note?.autoTextColor ?: true
+                                )?.let { note = it }
+                            }
+                        }
+                    )
+                }
             }
-        }
 
-        item {
-            ExpandableSection(
-                title = stringResource(R.string.reminders),
-                expanded = showReminderDropdownEditor,
-                horizontalAlignment = Alignment.Start,
-                onExpand = { scope.launch { UiSettingsStore.setShowReminderDropdownEditor(ctx, it) } }
-            ) {
+            item {
+                ExpandableSection(
+                    title = stringResource(R.string.reminders),
+                    expanded = showReminderDropdownEditor,
+                    horizontalAlignment = Alignment.Start,
+                    onExpand = {
+                        scope.launch {
+                            UiSettingsStore.setShowReminderDropdownEditor(
+                                ctx,
+                                it
+                            )
+                        }
+                    }
+                ) {
                     RemindersSection(reminders, currentNote.id, title, vm)
+                }
             }
-        }
 
-        item {
-            // --- Tags ---
-            val showTags by UiSettingsStore.getShowTagsDropdownEditor(ctx)
-                .collectAsState(initial = false)
+            item {
+                // --- Tags ---
 
-            ExpandableSection(
-                title = stringResource(R.string.tags),
-                expanded = showTags,
-                horizontalAlignment = Alignment.Start,
-                onExpand = { scope.launch { UiSettingsStore.setShowTagsDropdownEditor(ctx, it) } }
-            ) {
-                TagsSection(
-                    allTags = allTags,
-                    noteTagIds = tagIds,
-                    scope = scope,
-                    onAddTagToNote = { tag ->
-                        if (!tagIds.contains(tag.id)) {
-                            tagIds = tagIds + tag.id
+
+                ExpandableSection(
+                    title = stringResource(R.string.tags),
+                    expanded = showTags,
+                    horizontalAlignment = Alignment.Start,
+                    onExpand = {
+                        scope.launch {
+                            UiSettingsStore.setShowTagsDropdownEditor(
+                                ctx,
+                                it
+                            )
+                        }
+                    }
+                ) {
+                    TagsSection(
+                        allTags = allTags,
+                        noteTagIds = tagIds,
+                        scope = scope,
+                        onAddTagToNote = { tag ->
+                            if (!tagIds.contains(tag.id)) {
+                                tagIds = tagIds + tag.id
+                                scope.launch(Dispatchers.IO) {
+                                    vm.update(currentNote.copy(tagIds = tagIds))
+                                }
+                            }
+                        },
+                        onRemoveTagFromNote = { tag ->
+                            tagIds = tagIds.filterNot { it == tag.id }
                             scope.launch(Dispatchers.IO) {
                                 vm.update(currentNote.copy(tagIds = tagIds))
                             }
                         }
-                    },
-                    onRemoveTagFromNote = { tag ->
-                        tagIds = tagIds.filterNot { it == tag.id }
-                        scope.launch(Dispatchers.IO) {
-                            vm.update(currentNote.copy(tagIds = tagIds))
+                    )
+                }
+            }
+
+            item {
+                // --- Quick Actions ---
+                ExpandableSection(
+                    title = stringResource(R.string.quick_actions),
+                    expanded = showQuick,
+                    horizontalAlignment = Alignment.Start,
+                    onExpand = {
+                        scope.launch {
+                            UiSettingsStore.setShowQuickActionsDropdownEditor(
+                                ctx,
+                                it
+                            )
                         }
                     }
-                )
+                ) {
+                    CompletionToggle(currentNote, currentNote.id, vm) { note = it }
+                }
             }
         }
 
-        item {
-            // --- Quick Actions ---
-            val showQuick by UiSettingsStore.getShowQuickActionsDropdownEditor(ctx)
-                .collectAsState(initial = false)
-            ExpandableSection(
-                title = stringResource(R.string.quick_actions),
-                expanded = showQuick,
-                horizontalAlignment = Alignment.Start,
-                onExpand = { scope.launch { UiSettingsStore.setShowQuickActionsDropdownEditor(ctx, it) } }
-            ) {
-                CompletionToggle(currentNote, currentNote.id, vm) { note = it }
-            }
-        }
 
-        item {
-            Spacer(Modifier.height(15.dp))
+
+        Surface(
+            color = MaterialTheme.colorScheme.background,
+            tonalElevation = 3.dp
+        ) {
             ValidateCancelButtons(
                 onValidate = { handleExit() },
                 onCancel = {
                     scope.launch {
-                        val cleanedChecklist = checklist.map { it.text.trim() }.filter { it.isNotBlank() }
+                        val cleanedChecklist =
+                            checklist.map { it.text.trim() }.filter { it.isNotBlank() }
                         if (title.isBlank() && cleanedChecklist.isEmpty()) {
                             note?.let { vm.delete(it) }
                         }

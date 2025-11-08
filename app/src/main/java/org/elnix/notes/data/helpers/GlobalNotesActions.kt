@@ -152,7 +152,6 @@ fun GlobalActionIcon(
             )
             else -> Modifier.clickable { onClick(action) }
         }
-
     }
 
     // Determine visual mode: minimal if scale < 1f

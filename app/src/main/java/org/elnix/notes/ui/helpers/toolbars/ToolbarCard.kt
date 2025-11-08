@@ -1,16 +1,29 @@
 package org.elnix.notes.ui.helpers.toolbars
 
 import android.content.Context
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,6 +39,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
@@ -39,6 +55,8 @@ import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.tags.TagBubble
 import org.elnix.notes.ui.helpers.tags.TagEditorDialog
+import org.elnix.notes.ui.theme.AppObjectsColors
+import org.elnix.notes.ui.theme.adjustBrightness
 
 
 @Composable
@@ -46,10 +64,13 @@ fun ToolbarCard(
     ctx: Context,
     items: List<ToolbarItemState>,
     scrollState: ScrollState,
+    isSearchExpanded: Boolean,
+    height: Dp,
     color: Color,
     ghosted: Boolean,
     scale: Float,
     floatingToolbar: Boolean,
+    onSearchChange: ((String) -> Unit)? = null,
     onActionClick: (GlobalNotesActions, ClickType, TagItem?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -59,11 +80,12 @@ fun ToolbarCard(
     var editTag by remember { mutableStateOf<TagItem?>(null) }
     var showEditor by remember { mutableStateOf(false) }
     var initialTag by remember { mutableStateOf<TagItem?>(null) }
-
+    var searchText by remember { mutableStateOf("") }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .height(height)
             .graphicsLayer {
                 this.scaleX = scale
                 this.scaleY = scale
@@ -76,12 +98,13 @@ fun ToolbarCard(
             ),
         shape = if (floatingToolbar) { CircleShape } else  RectangleShape,
         colors = CardDefaults.cardColors(containerColor = color),
+        border = BorderStroke(2.dp, color.adjustBrightness(3f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
     ) {
         Row(
             modifier = Modifier
                 .padding(8.dp)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .then(
                     if (floatingToolbar) {
                         Modifier.clip(CircleShape)
@@ -100,6 +123,7 @@ fun ToolbarCard(
                     GlobalNotesActions.SPACER1, GlobalNotesActions.SPACER2, GlobalNotesActions.SPACER3 -> {
                         Spacer(modifier = Modifier.weight(1f))
                     }
+
                     GlobalNotesActions.TAGS -> {
                         // --- Tag bubbles ---
                         allTags.forEach { tag ->
@@ -107,11 +131,85 @@ fun ToolbarCard(
                                 tag = tag,
                                 selected = tag.selected,
                                 onClick = { onActionClick(action, ClickType.NORMAL, tag) },
-                                onLongClick =  { onActionClick(action, ClickType.LONG, tag) },
-                                onDelete =  { onActionClick(action, ClickType.DOUBLE, tag) },
+                                onLongClick = { onActionClick(action, ClickType.LONG, tag) },
+                                onDelete = { onActionClick(action, ClickType.DOUBLE, tag) },
                             )
                         }
                     }
+                    GlobalNotesActions.SEARCH -> {
+                        if (!isSearchExpanded) {
+                            GlobalActionIcon(
+                                ctx = ctx,
+                                action = action,
+                                ghosted = ghosted,
+                                scale = scale,
+                                showButtonLabel = item.showLabel
+                            ) { onActionClick(action, ClickType.NORMAL, null) }
+                        } else {
+                            val searchBoxColor = color.adjustBrightness(0.8f)
+
+                            TextField(
+                                value = searchText,
+                                onValueChange = { searchText = it; onSearchChange?.invoke(it) },
+                                placeholder = { Text(stringResource(R.string.search)) },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(
+                                    capitalization = KeyboardCapitalization.Sentences,
+                                    autoCorrectEnabled = true,
+                                    keyboardType = KeyboardType.Unspecified
+                                ),
+                                trailingIcon = {
+                                    GlobalActionIcon(
+                                        ctx,
+                                        GlobalNotesActions.SEARCH,
+                                        showButtonLabel = false
+                                    ) {
+                                        onActionClick(
+                                            GlobalNotesActions.SEARCH,
+                                            ClickType.NORMAL,
+                                            null
+                                        )
+                                    }
+                                },
+                                leadingIcon = {
+                                    if (!searchText.isEmpty()) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = stringResource(R.string.close),
+                                            modifier = Modifier
+                                                .clip(CircleShape)
+                                                .padding(5.dp)
+                                                .background(searchBoxColor)
+                                                .clickable { searchText = "" },
+                                            tint = MaterialTheme.colorScheme.error.copy(0.7f)
+                                        )
+                                    } else
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = stringResource(R.string.back),
+                                            modifier = Modifier
+                                                .clip(CircleShape)
+                                                .padding(5.dp)
+                                                .background(searchBoxColor)
+                                                .clickable {
+                                                    onActionClick(
+                                                        GlobalNotesActions.SEARCH,
+                                                        ClickType.NORMAL,
+                                                        null
+                                                    )
+                                                },
+                                            tint = MaterialTheme.colorScheme.outline.copy(0.7f)
+                                        )
+                                },
+                                colors = AppObjectsColors.outlinedTextFieldColors(
+                                    backgroundColor = searchBoxColor,
+                                    removeBorder = true
+                                ),
+                                shape = CircleShape
+                            )
+                        }
+                    }
+
                     else -> {
                         GlobalActionIcon(
                             ctx = ctx,

@@ -156,4 +156,5 @@
     <string name="floating_toolbars">Floating Toolbars</string>
     <string name="back">Back</string>
     <string name="no_notes_show_due_to_filters">No notes shown due to filters rules</string>
+    <string name="reorder_function_doesnt_work_yet">Reorder function doesn\'t work yet</string>
 </resources>

@@ -1,5 +1,6 @@
 package org.elnix.notes
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
@@ -51,9 +53,7 @@ import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.AddNoteFab
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.tags.TagEditorDialog
-import org.elnix.notes.ui.helpers.toolbars.QuickActionsToolbar
-import org.elnix.notes.ui.helpers.toolbars.SelectToolbar
-import org.elnix.notes.ui.helpers.toolbars.TagsToolbar
+import org.elnix.notes.ui.helpers.toolbars.UnifiedToolbar
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Stable
@@ -93,6 +93,10 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     // other options
     val floatingToolbars by UiSettingsStore.getFloatingToolbars(ctx).collectAsState(initial = true)
 
+    // Search options
+    var isSearchExpandedQuickActions by remember { mutableStateOf(false) }
+    var isSearchExpandedTags by remember { mutableStateOf(false) }
+    var isSearchExpandedSelect by remember { mutableStateOf(false) }
 
     // User actions
     fun onNoteLongClick(note: NoteEntity) {
@@ -118,14 +122,19 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    fun onGlobalToolbarAction(action: GlobalNotesActions, clickType: ClickType, tagItem: TagItem?) {
+    fun onGlobalToolbarAction(action: GlobalNotesActions, clickType: ClickType, tagItem: TagItem?, toolbar: ToolBars) {
         when (action) {
             GlobalNotesActions.ADD_NOTE -> showAddNoteMenu = true
-            GlobalNotesActions.SEARCH -> return // TODO()
-            GlobalNotesActions.SORT -> return //TODO()
+            GlobalNotesActions.SEARCH -> when (toolbar) {
+                ToolBars.SELECT -> isSearchExpandedSelect = !isSearchExpandedSelect
+                ToolBars.TAGS -> isSearchExpandedTags = !isSearchExpandedTags
+                ToolBars.QUICK_ACTIONS -> isSearchExpandedQuickActions = !isSearchExpandedQuickActions
+                else ->  return
+            }
+            GlobalNotesActions.SORT -> return //TODO
             GlobalNotesActions.SETTINGS -> navController.navigate(Routes.Settings.ROOT)
             GlobalNotesActions.DESELECT_ALL -> onGroupAction(NotesActions.SELECT)
-            GlobalNotesActions.REORDER -> isReorderMode = !isReorderMode
+            GlobalNotesActions.REORDER -> Toast.makeText(ctx, ctx.getString(R.string.reorder_function_doesnt_work_yet), Toast.LENGTH_SHORT).show() /*isReorderMode = !isReorderMode*/ // TODO
             GlobalNotesActions.EDIT_NOTE -> onGroupAction(NotesActions.EDIT)
             GlobalNotesActions.DELETE_NOTE -> onGroupAction(NotesActions.DELETE)
             GlobalNotesActions.COMPLETE_NOTE -> onGroupAction(NotesActions.COMPLETE)
@@ -191,31 +200,37 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         val toolbarComposable: (@Composable () -> Unit)? = when (bar.toolbar) {
             ToolBars.SELECT -> if (isMultiSelectMode) {
                 {
-                    SelectToolbar(
+                    UnifiedToolbar(
                         ctx,
+                        toolBars = ToolBars.SELECT,
                         scrollState = rememberScrollState(),
+                        isSearchExpanded = isSearchExpandedSelect,
                         floatingToolbar = floatingToolbars
-                    ) { action, clickType, tagItem -> onGlobalToolbarAction(action, clickType, tagItem) }
+                    ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
             }  else null
 
             ToolBars.TAGS -> {
                 {
-                    TagsToolbar(
+                    UnifiedToolbar(
                         ctx = ctx,
+                        toolBars = ToolBars.TAGS,
                         scrollState = rememberScrollState(),
+                        isSearchExpanded = isSearchExpandedTags,
                         floatingToolbar = floatingToolbars
-                    ) { action, clickType, tagItem -> onGlobalToolbarAction(action, clickType, tagItem) }
+                    ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
             }
 
             ToolBars.QUICK_ACTIONS -> {
                 {
-                    QuickActionsToolbar(
+                    UnifiedToolbar(
                         ctx = ctx,
+                        toolBars = ToolBars.QUICK_ACTIONS,
                         scrollState = rememberScrollState(),
+                        isSearchExpanded = isSearchExpandedQuickActions,
                         floatingToolbar = floatingToolbars
-                    ) { action, clickType, tagItem -> onGlobalToolbarAction(action, clickType, tagItem) }
+                    ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
             }
             ToolBars.SEPARATOR -> null
@@ -274,10 +289,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(
-                WindowInsets.systemBars
-                    .asPaddingValues()
-            )
+            .padding(WindowInsets.systemBars.asPaddingValues())
+            .imePadding()
     ) {
         if (notes.isEmpty()) {
             Box(
@@ -364,7 +377,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                     } else Modifier
                 )
             ,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(if (floatingToolbars) 8.dp else 0.dp)
         ) {
             topBars.forEach { it() }
         }
@@ -379,7 +392,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         Modifier.padding(horizontal = 16.dp)
                     } else Modifier
                 ),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(if (floatingToolbars) 8.dp else 0.dp)
         ) {
             bottomBars.forEach { it() }
         }

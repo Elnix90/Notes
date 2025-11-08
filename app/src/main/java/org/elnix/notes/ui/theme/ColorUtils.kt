@@ -156,7 +156,8 @@ object AppObjectsColors {
     @Composable
     fun outlinedTextFieldColors(
         backgroundColor: Color? = null,
-        onBackgroundColor: Color? = null
+        onBackgroundColor: Color? = null,
+        removeBorder: Boolean = false
     ): TextFieldColors {
         val colors = MaterialTheme.colorScheme
         return OutlinedTextFieldDefaults.colors(
@@ -173,10 +174,10 @@ object AppObjectsColors {
             cursorColor = colors.primary,
             errorCursorColor = colors.error,
 
-            focusedBorderColor = colors.primary,
-            unfocusedBorderColor = colors.outline,
-            disabledBorderColor = colors.surfaceVariant,
-            errorBorderColor = colors.error,
+            focusedBorderColor = if (!removeBorder) colors.primary else Color.Transparent,
+            unfocusedBorderColor = if (!removeBorder) colors.outline else Color.Transparent,
+            disabledBorderColor = if (!removeBorder) colors.outline.copy(0.5f) else Color.Transparent,
+            errorBorderColor = if (!removeBorder) colors.error else Color.Transparent,
 
             focusedLeadingIconColor = colors.primary,
             unfocusedLeadingIconColor = colors.onSurfaceVariant,

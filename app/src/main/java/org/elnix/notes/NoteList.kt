@@ -3,9 +3,8 @@ package org.elnix.notes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -72,6 +71,7 @@ fun NotesList(
 
     LazyColumn(
         state = reorderState.listState,
+        contentPadding = PaddingValues(top = topBarsHeight + 8.dp, bottom = bottomBarsHeight + 8.dp),
         modifier = Modifier
             .fillMaxSize()
             .then(
@@ -83,9 +83,6 @@ fun NotesList(
             ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Dummy box to allow scroll until notes aren't under the floating toolbars
-        item { Box(Modifier.height(topBarsHeight)) }
-
         // Show notes number under the pseudo box
         item { if (notesNumberText != null) {
             TextDivider(notesNumberText, Modifier.padding(horizontal = 16.dp))
@@ -122,6 +119,5 @@ fun NotesList(
                 )
             }
         }
-        item { Box(Modifier.height(bottomBarsHeight)) }
     }
 }

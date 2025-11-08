@@ -11,21 +11,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
-import org.elnix.notes.data.settings.ShowNavBarActions
-import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowBottomNavLabelsFlow
 import org.elnix.notes.ui.helpers.ExportImportRow
 import org.elnix.notes.ui.helpers.NotesExportImportRow
 import org.elnix.notes.ui.helpers.SettingsTitle
 
 @Composable
 fun BackupTab(ctx: Context, onBack: (() -> Unit)) {
-    val showNavLabels by getShowBottomNavLabelsFlow(ctx).collectAsState(initial = ShowNavBarActions.ALWAYS)
 
     Column(
         modifier = Modifier
@@ -40,7 +35,7 @@ fun BackupTab(ctx: Context, onBack: (() -> Unit)) {
     ) {
         SettingsTitle(title = stringResource(R.string.verification), onBack = onBack)
 
-        ExportImportRow(showNavLabels)
+        ExportImportRow()
         NotesExportImportRow(ctx)
 
     }

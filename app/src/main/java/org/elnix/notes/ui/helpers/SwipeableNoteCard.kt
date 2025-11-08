@@ -159,7 +159,6 @@ fun SwipeableNoteCard(
             isReorderMode = isReorderMode,
             scale = scale,
             elevation = elevation,
-            bgColor = bgColor,
             isDragging = isDragging,
             reorderState = reorderState,
             onClick = { onNoteClick(note) },

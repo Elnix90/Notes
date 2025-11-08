@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -62,7 +61,6 @@ fun NoteCard(
     isReorderMode: Boolean,
     scale: Float,
     elevation: Dp,
-    bgColor: Color,
     isDragging: Boolean,
     reorderState: ReorderableLazyListState,
     onClick: () -> Unit,
@@ -89,9 +87,10 @@ fun NoteCard(
             .padding(horizontal = 12.dp)
             .fillMaxWidth()
             .scale(scale)
-            .background(bgColor, RoundedCornerShape(12.dp)),
+            .background(note.bgColor, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(elevation)
+        elevation = CardDefaults.cardElevation(elevation),
+        colors = CardDefaults.cardColors(containerColor = note.bgColor)
     ) {
         Row(
             modifier = Modifier
@@ -142,7 +141,9 @@ fun NoteCard(
                 Text(
                     text = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(note.createdAt),
                     style = MaterialTheme.typography.bodySmall,
-                    color = note.txtColor.copy(alpha = 0.6f)
+                    color = note.txtColor.copy(
+                        alpha = if (note.isCompleted) 0.3f else 0.6f
+                    )
                 )
 
                 Spacer(Modifier.height(6.dp))

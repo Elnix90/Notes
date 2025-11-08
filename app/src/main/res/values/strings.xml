@@ -157,4 +157,8 @@
     <string name="back">Back</string>
     <string name="no_notes_show_due_to_filters">No notes shown due to filters rules</string>
     <string name="reorder_function_doesnt_work_yet">Reorder function doesn\'t work yet</string>
+    <string name="plugins">Plugins</string>
+    <string name="connected_apps">Connected Apps</string>
+    <string name="alphallm_app">Allow AlphaLM App Access</string>
+    <string name="alphallm_access_description">Allow the AlphaLM app to search and access your notes</string>
 </resources>

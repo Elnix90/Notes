@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DashboardCustomize
+import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Shield
@@ -60,6 +61,7 @@ import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.settings.BackupTab
 import org.elnix.notes.ui.settings.CustomisationTab
+import org.elnix.notes.ui.settings.PluginsTab
 import org.elnix.notes.ui.settings.RemindersTab
 import org.elnix.notes.ui.settings.appearance.AppearanceTab
 import org.elnix.notes.ui.settings.appearance.ColorSelectorTab
@@ -144,6 +146,10 @@ fun SettingsListScreen(navController: NavController) {
                 }
             )
 
+            SettingsItem(
+                title = stringResource(R.string.plugins),
+                icon = Icons.Default.Extension
+            ) { navController.navigate(Routes.Settings.PLUGINS) }
 
             if (isDebugModeEnabled) {
                 SettingsItem(
@@ -332,6 +338,15 @@ fun BackupSettingsScreen(navController: NavController) {
 @Composable
 fun LanguageSettingsScreen(navController: NavController) {
     LanguageTab {
+        navController.popBackStack()
+    }
+}
+
+@Composable
+fun PluginsSettingsScreen(navController: NavController) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    PluginsTab(ctx, scope) {
         navController.popBackStack()
     }
 }

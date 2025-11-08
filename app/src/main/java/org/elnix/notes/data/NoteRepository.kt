@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 class NoteRepository(private val dao: NoteDao) {
     fun observeAll(): Flow<List<NoteEntity>> = dao.observeAll()
 
+    suspend fun getAllNotes(): List<NoteEntity> = dao.getAll()
+
     suspend fun getById(id: Long): NoteEntity? = dao.getById(id)
 
     suspend fun upsert(note: NoteEntity): Long {

@@ -158,4 +158,8 @@
     <string name="reorder_function_doesnt_work_yet">Reorder function doesn\'t work yet</string>
     <string name="search_not_found">Search not found in notes</string>
     <string name="clear_search">Clear Search</string>
+    <string name="plugins">Plugins</string>
+    <string name="connected_apps">Connected Apps</string>
+    <string name="alphallm_app">Allow AlphaLM App Access</string>
+    <string name="alphallm_access_description">Allow the AlphaLM app to search and access your notes</string>
 </resources>

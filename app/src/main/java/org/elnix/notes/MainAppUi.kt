@@ -37,6 +37,7 @@ object Routes {
         const val BACKUP = "settings/backup"
         const val DEBUG = "settings/debug"
         const val LANGUAGE = "settings/language"
+        const val PLUGINS = "settings/plugins"
 
         object DebugSub {
             const val REMINDERS = "settings/debug/reminders"
@@ -151,6 +152,7 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteV
         composable(Routes.Settings.SECURITY) { SecuritySettingsScreen(navController) }
         composable(Routes.Settings.BACKUP) { BackupSettingsScreen(navController) }
         composable(Routes.Settings.LANGUAGE) { LanguageSettingsScreen(navController) }
+        composable(Routes.Settings.PLUGINS) { PluginsSettingsScreen(navController) }
 
         composable(Routes.Settings.DEBUG) { DebugSettingsScreen(navController) }
         // Debug sub-settings

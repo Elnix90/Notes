@@ -1,0 +1,18 @@
+"""
+Outputs all images from the screenshots folder in a single row for README.
+"""
+
+
+from pathlib import Path
+
+FOLDER = Path("/home/elnix/IdeaProjects/Notes/screenshots")
+
+images: list[str] = []
+for file in sorted(FOLDER.iterdir()):
+    if file.suffix.lower() in (".png", ".jpg", ".jpeg", ".gif"):
+        folder_name = FOLDER.name
+        alt_text = file.stem.replace("_", " ").capitalize()
+        images.append(f'<img src="{folder_name}/{file.name}" alt="{alt_text}" />')
+
+
+print(" ".join(images))

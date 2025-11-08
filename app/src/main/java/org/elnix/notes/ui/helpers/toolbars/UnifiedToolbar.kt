@@ -39,7 +39,7 @@ fun UnifiedToolbar(
         items = toolbarItems,
         scrollState = scrollState,
         isSearchExpanded = isSearchExpanded,
-        height = 75.dp,
+        height = 80.dp,
         color = color,
         ghosted = ghosted,
         scale = scale,

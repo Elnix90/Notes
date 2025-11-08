@@ -189,6 +189,13 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
+    fun clearSearchFilters() {
+        searchText = ""
+        isSearchExpandedTags = false
+        isSearchExpandedSelect = false
+        isSearchExpandedQuickActions = false
+    }
+
     LaunchedEffect(Unit) { vm.deleteAllEmptyNotes() }
 
     BackHandler {
@@ -199,6 +206,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 isMultiSelectMode = false
             }
             isReorderMode -> isReorderMode = false
+            isSearchExpandedQuickActions || isSearchExpandedTags || isSearchExpandedSelect -> clearSearchFilters()
             else -> navController.popBackStack()
         }
     }
@@ -259,8 +267,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    val topBarHeight = (75 * topBars.size).dp
-    val bottomBarHeight = (75 * bottomBars.size).dp
+    val topBarHeight = (80 * topBars.size).dp
+    val bottomBarHeight = (85 * bottomBars.size).dp
 
     var notesNumberText: String? = null
     if (showNotesNumber) {
@@ -364,12 +372,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         text = stringResource(R.string.clear_search),
                         style = MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.Underline),
                         color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.clickable {
-                            searchText = ""
-                            isSearchExpandedTags = false
-                            isSearchExpandedSelect = false
-                            isSearchExpandedQuickActions = false
-                        }
+                        modifier = Modifier.clickable { clearSearchFilters() }
                     )
                 }
             }

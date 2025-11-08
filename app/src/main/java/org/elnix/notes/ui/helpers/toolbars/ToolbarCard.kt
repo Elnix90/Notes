@@ -90,12 +90,7 @@ fun ToolbarCard(
                 this.scaleX = scale
                 this.scaleY = scale
             }
-            .alpha(if (ghosted) 0.6f else 1f)
-            .then(
-                if (floatingToolbar) {
-                    Modifier.padding(horizontal = 8.dp)
-                } else Modifier
-            ),
+            .alpha(if (ghosted) 0.6f else 1f),
         shape = if (floatingToolbar) { CircleShape } else  RectangleShape,
         colors = CardDefaults.cardColors(containerColor = color),
         border = BorderStroke(2.dp, color.adjustBrightness(3f)),
@@ -125,7 +120,6 @@ fun ToolbarCard(
                     }
 
                     GlobalNotesActions.TAGS -> {
-                        // --- Tag bubbles ---
                         allTags.forEach { tag ->
                             TagBubble(
                                 tag = tag,
@@ -159,19 +153,6 @@ fun ToolbarCard(
                                     autoCorrectEnabled = true,
                                     keyboardType = KeyboardType.Unspecified
                                 ),
-                                trailingIcon = {
-                                    GlobalActionIcon(
-                                        ctx,
-                                        GlobalNotesActions.SEARCH,
-                                        showButtonLabel = false
-                                    ) {
-                                        onActionClick(
-                                            GlobalNotesActions.SEARCH,
-                                            ClickType.NORMAL,
-                                            null
-                                        )
-                                    }
-                                },
                                 leadingIcon = {
                                     if (!searchText.isEmpty()) {
                                         Icon(
@@ -181,7 +162,7 @@ fun ToolbarCard(
                                                 .clip(CircleShape)
                                                 .padding(5.dp)
                                                 .background(searchBoxColor)
-                                                .clickable { searchText = "" },
+                                                .clickable { searchText = ""; onSearchChange?.invoke("") },
                                             tint = MaterialTheme.colorScheme.error.copy(0.7f)
                                         )
                                     } else

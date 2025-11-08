@@ -201,6 +201,7 @@ fun GlobalActionIcon(
                             style = MaterialTheme.typography.labelMedium
                         )
                     }
+                    Spacer(Modifier.width(6.dp))
                 }
             }
         }

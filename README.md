@@ -1,16 +1,16 @@
-# 📝 Notes — Android Notes App
+# 📝 Notes — Abndroid Notes App
 
-**Notes** is a modern, privacy-focused Android note-taking app built with **Jetpack Compose** and **Material 3**.  
+Modern, privacy-focused Android note-taking app built with **Jetpack Compose** and **Material 3**.  
 
 ---
 
 ## ✨ Features
 
 - 🗒️ **Rich note-taking**
-- 🎨 **Beautiful customizable UI**
+- 🎨 **Fully customizable UI**
 - 🔔 **Reminders**
 - 🔐 **Security (Biometrics and/or PIN)**
-- ☁️ **Backup & restore**
+[//]: # (- ☁️ **Backup & restore**)
 - 💾 **Fully offline (cannot connect to internet)**
 
 ---
@@ -22,18 +22,19 @@
 * [ ] Note attachments (images, audio)
 * [ ] Notes reordering
 * [ ] Notes resizable
-* [ ] Custom Notes colors
-* [ ] Search & tags
+* [x] Custom Notes colors
+* [x] Search & tags
 * [ ] Encrypted Notes database
 * [ ] Backup encryption
 * [x] Translations
 * [ ] Add due date
 * [ ] Show how many days / hours / min left
+* [ ] Show note detail
 ---
 
 ## 🤝 Contributing
 
-Pull requests are welcome!
+Pull requests are **welcome**!
 
 Steps:
 

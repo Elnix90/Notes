@@ -56,7 +56,7 @@ fun neededCLickTypeForAction (action: GlobalNotesActions): List<ClickType>? = wh
     GlobalNotesActions.EDIT_NOTE -> listOf(ClickType.NORMAL)
     GlobalNotesActions.DELETE_NOTE -> listOf(ClickType.NORMAL)
     GlobalNotesActions.COMPLETE_NOTE -> listOf(ClickType.NORMAL)
-    GlobalNotesActions.TAG_FILTER -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.TAG_FILTER -> listOf(ClickType.NORMAL, ClickType.LONG)
     GlobalNotesActions.ADD_TAG -> listOf(ClickType.NORMAL)
     GlobalNotesActions.TAGS -> listOf(ClickType.NORMAL)
     GlobalNotesActions.SPACER1,
@@ -108,7 +108,7 @@ fun globalActionName(ctx: Context, action: GlobalNotesActions): String = when (a
     GlobalNotesActions.EDIT_NOTE -> ctx.getString(R.string.edit)
     GlobalNotesActions.DELETE_NOTE -> ctx.getString(R.string.delete)
     GlobalNotesActions.COMPLETE_NOTE -> ctx.getString(R.string.complete)
-    GlobalNotesActions.TAG_FILTER -> ctx.getString(R.string.reset_filter)
+    GlobalNotesActions.TAG_FILTER -> ctx.getString(R.string.reset_filters)
     GlobalNotesActions.ADD_TAG -> ctx.getString(R.string.add_tag)
     else -> ctx.getString(R.string.spacer)
 }

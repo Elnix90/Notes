@@ -2,6 +2,7 @@ package org.elnix.notes
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
@@ -78,7 +80,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     // Which notes to show is dependent on tag selector
     val showTagSelector = toolbars.any { it.toolbar == ToolBars.TAGS && it.enabled }
     val notesToShow =
-        if (enabledTagIds.size == allTags.size || !showTagSelector) notes
+        if ( !showTagSelector || enabledTagIds.size == allTags.size ) notes
         else notes.filter { note -> note.tagIds.any { it in enabledTagIds } }
 
     // Tags things
@@ -288,6 +290,29 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                     color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.5f),
                     textAlign = TextAlign.Center
                 )
+            }
+        } else if (notesToShow.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(15.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.no_notes_show_due_to_filters),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.7f),
+                    )
+
+                    Text(
+                        text = stringResource(R.string.reset_filters),
+                        style = MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.Underline),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.clickable { scope.launch { TagsSettingsStore.setAllTagsSelected(ctx, true) } }
+                    )
+                }
             }
         } else {
             Column(

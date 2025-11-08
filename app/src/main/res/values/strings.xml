@@ -136,7 +136,7 @@
     <string name="show_tag_selector">Show Tag selector</string>
     <string name="show_tags_in_notes">Show Tags in notes</string>
     <string name="filtered_bote_number">Filtered note number</string>
-    <string name="reset_filter">Reset filter</string>
+    <string name="reset_filters">Reset filters</string>
     <string name="multi_select_toolbar_bottom">Select toolbar bottom</string>
     <string name="multi_select_toolbar_top">Select toolbar top</string>
     <string name="toolbars">Toolbars</string>
@@ -155,4 +155,5 @@
     <string name="show_search_text">Show Search text</string>
     <string name="floating_toolbars">Floating Toolbars</string>
     <string name="back">Back</string>
+    <string name="no_notes_show_due_to_filters">No notes shown due to filters rules</string>
 </resources>

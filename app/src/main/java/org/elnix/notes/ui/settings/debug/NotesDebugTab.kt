@@ -24,7 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.data.AppDatabase
 import org.elnix.notes.ui.NoteViewModel
-import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.theme.AppObjectsColors

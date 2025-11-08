@@ -16,7 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable

@@ -11,16 +11,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
@@ -34,7 +31,6 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Update
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +43,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -56,9 +51,11 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
-import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
+import org.elnix.notes.ui.helpers.settings.ContributorItem
+import org.elnix.notes.ui.helpers.settings.SettingsItem
+import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.settings.BackupTab
 import org.elnix.notes.ui.settings.CustomisationTab
 import org.elnix.notes.ui.settings.PluginsTab
@@ -71,7 +68,6 @@ import org.elnix.notes.ui.settings.debug.OtherDebugTab
 import org.elnix.notes.ui.settings.debug.RemindersDebugTab
 import org.elnix.notes.ui.settings.language.LanguageTab
 import org.elnix.notes.ui.settings.security.SecurityTab
-import org.elnix.notes.ui.theme.adjustBrightness
 
 
 @Composable
@@ -192,6 +188,23 @@ fun SettingsListScreen(navController: NavController) {
             }
         }
 
+        TextDivider(stringResource(R.string.contributors), Modifier.padding(horizontal = 60.dp))
+
+        ContributorItem(
+            name = "Elnix90",
+            imageRes = R.drawable.elnix90,
+            description = stringResource(R.string.app_developper),
+            githubUrl = "https://github.com/Elnix90"
+        )
+
+        ContributorItem(
+            name = "LuckyTheCookie",
+            imageRes = R.drawable.lucky_the_cookie,
+            description = stringResource(R.string.thaks_for_alphallm),
+            githubUrl = "https://github.com/LuckyTheCookie"
+        )
+
+
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -218,11 +231,13 @@ fun SettingsListScreen(navController: NavController) {
 
                         timesClickedOnVersion < 6 -> {
                             timesClickedOnVersion++
-                            toast = Toast.makeText(
-                                ctx,
-                                "${7 - timesClickedOnVersion} more times to enable Debug Mode",
-                                Toast.LENGTH_SHORT
-                            )
+                            if (timesClickedOnVersion > 3) {
+                                toast = Toast.makeText(
+                                    ctx,
+                                    "${7 - timesClickedOnVersion} more times to enable Debug Mode",
+                                    Toast.LENGTH_SHORT
+                                )
+                            }
                             toast?.show()
                         }
 
@@ -248,50 +263,7 @@ fun SettingsListScreen(navController: NavController) {
     }
 }
 
-@Composable
-fun SettingsItem(
-    title: String,
-    enabled: Boolean = true,
-    comingSoon: Boolean = false,
-    icon: ImageVector? = null,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled) { onClick() }
-            .background(
-                color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(15.dp)) {
-            if (icon != null) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary.adjustBrightness(if (enabled) 1f else 0.5f)
-                )
-            }
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (enabled) 1f else 0.5f)
-            )
-            if (comingSoon) {
-                Spacer(Modifier.weight(1f))
-                Text(
-                    text = stringResource(R.string.coming_soon),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface.adjustBrightness(0.5f)
-                )
-            }
-        }
-    }
-}
+
 
 
 @Composable

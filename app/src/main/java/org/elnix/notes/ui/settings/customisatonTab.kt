@@ -27,7 +27,7 @@ import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
-import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.toolbars.ToolbarItemsEditor

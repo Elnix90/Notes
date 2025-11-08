@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.settings.stores.PluginsSettingsStore
 import org.elnix.notes.security.BiometricManagerHelper
-import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
 

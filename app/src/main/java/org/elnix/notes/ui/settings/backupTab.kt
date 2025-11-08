@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.ExportImportRow
 import org.elnix.notes.ui.helpers.NotesExportImportRow
-import org.elnix.notes.ui.helpers.SettingsTitle
+import org.elnix.notes.ui.helpers.settings.SettingsTitle
 
 @Composable
 fun BackupTab(ctx: Context, onBack: (() -> Unit)) {

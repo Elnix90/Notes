@@ -82,15 +82,21 @@ fun NoteCard(
         allTags.filter { note.tagIds.contains(it.id) }
     }
 
+    val noteBgColor = note.bgColor?: MaterialTheme.colorScheme.surface
+    val noteTextColor = note.txtColor ?: MaterialTheme.colorScheme.onSurface
+    val bgColor =
+        if (isDragging) noteBgColor.copy(alpha = 0.2f)
+        else noteBgColor
+
     ElevatedCard(
         modifier = modifier
             .padding(horizontal = 12.dp)
             .fillMaxWidth()
             .scale(scale)
-            .background(note.bgColor, RoundedCornerShape(12.dp)),
+            .background(bgColor, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(elevation),
-        colors = CardDefaults.cardColors(containerColor = note.bgColor)
+        colors = CardDefaults.cardColors(containerColor = bgColor)
     ) {
         Row(
             modifier = Modifier
@@ -141,7 +147,7 @@ fun NoteCard(
                 Text(
                     text = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(note.createdAt),
                     style = MaterialTheme.typography.bodySmall,
-                    color = note.txtColor.copy(
+                    color = noteTextColor.copy(
                         alpha = if (note.isCompleted) 0.3f else 0.6f
                     )
                 )
@@ -153,7 +159,7 @@ fun NoteCard(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         textDecoration = if (note.isCompleted) TextDecoration.LineThrough else null
                     ),
-                    color = note.txtColor.copy(
+                    color = noteTextColor.copy(
                         alpha = if (note.isCompleted) 0.5f else 1f
                     )
                 )

@@ -126,19 +126,21 @@ object AppObjectsColors {
     }
 
 
-    @Composable
-    fun dropDownMenuColors(): TextFieldColors {
-        val colors = MaterialTheme.colorScheme
-        return TextFieldDefaults.colors(
-            focusedContainerColor = colors.secondary,
-            unfocusedContainerColor = colors.secondary,
-            disabledContainerColor = colors.surface,
-            focusedIndicatorColor = colors.primary,
-            unfocusedIndicatorColor = colors.outline,
-            focusedTextColor = colors.onSurface,
-            unfocusedTextColor = colors.onSurface
-        )
-    }
+// --Commented out by Inspection START (11/8/25, 7:59 PM):
+//    @Composable
+//    fun dropDownMenuColors(): TextFieldColors {
+//        val colors = MaterialTheme.colorScheme
+//        return TextFieldDefaults.colors(
+//            focusedContainerColor = colors.secondary,
+//            unfocusedContainerColor = colors.secondary,
+//            disabledContainerColor = colors.surface,
+//            focusedIndicatorColor = colors.primary,
+//            unfocusedIndicatorColor = colors.outline,
+//            focusedTextColor = colors.onSurface,
+//            unfocusedTextColor = colors.onSurface
+//        )
+//    }
+// --Commented out by Inspection STOP (11/8/25, 7:59 PM)
 
     @Composable
     fun checkboxColors(): CheckboxColors {

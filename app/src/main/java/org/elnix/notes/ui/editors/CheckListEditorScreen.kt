@@ -162,6 +162,10 @@ fun ChecklistEditorScreen(
     val showQuick by UiSettingsStore.getShowQuickActionsDropdownEditor(ctx).collectAsState(initial = false)
     val showTags by UiSettingsStore.getShowTagsDropdownEditor(ctx).collectAsState(initial = false)
 
+
+    val surfaceColor = MaterialTheme.colorScheme.surface
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -196,7 +200,7 @@ fun ChecklistEditorScreen(
             item {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surface,
+                    color = surfaceColor,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -226,7 +230,7 @@ fun ChecklistEditorScreen(
                                         keyboardType = KeyboardType.Unspecified
                                     ),
                                     colors = AppObjectsColors.outlinedTextFieldColors(
-                                        backgroundColor = MaterialTheme.colorScheme.surface,
+                                        backgroundColor = surfaceColor,
                                         onBackgroundColor = MaterialTheme.colorScheme.onSurface.adjustBrightness(
                                             if (item.checked) 0.5f else 1f
                                         )
@@ -267,7 +271,7 @@ fun ChecklistEditorScreen(
                                     }
                                 ),
                                 colors = AppObjectsColors.outlinedTextFieldColors(
-                                    backgroundColor = MaterialTheme.colorScheme.surface
+                                    backgroundColor = surfaceColor
                                 )
                             )
                             IconButton(
@@ -326,18 +330,20 @@ fun ChecklistEditorScreen(
                         onAutoSwitchToggle = { checked ->
                             scope.launch {
                                 toggleAutoColor(
-                                    currentNote.id,
-                                    vm,
-                                    checked
+                                    currentId = currentNote.id,
+                                    vm = vm,
+                                    checked = checked,
+                                    defaultColor = surfaceColor
                                 )?.let { note = it }
                             }
                         },
                         onRandomColorClick = {
                             scope.launch {
                                 setRandomColor(
-                                    currentNote.id,
-                                    vm,
-                                    note?.autoTextColor ?: true
+                                    currentId = currentNote.id,
+                                    vm = vm,
+                                    autoTextColor = note?.autoTextColor ?: true,
+                                    defaultColor = surfaceColor
                                 )?.let { note = it }
                             }
                         }

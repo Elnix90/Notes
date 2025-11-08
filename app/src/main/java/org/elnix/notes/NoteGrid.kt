@@ -60,6 +60,11 @@ fun NoteGridItem(
         label = "noteScale"
     )
 
+    val noteBgColor = note.bgColor?: MaterialTheme.colorScheme.surface
+    val noteTextColor = note.txtColor ?: MaterialTheme.colorScheme.onSurface
+//    val bgColor =
+//        if (isDragging) noteBgColor.copy(alpha = 0.2f)
+//        else noteBgColor
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -68,15 +73,15 @@ fun NoteGridItem(
                 onLongClick = { onLongClick(note) },
                 onClick = { onClick(note) }
             )
-            .background(note.bgColor, RoundedCornerShape(8.dp)),
+            .background(noteBgColor, RoundedCornerShape(8.dp)),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = note.bgColor)
+        colors = CardDefaults.cardColors(containerColor = noteBgColor)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = note.title,
-                color = note.txtColor,
+                color = noteTextColor,
                 style = MaterialTheme.typography.bodyLarge.copy(
                     textDecoration = if (note.isCompleted) TextDecoration.LineThrough else null
                 ),
@@ -86,7 +91,7 @@ fun NoteGridItem(
 
             Text(
                 text = note.desc,
-                color = note.txtColor,
+                color = noteTextColor,
                 style = MaterialTheme.typography.bodySmall.copy(
                     textDecoration = if (note.isCompleted) TextDecoration.LineThrough else null
                 ),

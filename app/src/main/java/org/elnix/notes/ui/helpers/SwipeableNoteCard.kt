@@ -28,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.burnoutcrew.reorderable.ReorderableLazyListState
@@ -46,7 +45,6 @@ fun SwipeableNoteCard(
     isReorderMode: Boolean,
     scale: Float,
     elevation: Dp,
-    bgColor: Color,
     isDragging: Boolean,
     reorderState: ReorderableLazyListState,
     onNoteClick: (NoteEntity) -> Unit,

@@ -81,7 +81,8 @@ fun NotesColorPickerSection(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Shuffle,
-                            contentDescription = stringResource(R.string.random_note_color)
+                            contentDescription = stringResource(R.string.random_note_color),
+                            tint = MaterialTheme.colorScheme.outline
                         )
                     }
                     Text(

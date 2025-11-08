@@ -51,7 +51,7 @@ object UiSettingsStore {
     fun getDefaultTheme(ctx: Context): Flow<DefaultThemes> =
         ctx.dataStore.data.map { prefs ->
             prefs[DEFAULT_THEME]?.let { DefaultThemes.valueOf(it) }
-                ?: DefaultThemes.DARK
+                ?: DefaultThemes.AMOLED
         }
 
     suspend fun setDefaultTheme(ctx: Context, state: DefaultThemes) {

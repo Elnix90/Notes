@@ -5,7 +5,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.elnix.notes.data.helpers.NoteType
-import org.elnix.notes.ui.theme.AmoledDefault
 import java.time.Instant
 import java.util.Calendar
 import java.util.Date
@@ -18,8 +17,8 @@ data class NoteEntity(
     val checklist: List<ChecklistItem> = emptyList(),
     val tagIds: List<Long> = emptyList(),
 
-    val bgColor: Color = AmoledDefault.Surface,
-    val txtColor: Color = AmoledDefault.OnSurface,
+    val bgColor: Color? = null,
+    val txtColor: Color? = null,
     val autoTextColor: Boolean = true,
 
     val isCompleted: Boolean = false,

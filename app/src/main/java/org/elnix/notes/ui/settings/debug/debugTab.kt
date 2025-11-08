@@ -25,11 +25,11 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.Routes
-import org.elnix.notes.SettingsItem
 import org.elnix.notes.data.settings.stores.UiSettingsStore
-import org.elnix.notes.ui.helpers.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.settings.SettingsItem
+import org.elnix.notes.ui.helpers.settings.SettingsTitle
 
 @Composable
 fun DebugTab(navController: NavController, onBack: (() -> Unit)) {

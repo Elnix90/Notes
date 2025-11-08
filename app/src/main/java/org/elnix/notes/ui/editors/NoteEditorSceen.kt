@@ -132,6 +132,9 @@ fun NoteEditorScreen(
     // --- Reminders ---
     val reminders by vm.remindersFor(currentNote.id).collectAsState(initial = emptyList())
 
+
+    val surfaceColor = MaterialTheme.colorScheme.surface
+
     // --- UI ---
     Column(
         modifier = Modifier
@@ -214,7 +217,12 @@ fun NoteEditorScreen(
                         },
                         onAutoSwitchToggle = { checked ->
                             scope.launch {
-                                toggleAutoColor(currentNote.id, vm, checked)?.let {
+                                toggleAutoColor(
+                                    currentId = currentNote.id,
+                                    vm = vm,
+                                    checked = checked,
+                                    defaultColor = surfaceColor
+                                )?.let {
                                     note = it
                                 }
                             }
@@ -222,9 +230,10 @@ fun NoteEditorScreen(
                         onRandomColorClick = {
                             scope.launch {
                                 setRandomColor(
-                                    currentNote.id,
-                                    vm,
-                                    currentNote.autoTextColor
+                                    currentId = currentNote.id,
+                                    vm = vm,
+                                    autoTextColor = currentNote.autoTextColor,
+                                    defaultColor = surfaceColor
                                 )?.let { note = it }
                             }
                         }

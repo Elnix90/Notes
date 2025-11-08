@@ -94,10 +94,6 @@ fun NotesList(
             ReorderableItem(state = reorderState, key = note.id) { isDragging ->
                 val scale by animateFloatAsState(if (isDragging) 1.03f else 1f)
                 val elevation by animateDpAsState(if (isDragging) 16.dp else 4.dp)
-                val bgColor =
-                    if (isDragging) note.bgColor.copy(alpha = 0.2f)
-                    else note.bgColor
-
 
                 SwipeableNoteCard(
                     note = note,
@@ -107,7 +103,6 @@ fun NotesList(
                     reorderState = reorderState,
                     scale = scale,
                     elevation = elevation,
-                    bgColor = bgColor,
                     isDragging = isDragging,
                     onNoteClick = { onNoteClick(note) },
                     onNoteLongClick = { onNoteLongClick(note) },

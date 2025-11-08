@@ -10,12 +10,8 @@ class NoteRepository(private val dao: NoteDao) {
 
     suspend fun upsert(note: NoteEntity): Long {
         val noteEdited = note.copy(lastEdit = System.currentTimeMillis())
-        // if id == 0 insert, else update (insert with REPLACE works too)
         return if (noteEdited.id == 0L) dao.upsert(noteEdited) else { dao.update(noteEdited); noteEdited.id }
     }
 
     suspend fun delete(note: NoteEntity) = dao.delete(note)
-
-    suspend fun updateOrder(id: Long, order: Int) = dao.updateOrder(id,order)
-
 }

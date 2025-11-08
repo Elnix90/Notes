@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -35,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -58,6 +58,7 @@ import java.util.Locale
 @Composable
 fun NoteCard(
     note: NoteEntity,
+    isSelectMode: Boolean,
     isReorderMode: Boolean,
     scale: Float,
     elevation: Dp,
@@ -114,7 +115,13 @@ fun NoteCard(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .clip(CircleShape)
-                        .clickable { onTypeIconClick() }
+                        .then(
+                            if (isSelectMode) {
+                                Modifier.pointerInput(Unit) {}
+                            } else {
+                                Modifier.clickable { onTypeIconClick() }
+                            }
+                        )
                         .background(iconColor)
                         .padding(5.dp)
                 ) {
@@ -181,9 +188,17 @@ fun NoteCard(
                             .detectReorder(reorderState)
                     )
                 } else if (showDeleteButton) {
-                    IconButton(
-                        onClick = { onDeleteButtonClick() },
-                        modifier = Modifier.size(40.dp)
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .then(
+                                if (isSelectMode) {
+                                    Modifier.pointerInput(Unit) {}
+                                } else {
+                                    Modifier.clickable { onDeleteButtonClick() }
+                                }
+                            )
+                            .padding(5.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,

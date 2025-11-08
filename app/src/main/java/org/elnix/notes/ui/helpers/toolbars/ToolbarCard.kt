@@ -71,7 +71,7 @@ fun ToolbarCard(
             .alpha(if (ghosted) 0.6f else 1f)
             .then(
                 if (floatingToolbar) {
-                    Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    Modifier.padding(horizontal = 8.dp)
                 } else Modifier
             ),
         shape = if (floatingToolbar) { CircleShape } else  RectangleShape,

@@ -1,8 +1,6 @@
 package org.elnix.notes
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,7 +20,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,10 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.burnoutcrew.reorderable.ReorderableItem
-import org.burnoutcrew.reorderable.detectReorderAfterLongPress
-import org.burnoutcrew.reorderable.rememberReorderableLazyListState
-import org.burnoutcrew.reorderable.reorderable
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.ClickType
 import org.elnix.notes.data.helpers.GlobalNotesActions
@@ -55,7 +47,6 @@ import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.AddNoteFab
-import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.tags.TagEditorDialog
 import org.elnix.notes.ui.helpers.toolbars.QuickActionsToolbar
@@ -172,24 +163,6 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    // Reorder logic
-    val localList = remember { mutableStateListOf<NoteEntity>().apply { addAll(notesToShow) } }
-    LaunchedEffect(notesToShow) {
-        if (notesToShow.map { it.id } != localList.map { it.id }) {
-            localList.clear()
-            localList.addAll(notesToShow)
-        }
-    }
-
-    val reorderState = rememberReorderableLazyListState(
-        onMove = { from, to ->
-            localList.move(from.index, to.index)
-        },
-        onDragEnd = { _, _ ->
-            vm.reorderNotes(localList.toList())
-        }
-    )
-
     LaunchedEffect(Unit) { vm.deleteAllEmptyNotes() }
 
     BackHandler {
@@ -251,8 +224,49 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    val topBarHeight = (90 * topBars.size).dp
-    val bottomBarHeight = (90 * bottomBars.size).dp
+    val topBarHeight = (75 * topBars.size).dp
+    val bottomBarHeight = (75 * bottomBars.size).dp
+
+    var notesNumberText: String? = null
+    if (showNotesNumber) {
+        notesNumberText = "${stringResource(R.string.note_number)} : ${notes.size}"
+        if (notesToShow.size != notes.size) {
+            notesNumberText += " • ${stringResource(R.string.filtered_bote_number)} : ${notesToShow.size}"
+        }
+    }
+
+//    var isDragging by remember { mutableStateOf(false) }
+//    val localNotes = remember { mutableStateListOf<NoteEntity>() }
+//
+//    val reorderState = rememberReorderableLazyListState(
+//        onMove = { from, to ->
+//            isDragging = true
+//            val item = localNotes.removeAt(from.index)
+//            localNotes.add(to.index, item)
+//        },
+//        onDragEnd = { _, _ ->
+//            isDragging = false
+//            scope.launch {
+//                localNotes.forEachIndexed { index, note ->
+//                    if (note.orderIndex != index)
+//                        vm.update(note.copy(orderIndex = index))
+//                }
+//            }
+//        }
+//    )
+
+//    LaunchedEffect(notes) {
+//        if (!isDragging) {
+//            val dbIds = notes.map { it.id }
+//            val localIds = localNotes.map { it.id }
+//            if (dbIds != localIds) {
+//                localNotes.clear()
+//                localNotes.addAll(notes)
+//            }
+//        }
+//    }
+
+
 
     Box(
         modifier = Modifier
@@ -280,68 +294,10 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                if (showNotesNumber) {
-                    var text = "${stringResource(R.string.note_number)} : ${notes.size}"
-                    if (notesToShow.size != notes.size) {
-                        text += " • ${stringResource(R.string.filtered_bote_number)} : ${notesToShow.size}"
-                    }
-                    TextDivider(text, Modifier.padding(horizontal = 16.dp))
-                }
                 when (noteViewType) {
-                    NoteViewType.LIST -> LazyColumn(
-                        state = reorderState.listState,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .then(
-                                if (isReorderMode)
-                                    Modifier
-                                        .reorderable(reorderState)
-                                        .detectReorderAfterLongPress(reorderState)
-                                else Modifier
-                            ),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        item { Box(Modifier.height(topBarHeight)) }
-
-                        items(localList.size, key = { localList[it].id }) { index ->
-                            val note = localList[index]
-                            ReorderableItem(state = reorderState, key = note.id) { isDragging ->
-                                val scale by animateFloatAsState(if (isDragging) 1.03f else 1f)
-                                val elevation by animateDpAsState(if (isDragging) 16.dp else 4.dp)
-                                val bgColor =
-                                    if (isDragging) note.bgColor.copy(alpha = 0.2f)
-                                    else note.bgColor
-
-                                SwipeableNoteCard(
-                                    note = note,
-                                    selected = selectedNotes.contains(note),
-                                    isSelectMode = isMultiSelectMode,
-                                    isReorderMode = isReorderMode,
-                                    reorderState = reorderState,
-                                    scale = scale,
-                                    elevation = elevation,
-                                    bgColor = bgColor,
-                                    isDragging = isDragging,
-                                    onNoteClick = { onNoteClick(note) },
-                                    onNoteLongClick = { onNoteLongClick(note) },
-                                    onRightAction = { note ->
-                                        performAction(actionSettings.rightAction, vm, navController, note, scope)
-                                    },
-                                    onLeftAction = { note ->
-                                        performAction(actionSettings.leftAction, vm, navController, note, scope)
-                                    },
-                                    onButtonClick = { note -> scope.launch { vm.delete(note) } },
-                                    onTypeButtonClick = { note ->
-                                        performAction(actionSettings.typeButtonAction, vm, navController, note, scope)
-                                    },
-                                    actionSettings = actionSettings
-                                )
-                            }
-                        }
-
-                        item { Box(Modifier.height(bottomBarHeight)) }
-                    }/*NotesList(
+                    NoteViewType.LIST -> NotesList(
                         notes = notesToShow,
+                        notesNumberText = notesNumberText,
                         selectedNotes = selectedNotes,
                         isSelectMode = isMultiSelectMode,
                         isReorderMode = isReorderMode,
@@ -361,7 +317,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         },
                         onOrderChanged = { newList -> vm.reorderNotes(newList) },
                         actionSettings = actionSettings
-                    )*/
+                    )
                     NoteViewType.GRID -> NotesGrid(
                         notes = notesToShow,
                         selectedNotes = selectedNotes,
@@ -379,11 +335,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 .fillMaxWidth()
                 .then(
                     if (floatingToolbars) {
-                        Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        Modifier.padding(horizontal = 16.dp)
                     } else Modifier
                 )
             ,
-            verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             topBars.forEach { it() }
         }
@@ -395,10 +351,10 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 .fillMaxWidth()
                 .then(
                     if (floatingToolbars) {
-                        Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        Modifier.padding(horizontal = 16.dp)
                     } else Modifier
                 ),
-            verticalArrangement = Arrangement.Bottom
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             bottomBars.forEach { it() }
         }
@@ -462,13 +418,4 @@ fun performAction(
         NotesActions.EDIT -> navController.navigate("edit/${note.id}?type=${note.type.name}")
         NotesActions.SELECT -> onSelectStart?.invoke()
     }
-}
-
-
-private fun <T> MutableList<T>.move(fromIndex: Int, toIndex: Int) {
-    if (fromIndex == toIndex) return
-    if (fromIndex !in indices || toIndex !in 0..size) return
-    val item = removeAt(fromIndex)
-    val insertIndex = if (toIndex > fromIndex) toIndex - 1 else toIndex
-    add(insertIndex, item)
 }

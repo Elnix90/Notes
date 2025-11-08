@@ -17,9 +17,6 @@ interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY orderIndex DESC")
     suspend fun getAll(): List<NoteEntity>
 
-    @Query("UPDATE notes SET orderIndex = :order WHERE id = :id")
-    suspend fun updateOrder(id: Long, order: Int)
-
     @Query("SELECT * FROM notes ORDER BY orderIndex ASC LIMIT 1")
     suspend fun getLast(): NoteEntity
     @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")

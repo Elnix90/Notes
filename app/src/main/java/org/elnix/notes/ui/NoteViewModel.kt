@@ -47,12 +47,15 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         return id
     }
 
-    fun reorderNotes(newList: List<NoteEntity>) = viewModelScope.launch {
-        newList.forEachIndexed { i, n ->
-            if (n.orderIndex != i) noteRepo.updateOrder(n.id, i)
+    fun reorderNotes(newList: List<NoteEntity>) {
+        viewModelScope.launch {
+            newList.forEachIndexed { index, note ->
+                if (note.orderIndex != index) {
+                    noteRepo.upsert(note.copy(orderIndex = index))
+                }
+            }
         }
     }
-
 
 
     fun update(note: NoteEntity) = viewModelScope.launch { noteRepo.upsert(note) }

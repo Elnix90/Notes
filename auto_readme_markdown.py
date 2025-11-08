@@ -15,7 +15,7 @@ for file in FOLDER.iterdir():
     if file.suffix.lower() in (".png", ".jpg", ".jpeg", ".gif"):
         folder_name = FOLDER.name
         alt_text = file.stem.replace("_", " ").capitalize()
-        images.append(f'<img src="{folder_name}/{file.name}" alt="{alt_text}" width="160"/>')
+        images.append(f'<img src="{folder_name}/{file.name}" alt="{alt_text}"/>')
         names.append(alt_text)
 
 # Build table header

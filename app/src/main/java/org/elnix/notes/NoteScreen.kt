@@ -77,11 +77,30 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     var isReorderMode by remember { mutableStateOf(false) }
     var showAddNoteMenu by remember { mutableStateOf(false) }
 
+    // Search options
+    var isSearchExpandedQuickActions by remember { mutableStateOf(false) }
+    var isSearchExpandedTags by remember { mutableStateOf(false) }
+    var isSearchExpandedSelect by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf<String?>(null) }
+
+
     // Which notes to show is dependent on tag selector
     val showTagSelector = toolbars.any { it.toolbar == ToolBars.TAGS && it.enabled }
     val notesToShow =
         if ( !showTagSelector || enabledTagIds.size == allTags.size ) notes
         else notes.filter { note -> note.tagIds.any { it in enabledTagIds } }
+
+    val filteredNotes = remember(notes, searchText) {
+        if (searchText.isNullOrBlank()) notesToShow
+        else {
+            val query = searchText!!.trim().lowercase()
+            notesToShow.filter { note ->
+                note.title.lowercase().contains(query) ||
+                note.desc.lowercase().contains(query) ||
+                note.checklist.any { it.text.lowercase().contains(query) }
+            }
+        }
+    }
 
     // Tags things
     var showDeleteConfirm by remember { mutableStateOf(false) }
@@ -93,10 +112,6 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     // other options
     val floatingToolbars by UiSettingsStore.getFloatingToolbars(ctx).collectAsState(initial = true)
 
-    // Search options
-    var isSearchExpandedQuickActions by remember { mutableStateOf(false) }
-    var isSearchExpandedTags by remember { mutableStateOf(false) }
-    var isSearchExpandedSelect by remember { mutableStateOf(false) }
 
     // User actions
     fun onNoteLongClick(note: NoteEntity) {
@@ -205,7 +220,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         toolBars = ToolBars.SELECT,
                         scrollState = rememberScrollState(),
                         isSearchExpanded = isSearchExpandedSelect,
-                        floatingToolbar = floatingToolbars
+                        floatingToolbar = floatingToolbars,
+                        onSearchChange = { if ( it.isNotBlank()) searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
             }  else null
@@ -217,7 +233,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         toolBars = ToolBars.TAGS,
                         scrollState = rememberScrollState(),
                         isSearchExpanded = isSearchExpandedTags,
-                        floatingToolbar = floatingToolbars
+                        floatingToolbar = floatingToolbars,
+                        onSearchChange = { searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
             }
@@ -229,7 +246,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         toolBars = ToolBars.QUICK_ACTIONS,
                         scrollState = rememberScrollState(),
                         isSearchExpanded = isSearchExpandedQuickActions,
-                        floatingToolbar = floatingToolbars
+                        floatingToolbar = floatingToolbars,
+                        onSearchChange = { searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
             }
@@ -327,6 +345,35 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                     )
                 }
             }
+        } else if (filteredNotes.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(15.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.search_not_found),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground.adjustBrightness(0.7f),
+                    )
+
+                    Text(
+                        text = stringResource(R.string.clear_search),
+                        style = MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.Underline),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.clickable {
+                            searchText = ""
+                            isSearchExpandedTags = false
+                            isSearchExpandedSelect = false
+                            isSearchExpandedQuickActions = false
+                        }
+                    )
+                }
+            }
+
         } else {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -334,7 +381,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             ) {
                 when (noteViewType) {
                     NoteViewType.LIST -> NotesList(
-                        notes = notesToShow,
+                        notes = filteredNotes,
                         notesNumberText = notesNumberText,
                         selectedNotes = selectedNotes,
                         isSelectMode = isMultiSelectMode,

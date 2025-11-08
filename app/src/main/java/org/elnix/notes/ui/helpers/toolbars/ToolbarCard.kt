@@ -138,6 +138,7 @@ fun ToolbarCard(
                     }
                     GlobalNotesActions.SEARCH -> {
                         if (!isSearchExpanded) {
+                            searchText = ""
                             GlobalActionIcon(
                                 ctx = ctx,
                                 action = action,

@@ -26,7 +26,6 @@ import org.elnix.notes.R
 import org.elnix.notes.Routes
 import org.elnix.notes.SettingsItem
 import org.elnix.notes.data.helpers.NoteViewType
-import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsTitle
@@ -40,8 +39,6 @@ fun AppearanceTab(
     navController: NavController,
     onBack: () -> Unit
 ) {
-    val showNavbarLabel by UiSettingsStore.getShowBottomNavLabelsFlow(ctx)
-        .collectAsState(initial = ShowNavBarActions.ALWAYS)
 
     val fullscreenApp by UiSettingsStore.getFullscreen(ctx).collectAsState(initial = false)
     val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx).collectAsState(initial = true)
@@ -73,14 +70,6 @@ fun AppearanceTab(
 
             TextDivider(stringResource(R.string.app_display))
 
-            ActionSelectorRow(
-                label = stringResource(R.string.show_navigation_bar_labels),
-                options = ShowNavBarActions.entries,
-                selected = showNavbarLabel,
-                optionLabel = { it.name}
-            ) {
-                scope.launch { UiSettingsStore.setShowBottomNavLabelsFlow(ctx, it) }
-            }
 
             SwitchRow(
                 fullscreenApp,
@@ -88,7 +77,7 @@ fun AppearanceTab(
             ) {
                 scope.launch { UiSettingsStore.setFullscreen(ctx, it) }
             }
-
+            TextDivider(stringResource(R.string.notes_display))
 
             SwitchRow(
                 showNotesNumber,
@@ -96,8 +85,6 @@ fun AppearanceTab(
             ) {
                 scope.launch { UiSettingsStore.setShowNotesNumber(ctx, it) }
             }
-
-            TextDivider(stringResource(R.string.notes_display))
 
             ActionSelectorRow(
                 label = stringResource(R.string.notes_view_type),

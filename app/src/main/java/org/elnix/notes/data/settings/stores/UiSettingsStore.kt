@@ -10,22 +10,9 @@ import org.elnix.notes.data.helpers.ColorPickerMode
 import org.elnix.notes.data.helpers.NoteViewType
 import org.elnix.notes.data.settings.ColorCustomisationMode
 import org.elnix.notes.data.settings.DefaultThemes
-import org.elnix.notes.data.settings.ShowNavBarActions
 import org.elnix.notes.data.settings.dataStore
 
 object UiSettingsStore {
-
-    private val SHOW_NAVBAR_LABELS = stringPreferencesKey("navbar_labels")
-    fun getShowBottomNavLabelsFlow(ctx: Context): Flow<ShowNavBarActions> =
-        ctx.dataStore.data.map { prefs ->
-            prefs[SHOW_NAVBAR_LABELS]?.let { ShowNavBarActions.valueOf(it) }
-                ?: ShowNavBarActions.ALWAYS
-        }
-
-
-    suspend fun setShowBottomNavLabelsFlow(ctx: Context, state: ShowNavBarActions) {
-        ctx.dataStore.edit { it[SHOW_NAVBAR_LABELS] = state.name }
-    }
 
 
     private val SHOW_NOTES_NUMBER = booleanPreferencesKey("show_notes_number")

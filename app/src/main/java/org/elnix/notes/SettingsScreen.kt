@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -216,7 +217,10 @@ fun SettingsListScreen(navController: NavController) {
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 8.dp, bottom = 16.dp)
-                .clickable {
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
                     toast?.cancel()
 
                     when {
@@ -224,14 +228,14 @@ fun SettingsListScreen(navController: NavController) {
                             toast = Toast.makeText(
                                 ctx,
                                 "Debug Mode is already enabled",
-                                Toast.LENGTH_SHORT
+                                 Toast.LENGTH_SHORT
                             )
                             toast?.show()
                         }
 
                         timesClickedOnVersion < 6 -> {
                             timesClickedOnVersion++
-                            if (timesClickedOnVersion > 3) {
+                            if (timesClickedOnVersion > 2) {
                                 toast = Toast.makeText(
                                     ctx,
                                     "${7 - timesClickedOnVersion} more times to enable Debug Mode",

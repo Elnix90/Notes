@@ -48,9 +48,11 @@ import org.burnoutcrew.reorderable.reorderable
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.GlobalActionIcon
 import org.elnix.notes.data.helpers.GlobalNotesActions
+import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.tags.TagBubble
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
 
@@ -175,35 +177,50 @@ fun ToolbarItemsEditor(
                                         },
                                     )
                                     Spacer(Modifier.weight(1f))
-                                    if (action != GlobalNotesActions.SPACER1 && action != GlobalNotesActions.SPACER2 && action != GlobalNotesActions.SPACER3) {
-
-                                        GlobalActionIcon(
-                                            ctx = ctx,
-                                            action = action,
-                                            showButtonLabel = item.showLabel,
-                                            onClick = {
-                                                toolbarItems = toolbarItems.toMutableList().apply {
-                                                    set(index, this[index].copy(showLabel = !item.showLabel))
-                                                }
-                                            }
+                                    if (action != GlobalNotesActions.SPACER1 && action != GlobalNotesActions.SPACER2 && action != GlobalNotesActions.SPACER3)
+                                    when (action ) {
+                                        GlobalNotesActions.TAGS -> TagBubble(
+                                            TagItem(
+                                                name = stringResource(R.string.tags),
+                                                color = Color.Blue
+                                            ), ghostMode = true
                                         )
-                                    } else {
-                                        Box(
-                                            contentAlignment = Alignment.Center,
-                                            modifier = Modifier
-                                                .padding(horizontal = 12.dp, vertical = 8.dp)
-                                                .width(150.dp)
-                                        ){
-                                            TextDivider(
-                                                stringResource(R.string.spacer),
-                                                backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(
-                                                    0.7f
-                                                ),
-                                                thickness = 5.dp,
-                                                modifier = Modifier.wrapContentWidth()
+
+                                        GlobalNotesActions.SPACER1, GlobalNotesActions.SPACER2, GlobalNotesActions.SPACER3 -> {
+                                            Box(
+                                                contentAlignment = Alignment.Center,
+                                                modifier = Modifier
+                                                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                                                    .width(150.dp)
+                                            ) {
+                                                TextDivider(
+                                                    stringResource(R.string.spacer),
+                                                    backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(
+                                                        0.7f
+                                                    ),
+                                                    thickness = 5.dp,
+                                                    modifier = Modifier.wrapContentWidth()
+                                                )
+                                            }
+                                        }
+
+                                        else -> {
+                                            GlobalActionIcon(
+                                                ctx = ctx,
+                                                action = action,
+                                                showButtonLabel = item.showLabel,
+                                                onClick = {
+                                                    toolbarItems = toolbarItems.toMutableList().apply {
+                                                        set(
+                                                            index,
+                                                            this[index].copy(showLabel = !item.showLabel)
+                                                        )
+                                                    }
+                                                }
                                             )
                                         }
                                     }
+
                                     Spacer(Modifier.weight(1f))
                                     Icon(
                                         imageVector = Icons.Default.DragHandle,

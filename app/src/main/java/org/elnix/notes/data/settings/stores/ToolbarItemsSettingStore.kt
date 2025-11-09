@@ -1,6 +1,7 @@
 package org.elnix.notes.data.settings.stores
 
 import android.content.Context
+import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -19,7 +20,8 @@ private val Context.dataStore by preferencesDataStore(name = "toolbar_items_pref
 data class ToolbarItemState(
     val action: GlobalNotesActions,
     val enabled: Boolean = false,
-    val showLabel: Boolean = false
+    val showLabel: Boolean = false,
+    val color: Color? = null
 )
 
 object ToolbarItemsSettingsStore {
@@ -47,6 +49,30 @@ object ToolbarItemsSettingsStore {
         val key = prefsKeyForToolbar(toolbar)
         ctx.dataStore.edit { prefs ->
             prefs[key] = gson.toJson(newItems)
+        }
+    }
+
+    suspend fun updateToolbarItemColor(
+        ctx: Context,
+        toolbar: ToolBars,
+        action: GlobalNotesActions,
+        newColor: Color?
+    ) {
+        val key = prefsKeyForToolbar(toolbar)
+        ctx.dataStore.edit { prefs ->
+            val raw = prefs[key]
+            val currentItems = if (raw.isNullOrEmpty()) {
+                defaultToolbarItems(toolbar)
+            } else {
+                runCatching { gson.fromJson<List<ToolbarItemState>>(raw, listType) }
+                    .getOrDefault(defaultToolbarItems(toolbar))
+            }
+
+            val updatedItems = currentItems.map { item ->
+                if (item.action == action) item.copy(color = newColor) else item
+            }
+
+            prefs[key] = gson.toJson(updatedItems)
         }
     }
 

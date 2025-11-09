@@ -117,6 +117,7 @@ fun globalActionName(ctx: Context, action: GlobalNotesActions): String = when (a
 @Composable
 fun GlobalActionIcon(
     ctx: Context,
+    color: Color?,
     action: GlobalNotesActions,
     ghosted: Boolean = false,
     scale: Float = 1f,
@@ -130,7 +131,7 @@ fun GlobalActionIcon(
     val label = globalActionName(ctx, action)
 
     val onColor = MaterialTheme.colorScheme.outline
-    val bgColor = globalActionColor(action).copy(alpha = 0.4f)
+    val bgColor = color ?: globalActionColor(action)
 
     // Create a clickable modifier that passes clicks through if ghosted
     val clickModifier = if (ghosted) {
@@ -161,7 +162,7 @@ fun GlobalActionIcon(
         modifier = Modifier
             .graphicsLayer { this.scaleX = scale; this.scaleY = scale }
             .clip(CircleShape)
-            .background(bgColor.copy(alpha = 0.4f))
+            .background(bgColor)
             .then(clickModifier)
             .padding(8.dp)
     ) {

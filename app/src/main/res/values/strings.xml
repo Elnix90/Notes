@@ -138,7 +138,7 @@
     <string name="search">Search</string>
     <string name="sort">Sort</string>
     <string name="deselect_all">Deselect</string>
-    <string name="add_note">Add_note</string>
+    <string name="add_note">Add note</string>
     <string name="reorder">Reorder</string>
     <string name="reorder_handle">Reorder Handle</string>
     <string name="spacer">Spacer</string>
@@ -152,8 +152,8 @@
     <string name="connected_apps">Connected Apps</string>
     <string name="alphallm_app">Allow AlphaLM App Access</string>
     <string name="contributors">Contributors</string>
-    <string name="app_developper">App Developer</string>
-    <string name="thaks_for_alphallm">Thanks for the integration of AlphaLLM using contentProvider</string>
+    <string name="app_developer">App Developer</string>
+    <string name="thanks_for_alphallm">Thanks for the integration of AlphaLLM using contentProvider</string>
     <string name="do_not_remind_me_again">Do not remind me again</string>
     <string name="delete_multiple_notes">Delete multiple notes</string>
     <string name="are_you_sure_to_delete">Are you sure to delete</string>
@@ -182,4 +182,6 @@
     <string name="random_color">Random Color</string>
     <string name="make_every_colors_random">Make every colors random</string>
     <string name="make_every_colors_random_explanation">This will set EVERY colors random, can be hare to reset after that.</string>
+    <string name="color">Color</string>
+    <string name="reset_colors">Reset Colors</string>
 </resources>

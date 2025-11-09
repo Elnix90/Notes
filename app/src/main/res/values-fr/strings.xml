@@ -125,7 +125,7 @@
     <string name="tag_name">Nom du Tag</string>
     <string name="tag">Tag</string>
     <string name="delete_tag">Supprimer le tag</string>
-    <string name="tag_deletion_confirm">ëtes vous sûr de vouloir supprimer le tag</string>
+    <string name="tag_deletion_confirm">Êtes vous sûr de vouloir supprimer le tag</string>
     <string name="show_tag_selector">Afficher le selecteur de tags</string>
     <string name="show_tags_in_notes">Afficher les tags dans les notes</string>
     <string name="filtered_bote_number">Nombre de notes filtrées</string>
@@ -153,8 +153,8 @@
     <string name="reorder_function_doesnt_work_yet">La fonction réorganiser ne fonctionne pas encore</string>
     <string name="search_not_found">La recherche n\'a rien trouvé</string>
     <string name="contributors">Contributeurs</string>
-    <string name="app_developper">Développeur de l\'app</string>
-    <string name="thaks_for_alphallm">Merci pour l\'intégration d\'AlphaLLM à l\'aide de contentProvider.</string>
+    <string name="app_developer">Développeur de l\'app</string>
+    <string name="thanks_for_alphallm">Merci pour l\'intégration d\'AlphaLLM à l\'aide de contentProvider.</string>
     <string name="do_not_remind_me_again">Ne plus me le rappeler</string>
     <string name="delete_multiple_notes">Supprimer plusieurs notes</string>
     <string name="are_you_sure_to_delete">Êtes vous sur de supprimer</string>
@@ -183,4 +183,6 @@
     <string name="random_color">Couleur Aléatoire</string>
     <string name="make_every_colors_random">Mettre toutes les couleurs aléatoires</string>
     <string name="make_every_colors_random_explanation">Cela définira TOUTES les couleurs de manière aléatoire, ce qui peut être difficile à réinitialiser par la suite.</string>
+    <string name="color">Couleur</string>
+    <string name="reset_colors">Reinitialiser couleurs</string>
 </resources>

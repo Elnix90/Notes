@@ -14,14 +14,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.elevatedCardElevation
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -50,6 +56,7 @@ import org.elnix.notes.data.helpers.GlobalActionIcon
 import org.elnix.notes.data.helpers.GlobalNotesActions
 import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.ToolBars
+import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.tags.TagBubble
@@ -88,6 +95,8 @@ fun ToolbarItemsEditor(
         }
     )
 
+    var showColorPickerDialog by remember { mutableStateOf(false) }
+    var editAction by remember { mutableStateOf<ToolbarItemState?>(null) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -104,6 +113,36 @@ fun ToolbarItemsEditor(
             text = "Edit toolbar: ${toolbar.name}",
             color = MaterialTheme.colorScheme.onSurface.copy(if (enabled) 1f else 0.5f)
         )
+
+        Spacer(Modifier.weight(1f))
+
+        Button(
+            onClick = {
+                scope.launch {
+                    toolbarItems.forEach { item ->
+                        ToolbarItemsSettingsStore.updateToolbarItemColor(
+                            ctx = ctx,
+                            toolbar = toolbar,
+                            action = item.action,
+                            newColor = null
+                        )
+                    }
+                }
+            },
+            enabled = toolbarItems.any { it.color != null },
+            colors = AppObjectsColors.buttonColors(),
+            shape = CircleShape
+        ){
+            Icon(
+                imageVector = Icons.Default.Restore,
+                contentDescription = stringResource(R.string.reset_colors),
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = stringResource(R.string.reset_colors),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
     }
 
     if (showDialog) {
@@ -141,24 +180,24 @@ fun ToolbarItemsEditor(
                         val isEnabled = when(toolbar) {
                             ToolBars.SELECT -> true
                             ToolBars.SEPARATOR -> false
-                            ToolBars.TAGS -> false
+                            ToolBars.TAGS -> true
                             ToolBars.QUICK_ACTIONS -> action != GlobalNotesActions.SETTINGS
                         }
 
                         ReorderableItem(state = reorderState, key = action.name) { isDragging ->
                             val scale by animateFloatAsState(if (isDragging) 1.03f else 1f)
                             val elevation by animateDpAsState(if (isDragging) 16.dp else 0.dp)
-                            val bgColor =
-                                if (isDragging) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                                else MaterialTheme.colorScheme.surfaceVariant
+                            val bgColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f)
 
                             ElevatedCard(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp)
-                                    .scale(scale)
-                                    .background(bgColor, RoundedCornerShape(12.dp)),
+                                    .scale(scale),
                                 elevation = elevatedCardElevation(elevation),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = bgColor
+                                ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Row(
@@ -177,7 +216,6 @@ fun ToolbarItemsEditor(
                                         },
                                     )
                                     Spacer(Modifier.weight(1f))
-                                    if (action != GlobalNotesActions.SPACER1 && action != GlobalNotesActions.SPACER2 && action != GlobalNotesActions.SPACER3)
                                     when (action ) {
                                         GlobalNotesActions.TAGS -> TagBubble(
                                             TagItem(
@@ -207,6 +245,7 @@ fun ToolbarItemsEditor(
                                         else -> {
                                             GlobalActionIcon(
                                                 ctx = ctx,
+                                                color = item.color,
                                                 action = action,
                                                 showButtonLabel = item.showLabel,
                                                 onClick = {
@@ -218,6 +257,25 @@ fun ToolbarItemsEditor(
                                                     }
                                                 }
                                             )
+
+                                            Spacer(Modifier.weight(1f))
+
+                                            IconButton(
+                                                onClick = {
+                                                    scope.launch {
+                                                        ToolbarItemsSettingsStore.setToolbarItems(ctx, toolbar, toolbarItems)
+                                                    }
+                                                    editAction = item
+                                                    showColorPickerDialog = true
+                                                },
+                                                colors = AppObjectsColors.iconButtonColors(),
+                                                shape = CircleShape
+                                            ){
+                                                Icon(
+                                                    imageVector = Icons.Default.ColorLens,
+                                                    contentDescription = stringResource(R.string.toolbar_color),
+                                                )
+                                            }
                                         }
                                     }
 
@@ -237,5 +295,23 @@ fun ToolbarItemsEditor(
             containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
+    }
+
+    if (showColorPickerDialog && editAction != null) {
+        val actionToEdit = editAction!!
+        ToolbarItemColorSelectorDialog(
+            item = actionToEdit,
+            onDismiss = { showColorPickerDialog = false }
+        ) { color ->
+            scope.launch {
+                ToolbarItemsSettingsStore.updateToolbarItemColor(
+                    ctx = ctx,
+                    toolbar = toolbar,
+                    action = actionToEdit.action,
+                    newColor = Color(color)
+                )
+            }
+            showColorPickerDialog = false
+        }
     }
 }

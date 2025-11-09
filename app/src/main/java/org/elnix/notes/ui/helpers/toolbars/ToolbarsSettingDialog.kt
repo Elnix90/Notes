@@ -18,7 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults.elevatedCardElevation
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
@@ -99,6 +101,36 @@ fun ToolbarsSettingsRow(
             text = stringResource(R.string.toolbars_order),
             color = MaterialTheme.colorScheme.onSurface.copy(if (enabled) 1f else 0.5f)
         )
+
+        Spacer(Modifier.weight(1f))
+
+        Button(
+            onClick = {
+                scope.launch {
+                    toolbars.forEach { item ->
+                        ToolbarsSettingsStore.updateToolbarColor(
+                            ctx = ctx,
+                            toolbar = item.toolbar,
+                            color = null,
+                            borderColor = null
+                        )
+                    }
+                }
+            },
+            enabled = toolbars.any { it.color != null || it.borderColor != null },
+            colors = AppObjectsColors.buttonColors(),
+            shape = CircleShape
+        ){
+            Icon(
+                imageVector = Icons.Default.Restore,
+                contentDescription = stringResource(R.string.reset_colors),
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = stringResource(R.string.reset_colors),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
     }
 
     if (showDialog) {
@@ -126,7 +158,7 @@ fun ToolbarsSettingsRow(
                     items(list.size, key = { list[it].toolbar.name }) { index ->
                         val item = list[index]
 
-                        val color = item.color ?: MaterialTheme.colorScheme.surface
+                        val color = item.color ?: MaterialTheme.colorScheme.surface.adjustBrightness(0.7f)
                         val borderColor = item.borderColor ?: color.adjustBrightness(3f)
 
                         ReorderableItem(state = reorderState, key = item.toolbar.name) { isDragging ->
@@ -183,6 +215,7 @@ fun ToolbarsSettingsRow(
 
                                         IconButton(
                                             onClick = {
+                                                scope.launch { ToolbarsSettingsStore.setToolbars(ctx, list) }
                                                 editToolbar = item
                                                 showColorPickerDialog = true
                                             },
@@ -231,7 +264,12 @@ fun ToolbarsSettingsRow(
             onDismiss = { showColorPickerDialog = false }
         ) { color, borderColor ->
                 scope.launch {
-                    ToolbarsSettingsStore.updateToolbarColor(ctx, toolbarToEdit.toolbar, Color(color), Color(borderColor))
+                    ToolbarsSettingsStore.updateToolbarColor(
+                        ctx = ctx,
+                        toolbar = toolbarToEdit.toolbar,
+                        color = Color(color),
+                        borderColor = Color(borderColor)
+                    )
                 }
                 showColorPickerDialog = false
         }

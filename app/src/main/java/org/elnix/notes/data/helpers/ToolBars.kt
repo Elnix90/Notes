@@ -18,12 +18,9 @@ fun defaultEnabledItems (toolbar: ToolBars): List<GlobalNotesActions>? = when (t
         GlobalNotesActions.DELETE_NOTE
     )
     ToolBars.QUICK_ACTIONS -> listOf(
-        GlobalNotesActions.REORDER,
-//        GlobalNotesActions.SEARCH,
-//        GlobalNotesActions.SPACER1,
+        GlobalNotesActions.SEARCH,
         GlobalNotesActions.ADD_NOTE,
         GlobalNotesActions.SPACER2,
-//        GlobalNotesActions.SORT,
         GlobalNotesActions.SETTINGS
     )
 
@@ -38,7 +35,7 @@ fun defaultEnabledItems (toolbar: ToolBars): List<GlobalNotesActions>? = when (t
 
 fun defaultShowLabelItems (toolbar: ToolBars): List<GlobalNotesActions>? = when (toolbar) {
     ToolBars.SELECT -> null
-    ToolBars.QUICK_ACTIONS -> listOf(GlobalNotesActions.SEARCH)
+    ToolBars.QUICK_ACTIONS -> listOf(GlobalNotesActions.ADD_NOTE)
     ToolBars.SEPARATOR -> null
     ToolBars.TAGS -> listOf(GlobalNotesActions.ADD_TAG)
 }

@@ -135,6 +135,7 @@ fun ToolbarCard(
                             GlobalActionIcon(
                                 ctx = ctx,
                                 action = action,
+                                color = item.color,
                                 ghosted = ghosted,
                                 scale = scale,
                                 showButtonLabel = item.showLabel
@@ -194,6 +195,7 @@ fun ToolbarCard(
                     else -> {
                         GlobalActionIcon(
                             ctx = ctx,
+                            color = item.color,
                             action = action,
                             ghosted = ghosted,
                             scale = scale,

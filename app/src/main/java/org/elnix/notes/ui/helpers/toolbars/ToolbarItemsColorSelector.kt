@@ -1,5 +1,6 @@
 package org.elnix.notes.ui.helpers.toolbars
 
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.AlertDialog
@@ -13,36 +14,37 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
-import org.elnix.notes.data.settings.stores.ToolbarSetting
+import org.elnix.notes.data.helpers.globalActionColor
+import org.elnix.notes.data.helpers.globalActionName
+import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.ui.helpers.colors.ColorPickerRow
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
-fun ToolbarColorSelectorDialog(
-    toolbar: ToolbarSetting,
+fun ToolbarItemColorSelectorDialog(
+    item: ToolbarItemState,
     onDismiss: () -> Unit,
-    onValidate: (Int, Int) -> Unit
+    onValidate: (Int) -> Unit
 ) {
-    val defaultSurfaceColor = MaterialTheme.colorScheme.surface
-    val defaultBorderColor = defaultSurfaceColor.adjustBrightness(3f)
+    val ctx = LocalContext.current
+
+    val defaultColor = globalActionColor(item.action)
 
     var colorInt by remember {
-        mutableIntStateOf(toolbar.color?.toArgb() ?: defaultSurfaceColor.toArgb())
+        mutableIntStateOf(item.color?.toArgb() ?: defaultColor.toArgb())
     }
 
-    var borderColorInt by remember {
-        mutableIntStateOf(toolbar.borderColor?.toArgb() ?: defaultBorderColor.toArgb())
-    }
 
     AlertDialog(
         containerColor = MaterialTheme.colorScheme.surface,
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(R.string.toolbar_colors),
+                text = "${globalActionName(ctx,item.action)} ${stringResource(R.string.color)} ",
                 color = MaterialTheme.colorScheme.onSurface
             )
         },
@@ -53,23 +55,15 @@ fun ToolbarColorSelectorDialog(
 
                 ColorPickerRow(
                     label = stringResource(R.string.toolbar_color),
-                    defaultColor = defaultSurfaceColor,
+                    defaultColor = defaultColor,
                     currentColor = colorInt,
                     backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
                     onColorPicked = { colorInt = it }
                 )
-
-                ColorPickerRow(
-                    label = stringResource(R.string.toolbar_border_color),
-                    defaultColor = defaultBorderColor,
-                    currentColor = borderColorInt,
-                    backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
-                    onColorPicked = { borderColorInt = it }
-                )
             }
         },
         confirmButton = {
-            Button(onClick = { onValidate(colorInt, borderColorInt) }
+            Button(onClick = { onValidate(colorInt) }
             ) {
                 Text(
                     text = stringResource(R.string.save),

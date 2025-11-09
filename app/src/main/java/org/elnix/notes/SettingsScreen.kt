@@ -200,14 +200,14 @@ fun SettingsListScreen(navController: NavController) {
         ContributorItem(
             name = "Elnix90",
             imageRes = R.drawable.elnix90,
-            description = stringResource(R.string.app_developper),
+            description = stringResource(R.string.app_developer),
             githubUrl = "https://github.com/Elnix90"
         )
 
         ContributorItem(
             name = "LuckyTheCookie",
             imageRes = R.drawable.lucky_the_cookie,
-            description = stringResource(R.string.thaks_for_alphallm),
+            description = stringResource(R.string.thanks_for_alphallm),
             githubUrl = "https://github.com/LuckyTheCookie"
         )
 

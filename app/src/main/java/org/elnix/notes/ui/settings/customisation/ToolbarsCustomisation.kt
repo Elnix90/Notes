@@ -75,7 +75,7 @@ fun ToolbarsCustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() ->
     ) {
         SettingsTitle(title = stringResource(R.string.customisation), onBack = onBack)
 
-        TextDivider(stringResource(R.string.toolbars_preview))
+        TextDivider(stringResource(R.string.toolbars))
 
         Column(
             modifier = Modifier

@@ -143,7 +143,7 @@ fun ToolbarsSettingsRow(
 
                                         Checkbox(
                                             checked = item.enabled,
-                                            enabled = item.toolbar != ToolBars.SELECT && item.toolbar != ToolBars.QUICK_ACTIONS,
+                                            enabled = item.toolbar != ToolBars.QUICK_ACTIONS,
                                             onCheckedChange = { checked ->
                                                 list = list.toMutableList().apply {
                                                     set(index, item.copy(enabled = checked))

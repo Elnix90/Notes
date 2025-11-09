@@ -72,6 +72,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     val enabledTagIds = allTags.filter { it.component4() }.map { it.id }.toSet()
 
     // Manage selection state
+    val isSelectingEnabled = toolbars.find { it.toolbar == ToolBars.SELECT }!!.enabled
     var selectedNotes by remember { mutableStateOf<Set<NoteEntity>>(emptySet()) }
     var isMultiSelectMode by remember { mutableStateOf(false) }
     var isReorderMode by remember { mutableStateOf(false) }
@@ -115,8 +116,10 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
 
     // User actions
     fun onNoteLongClick(note: NoteEntity) {
-        isMultiSelectMode = true
-        selectedNotes = selectedNotes + note
+        if (isSelectingEnabled){
+            isMultiSelectMode = true
+            selectedNotes = selectedNotes + note
+        }
     }
     fun onNoteClick(note: NoteEntity) {
         if (isMultiSelectMode) {

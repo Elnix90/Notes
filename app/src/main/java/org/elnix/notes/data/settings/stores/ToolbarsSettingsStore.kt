@@ -92,7 +92,7 @@ object ToolbarsSettingsStore {
 
     private val TOOLBARS_CORNER = intPreferencesKey("toolbars_corner")
     fun getToolbarsCorner(ctx: Context): Flow<Int> =
-        ctx.dataStore.data.map { it[TOOLBARS_CORNER] ?: 2 }
+        ctx.dataStore.data.map { it[TOOLBARS_CORNER] ?: 50 }
     suspend fun setToolbarsCorner(ctx: Context, size: Int) {
         ctx.dataStore.edit { it[TOOLBARS_CORNER] = size }
     }

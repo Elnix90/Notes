@@ -40,7 +40,7 @@ fun NotesList(
     onNoteLongClick: (NoteEntity) -> Unit,
     onRightAction: (NoteEntity) -> Unit,
     onLeftAction: (NoteEntity) -> Unit,
-    onButtonClick: (NoteEntity) -> Unit,
+    onDeleteButtonClick: (NoteEntity) -> Unit,
     onTypeButtonClick: (NoteEntity) -> Unit,
     onOrderChanged: (List<NoteEntity>) -> Unit,
     actionSettings: NoteActionSettings
@@ -108,7 +108,7 @@ fun NotesList(
                     onNoteLongClick = { onNoteLongClick(note) },
                     onRightAction = { onRightAction(note) },
                     onLeftAction = { onLeftAction(note) },
-                    onButtonClick = { onButtonClick(note) },
+                    onButtonClick = { onDeleteButtonClick(note) },
                     onTypeButtonClick = { onTypeButtonClick(note) },
                     actionSettings = actionSettings
                 )

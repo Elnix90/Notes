@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -83,6 +84,12 @@ fun DebugTab(navController: NavController, onBack: (() -> Unit)) {
                 title = "Other",
                 icon = Icons.Default.Build,
                 onClick = { navController.navigate(Routes.Settings.DebugSub.OTHER) }
+            )
+
+            SettingsItem(
+                title = "User Confirm",
+                icon = Icons.Default.VerifiedUser,
+                onClick = { navController.navigate(Routes.Settings.DebugSub.USER_CONFIRM) }
             )
         }
     }

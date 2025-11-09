@@ -49,6 +49,7 @@ import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
+import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.AddNoteFab
 import org.elnix.notes.ui.helpers.UserValidation
@@ -70,6 +71,17 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     val toolbars by ToolbarsSettingsStore.getToolbarsFlow(ctx).collectAsState(initial = ToolbarsSettingsStore.defaultList)
     val allTags by TagsSettingsStore.getTags(ctx).collectAsState(initial = emptyList())
     val enabledTagIds = allTags.filter { it.component4() }.map { it.id }.toSet()
+
+    //Other settings got by settingsStores
+    val showNoteDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationDeleteNote(ctx).collectAsState(initial = true)
+    val showMultipleDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationMultipleDeleteNote(ctx).collectAsState(initial = true)
+    val showMultipleEditConfirmation by UserConfirmSettingsStore.getShowUserValidationEditMultipleNote(ctx).collectAsState(initial = true)
+
+    var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
+    var showMultipleDeleteDialog by remember { mutableStateOf(false) }
+    var showMultipleEditDialog by remember { mutableStateOf(false) }
+
+    val floatingToolbars by UiSettingsStore.getFloatingToolbars(ctx).collectAsState(initial = true)
 
     // Manage selection state
     val isSelectingEnabled = toolbars.find { it.toolbar == ToolBars.SELECT }!!.enabled
@@ -104,14 +116,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     }
 
     // Tags things
-    var showDeleteConfirm by remember { mutableStateOf(false) }
+    var showTagDeleteConfirm by remember { mutableStateOf(false) }
     var editTag by remember { mutableStateOf<TagItem?>(null) }
     var showEditor by remember { mutableStateOf(false) }
     var showCreator by remember { mutableStateOf(false) }
     var initialTag by remember { mutableStateOf<TagItem?>(null) }
-
-    // other options
-    val floatingToolbars by UiSettingsStore.getFloatingToolbars(ctx).collectAsState(initial = true)
 
 
     // User actions
@@ -132,13 +141,96 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             )
         }
     }
-    fun onGroupAction(action: NotesActions) {
+    fun performGroupDelete() {
         scope.launch {
-            selectedNotes.forEach { note -> performAction(action, vm, navController, note, scope) }
+            selectedNotes.forEach { note -> performAction(NotesActions.DELETE, vm, navController, note, scope) }
             selectedNotes = emptySet()
             isMultiSelectMode = false
         }
     }
+
+    fun performGroupEdit() {
+        scope.launch {
+            selectedNotes.forEach { note -> performAction(NotesActions.EDIT, vm, navController, note, scope) }
+            selectedNotes = emptySet()
+            isMultiSelectMode = false
+        }
+    }
+
+
+    fun onGroupAction(action: NotesActions) {
+        when(action) {
+            NotesActions.DELETE -> {
+                if (showMultipleDeleteConfirmation) {
+                    showMultipleDeleteDialog = true
+                } else {
+                    performGroupDelete()
+                }
+            }
+            NotesActions.EDIT -> {
+                if (showMultipleEditConfirmation) {
+                    showMultipleEditDialog = true
+                } else {
+                    performGroupEdit()
+                }
+            }
+            else -> {
+                scope.launch {
+                    selectedNotes.forEach { note -> performAction(action, vm, navController, note, scope) }
+                    selectedNotes = emptySet()
+                    isMultiSelectMode = false
+                }
+            }
+        }
+    }
+
+    if (showMultipleDeleteDialog) {
+        UserValidation(
+            title = stringResource(R.string.delete_multiple_notes),
+            message = "${stringResource(R.string.are_you_sure_to_delete)} ${selectedNotes.size} notes ? ${stringResource(R.string.this_cant_be_undone)}!",
+            onCancel = { showMultipleDeleteDialog = false },
+            doNotRemindMeAgain = {
+                scope.launch { UserConfirmSettingsStore.setShowUserValidationMultipleDeleteNote(ctx, false) }
+            },
+            onAgree = {
+                showMultipleDeleteDialog = false
+                performGroupDelete()
+            }
+        )
+    }
+
+    if (showMultipleEditDialog) {
+        UserValidation(
+            title = stringResource(R.string.edit_multiple_notes),
+            message = "${stringResource(R.string.are_you_sure_to_edit)} ${selectedNotes.size} notes ? ${stringResource(R.string.it_will_open_several_editors)}!",
+            onCancel = { showMultipleEditDialog = false },
+            doNotRemindMeAgain = {
+                scope.launch { UserConfirmSettingsStore.setShowUserValidationEditMultipleNote(ctx, false) }
+            },
+            onAgree = {
+                showMultipleEditDialog = false
+                performGroupEdit()
+            }
+        )
+    }
+
+    if (noteToDelete != null) {
+        UserValidation(
+            title = stringResource(R.string.delete_note),
+            message = "${stringResource(R.string.are_you_sure_to_delete)} ${noteToDelete!!.title} ? ${stringResource(R.string.this_cant_be_undone)}!",
+            onCancel = { noteToDelete = null },
+            doNotRemindMeAgain = {
+                scope.launch { UserConfirmSettingsStore.setShowUserValidationDeleteNote(ctx, false) }
+            },
+            onAgree = {
+                scope.launch {
+                    vm.delete(noteToDelete!!)
+                    noteToDelete = null
+                }
+            }
+        )
+    }
+
 
     fun onGlobalToolbarAction(action: GlobalNotesActions, clickType: ClickType, tagItem: TagItem?, toolbar: ToolBars) {
         when (action) {
@@ -182,7 +274,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
 
                     ClickType.DOUBLE -> {
                         editTag = tag
-                        showDeleteConfirm = true
+                        showTagDeleteConfirm = true
                     }
                 }
             }
@@ -397,14 +489,20 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         onNoteClick = ::onNoteClick,
                         onNoteLongClick = ::onNoteLongClick,
                         onRightAction = { note ->
-                            performAction(actionSettings.rightAction, vm, navController, note, scope)
+                            if (actionSettings.rightAction == NotesActions.DELETE && showNoteDeleteConfirmation) noteToDelete = note
+                            else performAction(actionSettings.rightAction, vm, navController, note, scope)
                         },
                         onLeftAction = { note ->
-                            performAction(actionSettings.leftAction, vm, navController, note, scope)
+                            if (actionSettings.leftAction == NotesActions.DELETE && showNoteDeleteConfirmation) noteToDelete = note
+                            else performAction(actionSettings.leftAction, vm, navController, note, scope)
                         },
-                        onButtonClick = { note -> scope.launch { vm.delete(note) } },
+                        onDeleteButtonClick = { note ->
+                            if (showNoteDeleteConfirmation) noteToDelete = note
+                            else { scope.launch { vm.delete(note) } }
+                        },
                         onTypeButtonClick = { note ->
-                            performAction(actionSettings.typeButtonAction, vm, navController, note, scope)
+                            if (actionSettings.typeButtonAction == NotesActions.DELETE && showNoteDeleteConfirmation) noteToDelete = note
+                            else performAction(actionSettings.typeButtonAction, vm, navController, note, scope)
                         },
                         onOrderChanged = { newList -> vm.reorderNotes(newList) },
                         actionSettings = actionSettings
@@ -476,14 +574,14 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         )
     }
 
-    if (showDeleteConfirm && editTag != null) {
+    if (showTagDeleteConfirm && editTag != null) {
         val tagToDelete = editTag!!
         UserValidation(
             title = stringResource(R.string.delete_tag),
             message = "${stringResource(R.string.tag_deletion_confirm)} '${tagToDelete.name}'?",
-            onCancel = { showDeleteConfirm = false },
+            onCancel = { showTagDeleteConfirm = false },
             onAgree = {
-                showDeleteConfirm = false
+                showTagDeleteConfirm = false
                 scope.launch { TagsSettingsStore.deleteTag(ctx, tagToDelete) }
             }
         )
@@ -498,10 +596,16 @@ fun performAction(
     navController: NavHostController,
     note: NoteEntity,
     scope: CoroutineScope,
+//    ctx: Context? = null,
+//    monoAction: Boolean = true,
+//    noteToDelete: ((NoteEntity) -> Unit)? = null,
     onSelectStart: (() -> Unit)? = null
 ) {
     when (action) {
         NotesActions.DELETE -> scope.launch { vm.delete(note) }
+//        NotesActions.DELETE -> if (monoAction && noteToDelete != null) {
+//            scope.launch { vm.delete(note) }
+//        }
         NotesActions.COMPLETE -> scope.launch {
             if (note.isCompleted) vm.markUnCompleted(note)
             else vm.markCompleted(note)

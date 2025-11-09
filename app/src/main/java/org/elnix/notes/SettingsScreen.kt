@@ -51,6 +51,7 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.settings.stores.UiSettingsStore
+import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
@@ -67,6 +68,7 @@ import org.elnix.notes.ui.settings.debug.DebugTab
 import org.elnix.notes.ui.settings.debug.NotesDebugTab
 import org.elnix.notes.ui.settings.debug.OtherDebugTab
 import org.elnix.notes.ui.settings.debug.RemindersDebugTab
+import org.elnix.notes.ui.settings.debug.UserConfirmDebugTab
 import org.elnix.notes.ui.settings.language.LanguageTab
 import org.elnix.notes.ui.settings.security.SecurityTab
 
@@ -80,6 +82,7 @@ fun SettingsListScreen(navController: NavController) {
     val isDebugModeEnabled by UiSettingsStore.getDebugMode(ctx).collectAsState(initial = false)
 
     var timesClickedOnVersion by remember { mutableIntStateOf(0) }
+    val showUserConfirmEnableDebug by UserConfirmSettingsStore.getShowEnableDebug(ctx).collectAsState(initial = true)
     var showDebugModeUserValidation by remember { mutableStateOf(false) }
 
     var toast by remember { mutableStateOf<Toast?>(null) }
@@ -228,10 +231,11 @@ fun SettingsListScreen(navController: NavController) {
                             toast = Toast.makeText(
                                 ctx,
                                 "Debug Mode is already enabled",
-                                 Toast.LENGTH_SHORT
+                                Toast.LENGTH_SHORT
                             )
                             toast?.show()
                         }
+                        !showUserConfirmEnableDebug -> scope.launch { UiSettingsStore.setDebugMode(ctx, true) }
 
                         timesClickedOnVersion < 6 -> {
                             timesClickedOnVersion++
@@ -257,7 +261,10 @@ fun SettingsListScreen(navController: NavController) {
         UserValidation(
             title = stringResource(R.string.are_you_sure),
             message = stringResource(R.string.debug_mode_will_be_enabled),
-            onCancel = { showDebugModeUserValidation = false}
+            onCancel = { showDebugModeUserValidation = false},
+            doNotRemindMeAgain = {
+                scope.launch { UserConfirmSettingsStore.setShowEnableDebug(ctx,false) }
+            }
         ) {
             scope.launch{
                 UiSettingsStore.setDebugMode(ctx, true)
@@ -362,6 +369,15 @@ fun DebugNotesSettingsScreen(navController: NavController, vm : NoteViewModel) {
 @Composable
 fun OtherSettingsScreen(navController: NavController) {
     OtherDebugTab {
+        navController.popBackStack()
+    }
+}
+
+@Composable
+fun UserConfirmSettingsScreen(navController: NavController) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    UserConfirmDebugTab(ctx, scope) {
         navController.popBackStack()
     }
 }

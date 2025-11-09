@@ -155,4 +155,12 @@
     <string name="contributors">Contributeurs</string>
     <string name="app_developper">Développeur de l\'app</string>
     <string name="thaks_for_alphallm">Merci pour l\'intégration d\'AlphaLLM à l\'aide de contentProvider.</string>
+    <string name="do_not_remind_me_again">Ne plus me le rappeler</string>
+    <string name="delete_multiple_notes">Supprimer plusieurs notes</string>
+    <string name="are_you_sure_to_delete">Êtes vous sur de supprimer</string>
+    <string name="this_cant_be_undone">Cela ne peut être annulé</string>
+    <string name="edit_multiple_notes">Editer plusieurs notes</string>
+    <string name="are_you_sure_to_edit">Êtes vous sur d\'éditer</string>
+    <string name="it_will_open_several_editors">Cela va ouvrir plusieurs éditeurs</string>
+    <string name="delete_note">Supprimer la note</string>
 </resources>

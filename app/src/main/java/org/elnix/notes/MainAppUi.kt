@@ -43,6 +43,7 @@ object Routes {
             const val REMINDERS = "settings/debug/reminders"
             const val NOTES = "settings/debug/notes"
             const val OTHER = "settings/debug/other"
+            const val USER_CONFIRM = "settings/debug/user_confirm"
         }
     }
 }
@@ -159,5 +160,6 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteV
         composable(Routes.Settings.DebugSub.REMINDERS) { DebugReminderSettingsScreen(navController, vm) }
         composable(Routes.Settings.DebugSub.NOTES) { DebugNotesSettingsScreen(navController, vm) }
         composable(Routes.Settings.DebugSub.OTHER) { OtherSettingsScreen(navController) }
+        composable(Routes.Settings.DebugSub.USER_CONFIRM) { UserConfirmSettingsScreen(navController) }
     }
 }

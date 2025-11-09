@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -33,10 +34,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -52,6 +51,7 @@ import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.neededCLickTypeForAction
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarItemState
+import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.tags.TagBubble
 import org.elnix.notes.ui.helpers.tags.TagEditorDialog
@@ -67,14 +67,16 @@ fun ToolbarCard(
     isSearchExpanded: Boolean,
     height: Dp,
     color: Color,
+    borderColor: Color,
     ghosted: Boolean,
     scale: Float,
-    floatingToolbar: Boolean,
     onSearchChange: ((String) -> Unit)? = null,
     onActionClick: (GlobalNotesActions, ClickType, TagItem?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val allTags by TagsSettingsStore.getTags(ctx).collectAsState(initial = emptyList())
+    val border by ToolbarsSettingsStore.getToolbarsBorder(ctx).collectAsState(initial = 2)
+    val corner by ToolbarsSettingsStore.getToolbarsCorner(ctx).collectAsState(initial = 90)
 
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var editTag by remember { mutableStateOf<TagItem?>(null) }
@@ -89,22 +91,18 @@ fun ToolbarCard(
             .graphicsLayer {
                 this.scaleX = scale
                 this.scaleY = scale
-            }
-            .alpha(if (ghosted) 0.6f else 1f),
-        shape = if (floatingToolbar) { CircleShape } else  RectangleShape,
+            },
+//            .alpha(if (ghosted) 0.6f else 1f),
+        shape = RoundedCornerShape(percent = corner),
         colors = CardDefaults.cardColors(containerColor = color),
-        border = BorderStroke(2.dp, color.adjustBrightness(3f)),
+        border = if ( border > 0) BorderStroke(border.dp, borderColor) else null,
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
     ) {
         Row(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxSize()
-                .then(
-                    if (floatingToolbar) {
-                        Modifier.clip(CircleShape)
-                    } else Modifier
-                )
+                .clip(RoundedCornerShape(percent = corner))
                 .horizontalScroll(scrollState)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -124,6 +122,7 @@ fun ToolbarCard(
                             TagBubble(
                                 tag = tag,
                                 selected = tag.selected,
+                                ghostMode = ghosted,
                                 onClick = { onActionClick(action, ClickType.NORMAL, tag) },
                                 onLongClick = { onActionClick(action, ClickType.LONG, tag) },
                                 onDelete = { onActionClick(action, ClickType.DOUBLE, tag) },

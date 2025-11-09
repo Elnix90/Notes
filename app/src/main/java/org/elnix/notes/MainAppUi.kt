@@ -32,6 +32,10 @@ object Routes {
         const val APPEARANCE = "settings/appearance"
         const val COLORS = "settings/appearance/colors"
         const val CUSTOMISATION = "settings/customisation"
+
+        object CustomisationSub {
+            const val TOOLBARS = "settings/customisation/toolbars"
+        }
         const val REMINDER = "settings/reminder"
         const val SECURITY = "settings/security"
         const val BACKUP = "settings/backup"
@@ -148,7 +152,10 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteV
         composable(Routes.Settings.ROOT) { SettingsListScreen(navController) }
         composable(Routes.Settings.APPEARANCE) { AppearanceSettingsScreen(navController) }
         composable(Routes.Settings.COLORS) { ColorSelectorSettingsScreen(navController) }
+
         composable(Routes.Settings.CUSTOMISATION) { CustomisationSettingsScreen(navController) }
+        composable(Routes.Settings.CustomisationSub.TOOLBARS) { ToolbarsCustomisationSettingsScreen(navController) }
+
         composable(Routes.Settings.REMINDER) { RemindersSettingsScreen(navController) }
         composable(Routes.Settings.SECURITY) { SecuritySettingsScreen(navController) }
         composable(Routes.Settings.BACKUP) { BackupSettingsScreen(navController) }

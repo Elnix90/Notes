@@ -7,13 +7,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,13 +37,13 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.ColorPickerMode
 import org.elnix.notes.data.helpers.colorPickerText
 import org.elnix.notes.data.settings.stores.UiSettingsStore.getColorPickerMode
 import org.elnix.notes.data.settings.stores.UiSettingsStore.setColorPickerMode
+import org.elnix.notes.ui.settings.appearance.randomColor
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
@@ -46,8 +53,9 @@ fun ColorPickerRow(
     enabled: Boolean = true,
     defaultColor: Color,
     currentColor: Int,
+    randomColorButton: Boolean = true,
+    resetButton: Boolean = true,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
-    scope: CoroutineScope,
     onColorPicked: (Int) -> Unit
 ) {
     var showPicker by remember { mutableStateOf(false) }
@@ -55,12 +63,12 @@ fun ColorPickerRow(
     val modifier = if (showLabel) Modifier.fillMaxWidth() else Modifier.wrapContentWidth()
     Row(
        modifier = modifier
-            .clickable(enabled) { showPicker = true }
-            .background(
-                color = backgroundColor.adjustBrightness(if (enabled) 1f else 0.5f),
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+           .clickable(enabled) { showPicker = true }
+           .background(
+               color = backgroundColor.adjustBrightness(if (enabled) 1f else 0.5f),
+               shape = RoundedCornerShape(12.dp)
+           )
+           .padding(horizontal = 16.dp, vertical = 14.dp),
 
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -71,7 +79,41 @@ fun ColorPickerRow(
                 color = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (enabled) 1f else 0.5f)
             )
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            if (randomColorButton) {
+                Icon(
+                    imageVector = Icons.Default.Shuffle,
+                    contentDescription = stringResource(R.string.random_color),
+                    tint = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(backgroundColor.adjustBrightness(0.8f))
+                        .padding(5.dp)
+                        .clickable { onColorPicked(randomColor().toArgb()) }
+                )
+            }
+
+            Spacer(Modifier.width(8.dp))
+
+            if (resetButton) {
+                Icon(
+                    imageVector = Icons.Default.Restore,
+                    contentDescription = stringResource(R.string.reset),
+                    tint = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(backgroundColor.adjustBrightness(0.8f))
+                        .padding(5.dp)
+                        .clickable { onColorPicked(defaultColor.toArgb()) }
+                )
+            }
+
+            Spacer(Modifier.width(12.dp))
+
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -91,7 +133,6 @@ fun ColorPickerRow(
             title = { Text(text = "${stringResource(R.string.pick_a)} $label ${stringResource(R.string.color_text_literal)}", color = MaterialTheme.colorScheme.onSurface) },
             text = {
                 ColorPicker(
-                    scope,
                     initialColor = Color(currentColor),
                     defaultColor = defaultColor,
                     onColorSelected = {
@@ -111,12 +152,13 @@ fun ColorPickerRow(
 
 @Composable
 private fun ColorPicker(
-    scope: CoroutineScope,
     initialColor: Color,
     defaultColor: Color,
     onColorSelected: (Color) -> Unit
 ) {
+
     val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
     val mode by getColorPickerMode(ctx).collectAsState(initial = ColorPickerMode.SLIDERS)
 
     Column(

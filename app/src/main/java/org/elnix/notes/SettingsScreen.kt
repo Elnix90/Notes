@@ -60,11 +60,12 @@ import org.elnix.notes.ui.helpers.settings.ContributorItem
 import org.elnix.notes.ui.helpers.settings.SettingsItem
 import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.settings.BackupTab
-import org.elnix.notes.ui.settings.CustomisationTab
 import org.elnix.notes.ui.settings.PluginsTab
 import org.elnix.notes.ui.settings.RemindersTab
 import org.elnix.notes.ui.settings.appearance.AppearanceTab
 import org.elnix.notes.ui.settings.appearance.ColorSelectorTab
+import org.elnix.notes.ui.settings.customisation.CustomisationTab
+import org.elnix.notes.ui.settings.customisation.ToolbarsCustomisationTab
 import org.elnix.notes.ui.settings.debug.DebugTab
 import org.elnix.notes.ui.settings.debug.NotesDebugTab
 import org.elnix.notes.ui.settings.debug.OtherDebugTab
@@ -284,7 +285,7 @@ fun AppearanceSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     AppearanceTab(ctx, scope, navController) {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.ROOT)
     }
 }
 
@@ -293,7 +294,7 @@ fun ColorSelectorSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     ColorSelectorTab(ctx, scope) {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.APPEARANCE)
     }
 }
 @Composable
@@ -301,14 +302,14 @@ fun RemindersSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     RemindersTab(ctx, scope) {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.ROOT)
     }
 }
 
 @Composable
 fun SecuritySettingsScreen(navController: NavController) {
     SecurityTab {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.ROOT)
     }
 }
 
@@ -316,14 +317,14 @@ fun SecuritySettingsScreen(navController: NavController) {
 fun BackupSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     BackupTab(ctx) {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.ROOT)
     }
 }
 
 @Composable
 fun LanguageSettingsScreen(navController: NavController) {
     LanguageTab {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.ROOT)
     }
 }
 
@@ -332,7 +333,7 @@ fun PluginsSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     PluginsTab(ctx, scope) {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.ROOT)
     }
 }
 
@@ -340,15 +341,24 @@ fun PluginsSettingsScreen(navController: NavController) {
 fun CustomisationSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    CustomisationTab(ctx, scope) {
-        navController.popBackStack()
+    CustomisationTab(ctx, scope, navController) {
+        navController.navigate(Routes.Settings.ROOT)
+    }
+}
+
+@Composable
+fun ToolbarsCustomisationSettingsScreen(navController: NavController) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    ToolbarsCustomisationTab(ctx, scope) {
+        navController.navigate(Routes.Settings.CUSTOMISATION)
     }
 }
 
 @Composable
 fun DebugSettingsScreen(navController: NavController) {
     DebugTab(navController) {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.ROOT)
     }
 }
 
@@ -357,21 +367,21 @@ fun DebugReminderSettingsScreen(navController: NavController, vm : NoteViewModel
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     RemindersDebugTab(ctx, scope, vm) {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.DEBUG)
     }
 }
 
 @Composable
 fun DebugNotesSettingsScreen(navController: NavController, vm : NoteViewModel) {
     NotesDebugTab(vm) {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.DEBUG)
     }
 }
 
 @Composable
 fun OtherSettingsScreen(navController: NavController) {
     OtherDebugTab {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.DEBUG)
     }
 }
 
@@ -380,7 +390,7 @@ fun UserConfirmSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     UserConfirmDebugTab(ctx, scope) {
-        navController.popBackStack()
+        navController.navigate(Routes.Settings.DEBUG)
     }
 }
 

@@ -6,9 +6,9 @@ import androidx.compose.ui.graphics.Color
 object AmoledDefault : ThemeColors {
     override val Primary = Color(0xFF6650a4)
     override val OnPrimary = Color(0xFFCECECE)
-    override val Secondary = Primary.adjustBrightness(1.2f)
+    override val Secondary = Color(0xFF934EB2)
     override val OnSecondary = OnPrimary
-    override val Tertiary = Secondary.adjustBrightness(1.2f)
+    override val Tertiary = Color(0xFFCB84EC)
     override val OnTertiary = OnPrimary
     override val Background = Color.Black
     override val OnBackground = OnPrimary
@@ -28,13 +28,13 @@ object AmoledDefault : ThemeColors {
 }
 
 object DarkDefault : ThemeColors {
-    override val Primary = Color(0xFF8F6EE8)
+    override val Primary = Color(0xFF9842B7)
     override val OnPrimary = Color.Black
 
-    override val Secondary = Primary.adjustBrightness(1.15f)
+    override val Secondary = Color(0xFFA06CB7)
     override val OnSecondary = OnPrimary
 
-    override val Tertiary = Secondary.adjustBrightness(1.15f)
+    override val Tertiary = Color(0xFFB784C9)
     override val OnTertiary = OnPrimary
 
     override val Background = Color(0xFF1A1624)
@@ -62,9 +62,9 @@ object DarkDefault : ThemeColors {
 object LightDefault : ThemeColors {
     override val Primary = Color(0xFFA351E7)
     override val OnPrimary = Color.Black
-    override val Secondary = Primary.adjustBrightness(0.8f)
+    override val Secondary = Color(0xFF772C93)
     override val OnSecondary = OnPrimary
-    override val Tertiary = Secondary.adjustBrightness(0.8f)
+    override val Tertiary = Color(0xFF530D72)
     override val OnTertiary = OnPrimary
     override val Background = Color.White
     override val OnBackground = OnPrimary

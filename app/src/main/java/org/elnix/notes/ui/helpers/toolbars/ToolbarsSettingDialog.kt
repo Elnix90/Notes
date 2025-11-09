@@ -3,20 +3,27 @@ package org.elnix.notes.ui.helpers.toolbars
 import android.content.Context
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults.elevatedCardElevation
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,6 +49,7 @@ import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.ToolBars
+import org.elnix.notes.data.settings.stores.ToolbarSetting
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.theme.AppObjectsColors
@@ -72,6 +80,10 @@ fun ToolbarsSettingsRow(
         }
     )
 
+    var showColorPickerDialog by remember { mutableStateOf(false) }
+    var editToolbar by remember { mutableStateOf<ToolbarSetting?>(null) }
+
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -84,7 +96,7 @@ fun ToolbarsSettingsRow(
             .padding(horizontal = 16.dp, vertical = 14.dp)
     ) {
         Text(
-            text = "Toolbars",
+            text = stringResource(R.string.toolbars_order),
             color = MaterialTheme.colorScheme.onSurface.copy(if (enabled) 1f else 0.5f)
         )
     }
@@ -114,12 +126,16 @@ fun ToolbarsSettingsRow(
                     items(list.size, key = { list[it].toolbar.name }) { index ->
                         val item = list[index]
 
+                        val color = item.color ?: MaterialTheme.colorScheme.surface
+                        val borderColor = item.borderColor ?: color.adjustBrightness(3f)
+
                         ReorderableItem(state = reorderState, key = item.toolbar.name) { isDragging ->
                             val scale by animateFloatAsState(if (isDragging) 1.03f else 1f)
                             val elevation by animateDpAsState(if (isDragging) 16.dp else 0.dp)
+
                             val bgColor =
-                                if (isDragging) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                                else MaterialTheme.colorScheme.surfaceVariant
+                                if (isDragging) color.copy(alpha = 0.2f)
+                                else color
 
                             ElevatedCard(
                                 modifier = Modifier
@@ -127,14 +143,21 @@ fun ToolbarsSettingsRow(
                                     .padding(vertical = 4.dp)
                                     .scale(scale)
                                     .background(bgColor, RoundedCornerShape(12.dp))
+                                    .border(
+                                        BorderStroke(1.dp, borderColor),
+                                        RoundedCornerShape(12.dp)
+                                    )
                                     .detectReorder(reorderState),
-                                shape = RoundedCornerShape(12.dp),
                                 elevation = elevatedCardElevation(elevation)
                             ) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(MaterialTheme.colorScheme.surface.adjustBrightness(0.7f))
+                                        .background(
+                                            MaterialTheme.colorScheme.surface.adjustBrightness(
+                                                0.7f
+                                            )
+                                        )
                                         .padding(horizontal = 12.dp, vertical = 8.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -157,6 +180,22 @@ fun ToolbarsSettingsRow(
                                             modifier = Modifier.weight(1f),
                                             style = MaterialTheme.typography.bodyLarge
                                         )
+
+                                        IconButton(
+                                            onClick = {
+                                                editToolbar = item
+                                                showColorPickerDialog = true
+                                            },
+                                            colors = AppObjectsColors.iconButtonColors(),
+                                            shape = CircleShape
+                                        ){
+                                            Icon(
+                                                imageVector = Icons.Default.ColorLens,
+                                                contentDescription = stringResource(R.string.toolbar_color),
+                                            )
+                                        }
+
+                                        Spacer(Modifier.width(8.dp))
 
                                         Icon(
                                             imageVector = Icons.Default.DragHandle,
@@ -183,5 +222,18 @@ fun ToolbarsSettingsRow(
             containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
+    }
+
+    if (showColorPickerDialog && editToolbar != null) {
+        val toolbarToEdit = editToolbar!!
+        ToolbarColorSelectorDialog(
+            toolbar = toolbarToEdit,
+            onDismiss = { showColorPickerDialog = false }
+        ) { color, borderColor ->
+                scope.launch {
+                    ToolbarsSettingsStore.updateToolbarColor(ctx, toolbarToEdit.toolbar, Color(color), Color(borderColor))
+                }
+                showColorPickerDialog = false
+        }
     }
 }

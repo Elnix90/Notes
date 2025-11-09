@@ -142,11 +142,4 @@ object UiSettingsStore {
     suspend fun setShowTagsInNotes(ctx: Context, enabled: Boolean) {
         ctx.dataStore.edit { it[SHOW_TAGS_IN_NOTES] = enabled }
     }
-
-    private val FLOATING_TOOLBARS = booleanPreferencesKey("floating_toolbars")
-    fun getFloatingToolbars(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[FLOATING_TOOLBARS] ?: true }
-    suspend fun setFloatingToolbars(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[FLOATING_TOOLBARS] = enabled }
-    }
 }

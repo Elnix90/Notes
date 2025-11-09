@@ -18,7 +18,6 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
@@ -110,17 +109,18 @@ object AppObjectsColors {
 
     @Composable
     fun sliderColors(
-        activeTrackColor: Color? = null
+        activeTrackColor: Color? = null,
+        backgroundColor: Color? = null
     ): SliderColors {
         val colors = MaterialTheme.colorScheme
         return SliderDefaults.colors(
             thumbColor = activeTrackColor?: colors.primary,
             activeTrackColor = activeTrackColor?: colors.secondary,
             activeTickColor = activeTrackColor?: colors.primary,
-            inactiveTrackColor = colors.surface,
+            inactiveTrackColor = backgroundColor ?: colors.surface,
             inactiveTickColor = activeTrackColor?: colors.primary,
             disabledThumbColor = colors.primary,
-            disabledActiveTrackColor = colors.onSurface,
+            disabledActiveTrackColor = backgroundColor ?: colors.onSurface,
             disabledActiveTickColor = colors.primary,
         )
     }
@@ -230,13 +230,16 @@ object AppObjectsColors {
     }
 
     @Composable
-    fun iconButtonColors(): IconButtonColors {
+    fun iconButtonColors(
+        backgroundColor: Color? = null,
+        contentColor: Color? = null
+    ): IconButtonColors {
         val colors = MaterialTheme.colorScheme
         return IconButtonDefaults.iconButtonColors(
-            containerColor = colors.primary,
-            contentColor = colors.outline,
-            disabledContainerColor = colors.primary.copy(0.5f),
-            disabledContentColor = colors.outline.copy(0.5f)
+            containerColor = backgroundColor ?: colors.primary,
+            contentColor = contentColor ?: colors.outline,
+            disabledContainerColor = backgroundColor ?: colors.primary.copy(0.5f),
+            disabledContentColor = contentColor ?: colors.outline.copy(0.5f)
         )
     }
 }

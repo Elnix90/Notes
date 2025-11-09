@@ -4,16 +4,22 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +28,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
@@ -36,9 +44,9 @@ import org.elnix.notes.data.settings.applyDefaultThemeColors
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
-import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.colors.ColorPickerRow
+import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.theme.AmoledDefault
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.LocalExtraColors
@@ -86,6 +94,7 @@ fun ColorSelectorTab(
     val selectedDefaultTheme by UiSettingsStore.getDefaultTheme(ctx).collectAsState(initial = DefaultThemes.DARK)
 
     var showResetValidation by remember { mutableStateOf(false) }
+    var showRandomColorsValidation by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
 
@@ -112,15 +121,44 @@ fun ColorSelectorTab(
             scope.launch { UiSettingsStore.setColorCustomisationMode(ctx, it) }
         }
 
-        Button(
-            onClick = { showResetValidation = true },
-            modifier = Modifier.fillMaxWidth(),
-            colors = AppObjectsColors.buttonColors()
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = stringResource(R.string.reset_to_default_colors),
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+            Button(
+                onClick = { showResetValidation = true },
+                modifier = Modifier.weight(1f),
+                colors = AppObjectsColors.buttonColors()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Restore,
+                    contentDescription = stringResource(R.string.reset),
+                    tint = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .padding(5.dp)
+                )
+
+                Text(
+                    text = stringResource(R.string.reset_to_default_colors),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+
+            IconButton(
+                onClick = { showRandomColorsValidation = true },
+                colors = AppObjectsColors.iconButtonColors(
+                    backgroundColor = MaterialTheme.colorScheme.primary.copy(0.7f)
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Shuffle,
+                    contentDescription = stringResource(R.string.make_every_colors_random),
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .padding(5.dp)
+                )
+            }
         }
 
         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
@@ -132,137 +170,118 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.primary_color),
                         defaultColor = AmoledDefault.Primary,
-                        currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb(),
-                        scope = scope,
+                        currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb()
                     ) { scope.launch { ColorSettingsStore.setPrimary(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.on_primary_color),
                         defaultColor = AmoledDefault.OnPrimary,
-                        currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb(),
-                        scope = scope,
+                        currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb()
                     ) { scope.launch { ColorSettingsStore.setOnPrimary(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.secondary_color),
                         defaultColor = AmoledDefault.Secondary,
-                        currentColor = secondary ?: MaterialTheme.colorScheme.secondary.toArgb(),
-                        scope = scope,
+                        currentColor = secondary ?: MaterialTheme.colorScheme.secondary.toArgb()
                     ) { scope.launch { ColorSettingsStore.setSecondary(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.on_secondary_color),
                         defaultColor = AmoledDefault.OnSecondary,
                         currentColor = onSecondary
-                            ?: MaterialTheme.colorScheme.onSecondary.toArgb(),
-                        scope = scope,
+                            ?: MaterialTheme.colorScheme.onSecondary.toArgb()
                     ) { scope.launch { ColorSettingsStore.setOnSecondary(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.tertiary_color),
                         defaultColor = AmoledDefault.Tertiary,
-                        currentColor = tertiary ?: MaterialTheme.colorScheme.tertiary.toArgb(),
-                        scope = scope,
+                        currentColor = tertiary ?: MaterialTheme.colorScheme.tertiary.toArgb()
                     ) { scope.launch { ColorSettingsStore.setTertiary(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.on_tertiary_color),
                         defaultColor = AmoledDefault.OnTertiary,
-                        currentColor = onTertiary ?: MaterialTheme.colorScheme.onTertiary.toArgb(),
-                        scope = scope,
+                        currentColor = onTertiary ?: MaterialTheme.colorScheme.onTertiary.toArgb()
                     ) { scope.launch { ColorSettingsStore.setOnTertiary(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.background_color),
                         defaultColor = AmoledDefault.Background,
-                        currentColor = background ?: MaterialTheme.colorScheme.background.toArgb(),
-                        scope = scope,
+                        currentColor = background ?: MaterialTheme.colorScheme.background.toArgb()
                     ) { scope.launch { ColorSettingsStore.setBackground(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.on_background_color),
                         defaultColor = AmoledDefault.OnBackground,
                         currentColor = onBackground
-                            ?: MaterialTheme.colorScheme.onBackground.toArgb(),
-                        scope = scope,
+                            ?: MaterialTheme.colorScheme.onBackground.toArgb()
                     ) { scope.launch { ColorSettingsStore.setOnBackground(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.surface_color),
                         defaultColor = AmoledDefault.Surface,
-                        currentColor = surface ?: MaterialTheme.colorScheme.surface.toArgb(),
-                        scope = scope,
+                        currentColor = surface ?: MaterialTheme.colorScheme.surface.toArgb()
                     ) { scope.launch { ColorSettingsStore.setSurface(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.on_surface_color),
                         defaultColor = AmoledDefault.OnSurface,
-                        currentColor = onSurface ?: MaterialTheme.colorScheme.onSurface.toArgb(),
-                        scope = scope,
+                        currentColor = onSurface ?: MaterialTheme.colorScheme.onSurface.toArgb()
                     ) { scope.launch { ColorSettingsStore.setOnSurface(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.error_color),
                         defaultColor = AmoledDefault.Error,
-                        currentColor = error ?: MaterialTheme.colorScheme.error.toArgb(),
-                        scope = scope,
+                        currentColor = error ?: MaterialTheme.colorScheme.error.toArgb()
                     ) { scope.launch { ColorSettingsStore.setError(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.on_error_color),
                         defaultColor = AmoledDefault.OnError,
-                        currentColor = onError ?: MaterialTheme.colorScheme.onError.toArgb(),
-                        scope = scope,
+                        currentColor = onError ?: MaterialTheme.colorScheme.onError.toArgb()
                     ) { scope.launch { ColorSettingsStore.setOnError(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.outline_color),
                         defaultColor = AmoledDefault.Outline,
-                        currentColor = outline ?: MaterialTheme.colorScheme.outline.toArgb(),
-                        scope = scope,
+                        currentColor = outline ?: MaterialTheme.colorScheme.outline.toArgb()
                     ) { scope.launch { ColorSettingsStore.setOutline(ctx, it) } }
 
                     // === Extra custom action colors ===
                     ColorPickerRow(
                         label = stringResource(R.string.delete_color),
                         defaultColor = AmoledDefault.Delete,
-                        currentColor = delete ?: LocalExtraColors.current.delete.toArgb(),
-                        scope = scope,
+                        currentColor = delete ?: LocalExtraColors.current.delete.toArgb()
                     ) { scope.launch { ColorSettingsStore.setDelete(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.edit_color),
                         defaultColor = AmoledDefault.Edit,
-                        currentColor = edit ?: LocalExtraColors.current.edit.toArgb(),
-                        scope = scope,
+                        currentColor = edit ?: LocalExtraColors.current.edit.toArgb()
                     ) { scope.launch { ColorSettingsStore.setEdit(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.complete_color),
                         defaultColor = AmoledDefault.Complete,
-                        currentColor = complete ?: LocalExtraColors.current.complete.toArgb(),
-                        scope = scope,
+                        currentColor = complete ?: LocalExtraColors.current.complete.toArgb()
                     ) { scope.launch { ColorSettingsStore.setComplete(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.note_type_text),
                         defaultColor = AmoledDefault.NoteTypeText,
-                        currentColor = noteTypeText ?: LocalExtraColors.current.noteTypeText.toArgb(),
-                        scope = scope,
+                        currentColor = noteTypeText ?: LocalExtraColors.current.noteTypeText.toArgb()
                     ) { scope.launch { ColorSettingsStore.setNoteTypeText(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.note_type_checklist),
                         defaultColor = AmoledDefault.NoteTypeChecklist,
-                        currentColor = noteTypeChecklist ?: LocalExtraColors.current.noteTypeChecklist.toArgb(),
-                        scope = scope,
+                        currentColor = noteTypeChecklist ?: LocalExtraColors.current.noteTypeChecklist.toArgb()
                     ) { scope.launch { ColorSettingsStore.setNoteTypeChecklist(ctx, it) } }
 
                     ColorPickerRow(
                         label = stringResource(R.string.note_type_drawing),
                         defaultColor = AmoledDefault.NoteTypeDrawing,
-                        currentColor = noteTypeDrawing ?: LocalExtraColors.current.noteTypeDrawing.toArgb(),
-                        scope = scope,
+                        currentColor = noteTypeDrawing ?: LocalExtraColors.current.noteTypeDrawing.toArgb()
                     ) { scope.launch { ColorSettingsStore.setNoteTypeDrawing(ctx, it) } }
 
                 }
@@ -274,8 +293,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.primary_color),
                         defaultColor = AmoledDefault.Primary,
-                        currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb(),
-                        scope = scope,
+                        currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb()
                     ) { newColorInt ->
 
 
@@ -298,8 +316,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.background_color),
                         defaultColor = AmoledDefault.Background,
-                        currentColor = background ?: MaterialTheme.colorScheme.background.toArgb(),
-                        scope = scope,
+                        currentColor = background ?: MaterialTheme.colorScheme.background.toArgb()
                     ) {
                         scope.launch {
                             ColorSettingsStore.setBackground(ctx, it)
@@ -309,8 +326,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.text_color),
                         defaultColor = AmoledDefault.OnPrimary,
-                        currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb(),
-                        scope = scope,
+                        currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb()
                     ) {
                         scope.launch {
                             ColorSettingsStore.setOnPrimary(ctx, it)
@@ -353,6 +369,18 @@ fun ColorSelectorTab(
                     selectedDefaultTheme
                 )
                 showResetValidation = false
+            }
+        }
+    }
+    if(showRandomColorsValidation){
+        UserValidation(
+            title = stringResource(R.string.make_every_colors_random),
+            message = stringResource(R.string.make_every_colors_random_explanation),
+            onCancel = { showRandomColorsValidation = false }
+        ) {
+            scope.launch {
+                ColorSettingsStore.setAllRandomColors(ctx)
+                showRandomColorsValidation = false
             }
         }
     }

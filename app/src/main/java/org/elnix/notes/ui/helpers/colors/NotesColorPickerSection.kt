@@ -67,8 +67,7 @@ fun NotesColorPickerSection(
                     showLabel = false,
                     defaultColor = MaterialTheme.colorScheme.surface,
                     currentColor = note?.bgColor?.toArgb()
-                        ?: MaterialTheme.colorScheme.surface.toArgb(),
-                    scope = scope
+                        ?: MaterialTheme.colorScheme.surface.toArgb()
                 ) { onBgColorPicked(it) }
 
                 // RANDOM NOTE COLOR BUTTON
@@ -113,7 +112,6 @@ fun NotesColorPickerSection(
                     defaultColor = MaterialTheme.colorScheme.onSurface,
                     currentColor = note?.txtColor?.toArgb()
                         ?: MaterialTheme.colorScheme.onSurface.toArgb(),
-                    scope = scope,
                     enabled = !autoTextColorEnabled,
                 ) { onTextColorPicked(it) }
 

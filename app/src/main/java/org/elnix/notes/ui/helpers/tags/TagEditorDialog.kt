@@ -79,8 +79,7 @@ fun TagEditorDialog(
                     defaultColor = Color(colorInt),
                     currentColor = colorInt,
                     backgroundColor = MaterialTheme.colorScheme.primary,
-                    onColorPicked = { colorInt = it },
-                    scope = scope
+                    onColorPicked = { colorInt = it }
                 )
 
                 if (initialTag != null) {

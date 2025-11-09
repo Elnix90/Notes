@@ -81,7 +81,10 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     var showMultipleDeleteDialog by remember { mutableStateOf(false) }
     var showMultipleEditDialog by remember { mutableStateOf(false) }
 
-    val floatingToolbars by UiSettingsStore.getFloatingToolbars(ctx).collectAsState(initial = true)
+    val paddingLeft by ToolbarsSettingsStore.getToolbarsPaddingLeft(ctx).collectAsState(initial = 16)
+    val paddingRight by ToolbarsSettingsStore.getToolbarsPaddingRight(ctx).collectAsState(initial = 16)
+    val toolbarsSpacing by ToolbarsSettingsStore.getToolbarsSpacing(ctx).collectAsState(initial = 8)
+
 
     // Manage selection state
     val isSelectingEnabled = toolbars.find { it.toolbar == ToolBars.SELECT }!!.enabled
@@ -320,10 +323,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 {
                     UnifiedToolbar(
                         ctx,
-                        toolBars = ToolBars.SELECT,
+                        toolbar = ToolBars.SELECT,
                         scrollState = rememberScrollState(),
                         isSearchExpanded = isSearchExpandedSelect,
-                        floatingToolbar = floatingToolbars,
+                        color = bar.color,
+                        borderColor = bar.borderColor,
                         onSearchChange = { if ( it.isNotBlank()) searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
@@ -333,10 +337,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 {
                     UnifiedToolbar(
                         ctx = ctx,
-                        toolBars = ToolBars.TAGS,
+                        toolbar = ToolBars.TAGS,
                         scrollState = rememberScrollState(),
                         isSearchExpanded = isSearchExpandedTags,
-                        floatingToolbar = floatingToolbars,
+                        color = bar.color,
+                        borderColor = bar.borderColor,
                         onSearchChange = { searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
@@ -346,10 +351,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 {
                     UnifiedToolbar(
                         ctx = ctx,
-                        toolBars = ToolBars.QUICK_ACTIONS,
+                        toolbar = ToolBars.QUICK_ACTIONS,
                         scrollState = rememberScrollState(),
                         isSearchExpanded = isSearchExpandedQuickActions,
-                        floatingToolbar = floatingToolbars,
+                        color = bar.color,
+                        borderColor = bar.borderColor,
                         onSearchChange = { searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
@@ -362,8 +368,9 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    val topBarHeight = (80 * topBars.size).dp
-    val bottomBarHeight = (85 * bottomBars.size).dp
+    val topBarHeight = ((85 * topBars.size) + toolbarsSpacing * maxOf(0, topBars.size - 1)).dp
+    val bottomBarHeight = ((85 * bottomBars.size) + toolbarsSpacing * maxOf(0, bottomBars.size - 1)).dp
+
 
     var notesNumberText: String? = null
     if (showNotesNumber) {
@@ -522,13 +529,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 .height(topBarHeight)
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
-                .then(
-                    if (floatingToolbars) {
-                        Modifier.padding(horizontal = 16.dp)
-                    } else Modifier
-                )
-            ,
-            verticalArrangement = Arrangement.spacedBy(if (floatingToolbars) 8.dp else 0.dp)
+                .padding(paddingLeft.dp, 0.dp, paddingRight.dp,0.dp),
+            verticalArrangement = Arrangement.spacedBy(toolbarsSpacing.dp)
         ) {
             topBars.forEach { it() }
         }
@@ -538,12 +540,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 .height(bottomBarHeight)
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .then(
-                    if (floatingToolbars) {
-                        Modifier.padding(horizontal = 16.dp)
-                    } else Modifier
-                ),
-            verticalArrangement = Arrangement.spacedBy(if (floatingToolbars) 8.dp else 0.dp)
+                .padding(paddingLeft.dp, 0.dp, paddingRight.dp,0.dp),
+            verticalArrangement = Arrangement.spacedBy(toolbarsSpacing.dp)
         ) {
             bottomBars.forEach { it() }
         }

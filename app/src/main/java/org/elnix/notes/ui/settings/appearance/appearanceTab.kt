@@ -43,7 +43,6 @@ fun AppearanceTab(
     val fullscreenApp by UiSettingsStore.getFullscreen(ctx).collectAsState(initial = false)
     val showNotesNumber by UiSettingsStore.getShowNotesNumber(ctx).collectAsState(initial = true)
     val notesViewType by UiSettingsStore.getNoteViewType(ctx).collectAsState(initial = NoteViewType.LIST)
-    val floatingToolbars by UiSettingsStore.getFloatingToolbars(ctx).collectAsState(initial = true)
 
     Column(
         modifier = Modifier
@@ -94,13 +93,6 @@ fun AppearanceTab(
                 optionLabel = { it.name}
             ) {
                 scope.launch { UiSettingsStore.setNoteViewType(ctx, it) }
-            }
-
-            SwitchRow(
-                floatingToolbars,
-                stringResource(R.string.floating_toolbars),
-            ) {
-                scope.launch { UiSettingsStore.setFloatingToolbars(ctx, it) }
             }
         }
     }

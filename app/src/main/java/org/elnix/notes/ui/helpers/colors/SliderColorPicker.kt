@@ -33,9 +33,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.SliderWithLabel
+import org.elnix.notes.ui.settings.appearance.randomColor
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
-import kotlin.random.Random
 
 @Composable
 fun SliderColorPicker(
@@ -93,9 +93,10 @@ fun SliderColorPicker(
             IconButton(
                 onClick = {
                     pushCurrentColor()
-                    red = Random.nextFloat()
-                    green = Random.nextFloat()
-                    blue = Random.nextFloat()
+                    val color = randomColor()
+                    red = color.red
+                    green = color.green
+                    blue = color.blue
                 },
                 modifier = Modifier.weight(1f)
             ) {

@@ -14,25 +14,28 @@ import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.helpers.defaultToolbarItems
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
+import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
 fun UnifiedToolbar(
     ctx: Context,
-    toolBars: ToolBars,
+    toolbar: ToolBars,
     scrollState: ScrollState,
     isSearchExpanded: Boolean,
-    color: Color = MaterialTheme.colorScheme.surface,
+    color: Color? = null,
+    borderColor: Color? = null,
     ghosted: Boolean = false,
     scale: Float = 1f,
-    floatingToolbar: Boolean,
     onSearchChange: ((String) -> Unit)? = null,
-    onActionClick: (GlobalNotesActions, ClickType, TagItem?, ToolBars) -> Unit
+    onActionClick: ((GlobalNotesActions, ClickType, TagItem?, ToolBars) -> Unit)? = null
 ) {
-    val toolbarItemsState = remember { ToolbarItemsSettingsStore.getToolbarItemsFlow(ctx, toolBars) }
-        .collectAsState(initial = defaultToolbarItems(toolBars))
+    val toolbarItemsState = remember { ToolbarItemsSettingsStore.getToolbarItemsFlow(ctx, toolbar) }
+        .collectAsState(initial = defaultToolbarItems(toolbar))
 
     val toolbarItems = toolbarItemsState.value
 
+    val toolbarColor = color ?: MaterialTheme.colorScheme.surface
+    val toolbarBorderColor = borderColor ?: toolbarColor.adjustBrightness(3f)
 
     ToolbarCard(
         ctx = ctx,
@@ -40,12 +43,12 @@ fun UnifiedToolbar(
         scrollState = scrollState,
         isSearchExpanded = isSearchExpanded,
         height = 80.dp,
-        color = color,
+        color = toolbarColor,
+        borderColor = toolbarBorderColor,
         ghosted = ghosted,
         scale = scale,
-        floatingToolbar = floatingToolbar,
         onSearchChange = { onSearchChange?.invoke(it) }
     ) { action, clickType, tagItem ->
-        onActionClick(action, clickType, tagItem, toolBars)
+        onActionClick?.invoke(action, clickType, tagItem, toolbar)
     }
 }

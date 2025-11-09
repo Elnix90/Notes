@@ -1,4 +1,4 @@
-package org.elnix.notes.ui.settings
+package org.elnix.notes.ui.settings.customisation
 
 import android.content.Context
 import androidx.compose.foundation.background
@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Route
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,23 +20,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
+import org.elnix.notes.Routes
 import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.NotesActions
-import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.settings.SettingsItem
 import org.elnix.notes.ui.helpers.settings.SettingsTitle
-import org.elnix.notes.ui.helpers.toolbars.ToolbarItemsEditor
-import org.elnix.notes.ui.helpers.toolbars.ToolbarsSettingsRow
 
 @Composable
-fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
+fun CustomisationTab(
+    ctx: Context,
+    scope: CoroutineScope,
+    navController: NavController,
+    onBack: (() -> Unit)
+) {
     val settings by ActionSettingsStore.getActionSettingsFlow(ctx).collectAsState(initial = NoteActionSettings())
 
 
@@ -146,14 +153,11 @@ fun CustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) 
             scope.launch { UiSettingsStore.setShowTagsInNotes(ctx, it) }
         }
 
-        TextDivider(stringResource(R.string.toolbars))
-
-        ToolbarsSettingsRow(ctx)
-
-        ToolbarItemsEditor(ctx, toolbar = ToolBars.SELECT)
-
-        ToolbarItemsEditor(ctx, toolbar = ToolBars.TAGS)
-
-        ToolbarItemsEditor(ctx, toolbar = ToolBars.QUICK_ACTIONS)
+        SettingsItem(
+            title = stringResource(R.string.toolbars),
+            icon = Icons.Default.Route
+        ) {
+            navController.navigate(Routes.Settings.CustomisationSub.TOOLBARS)
+        }
     }
 }

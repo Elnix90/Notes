@@ -28,6 +28,7 @@ import org.elnix.notes.data.settings.stores.ColorSettingsStore.setPrimary
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setSecondary
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setSurface
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setTertiary
+import org.elnix.notes.ui.settings.appearance.randomColor
 import org.elnix.notes.ui.theme.AmoledDefault
 import org.elnix.notes.ui.theme.DarkDefault
 import org.elnix.notes.ui.theme.LightDefault
@@ -184,6 +185,32 @@ object ColorSettingsStore {
 
         applyThemeColors(ctx, themeColors)
     }
+
+
+    suspend fun setAllRandomColors(ctx: Context) {
+        val random = { randomColor() }
+
+        setPrimary(ctx, random().toArgb())
+        setOnPrimary(ctx, random().toArgb())
+        setSecondary(ctx, random().toArgb())
+        setOnSecondary(ctx, random().toArgb())
+        setTertiary(ctx, random().toArgb())
+        setOnTertiary(ctx, random().toArgb())
+        setBackground(ctx, random().toArgb())
+        setOnBackground(ctx, random().toArgb())
+        setSurface(ctx, random().toArgb())
+        setOnSurface(ctx, random().toArgb())
+        setError(ctx, random().toArgb())
+        setOnError(ctx, random().toArgb())
+        setOutline(ctx, random().toArgb())
+        setDelete(ctx, random().toArgb())
+        setEdit(ctx, random().toArgb())
+        setComplete(ctx, random().toArgb())
+        setNoteTypeText(ctx, random().toArgb())
+        setNoteTypeChecklist(ctx, random().toArgb())
+        setNoteTypeDrawing(ctx, random().toArgb())
+    }
+
 }
 
 

@@ -162,4 +162,24 @@
     <string name="are_you_sure_to_edit">Are you sure to edit</string>
     <string name="it_will_open_several_editors">It will open several editors</string>
     <string name="delete_note">Delete note</string>
+    <string name="toolbars_border">Toolbars Border</string>
+    <string name="no_border">No border</string>
+    <string name="rectangle">Rectangle</string>
+    <string name="corner_radius">Corner radius</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
+    <string name="top">Top</string>
+    <string name="bottom">Bottom</string>
+    <string name="padding">Padding</string>
+    <string name="toolbars_spacing">Toolbars Spacing</string>
+    <string name="toolbars_preview">toolbars preview</string>
+    <string name="toolbars_items_and_order">Toolbars items and order</string>
+    <string name="toolbars_appearance">Toolbars Appearance</string>
+    <string name="toolbars_order">Toolbars Order</string>
+    <string name="toolbar_color">Toolbar Color</string>
+    <string name="toolbar_border_color">Toolbar Border Color</string>
+    <string name="toolbar_colors">Toolbar Colors</string>
+    <string name="random_color">Random Color</string>
+    <string name="make_every_colors_random">Make every colors random</string>
+    <string name="make_every_colors_random_explanation">This will set EVERY colors random, can be hare to reset after that.</string>
 </resources>

@@ -187,20 +187,11 @@ fun GlobalActionIcon(
                             .background(onColor.copy(alpha = 0.4f), RoundedCornerShape(2.dp))
                     )
                 } else {
-                    if (!ghosted) {
-                        Text(
-                            text = label,
-                            color = onColor,
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    } else {
-                        // faded text if ghosted but not minimal
-                        Text(
-                            text = label,
-                            color = onColor.copy(alpha = 0.5f),
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
+                    Text(
+                        text = label,
+                        color = onColor,
+                        style = MaterialTheme.typography.labelMedium
+                    )
                     Spacer(Modifier.width(6.dp))
                 }
             }

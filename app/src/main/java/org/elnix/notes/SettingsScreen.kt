@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -89,6 +90,7 @@ fun SettingsListScreen(navController: NavController) {
 
     val versionName = ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName
 
+    BackHandler { navController.navigate(Routes.NOTES) }
 
     Column(
         modifier = Modifier
@@ -103,7 +105,7 @@ fun SettingsListScreen(navController: NavController) {
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         SettingsTitle(title = stringResource(R.string.settings)) {
-            navController.popBackStack()
+            navController.navigate(Routes.NOTES)
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {

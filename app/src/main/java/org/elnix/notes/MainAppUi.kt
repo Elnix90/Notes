@@ -83,19 +83,19 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                     NoteType.TEXT -> NoteEditorScreen(
                         vm,
                         null,
-                        onSaved = { navController.navigateUp()},
-                        onCancel = { navController.navigateUp() })
+                        onSaved = { navController.navigate(Routes.NOTES) },
+                        onCancel = { navController.navigate(Routes.NOTES)  })
                     NoteType.CHECKLIST -> ChecklistEditorScreen(
                         vm,
                         null,
-                        onSaved = { navController.navigateUp() },
-                        onCancel = { navController.navigateUp() }
+                        onSaved = { navController.navigate(Routes.NOTES)  },
+                        onCancel = { navController.navigate(Routes.NOTES)  }
                     )
                     NoteType.DRAWING -> DrawingEditorScreen(
                         vm,
                         null,
-                        onSaved = { navController.navigateUp() },
-                        onCancel = { navController.navigateUp() }
+                        onSaved = { navController.navigate(Routes.NOTES)  },
+                        onCancel = { navController.navigate(Routes.NOTES)  }
                     )
                 }
             }
@@ -119,19 +119,19 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                     NoteType.TEXT -> NoteEditorScreen(
                         vm,
                         noteId,
-                        onSaved = { navController.navigateUp() },
-                        onCancel = { navController.navigateUp() })
+                        onSaved = { navController.navigate(Routes.NOTES) },
+                        onCancel = { navController.navigate(Routes.NOTES)  })
                     NoteType.CHECKLIST -> ChecklistEditorScreen(
                         vm,
                         noteId,
-                        onSaved = { navController.navigateUp() },
-                        onCancel = { navController.navigateUp() }
+                        onSaved = { navController.navigate(Routes.NOTES)  },
+                        onCancel = { navController.navigate(Routes.NOTES)  }
                     )
                     NoteType.DRAWING -> DrawingEditorScreen(
                         vm,
                         noteId,
-                        onSaved = { navController.navigateUp() },
-                        onCancel = { navController.navigateUp() }
+                        onSaved = { navController.navigate(Routes.NOTES)  },
+                        onCancel = { navController.navigate(Routes.NOTES)  }
                     )
                 }
             }

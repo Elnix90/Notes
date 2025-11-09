@@ -23,15 +23,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
 import org.elnix.notes.R
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
 fun NotesColorPickerSection(
-    note: NoteEntity?,
-    scope: CoroutineScope,
+    note: NoteEntity,
     onBgColorPicked: (Int) -> Unit,
     onTextColorPicked: (Int) -> Unit,
     onAutoSwitchToggle: (Boolean) -> Unit,
@@ -66,8 +64,9 @@ fun NotesColorPickerSection(
                     label = label,
                     showLabel = false,
                     defaultColor = MaterialTheme.colorScheme.surface,
-                    currentColor = note?.bgColor?.toArgb()
-                        ?: MaterialTheme.colorScheme.surface.toArgb()
+                    currentColor = note.bgColor?.toArgb()
+                        ?: MaterialTheme.colorScheme.surface.toArgb(),
+                    randomColorButton = false
                 ) { onBgColorPicked(it) }
 
                 // RANDOM NOTE COLOR BUTTON
@@ -104,15 +103,16 @@ fun NotesColorPickerSection(
                 )
                 Spacer(Modifier.height(4.dp))
 
-                val autoTextColorEnabled = note?.autoTextColor ?: false
+                val autoTextColorEnabled = note.autoTextColor
 
                 ColorPickerRow(
                     label = label,
                     showLabel = false,
                     defaultColor = MaterialTheme.colorScheme.onSurface,
-                    currentColor = note?.txtColor?.toArgb()
+                    currentColor = note.txtColor?.toArgb()
                         ?: MaterialTheme.colorScheme.onSurface.toArgb(),
                     enabled = !autoTextColorEnabled,
+                    randomColorButton = false
                 ) { onTextColorPicked(it) }
 
                 // AUTO TEXT COLOR CHECKBOX

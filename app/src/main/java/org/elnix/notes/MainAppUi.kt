@@ -16,9 +16,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.ui.NoteViewModel
-import org.elnix.notes.ui.editors.ChecklistEditorScreen
 import org.elnix.notes.ui.editors.DrawingEditorScreen
-import org.elnix.notes.ui.editors.NoteEditorScreen
+import org.elnix.notes.ui.editors.UnifiedTextualNotesEditor
 import org.elnix.notes.ui.security.LockScreen
 
 // -------------------- ROUTES --------------------
@@ -84,17 +83,13 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                 val noteType = NoteType.valueOf(typeArg ?: NoteType.TEXT.name)
 
                 when (noteType) {
-                    NoteType.TEXT -> NoteEditorScreen(
-                        vm,
-                        null,
-                        onSaved = { navController.navigate(Routes.NOTES) },
-                        onCancel = { navController.navigate(Routes.NOTES)  })
-                    NoteType.CHECKLIST -> ChecklistEditorScreen(
-                        vm,
-                        null,
-                        onSaved = { navController.navigate(Routes.NOTES)  },
-                        onCancel = { navController.navigate(Routes.NOTES)  }
-                    )
+                    NoteType.TEXT, NoteType.CHECKLIST -> UnifiedTextualNotesEditor(
+                        vm = vm,
+                        navController = navController,
+                        noteId = null,
+                        noteType = noteType
+                    ) { navController.navigate(Routes.NOTES) }
+
                     NoteType.DRAWING -> DrawingEditorScreen(
                         vm,
                         null,
@@ -120,17 +115,12 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                 val noteType = NoteType.valueOf(typeArg ?: NoteType.TEXT.name)
 
                 when (noteType) {
-                    NoteType.TEXT -> NoteEditorScreen(
-                        vm,
-                        noteId,
-                        onSaved = { navController.navigate(Routes.NOTES) },
-                        onCancel = { navController.navigate(Routes.NOTES)  })
-                    NoteType.CHECKLIST -> ChecklistEditorScreen(
-                        vm,
-                        noteId,
-                        onSaved = { navController.navigate(Routes.NOTES)  },
-                        onCancel = { navController.navigate(Routes.NOTES)  }
-                    )
+                    NoteType.TEXT, NoteType.CHECKLIST -> UnifiedTextualNotesEditor(
+                        vm = vm,
+                        navController = navController,
+                        noteId = noteId,
+                        noteType = noteType
+                    ) { navController.navigate(Routes.NOTES) }
                     NoteType.DRAWING -> DrawingEditorScreen(
                         vm,
                         noteId,

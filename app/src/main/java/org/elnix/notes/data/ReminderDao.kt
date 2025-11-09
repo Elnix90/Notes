@@ -17,6 +17,9 @@ interface ReminderDao {
     @Query("SELECT * FROM reminders WHERE noteId = :noteId")
     fun observeByNoteId(noteId: Long): Flow<List<ReminderEntity>>
 
+    @Query("SELECT * FROM reminders WHERE noteId = :noteId")
+    suspend fun getByNoteId(noteId: Long): List<ReminderEntity>
+
     @Insert
     suspend fun insert(reminder: ReminderEntity): Long
 

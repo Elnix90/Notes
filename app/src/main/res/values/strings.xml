@@ -184,4 +184,5 @@
     <string name="make_every_colors_random_explanation">This will set EVERY colors random, can be hare to reset after that.</string>
     <string name="color">Color</string>
     <string name="reset_colors">Reset Colors</string>
+    <string name="duplicate">Duplicate</string>
 </resources>

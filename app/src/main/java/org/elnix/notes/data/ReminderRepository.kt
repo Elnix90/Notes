@@ -17,4 +17,16 @@ class ReminderRepository(private val dao: ReminderDao) {
         dao.delete(reminder)
 
     suspend fun deleteByNoteId(noteId: Long) = dao.deleteByNoteId(noteId)
+
+    suspend fun duplicateReminders(fromNoteId: Long, toNoteId: Long) {
+        val oldReminders = dao.getByNoteId(fromNoteId)
+        oldReminders.forEach { reminder ->
+            dao.insert(
+                reminder.copy(
+                    id = 0, // force new ID
+                    noteId = toNoteId
+                )
+            )
+        }
+    }
 }

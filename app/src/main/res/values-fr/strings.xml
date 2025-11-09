@@ -185,4 +185,5 @@
     <string name="make_every_colors_random_explanation">Cela définira TOUTES les couleurs de manière aléatoire, ce qui peut être difficile à réinitialiser par la suite.</string>
     <string name="color">Couleur</string>
     <string name="reset_colors">Reinitialiser couleurs</string>
+    <string name="duplicate">Dupliquer la note</string>
 </resources>

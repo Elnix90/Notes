@@ -18,7 +18,6 @@ import org.elnix.notes.data.NoteRepository
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.ReminderRepository
 import org.elnix.notes.data.helpers.NoteType
-import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import kotlin.random.Random
 
@@ -57,6 +56,24 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    suspend fun duplicateNote(noteId: Long): Long {
+        val note = noteRepo.getById(noteId) ?: return -1L
+        val currentNotes = noteRepo.observeAll().firstOrNull() ?: emptyList()
+
+        val duplicatedNote = note.copy(
+            id = 0, // ensure new insert
+            title = note.title + " (copy)",
+            orderIndex = currentNotes.size
+        )
+
+        val newId = noteRepo.upsert(duplicatedNote)
+
+        reminderRepo.duplicateReminders(noteId, newId)
+
+        return newId
+    }
+
+
 
     fun update(note: NoteEntity) = viewModelScope.launch { noteRepo.upsert(note) }
     fun delete(note: NoteEntity) = viewModelScope.launch { noteRepo.delete(note) }
@@ -78,23 +95,23 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
 
 
-    // --- Tags ---
-    // Helper: resolve tags by ID
-    fun resolveTags(note: NoteEntity, allTags: List<TagItem>): List<TagItem> {
-        return allTags.filter { note.tagIds.contains(it.id) }
-    }
-
-    // Add a tag to note
-    fun addTagToNote(note: NoteEntity, tag: TagItem) = viewModelScope.launch {
-        val updated = note.copy(tagIds = note.tagIds + tag.id)
-        noteRepo.upsert(updated)
-    }
-
-    // Remove tag from note
-    fun deleteTagFromNote(note: NoteEntity, tag: TagItem) = viewModelScope.launch {
-        val updated = note.copy(tagIds = note.tagIds.filterNot { it == tag.id })
-        noteRepo.upsert(updated)
-    }
+//    // --- Tags ---
+//    // Helper: resolve tags by ID
+//    fun resolveTags(note: NoteEntity, allTags: List<TagItem>): List<TagItem> {
+//        return allTags.filter { note.tagIds.contains(it.id) }
+//    }
+//
+//    // Add a tag to note
+//    fun addTagToNote(note: NoteEntity, tag: TagItem) = viewModelScope.launch {
+//        val updated = note.copy(tagIds = note.tagIds + tag.id)
+//        noteRepo.upsert(updated)
+//    }
+//
+//    // Remove tag from note
+//    fun deleteTagFromNote(note: NoteEntity, tag: TagItem) = viewModelScope.launch {
+//        val updated = note.copy(tagIds = note.tagIds.filterNot { it == tag.id })
+//        noteRepo.upsert(updated)
+//    }
 
 
 

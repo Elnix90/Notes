@@ -14,27 +14,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.NoteEntity
-import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
 fun CompletionToggle(
-    note: NoteEntity?,
-    currentId: Long?,
-    vm: NoteViewModel,
-    onUpdated: (NoteEntity) -> Unit
+    note: NoteEntity,
+//    currentId: Long?,
+//    vm: NoteViewModel,
+    onComplete: (Boolean) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    var isCompleted by remember { mutableStateOf(note?.isCompleted ?: false) }
+//    val scope = rememberCoroutineScope()
+    var isCompleted by remember { mutableStateOf(note.isCompleted) }
 
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -45,16 +42,7 @@ fun CompletionToggle(
             modifier = Modifier
                 .clickable {
                     isCompleted = !isCompleted
-                    scope.launch {
-                        currentId?.let { id ->
-                            val n = vm.getById(id)
-                            if (n != null) {
-                                val updated = n.copy(isCompleted = isCompleted)
-                                vm.update(updated)
-                                onUpdated(updated)
-                            }
-                        }
-                    }
+                    onComplete(isCompleted)
                 }
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {

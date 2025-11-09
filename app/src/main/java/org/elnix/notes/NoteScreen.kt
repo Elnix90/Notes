@@ -594,16 +594,11 @@ fun performAction(
     navController: NavHostController,
     note: NoteEntity,
     scope: CoroutineScope,
-//    ctx: Context? = null,
-//    monoAction: Boolean = true,
-//    noteToDelete: ((NoteEntity) -> Unit)? = null,
     onSelectStart: (() -> Unit)? = null
 ) {
     when (action) {
         NotesActions.DELETE -> scope.launch { vm.delete(note) }
-//        NotesActions.DELETE -> if (monoAction && noteToDelete != null) {
-//            scope.launch { vm.delete(note) }
-//        }
+
         NotesActions.COMPLETE -> scope.launch {
             if (note.isCompleted) vm.markUnCompleted(note)
             else vm.markCompleted(note)

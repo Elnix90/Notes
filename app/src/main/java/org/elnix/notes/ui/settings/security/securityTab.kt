@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -30,8 +31,8 @@ import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsOutlinedField
-import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.helpers.SwitchRow
+import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.theme.adjustBrightness
 import java.time.Instant
 
@@ -61,7 +62,7 @@ fun SecurityTab(onBack: (() -> Unit)) {
 
         SwitchRow(
             settings.useBiometrics,
-            "Enable Biometric Lock",
+            stringResource(R.string.enable_biometrics_lock),
             canBiometrics
         ) {
             scope.launch {
@@ -69,7 +70,7 @@ fun SecurityTab(onBack: (() -> Unit)) {
                     activity = activity,
                     useBiometrics = true,
                     useDeviceCredential = false,
-                    title = "Verification",
+                    title = ctx.getString(R.string.verification),
                     onSuccess = {
                         scope.launch {
                             LockSettingsStore.updateLockSettings(
@@ -85,7 +86,7 @@ fun SecurityTab(onBack: (() -> Unit)) {
 
         SwitchRow(
             settings.useDeviceCredential,
-            "Enable Device Credential Lock",
+            stringResource(R.string.enable_device__pin_lock),
             canDeviceLock
         ) {
             scope.launch {

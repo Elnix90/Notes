@@ -186,4 +186,6 @@
     <string name="color">Couleur</string>
     <string name="reset_colors">Reinitialiser couleurs</string>
     <string name="duplicate">Dupliquer la note</string>
+    <string name="enable_biometrics_lock">Activer le verouillage par biométrie</string>
+    <string name="enable_device__pin_lock">Activer le verouilage par PIN du téléphone</string>
 </resources>

@@ -165,6 +165,7 @@ fun UnifiedTextualNotesEditor(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(WindowInsets.systemBars.asPaddingValues())
+            .padding(horizontal = 16.dp)
             .imePadding()
     ) {
         LazyColumn(
@@ -172,7 +173,7 @@ fun UnifiedTextualNotesEditor(
                 .weight(1f)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 5.dp)
+            contentPadding = PaddingValues(bottom = 150.dp)
         ) {
             // --- Title ---
             item {

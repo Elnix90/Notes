@@ -4,19 +4,24 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Route
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -56,108 +61,135 @@ fun CustomisationTab(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
-            .padding(
-                WindowInsets.systemBars
-                    .asPaddingValues()
-            )
-            .padding(horizontal = 16.dp, vertical = 5.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+            .padding(WindowInsets.systemBars.asPaddingValues())
+            .padding(horizontal = 16.dp)
+            .imePadding()
     ) {
-        SettingsTitle(title = stringResource(R.string.customisation), onBack = onBack)
 
-        TextDivider(stringResource(R.string.note_actions))
-
-        // --- Swipe Left ---
-        ActionSelectorRow(
-            label = stringResource(R.string.swipe_left_action),
-            options = NotesActions.entries,
-            selected = settings.leftAction,
-            optionLabel = { it.name}
-        ) {
-            scope.launch { ActionSettingsStore.setSwipeLeftAction(ctx, it) }
+        Surface(color = MaterialTheme.colorScheme.background, tonalElevation = 3.dp) {
+            SettingsTitle(title = stringResource(R.string.customisation)) { onBack() }
+            Spacer(Modifier.height(20.dp))
         }
 
-        // --- Swipe Right ---
-        ActionSelectorRow(
-            label = stringResource(R.string.swipe_right_action),
-            options = NotesActions.entries,
-            selected = settings.rightAction,
-            optionLabel = { it.name}
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(bottom = 400.dp)
         ) {
-            scope.launch { ActionSettingsStore.setSwipeRightAction(ctx, it) }
-        }
 
-        // --- Click Action ---
-        ActionSelectorRow(
-            label = stringResource(R.string.click_action),
-            options = NotesActions.entries,
-            selected = settings.clickAction,
-            optionLabel = { it.name}
-        ) {
-            scope.launch { ActionSettingsStore.setClickAction(ctx, it) }
-        }
+            item { TextDivider(stringResource(R.string.note_actions)) }
 
-        // --- Long Click Action ---
-        ActionSelectorRow(
-            label = stringResource(R.string.long_click_action),
-            options = NotesActions.entries,
-            selected = settings.longClickAction,
-            optionLabel = { it.name}
-        ) {
-            scope.launch { ActionSettingsStore.setLongClickAction(ctx, it) }
-        }
+            // --- Swipe Left ---
+            item {
+                ActionSelectorRow(
+                    label = stringResource(R.string.swipe_left_action),
+                    options = NotesActions.entries,
+                    selected = settings.leftAction,
+                    optionLabel = { it.name }
+                ) {
+                    scope.launch { ActionSettingsStore.setSwipeLeftAction(ctx, it) }
+                }
+            }
 
-        // --- Type Button action ---
-        ActionSelectorRow(
-            label = stringResource(R.string.type_button_action),
-            options = NotesActions.entries,
-            selected = settings.typeButtonAction,
-            enabled = showNoteTypeIcon,
-            optionLabel = { it.name}
-        ) {
-            scope.launch { ActionSettingsStore.setTypeButtonAction(ctx, it) }
-        }
+            // --- Swipe Right ---
+            item {
+                ActionSelectorRow(
+                    label = stringResource(R.string.swipe_right_action),
+                    options = NotesActions.entries,
+                    selected = settings.rightAction,
+                    optionLabel = { it.name }
+                ) {
+                    scope.launch { ActionSettingsStore.setSwipeRightAction(ctx, it) }
+                }
+            }
 
-        TextDivider(stringResource(R.string.buttons_display))
+            // --- Click Action ---
+            item {
+                ActionSelectorRow(
+                    label = stringResource(R.string.click_action),
+                    options = NotesActions.entries,
+                    selected = settings.clickAction,
+                    optionLabel = { it.name }
+                ) {
+                    scope.launch { ActionSettingsStore.setClickAction(ctx, it) }
+                }
+            }
+
+            // --- Long Click Action ---
+            item {
+                ActionSelectorRow(
+                    label = stringResource(R.string.long_click_action),
+                    options = NotesActions.entries,
+                    selected = settings.longClickAction,
+                    optionLabel = { it.name }
+                ) {
+                    scope.launch { ActionSettingsStore.setLongClickAction(ctx, it) }
+                }
+            }
+
+            // --- Type Button action ---
+            item {
+                ActionSelectorRow(
+                    label = stringResource(R.string.type_button_action),
+                    options = NotesActions.entries,
+                    selected = settings.typeButtonAction,
+                    enabled = showNoteTypeIcon,
+                    optionLabel = { it.name }
+                ) {
+                    scope.launch { ActionSettingsStore.setTypeButtonAction(ctx, it) }
+                }
+            }
+
+            item { TextDivider(stringResource(R.string.buttons_display)) }
 
 
-        SwitchRow(
-            showNoteTypeIcon,
-            stringResource(R.string.show_note_type_icon),
-        ) {
-            scope.launch { UiSettingsStore.setShowNoteTypeIcon(ctx, it) }
-        }
+            item {
+                SwitchRow(
+                    showNoteTypeIcon,
+                    stringResource(R.string.show_note_type_icon),
+                ) {
+                    scope.launch { UiSettingsStore.setShowNoteTypeIcon(ctx, it) }
+                }
+            }
 
-        SwitchRow(
-            showDeleteButton,
-            stringResource(R.string.show_delete_button),
-        ) {
-            scope.launch { UiSettingsStore.setShowDeleteButton(ctx, it) }
-        }
+            item {
+                SwitchRow(
+                    showDeleteButton,
+                    stringResource(R.string.show_delete_button),
+                ) {
+                    scope.launch { UiSettingsStore.setShowDeleteButton(ctx, it) }
+                }
+            }
 
-        // New Tags Category
-        TextDivider(stringResource(R.string.tags))
+            // New Tags Category
+            item { TextDivider(stringResource(R.string.tags)) }
 
-        SwitchRow(
-            showTagSelector,
-            stringResource(R.string.show_tag_selector),
-        ) {
-            scope.launch { UiSettingsStore.setShowTagSelector(ctx, it) }
-        }
+            item {
+                SwitchRow(
+                    showTagSelector,
+                    stringResource(R.string.show_tag_selector),
+                ) {
+                    scope.launch { UiSettingsStore.setShowTagSelector(ctx, it) }
+                }
+            }
 
-        SwitchRow(
-            showTagsInNotes,
-            stringResource(R.string.show_tags_in_notes),
-        ) {
-            scope.launch { UiSettingsStore.setShowTagsInNotes(ctx, it) }
-        }
+            item {
+                SwitchRow(
+                    showTagsInNotes,
+                    stringResource(R.string.show_tags_in_notes),
+                ) {
+                    scope.launch { UiSettingsStore.setShowTagsInNotes(ctx, it) }
+                }
+            }
 
-        SettingsItem(
-            title = stringResource(R.string.toolbars),
-            icon = Icons.Default.Route
-        ) {
-            navController.navigate(Routes.Settings.CustomisationSub.TOOLBARS)
+            item {
+                SettingsItem(
+                    title = stringResource(R.string.toolbars),
+                    icon = Icons.Default.Route
+                ) {
+                    navController.navigate(Routes.Settings.CustomisationSub.TOOLBARS)
+                }
+            }
         }
     }
 }

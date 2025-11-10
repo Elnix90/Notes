@@ -185,4 +185,6 @@
     <string name="color">Color</string>
     <string name="reset_colors">Reset Colors</string>
     <string name="duplicate">Duplicate</string>
+    <string name="enable_biometrics_lock">Enable Biometric Lock</string>
+    <string name="enable_device__pin_lock">Enable device PIN lock</string>
 </resources>

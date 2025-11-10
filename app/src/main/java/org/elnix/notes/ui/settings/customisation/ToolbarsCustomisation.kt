@@ -4,23 +4,27 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,125 +72,155 @@ fun ToolbarsCustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() ->
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
             .padding(WindowInsets.systemBars.asPaddingValues())
-            .padding(horizontal = 16.dp, vertical = 5.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+            .padding(horizontal = 16.dp)
+            .imePadding()
     ) {
-        SettingsTitle(title = stringResource(R.string.customisation), onBack = onBack)
 
-        TextDivider(stringResource(R.string.toolbars))
+        Surface(color = MaterialTheme.colorScheme.background, tonalElevation = 3.dp) {
+            SettingsTitle(title = stringResource(R.string.toolbars)) { onBack() }
+            Spacer(Modifier.height(20.dp))
+        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingLeft.dp, 0.dp, paddingRight.dp, 0.dp),
-            verticalArrangement = Arrangement.spacedBy(spacing.dp)
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(bottom = 400.dp)
         ) {
 
             toolbars.filter { it.toolbar != ToolBars.SEPARATOR }.forEach { bar ->
-                UnifiedToolbar(
-                    ctx = ctx,
-                    toolbar = bar.toolbar,
-                    scrollState = rememberScrollState(),
-                    isSearchExpanded = false,
-                    color = bar.color,
-                    borderColor = bar.borderColor,
-                    ghosted = true
+                item {
+                    UnifiedToolbar(
+                        ctx = ctx,
+                        toolbar = bar.toolbar,
+                        scrollState = rememberScrollState(),
+                        isSearchExpanded = false,
+                        color = bar.color,
+                        borderColor = bar.borderColor,
+                        ghosted = true
+                    )
+                }
+            }
+
+
+            item { TextDivider(stringResource(R.string.toolbars_appearance)) }
+
+
+            item {
+                SwitchRow(
+                    floatingToolbars,
+                    stringResource(R.string.floating_toolbars)
+                ) {
+                    scope.launch { ToolbarsSettingsStore.setFloatingToolbars(ctx, it) }
+                }
+            }
+
+            // Border slider
+            item {
+                SliderToolbarSetting(
+                    label = { value ->
+                        if (value > 0)
+                            "${stringResource(R.string.toolbars_border)}:  $value dp"
+                        else stringResource(R.string.no_border)
+                    },
+                    initialValue = border,
+                    valueRange = 0f..10f,
+                    steps = 9,
+                    onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsBorder(ctx, 2) } },
+                    onValueChangeFinished = { v ->
+                        scope.launch { ToolbarsSettingsStore.setToolbarsBorder(ctx, v) }
+                    }
                 )
             }
+
+            // Corner radius slider
+            item {
+                SliderToolbarSetting(
+                    label = { value ->
+                        if (value > 0)
+                            "${stringResource(R.string.corner_radius)}:  ${value * 2} %"
+                        else stringResource(R.string.rectangle)
+                    },
+                    initialValue = corner,
+                    valueRange = 0f..50f,
+                    steps = 49,
+                    onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsCorner(ctx, 50) } },
+                    onValueChangeFinished = { v ->
+                        scope.launch { ToolbarsSettingsStore.setToolbarsCorner(ctx, v) }
+                    }
+                )
+            }
+
+            // Padding left
+            item {
+                SliderToolbarSetting(
+                    label = { value ->
+                        "${stringResource(R.string.padding)} ${stringResource(R.string.left)}: $value px"
+                    },
+                    initialValue = paddingLeft,
+                    valueRange = 0f..maxPadding.toFloat(),
+                    steps = maxPadding - 1,
+                    onReset = {
+                        scope.launch {
+                            ToolbarsSettingsStore.setToolbarsPaddingLeft(
+                                ctx,
+                                16
+                            )
+                        }
+                    },
+                    onValueChangeFinished = { v ->
+                        scope.launch { ToolbarsSettingsStore.setToolbarsPaddingLeft(ctx, v) }
+                    }
+                )
+            }
+
+            item {
+                // Padding right
+                SliderToolbarSetting(
+                    label = { value ->
+                        "${stringResource(R.string.padding)} ${stringResource(R.string.right)}: $value px"
+                    },
+                    initialValue = paddingRight,
+                    valueRange = 0f..maxPadding.toFloat(),
+                    steps = maxPadding - 1,
+                    onReset = {
+                        scope.launch {
+                            ToolbarsSettingsStore.setToolbarsPaddingRight(
+                                ctx,
+                                16
+                            )
+                        }
+                    },
+                    onValueChangeFinished = { v ->
+                        scope.launch { ToolbarsSettingsStore.setToolbarsPaddingRight(ctx, v) }
+                    }
+                )
+            }
+
+            // Toolbars spacing
+            item {
+                SliderToolbarSetting(
+                    label = { value ->
+                        "${stringResource(R.string.toolbars_spacing)}: $value px"
+                    },
+                    initialValue = spacing,
+                    valueRange = 0f..maxPadding.toFloat(),
+                    steps = maxPadding - 1,
+                    onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, 8) } },
+                    onValueChangeFinished = { v ->
+                        scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, v) }
+                    }
+                )
+            }
+
+            item {
+                TextDivider(stringResource(R.string.toolbars_items_and_order))
+            }
+            item { ToolbarsSettingsRow(ctx) }
+            item { ToolbarItemsEditor(ctx, ToolBars.SELECT) }
+            item { ToolbarItemsEditor(ctx, ToolBars.TAGS) }
+            item { ToolbarItemsEditor(ctx, ToolBars.QUICK_ACTIONS) }
         }
-
-        TextDivider(stringResource(R.string.toolbars_appearance))
-
-
-        SwitchRow(
-            floatingToolbars,
-            stringResource(R.string.floating_toolbars)
-        ) {
-            scope.launch { ToolbarsSettingsStore.setFloatingToolbars(ctx, it) }
-        }
-
-        // Border slider
-        SliderToolbarSetting(
-            label = { value ->
-                if (value > 0)
-                    "${stringResource(R.string.toolbars_border)}:  $value dp"
-                else stringResource(R.string.no_border)
-            },
-            initialValue = border,
-            valueRange = 0f..10f,
-            steps = 9,
-            onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsBorder(ctx, 2) } },
-            onValueChangeFinished = { v ->
-                scope.launch { ToolbarsSettingsStore.setToolbarsBorder(ctx, v) }
-            }
-        )
-
-        // Corner radius slider
-        SliderToolbarSetting(
-            label = { value ->
-                if (value > 0)
-                    "${stringResource(R.string.corner_radius)}:  ${value * 2} %"
-                else stringResource(R.string.rectangle)
-            },
-            initialValue = corner,
-            valueRange = 0f..50f,
-            steps = 49,
-            onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsCorner(ctx, 50) } },
-            onValueChangeFinished = { v ->
-                scope.launch { ToolbarsSettingsStore.setToolbarsCorner(ctx, v) }
-            }
-        )
-
-        // Padding left
-        SliderToolbarSetting(
-            label = { value ->
-                "${stringResource(R.string.padding)} ${stringResource(R.string.left)}: $value px"
-            },
-            initialValue = paddingLeft,
-            valueRange = 0f..maxPadding.toFloat(),
-            steps = maxPadding - 1,
-            onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsPaddingLeft(ctx, 16) } },
-            onValueChangeFinished = { v ->
-                scope.launch { ToolbarsSettingsStore.setToolbarsPaddingLeft(ctx, v) }
-            }
-        )
-
-        // Padding right
-        SliderToolbarSetting(
-            label = { value ->
-                "${stringResource(R.string.padding)} ${stringResource(R.string.right)}: $value px"
-            },
-            initialValue = paddingRight,
-            valueRange = 0f..maxPadding.toFloat(),
-            steps = maxPadding - 1,
-            onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsPaddingRight(ctx, 16) } },
-            onValueChangeFinished = { v ->
-                scope.launch { ToolbarsSettingsStore.setToolbarsPaddingRight(ctx, v) }
-            }
-        )
-
-        // Toolbars spacing
-        SliderToolbarSetting(
-            label = { value ->
-                "${stringResource(R.string.toolbars_spacing)}: $value px"
-            },
-            initialValue = spacing,
-            valueRange = 0f..maxPadding.toFloat(),
-            steps = maxPadding - 1,
-            onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, 8) } },
-            onValueChangeFinished = { v ->
-                scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, v) }
-            }
-        )
-
-        TextDivider(stringResource(R.string.toolbars_items_and_order))
-
-        ToolbarsSettingsRow(ctx)
-        ToolbarItemsEditor(ctx, ToolBars.SELECT)
-        ToolbarItemsEditor(ctx, ToolBars.TAGS)
-        ToolbarItemsEditor(ctx, ToolBars.QUICK_ACTIONS)
     }
 }
 

@@ -1,4 +1,4 @@
-package org.elnix.notes.ui.settings.appearance
+package org.elnix.notes.ui.helpers
 
 import androidx.compose.ui.graphics.Color
 import kotlin.random.Random

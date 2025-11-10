@@ -1,4 +1,4 @@
-# 📝 Notes — Abndroid Notes App
+# 📝 Notes — `Abndroid` Notes App
 
 Modern, privacy-focused Android note-taking app built with **Jetpack Compose** and **Material 3**.  
 

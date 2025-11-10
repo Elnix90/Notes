@@ -139,7 +139,7 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteV
         startDestination = Routes.Settings.ROOT,
         route = "settings_graph"
     ) {
-        composable(Routes.Settings.ROOT) { SettingsListScreen(navController) }
+        composable(Routes.Settings.ROOT) { SettingsListScreen(navController) { navController.navigate(Routes.NOTES) } }
         composable(Routes.Settings.APPEARANCE) { AppearanceSettingsScreen(navController) }
         composable(Routes.Settings.COLORS) { ColorSelectorSettingsScreen(navController) }
 

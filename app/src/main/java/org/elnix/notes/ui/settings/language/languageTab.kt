@@ -1,20 +1,12 @@
 package org.elnix.notes.ui.settings.language
 
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.settings.stores.LanguageSettingsStore
-import org.elnix.notes.ui.helpers.settings.SettingsTitle
+import org.elnix.notes.ui.settings.SettingsLazyHeader
 
 @Composable
 fun LanguageTab(onBack: () -> Unit) {
@@ -52,54 +44,41 @@ fun LanguageTab(onBack: () -> Unit) {
         selectedTag = LanguageSettingsStore().getLanguageTag(context)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(
-                WindowInsets.systemBars
-                    .asPaddingValues()
-            )
-            .padding(horizontal = 16.dp, vertical = 5.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+    SettingsLazyHeader(
+        title = stringResource(R.string.settings_language_title),
+        onBack = onBack
     ) {
-        SettingsTitle(title = stringResource(R.string.settings_language_title), onBack = onBack)
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-
-            availableLanguages.forEach { (tag, name) ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            scope.launch {
-                                LanguageSettingsStore().setLanguageTag(context, tag)
-                                applyLocale(tag)
-                                selectedTag = tag
-                            }
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = tag == selectedTag,
-                        onClick = {
-                            scope.launch {
-                                LanguageSettingsStore().setLanguageTag(context, tag)
-                                applyLocale(tag)
-                                selectedTag = tag
-                            }
+        items(availableLanguages) { (tag, name) ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        scope.launch {
+                            LanguageSettingsStore().setLanguageTag(context, tag)
+                            applyLocale(tag)
+                            selectedTag = tag
                         }
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(name)
-                }
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = tag == selectedTag,
+                    onClick = {
+                        scope.launch {
+                            LanguageSettingsStore().setLanguageTag(context, tag)
+                            applyLocale(tag)
+                            selectedTag = tag
+                        }
+                    }
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(name)
             }
+        }
 
-            // Add option for "System default"
+        // Add option for "System default"
+        item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -127,7 +106,6 @@ fun LanguageTab(onBack: () -> Unit) {
             }
         }
     }
-
 }
 
 

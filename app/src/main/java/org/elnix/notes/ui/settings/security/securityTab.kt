@@ -2,14 +2,9 @@ package org.elnix.notes.ui.settings.security
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -32,7 +27,7 @@ import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsOutlinedField
 import org.elnix.notes.ui.helpers.SwitchRow
-import org.elnix.notes.ui.helpers.settings.SettingsTitle
+import org.elnix.notes.ui.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.adjustBrightness
 import java.time.Instant
 
@@ -46,121 +41,122 @@ fun SecurityTab(onBack: (() -> Unit)) {
     val canBiometrics = BiometricManagerHelper.canBiometrics(activity)
     val canDeviceLock = BiometricManagerHelper.canDeviceLock(activity)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(
-                WindowInsets.systemBars
-                    .asPaddingValues()
-            )
-            .padding(horizontal = 16.dp, vertical = 5.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+    SettingsLazyHeader(
+        title = stringResource(R.string.security_privacy),
+        onBack = onBack
     ) {
-        SettingsTitle(title = "Security", onBack = onBack)
 
-
-        SwitchRow(
-            settings.useBiometrics,
-            stringResource(R.string.enable_biometrics_lock),
-            canBiometrics
-        ) {
-            scope.launch {
-                BiometricManagerHelper.authenticateUser(
-                    activity = activity,
-                    useBiometrics = true,
-                    useDeviceCredential = false,
-                    title = ctx.getString(R.string.verification),
-                    onSuccess = {
-                        scope.launch {
-                            LockSettingsStore.updateLockSettings(
-                                ctx,
-                                settings.copy(lastUnlockTimestamp = Instant.now().toEpochMilli(), useBiometrics = !settings.useBiometrics)
-                            )
-                        }
-                    },
-                    onFailure = {}
-                )
+        item {
+            SwitchRow(
+                settings.useBiometrics,
+                stringResource(R.string.enable_biometrics_lock),
+                canBiometrics
+            ) {
+                scope.launch {
+                    BiometricManagerHelper.authenticateUser(
+                        activity = activity,
+                        useBiometrics = true,
+                        useDeviceCredential = false,
+                        title = ctx.getString(R.string.verification),
+                        onSuccess = {
+                            scope.launch {
+                                LockSettingsStore.updateLockSettings(
+                                    ctx,
+                                    settings.copy(
+                                        lastUnlockTimestamp = Instant.now().toEpochMilli(),
+                                        useBiometrics = !settings.useBiometrics
+                                    )
+                                )
+                            }
+                        },
+                        onFailure = {}
+                    )
+                }
             }
         }
 
-        SwitchRow(
-            settings.useDeviceCredential,
-            stringResource(R.string.enable_device__pin_lock),
-            canDeviceLock
-        ) {
-            scope.launch {
-                LockSettingsStore.updateLockSettings(
-                    ctx,
-                    settings.copy(useDeviceCredential = it)
-                )
+        item {
+            SwitchRow(
+                settings.useDeviceCredential,
+                stringResource(R.string.enable_device__pin_lock),
+                canDeviceLock
+            ) {
+                scope.launch {
+                    LockSettingsStore.updateLockSettings(
+                        ctx,
+                        settings.copy(useDeviceCredential = it)
+                    )
+                }
             }
         }
 
 
-        val selectedUnit by LockSettingsStore.getUnitSelected(ctx).collectAsState(initial = TimeoutOptions.MINUTES)
 
 
-        // Conversion multiplier to seconds
-        val unitMultiplier = when (selectedUnit) {
-            TimeoutOptions.SECONDS -> 1
-            TimeoutOptions.MINUTES ->60
-            TimeoutOptions.HOURS -> 3600
-            TimeoutOptions.DAYS ->  86400
-        }
+        item {
+            val selectedUnit by LockSettingsStore.getUnitSelected(ctx).collectAsState(initial = TimeoutOptions.MINUTES)
 
-        // Convert current seconds back to the selected display unit
-        val displayedValue = remember(settings.lockTimeoutSeconds, selectedUnit) {
-            (settings.lockTimeoutSeconds / unitMultiplier).toString()
-        }
+            // Conversion multiplier to seconds
+            val unitMultiplier = when (selectedUnit) {
+                TimeoutOptions.SECONDS -> 1
+                TimeoutOptions.MINUTES ->60
+                TimeoutOptions.HOURS -> 3600
+                TimeoutOptions.DAYS ->  86400
+            }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .padding(horizontal = 8.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            SettingsOutlinedField(
-                value = displayedValue,
-                label = ctx.getString(R.string.timeout),
-                minValue = 0,
-                maxValue = Int.MAX_VALUE,
-                keyboardType = KeyboardType.Number,
+            // Convert current seconds back to the selected display unit
+            val displayedValue = remember(settings.lockTimeoutSeconds, selectedUnit) {
+                (settings.lockTimeoutSeconds / unitMultiplier).toString()
+            }
+
+            Row(
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
                     .background(
                         color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
                         shape = RoundedCornerShape(12.dp)
                     )
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                scope = scope,
-                enabled = enabled
-            ) { newValue ->
-                val parsed = newValue.toIntOrNull() ?: return@SettingsOutlinedField
-                val seconds = parsed * unitMultiplier
-                scope.launch {
-                    LockSettingsStore.updateLockSettings(
-                        ctx,
-                        settings.copy(lockTimeoutSeconds = seconds)
-                    )
+                    .padding(horizontal = 8.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                SettingsOutlinedField(
+                    value = displayedValue,
+                    label = ctx.getString(R.string.timeout),
+                    minValue = 0,
+                    maxValue = Int.MAX_VALUE,
+                    keyboardType = KeyboardType.Number,
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    scope = scope,
+                    enabled = enabled
+                ) { newValue ->
+                    val parsed = newValue.toIntOrNull() ?: return@SettingsOutlinedField
+                    val seconds = parsed * unitMultiplier
+                    scope.launch {
+                        LockSettingsStore.updateLockSettings(
+                            ctx,
+                            settings.copy(lockTimeoutSeconds = seconds)
+                        )
+                    }
                 }
-            }
 
-            ActionSelectorRow(
-                options = TimeoutOptions.entries,
-                selected = selectedUnit,
-                enabled = enabled,
-                backgroundColor = MaterialTheme.colorScheme.secondary,
-                surfaceColor = MaterialTheme.colorScheme.surface,
-                textColor = MaterialTheme.colorScheme.onSecondary,
-                optionLabel = { it.name.lowercase().replaceFirstChar { c -> c.uppercase() } }
-            ) { newOption ->
-                scope.launch{ LockSettingsStore.setUnitSelected(ctx, newOption) }
+                ActionSelectorRow(
+                    options = TimeoutOptions.entries,
+                    selected = selectedUnit,
+                    enabled = enabled,
+                    backgroundColor = MaterialTheme.colorScheme.secondary,
+                    surfaceColor = MaterialTheme.colorScheme.surface,
+                    textColor = MaterialTheme.colorScheme.onSecondary,
+                    optionLabel = { it.name.lowercase().replaceFirstChar { c -> c.uppercase() } }
+                ) { newOption ->
+                    scope.launch { LockSettingsStore.setUnitSelected(ctx, newOption) }
+                }
             }
         }
     }

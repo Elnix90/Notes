@@ -1,21 +1,12 @@
-package org.elnix.notes.ui.settings
+package org.elnix.notes.ui.settings.reminders
 
 import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material3.AlertDialog
@@ -38,9 +29,9 @@ import org.elnix.notes.R
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore.getDefaultRemindersFlow
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore.setDefaultReminders
-import org.elnix.notes.ui.helpers.settings.SettingsTitle
 import org.elnix.notes.ui.helpers.reminders.ReminderBubble
 import org.elnix.notes.ui.helpers.reminders.ReminderPicker
+import org.elnix.notes.ui.settings.SettingsLazyHeader
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -50,31 +41,12 @@ fun RemindersTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
 
     var showHelpDialog by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(
-                WindowInsets.systemBars
-                    .asPaddingValues()
-            )
-            .padding(horizontal = 16.dp, vertical = 5.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+    SettingsLazyHeader(
+        title = stringResource(R.string.security_privacy),
+        onBack = onBack
     ) {
 
-        SettingsTitle(
-            title = stringResource(R.string.notification_reminders),
-            helpIcon = { showHelpDialog = true },
-            onBack = onBack
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-
+        item {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -97,14 +69,17 @@ fun RemindersTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
                         )
                     }
             }
+        }
 
 
+        item {
             ReminderPicker { picked ->
                 val newList = defaultReminders + picked
                 scope.launch { setDefaultReminders(ctx, newList) }
             }
         }
     }
+
     if (showHelpDialog) {
         AlertDialog(
             onDismissRequest = {

@@ -8,21 +8,9 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Backup
@@ -36,7 +24,6 @@ import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,7 +33,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -61,12 +47,10 @@ import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.settings.ContributorItem
 import org.elnix.notes.ui.helpers.settings.SettingsItem
-import org.elnix.notes.ui.helpers.settings.SettingsTitle
-import org.elnix.notes.ui.settings.BackupTab
-import org.elnix.notes.ui.settings.PluginsTab
-import org.elnix.notes.ui.settings.RemindersTab
+import org.elnix.notes.ui.settings.SettingsLazyHeader
 import org.elnix.notes.ui.settings.appearance.AppearanceTab
 import org.elnix.notes.ui.settings.appearance.ColorSelectorTab
+import org.elnix.notes.ui.settings.backup.BackupTab
 import org.elnix.notes.ui.settings.customisation.CustomisationTab
 import org.elnix.notes.ui.settings.customisation.ToolbarsCustomisationTab
 import org.elnix.notes.ui.settings.debug.DebugTab
@@ -75,11 +59,16 @@ import org.elnix.notes.ui.settings.debug.OtherDebugTab
 import org.elnix.notes.ui.settings.debug.RemindersDebugTab
 import org.elnix.notes.ui.settings.debug.UserConfirmDebugTab
 import org.elnix.notes.ui.settings.language.LanguageTab
+import org.elnix.notes.ui.settings.plugins.PluginsTab
+import org.elnix.notes.ui.settings.reminders.RemindersTab
 import org.elnix.notes.ui.settings.security.SecurityTab
 
 
 @Composable
-fun SettingsListScreen(navController: NavController) {
+fun SettingsListScreen(
+    navController: NavController,
+    onBack: () -> Unit
+) {
 
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
@@ -95,29 +84,12 @@ fun SettingsListScreen(navController: NavController) {
 
     val versionName = ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName
 
-    BackHandler { navController.navigate(Routes.NOTES) }
+    BackHandler { onBack() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(WindowInsets.systemBars.asPaddingValues())
-            .padding(horizontal = 16.dp)
-            .imePadding()
+    SettingsLazyHeader(
+        title = stringResource(R.string.settings),
+        onBack = { onBack() }
     ) {
-
-        Surface(color = MaterialTheme.colorScheme.background, tonalElevation = 3.dp) {
-            SettingsTitle(title = stringResource(R.string.settings)) {
-                navController.navigate(Routes.NOTES)
-            }
-            Spacer(Modifier.height(20.dp))
-        }
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(bottom = 400.dp)
-        ) {
             item {
                 SettingsItem(
                     title = stringResource(R.string.appearance),
@@ -250,18 +222,12 @@ fun SettingsListScreen(navController: NavController) {
             }
 
 
-
-            item {
-                Spacer(modifier = Modifier.weight(1f))
-            }
-
             item {
                 Text(
                     text = "${stringResource(R.string.version)} $versionName",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
                         .padding(top = 8.dp, bottom = 16.dp)
                         .clickable(
                             indication = null,
@@ -306,7 +272,6 @@ fun SettingsListScreen(navController: NavController) {
                 )
             }
         }
-    }
 
     if (showDebugModeUserValidation) {
         UserValidation(

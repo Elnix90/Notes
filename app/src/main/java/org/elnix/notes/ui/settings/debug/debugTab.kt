@@ -1,27 +1,16 @@
 package org.elnix.notes.ui.settings.debug
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.VerifiedUser
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
@@ -30,7 +19,7 @@ import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.settings.SettingsItem
-import org.elnix.notes.ui.helpers.settings.SettingsTitle
+import org.elnix.notes.ui.settings.SettingsLazyHeader
 
 @Composable
 fun DebugTab(navController: NavController, onBack: (() -> Unit)) {
@@ -39,53 +28,53 @@ fun DebugTab(navController: NavController, onBack: (() -> Unit)) {
 
     val isDebugModeEnabled by UiSettingsStore.getDebugMode(ctx).collectAsState(initial = false)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(
-                WindowInsets.systemBars
-                    .asPaddingValues()
-            )
-            .padding(horizontal = 16.dp, vertical = 5.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+    SettingsLazyHeader(
+        title = stringResource(R.string.debug),
+        onBack = onBack
     ) {
-        SettingsTitle(title = "Debug", onBack = onBack)
 
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
+        item{
             SwitchRow(
                 state = isDebugModeEnabled,
                 text = "Activate Debug Mode",
                 defaultValue = true
             ) {
-                scope.launch{
+                scope.launch {
                     UiSettingsStore.setDebugMode(ctx, false)
                 }
                 navController.popBackStack()
             }
+        }
 
+        item {
             TextDivider(stringResource(R.string.debug_categories))
+        }
 
-
+        item {
             SettingsItem(
                 title = "Reminders",
                 icon = Icons.Default.Alarm,
                 onClick = { navController.navigate(Routes.Settings.DebugSub.REMINDERS) }
             )
+        }
 
+        item {
             SettingsItem(
                 title = "Notes",
                 icon = Icons.AutoMirrored.Filled.FormatListBulleted,
                 onClick = { navController.navigate(Routes.Settings.DebugSub.NOTES) }
             )
+        }
 
+        item {
             SettingsItem(
                 title = "Other",
                 icon = Icons.Default.Build,
                 onClick = { navController.navigate(Routes.Settings.DebugSub.OTHER) }
             )
+        }
 
+        item {
             SettingsItem(
                 title = "User Confirm",
                 icon = Icons.Default.VerifiedUser,

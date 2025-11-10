@@ -1,5 +1,6 @@
 package org.elnix.notes.ui.settings.customisation
 
+import android.R.attr.spacing
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -33,77 +34,75 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
-import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.toolbars.ToolbarItemsEditor
-import org.elnix.notes.ui.helpers.toolbars.ToolbarsSettingsRow
 import org.elnix.notes.ui.helpers.toolbars.UnifiedToolbar
 import org.elnix.notes.ui.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 import kotlin.math.roundToInt
 
 @Composable
-fun ToolbarsCustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
-
-    val floatingToolbars by ToolbarsSettingsStore.getFloatingToolbars(ctx).collectAsState(initial = true)
-
-    val border by ToolbarsSettingsStore.getToolbarsBorder(ctx).collectAsState(initial = 2)
-    val corner by ToolbarsSettingsStore.getToolbarsCorner(ctx).collectAsState(initial = 50)
-    val paddingLeft by ToolbarsSettingsStore.getToolbarsPaddingLeft(ctx).collectAsState(initial = 16)
-    val paddingRight by ToolbarsSettingsStore.getToolbarsPaddingRight(ctx).collectAsState(initial = 16)
-    val spacing by ToolbarsSettingsStore.getToolbarsSpacing(ctx).collectAsState(initial = 8)
-
+fun ToolbarCustomisationTab(
+    ctx: Context,
+    scope: CoroutineScope,
+    toolbar: ToolBars,
+    onBack: (() -> Unit)
+) {
     val maxPadding = 100
 
     val toolbarsFlow = remember { ToolbarsSettingsStore.getToolbarsFlow(ctx) }
     val toolbars by toolbarsFlow.collectAsState(initial = emptyList())
+    val toolbar = toolbars.find { it.toolbar == toolbar }!!
 
     SettingsLazyHeader(
-        title = stringResource(R.string.toolbars),
+        title = stringResource(R.string.toolbar_customization),
         onBack = onBack
     ) {
 
-        toolbars.filter { it.toolbar != ToolBars.SEPARATOR }.forEach { bar ->
-            item {
-                UnifiedToolbar(
-                    ctx = ctx,
-                    toolbar = bar.toolbar,
-                    scrollState = rememberScrollState(),
-                    isSearchExpanded = false,
-                    color = bar.color,
-                    borderColor = bar.borderColor,
-                    ghosted = true
-                )
-            }
-        }
-
-
-        item { TextDivider(stringResource(R.string.toolbars_appearance)) }
-
-
         item {
-            SwitchRow(
-                floatingToolbars,
-                stringResource(R.string.floating_toolbars)
-            ) {
-                scope.launch { ToolbarsSettingsStore.setFloatingToolbars(ctx, it) }
-            }
+            UnifiedToolbar(
+                ctx = ctx,
+                toolbar = toolbar.toolbar,
+                scrollState = rememberScrollState(),
+                isSearchExpanded = false,
+                color = toolbar.color,
+                borderColor = toolbar.borderColor,
+                borderWidth = toolbar.borderWidth,
+                borderRadius = toolbar.borderRadius,
+                elevation = toolbar.elevation,
+                paddingLeft = toolbar.leftPadding,
+                paddingRight = toolbar.rightPadding,
+                ghosted = true
+            )
         }
+
 
         // Border slider
         item {
             SliderToolbarSetting(
                 label = { value ->
                     if (value > 0)
-                        "${stringResource(R.string.toolbars_border)}:  $value dp"
+                        "${stringResource(R.string.toolbars_border)}:  $value px"
                     else stringResource(R.string.no_border)
                 },
-                initialValue = border,
-                valueRange = 0f..10f,
-                steps = 9,
-                onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsBorder(ctx, 2) } },
+                initialValue = toolbar.borderWidth,
+                valueRange = 0f..20f,
+                steps = 19,
+                onReset = {
+                    scope.launch {
+                        ToolbarsSettingsStore.updateToolbarSetting(
+                             ctx = ctx,
+                             toolbar = toolbar.toolbar
+                        ) { it.copy(borderWidth = 2) }
+                    }
+                },
                 onValueChangeFinished = { v ->
-                    scope.launch { ToolbarsSettingsStore.setToolbarsBorder(ctx, v) }
+                    scope.launch {
+                        ToolbarsSettingsStore.updateToolbarSetting(
+                            ctx = ctx,
+                            toolbar = toolbar.toolbar
+                        ) { it.copy(borderWidth = v) }
+                    }
                 }
             )
         }
@@ -116,12 +115,24 @@ fun ToolbarsCustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() ->
                         "${stringResource(R.string.corner_radius)}:  ${value * 2} %"
                     else stringResource(R.string.rectangle)
                 },
-                initialValue = corner,
+                initialValue = toolbar.borderRadius,
                 valueRange = 0f..50f,
                 steps = 49,
-                onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsCorner(ctx, 50) } },
+                onReset = {
+                    scope.launch {
+                        ToolbarsSettingsStore.updateToolbarSetting(
+                            ctx = ctx,
+                            toolbar = toolbar.toolbar
+                        ) { it.copy(borderRadius = 50) }
+                    }
+                },
                 onValueChangeFinished = { v ->
-                    scope.launch { ToolbarsSettingsStore.setToolbarsCorner(ctx, v) }
+                    scope.launch {
+                        ToolbarsSettingsStore.updateToolbarSetting(
+                            ctx = ctx,
+                            toolbar = toolbar.toolbar
+                        ) { it.copy(borderRadius = v) }
+                    }
                 }
             )
         }
@@ -132,19 +143,24 @@ fun ToolbarsCustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() ->
                 label = { value ->
                     "${stringResource(R.string.padding)} ${stringResource(R.string.left)}: $value px"
                 },
-                initialValue = paddingLeft,
+                initialValue = toolbar.leftPadding,
                 valueRange = 0f..maxPadding.toFloat(),
                 steps = maxPadding - 1,
                 onReset = {
                     scope.launch {
-                        ToolbarsSettingsStore.setToolbarsPaddingLeft(
-                            ctx,
-                            16
-                        )
+                        ToolbarsSettingsStore.updateToolbarSetting(
+                            ctx = ctx,
+                            toolbar = toolbar.toolbar
+                        ) { it.copy(leftPadding = 16) }
                     }
                 },
                 onValueChangeFinished = { v ->
-                    scope.launch { ToolbarsSettingsStore.setToolbarsPaddingLeft(ctx, v) }
+                    scope.launch {
+                        ToolbarsSettingsStore.updateToolbarSetting(
+                            ctx = ctx,
+                            toolbar = toolbar.toolbar
+                        ) { it.copy(leftPadding = v) }
+                    }
                 }
             )
         }
@@ -155,19 +171,52 @@ fun ToolbarsCustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() ->
                 label = { value ->
                     "${stringResource(R.string.padding)} ${stringResource(R.string.right)}: $value px"
                 },
-                initialValue = paddingRight,
+                initialValue = toolbar.rightPadding,
                 valueRange = 0f..maxPadding.toFloat(),
                 steps = maxPadding - 1,
                 onReset = {
                     scope.launch {
-                        ToolbarsSettingsStore.setToolbarsPaddingRight(
-                            ctx,
-                            16
-                        )
+                        ToolbarsSettingsStore.updateToolbarSetting(
+                            ctx = ctx,
+                            toolbar = toolbar.toolbar
+                        ) { it.copy(rightPadding = 16) }
                     }
                 },
                 onValueChangeFinished = { v ->
-                    scope.launch { ToolbarsSettingsStore.setToolbarsPaddingRight(ctx, v) }
+                    scope.launch {
+                        ToolbarsSettingsStore.updateToolbarSetting(
+                            ctx = ctx,
+                            toolbar = toolbar.toolbar
+                        ) { it.copy(rightPadding = v) }
+                    }
+                }
+            )
+        }
+
+        item {
+            // Toolbar Elevation
+            SliderToolbarSetting(
+                label = { value ->
+                    "${stringResource(R.string.toolbar_evevation)}: $value px"
+                },
+                initialValue = toolbar.elevation,
+                valueRange = 0f..maxPadding.toFloat(),
+                steps = maxPadding - 1,
+                onReset = {
+                    scope.launch {
+                        ToolbarsSettingsStore.updateToolbarSetting(
+                            ctx = ctx,
+                            toolbar = toolbar.toolbar
+                        ) { it.copy(elevation = 3) }
+                    }
+                },
+                onValueChangeFinished = { v ->
+                    scope.launch {
+                        ToolbarsSettingsStore.updateToolbarSetting(
+                            ctx = ctx,
+                            toolbar = toolbar.toolbar
+                        ) { it.copy(elevation = v) }
+                    }
                 }
             )
         }
@@ -191,10 +240,8 @@ fun ToolbarsCustomisationTab(ctx: Context, scope: CoroutineScope, onBack: (() ->
         item {
             TextDivider(stringResource(R.string.toolbars_items_and_order))
         }
-        item { ToolbarsSettingsRow(ctx) }
-        item { ToolbarItemsEditor(ctx, ToolBars.SELECT) }
-        item { ToolbarItemsEditor(ctx, ToolBars.TAGS) }
-        item { ToolbarItemsEditor(ctx, ToolBars.QUICK_ACTIONS) }
+
+        item { ToolbarItemsEditor(ctx, toolbar.toolbar) }
     }
 }
 

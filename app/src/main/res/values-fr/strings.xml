@@ -196,4 +196,10 @@
     <string name="light_theme">Clair</string>
     <string name="system_theme">Système</string>
     <string name="select_color">Selectionner</string>
+    <string name="toolbar_customization">Customisation de la barre d\'outils</string>
+    <string name="toolbar_evevation">Elévation de la barre d\'outils</string>
+    <string name="edit_toolbar">Editer la barre d\'outils</string>
+    <string name="toolbar_select">Barre d\'outils séléctionner</string>
+    <string name="toolbar_quick_actions">Barre d\'outils actions rapider</string>
+    <string name="toolbar_tags">Barre d\'outils tags</string>
 </resources>

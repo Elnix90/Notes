@@ -56,6 +56,7 @@ import org.elnix.notes.data.helpers.GlobalActionIcon
 import org.elnix.notes.data.helpers.GlobalNotesActions
 import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.ToolBars
+import org.elnix.notes.data.helpers.toolbarName
 import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
@@ -110,7 +111,7 @@ fun ToolbarItemsEditor(
             .padding(horizontal = 16.dp, vertical = 14.dp)
     ) {
         Text(
-            text = "Edit toolbar: ${toolbar.name}",
+            text = "${stringResource(R.string.edit_toolbar)}: ${toolbarName(toolbar)}",
             color = MaterialTheme.colorScheme.onSurface.copy(if (enabled) 1f else 0.5f)
         )
 

@@ -195,4 +195,10 @@
     <string name="light_theme">Light</string>
     <string name="system_theme">System</string>
     <string name="select_color">Select</string>
+    <string name="toolbar_customization">Toolbar Customisation</string>
+    <string name="toolbar_evevation">Toolbar Elevation</string>
+    <string name="edit_toolbar">Edit Toobar</string>
+    <string name="toolbar_select">Toolbar select</string>
+    <string name="toolbar_quick_actions">Toolbar Quick Actions</string>
+    <string name="toolbar_tags">Toolbar Tags</string>
 </resources>

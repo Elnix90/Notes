@@ -15,6 +15,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.elnix.notes.data.helpers.NoteType
+import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.editors.DrawingEditorScreen
 import org.elnix.notes.ui.editors.UnifiedTextualNotesEditor
@@ -34,6 +35,7 @@ object Routes {
 
         object CustomisationSub {
             const val TOOLBARS = "settings/customisation/toolbars"
+            const val TOOLBAR_EDITOR = "settings/customisation/toolbar"
         }
         const val REMINDER = "settings/reminder"
         const val SECURITY = "settings/security"
@@ -144,7 +146,22 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteV
         composable(Routes.Settings.COLORS) { ColorSelectorSettingsScreen(navController) }
 
         composable(Routes.Settings.CUSTOMISATION) { CustomisationSettingsScreen(navController) }
-        composable(Routes.Settings.CustomisationSub.TOOLBARS) { ToolbarsCustomisationSettingsScreen(navController) }
+        composable(Routes.Settings.CustomisationSub.TOOLBARS) { ToolbarsOrderSettingsScreen(navController) }
+
+        composable(
+            route = "${Routes.Settings.CustomisationSub.TOOLBAR_EDITOR}?toolbar={toolbar}",
+            arguments = listOf(
+                navArgument("toolbar") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val toolbarKey = backStackEntry.arguments?.getString("toolbar") ?: return@composable
+            val toolbarSetting = ToolBars.valueOf(toolbarKey)
+
+            ToolbarsCustomisationSettingsScreen(
+                navController = navController,
+                toolbar = toolbarSetting
+            )
+        }
 
         composable(Routes.Settings.REMINDER) { RemindersSettingsScreen(navController) }
         composable(Routes.Settings.SECURITY) { SecuritySettingsScreen(navController) }

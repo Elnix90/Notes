@@ -81,8 +81,6 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     var showMultipleDeleteDialog by remember { mutableStateOf(false) }
     var showMultipleEditDialog by remember { mutableStateOf(false) }
 
-    val paddingLeft by ToolbarsSettingsStore.getToolbarsPaddingLeft(ctx).collectAsState(initial = 16)
-    val paddingRight by ToolbarsSettingsStore.getToolbarsPaddingRight(ctx).collectAsState(initial = 16)
     val toolbarsSpacing by ToolbarsSettingsStore.getToolbarsSpacing(ctx).collectAsState(initial = 8)
 
 
@@ -328,6 +326,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         isSearchExpanded = isSearchExpandedSelect,
                         color = bar.color,
                         borderColor = bar.borderColor,
+                        borderWidth = bar.borderWidth,
+                        borderRadius = bar.borderRadius,
+                        elevation = bar.elevation,
+                        paddingLeft = bar.leftPadding,
+                        paddingRight = bar.rightPadding,
                         onSearchChange = { if ( it.isNotBlank()) searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
@@ -342,6 +345,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         isSearchExpanded = isSearchExpandedTags,
                         color = bar.color,
                         borderColor = bar.borderColor,
+                        borderWidth = bar.borderWidth,
+                        borderRadius = bar.borderRadius,
+                        elevation = bar.elevation,
+                        paddingLeft = bar.leftPadding,
+                        paddingRight = bar.rightPadding,
                         onSearchChange = { searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
@@ -355,7 +363,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         scrollState = rememberScrollState(),
                         isSearchExpanded = isSearchExpandedQuickActions,
                         color = bar.color,
-                        borderColor = bar.borderColor,
+                        borderColor = bar.borderColor,borderWidth = bar.borderWidth,
+                        borderRadius = bar.borderRadius,
+                        elevation = bar.elevation,
+                        paddingLeft = bar.leftPadding,
+                        paddingRight = bar.rightPadding,
                         onSearchChange = { searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
@@ -528,8 +540,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             modifier = Modifier
                 .height(topBarHeight)
                 .align(Alignment.TopCenter)
-                .fillMaxWidth()
-                .padding(paddingLeft.dp, 0.dp, paddingRight.dp,0.dp),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(toolbarsSpacing.dp)
         ) {
             topBars.forEach { it() }
@@ -539,8 +550,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             modifier = Modifier
                 .height(bottomBarHeight)
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(paddingLeft.dp, 0.dp, paddingRight.dp,0.dp),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(toolbarsSpacing.dp)
         ) {
             bottomBars.forEach { it() }
@@ -603,7 +613,7 @@ fun performAction(
             if (note.isCompleted) vm.markUnCompleted(note)
             else vm.markCompleted(note)
         }
-        NotesActions.EDIT -> navController.navigate("edit/${note.id}?type=${note.type.name}")
+        NotesActions.EDIT -> navController.navigate("${Routes.EDIT}/${note.id}?type=${note.type.name}")
         NotesActions.SELECT -> onSelectStart?.invoke()
     }
 }

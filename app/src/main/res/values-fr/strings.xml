@@ -188,4 +188,12 @@
     <string name="duplicate">Dupliquer la note</string>
     <string name="enable_biometrics_lock">Activer le verouillage par biométrie</string>
     <string name="enable_device__pin_lock">Activer le verouilage par PIN du téléphone</string>
+    <string name="color_mode_default">Défaut</string>
+    <string name="color_mode_normal">Normal</string>
+    <string name="color_mode_all">Toutes</string>
+    <string name="amoled_theme">Amoled</string>
+    <string name="dark_theme">Sombre</string>
+    <string name="light_theme">Clair</string>
+    <string name="system_theme">Système</string>
+    <string name="select_color">Selectionner</string>
 </resources>

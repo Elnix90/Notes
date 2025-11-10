@@ -1,11 +1,24 @@
 package org.elnix.notes.ui.settings.appearance
 
 import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AllInclusive
+import androidx.compose.material.icons.filled.InvertColors
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.Button
@@ -13,6 +26,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,9 +47,11 @@ import org.elnix.notes.R
 import org.elnix.notes.data.settings.ColorCustomisationMode
 import org.elnix.notes.data.settings.DefaultThemes
 import org.elnix.notes.data.settings.applyDefaultThemeColors
+import org.elnix.notes.data.settings.colorCustomizationModeName
+import org.elnix.notes.data.settings.defaultThemeName
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
-import org.elnix.notes.ui.helpers.ActionSelectorRow
+import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.colors.ColorPickerRow
 import org.elnix.notes.ui.settings.SettingsLazyHeader
@@ -76,6 +92,7 @@ fun ColorSelectorTab(
     val delete by ColorSettingsStore.getDelete(ctx).collectAsState(initial = null)
     val edit by ColorSettingsStore.getEdit(ctx).collectAsState(initial = null)
     val complete by ColorSettingsStore.getComplete(ctx).collectAsState(initial = null)
+    val select by ColorSettingsStore.getSelect(ctx).collectAsState(initial = null)
 
     val noteTypeText by ColorSettingsStore.getNoteTypeText(ctx).collectAsState(initial = null)
     val noteTypeChecklist by ColorSettingsStore.getNoteTypeChecklist(ctx).collectAsState(initial = null)
@@ -94,12 +111,76 @@ fun ColorSelectorTab(
     ) {
 
         item {
-            ActionSelectorRow(
-                options = ColorCustomisationMode.entries,
-                selected = colorCustomisationMode,
-                label = stringResource(R.string.color_custom_mode)
+            TextDivider(stringResource(R.string.color_custom_mode))
+
+            Spacer(Modifier.height(15.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                scope.launch { UiSettingsStore.setColorCustomisationMode(ctx, it) }
+                ColorCustomisationMode.entries.forEach {
+                    Column(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable {
+                                scope.launch {
+                                    UiSettingsStore.setColorCustomisationMode(ctx, it)
+                                }
+                            }
+                            .padding(5.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        when (it) {
+                            ColorCustomisationMode.DEFAULT -> {
+                                Icon(
+                                    imageVector = Icons.Default.InvertColors,
+                                    contentDescription = stringResource(R.string.color_mode_default),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                            ColorCustomisationMode.NORMAL -> {
+                                Icon(
+                                    imageVector = Icons.Default.Palette,
+                                    contentDescription = stringResource(R.string.color_mode_normal),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                            ColorCustomisationMode.ALL -> {
+                                Icon(
+                                    imageVector = Icons.Default.AllInclusive,
+                                    contentDescription = stringResource(R.string.color_mode_all),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+
+                        Spacer(Modifier.height(5.dp))
+
+                        Text(
+                            text = colorCustomizationModeName(it),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+
+                        RadioButton(
+                            selected = colorCustomisationMode == it,
+                            onClick = {
+                                scope.launch {
+                                    UiSettingsStore.setColorCustomisationMode(ctx, it)
+                                }
+                            },
+                            colors = AppObjectsColors.radioButtonColors()
+                        )
+                    }
+                }
             }
         }
 
@@ -131,7 +212,7 @@ fun ColorSelectorTab(
                 IconButton(
                     onClick = { showRandomColorsValidation = true },
                     colors = AppObjectsColors.iconButtonColors(
-                        backgroundColor = MaterialTheme.colorScheme.primary.copy(0.7f)
+                        backgroundColor = MaterialTheme.colorScheme.primary.copy(0.5f)
                     )
                 ) {
                     Icon(
@@ -285,6 +366,14 @@ fun ColorSelectorTab(
 
                 item {
                     ColorPickerRow(
+                        label = stringResource(R.string.select_color),
+                        defaultColor = AmoledDefault.Select,
+                        currentColor = select ?: LocalExtraColors.current.select.toArgb()
+                    ) { scope.launch { ColorSettingsStore.setSelect(ctx, it) } }
+                }
+
+                item {
+                    ColorPickerRow(
                         label = stringResource(R.string.note_type_text),
                         defaultColor = AmoledDefault.NoteTypeText,
                         currentColor = noteTypeText
@@ -372,14 +461,79 @@ fun ColorSelectorTab(
 
             ColorCustomisationMode.DEFAULT -> {
                 item {
-                    ActionSelectorRow(
-                        options = DefaultThemes.entries,
-                        selected = selectedDefaultTheme,
-                        label = stringResource(R.string.theme)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme.surface,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .padding(vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        scope.launch {
-                            UiSettingsStore.setDefaultTheme(ctx, it)
-                            applyDefaultThemeColors(ctx, it)
+                        DefaultThemes.entries.forEach {
+                            Column(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        scope.launch {
+                                            UiSettingsStore.setDefaultTheme(ctx, it)
+                                            applyDefaultThemeColors(ctx, it)
+                                        }
+                                    }
+                                    .padding(5.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+
+                                when (it) {
+                                    DefaultThemes.AMOLED -> Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(Color.Black)
+                                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
+                                    )
+                                    DefaultThemes.DARK -> Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(Color.DarkGray)
+                                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
+                                    )
+                                    DefaultThemes.LIGHT -> Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(Color.White)
+                                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
+                                    )
+                                    DefaultThemes.SYSTEM -> Icon(
+                                        imageVector = Icons.Default.InvertColors,
+                                        contentDescription = stringResource(R.string.dark_theme),
+                                        modifier = Modifier.size(40.dp),
+                                        tint = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+
+                                Spacer(Modifier.height(5.dp))
+
+                                Text(
+                                    text = defaultThemeName(it),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+
+                                RadioButton(
+                                    selected = selectedDefaultTheme == it,
+                                    onClick = {
+                                        scope.launch {
+                                            UiSettingsStore.setDefaultTheme(ctx, it)
+                                            applyDefaultThemeColors(ctx, it)
+                                        }
+                                    },
+                                    colors = AppObjectsColors.radioButtonColors()
+                                )
+                            }
                         }
                     }
                 }

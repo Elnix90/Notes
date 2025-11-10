@@ -1,6 +1,7 @@
 package org.elnix.notes.data.settings
 
 import android.content.Context
+import android.content.res.Configuration
 import androidx.compose.ui.graphics.toArgb
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.ui.theme.AmoledDefault
@@ -9,14 +10,23 @@ import org.elnix.notes.ui.theme.LightDefault
 import org.elnix.notes.ui.theme.ThemeColors
 
 suspend fun applyDefaultThemeColors(ctx: Context, theme: DefaultThemes) {
-    val colors: ThemeColors = when (theme) {
+    setThemeColors(ctx, getDefaultColorScheme(ctx, theme))
+}
+
+fun getDefaultColorScheme(ctx: Context, theme: DefaultThemes) = when (theme) {
         DefaultThemes.LIGHT -> LightDefault
         DefaultThemes.DARK -> DarkDefault
         DefaultThemes.AMOLED -> AmoledDefault
+        DefaultThemes.SYSTEM -> {
+            val nightModeFlags = ctx.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                DarkDefault
+            } else {
+                LightDefault
+            }
+        }
     }
 
-    setThemeColors(ctx, colors)
-}
 
 private suspend fun setThemeColors(ctx: Context, colors: ThemeColors) {
     ColorSettingsStore.setPrimary(ctx, colors.Primary.toArgb())

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.settings.ColorCustomisationMode
 import org.elnix.notes.data.settings.DefaultThemes
 import org.elnix.notes.data.settings.dataStore
+import org.elnix.notes.data.settings.getDefaultColorScheme
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setBackground
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setComplete
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setDelete
@@ -30,8 +31,6 @@ import org.elnix.notes.data.settings.stores.ColorSettingsStore.setSurface
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setTertiary
 import org.elnix.notes.ui.helpers.randomColor
 import org.elnix.notes.ui.theme.AmoledDefault
-import org.elnix.notes.ui.theme.DarkDefault
-import org.elnix.notes.ui.theme.LightDefault
 import org.elnix.notes.ui.theme.ThemeColors
 
 object ColorSettingsStore {
@@ -174,13 +173,8 @@ object ColorSettingsStore {
     ) {
 
         val themeColors: ThemeColors = when (selectedColorCustomisationMode) {
-            ColorCustomisationMode.DEFAULT -> when (selectedMode) {
-                DefaultThemes.LIGHT -> LightDefault
-                DefaultThemes.DARK -> DarkDefault
-                DefaultThemes.AMOLED -> AmoledDefault
-            }
-            ColorCustomisationMode.NORMAL,
-            ColorCustomisationMode.ALL -> AmoledDefault
+            ColorCustomisationMode.DEFAULT -> getDefaultColorScheme(ctx, selectedMode)
+            ColorCustomisationMode.NORMAL, ColorCustomisationMode.ALL -> AmoledDefault
         }
 
         applyThemeColors(ctx, themeColors)

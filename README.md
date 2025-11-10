@@ -6,11 +6,11 @@ Modern, privacy-focused Android note-taking app built with **Jetpack Compose** a
 
 ## ✨ Features
 
-- 🗒️ **Rich note-taking**
-- 🎨 **Fully customizable UI**
-- 🔔 **Reminders**
-- 🔐 **Security (Biometrics and/or PIN)**
-- 💾 **Fully offline (cannot connect to internet)**
+- **Rich note-taking**
+- **Fully customizable UI**
+- **Reminders**
+- **Security (Biometrics and/or PIN)**
+- **Fully offline (cannot connect to internet)**
 
 ---
 

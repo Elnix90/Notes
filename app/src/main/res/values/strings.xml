@@ -195,4 +195,13 @@
     <string name="light_theme">Light</string>
     <string name="system_theme">System</string>
     <string name="select_color">Select</string>
+    <string name="toolbar_customization">Toolbar Customisation</string>
+    <string name="toolbar_evevation">Toolbar Elevation</string>
+    <string name="edit_toolbar">Edit Toobar</string>
+    <string name="toolbar_select">Toolbar select</string>
+    <string name="toolbar_quick_actions">Toolbar Quick Actions</string>
+    <string name="toolbar_tags">Toolbar Tags</string>
+    <string name="toolbars_order_help">Toolbars order help</string>
+    <string name="tolbars_order_help_explanation">This menu allows you to reorganize and customize each toolbar individually. You can place them wherever you want, change their color and appearance, enable or disable them—do whatever you want and enjoy. I worked hard to bring you this feature :)</string>
+    <string name="help">Help</string>
 </resources>

@@ -1,5 +1,8 @@
 package org.elnix.notes.data.helpers
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import org.elnix.notes.R
 import org.elnix.notes.data.settings.stores.ToolbarItemState
 
 enum class ToolBars {
@@ -62,5 +65,13 @@ fun defaultToolbarItems(toolbar: ToolBars): List<ToolbarItemState> {
             else -> 0 // Otherwise, keep current relative order
         }
     })
+}
+
+@Composable
+fun toolbarName(toolbar: ToolBars) = when (toolbar) {
+    ToolBars.SELECT -> stringResource(R.string.toolbar_select)
+    ToolBars.SEPARATOR -> ""
+    ToolBars.TAGS -> stringResource(R.string.toolbar_tags)
+    ToolBars.QUICK_ACTIONS -> stringResource(R.string.toolbar_quick_actions)
 }
 

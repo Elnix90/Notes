@@ -51,7 +51,6 @@ import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.neededCLickTypeForAction
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarItemState
-import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.tags.TagBubble
 import org.elnix.notes.ui.helpers.tags.TagEditorDialog
@@ -66,17 +65,19 @@ fun ToolbarCard(
     scrollState: ScrollState,
     isSearchExpanded: Boolean,
     height: Dp,
-    color: Color,
+    backgroundColor: Color,
     borderColor: Color,
+    borderWidth: Int,
+    borderRadius: Int,
+    elevation: Int,
+    paddingLeft: Int,
+    paddingRight: Int,
     ghosted: Boolean,
     scale: Float,
     onSearchChange: ((String) -> Unit)? = null,
     onActionClick: (GlobalNotesActions, ClickType, TagItem?) -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val allTags by TagsSettingsStore.getTags(ctx).collectAsState(initial = emptyList())
-    val border by ToolbarsSettingsStore.getToolbarsBorder(ctx).collectAsState(initial = 2)
-    val corner by ToolbarsSettingsStore.getToolbarsCorner(ctx).collectAsState(initial = 90)
 
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var editTag by remember { mutableStateOf<TagItem?>(null) }
@@ -91,18 +92,18 @@ fun ToolbarCard(
             .graphicsLayer {
                 this.scaleX = scale
                 this.scaleY = scale
-            },
-//            .alpha(if (ghosted) 0.6f else 1f),
-        shape = RoundedCornerShape(percent = corner),
-        colors = CardDefaults.cardColors(containerColor = color),
-        border = if ( border > 0) BorderStroke(border.dp, borderColor) else null,
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+            }
+            .padding(start = paddingLeft.dp, end = paddingRight.dp),
+        shape = RoundedCornerShape(percent = borderRadius),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        border = if ( borderWidth > 0) BorderStroke(borderWidth.dp, borderColor) else null,
+        elevation = CardDefaults.cardElevation(defaultElevation = elevation.dp)
     ) {
         Row(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxSize()
-                .clip(RoundedCornerShape(percent = corner))
+                .clip(RoundedCornerShape(percent = borderRadius))
                 .horizontalScroll(scrollState)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -118,6 +119,8 @@ fun ToolbarCard(
                     }
 
                     GlobalNotesActions.TAGS -> {
+                        val allTags by TagsSettingsStore.getTags(ctx).collectAsState(initial = emptyList())
+
                         allTags.forEach { tag ->
                             TagBubble(
                                 tag = tag,
@@ -141,7 +144,7 @@ fun ToolbarCard(
                                 showButtonLabel = item.showLabel
                             ) { onActionClick(action, ClickType.NORMAL, null) }
                         } else {
-                            val searchBoxColor = color.adjustBrightness(0.8f)
+                            val searchBoxColor = backgroundColor.adjustBrightness(0.8f)
 
                             TextField(
                                 value = searchText,

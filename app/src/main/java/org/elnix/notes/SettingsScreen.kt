@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.NoteViewModel
@@ -52,7 +53,8 @@ import org.elnix.notes.ui.settings.appearance.AppearanceTab
 import org.elnix.notes.ui.settings.appearance.ColorSelectorTab
 import org.elnix.notes.ui.settings.backup.BackupTab
 import org.elnix.notes.ui.settings.customisation.CustomisationTab
-import org.elnix.notes.ui.settings.customisation.ToolbarsCustomisationTab
+import org.elnix.notes.ui.settings.customisation.ToolbarCustomisationTab
+import org.elnix.notes.ui.settings.customisation.ToolbarsOrderTab
 import org.elnix.notes.ui.settings.debug.DebugTab
 import org.elnix.notes.ui.settings.debug.NotesDebugTab
 import org.elnix.notes.ui.settings.debug.OtherDebugTab
@@ -360,11 +362,20 @@ fun CustomisationSettingsScreen(navController: NavController) {
 }
 
 @Composable
-fun ToolbarsCustomisationSettingsScreen(navController: NavController) {
+fun ToolbarsOrderSettingsScreen(navController: NavController) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    ToolbarsCustomisationTab(ctx, scope) {
+    ToolbarsOrderTab(ctx, scope, navController) {
         navController.navigate(Routes.Settings.CUSTOMISATION)
+    }
+}
+
+@Composable
+fun ToolbarsCustomisationSettingsScreen(navController: NavController, toolbar: ToolBars) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    ToolbarCustomisationTab(ctx, scope, toolbar) {
+        navController.navigate(Routes.Settings.CustomisationSub.TOOLBARS)
     }
 }
 

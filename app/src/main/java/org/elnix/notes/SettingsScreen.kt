@@ -124,188 +124,191 @@ fun SettingsListScreen(
             }
         }
     ) {
-            item {
-                SettingsItem(
-                    title = stringResource(R.string.appearance),
-                    icon = Icons.Default.DarkMode
-                ) { navController.navigate(Routes.Settings.APPEARANCE) }
-            }
 
-            item {
-                SettingsItem(
-                    title = stringResource(R.string.customisation),
-                    icon = Icons.Default.DashboardCustomize
-                ) { navController.navigate(Routes.Settings.CUSTOMISATION) }
-            }
-            item {
-                SettingsItem(
-                    title = stringResource(R.string.notification_reminders),
-                    icon = Icons.Default.Alarm
-                ) { navController.navigate(Routes.Settings.REMINDER) }
-            }
+        item { TextDivider(stringResource(R.string.main_settings)) }
 
-            item {
-                SettingsItem(
-                    title = stringResource(R.string.security_privacy),
-                    icon = Icons.Default.Shield
-                ) { navController.navigate(Routes.Settings.SECURITY) }
-            }
+        item {
+            SettingsItem(
+                title = stringResource(R.string.appearance),
+                icon = Icons.Default.DarkMode
+            ) { navController.navigate(Routes.Settings.APPEARANCE) }
+        }
 
-            item {
-                SettingsItem(
-                    title = stringResource(R.string.backup_restore),
-                    icon = Icons.Default.Backup,
-                    enabled = false,
-                    comingSoon = true
-                ) { navController.navigate(Routes.Settings.BACKUP) }
-            }
+        item {
+            SettingsItem(
+                title = stringResource(R.string.customisation),
+                icon = Icons.Default.DashboardCustomize
+            ) { navController.navigate(Routes.Settings.CUSTOMISATION) }
+        }
+        item {
+            SettingsItem(
+                title = stringResource(R.string.notification_reminders),
+                icon = Icons.Default.Alarm
+            ) { navController.navigate(Routes.Settings.REMINDER) }
+        }
 
-            item {
-                SettingsItem(
-                    title = stringResource(R.string.settings_language_title),
-                    icon = Icons.Default.Language,
-                    onClick = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            openSystemLanguageSettings(ctx)
-                        } else {
-                            navController.navigate(Routes.Settings.LANGUAGE)
-                        }
+        item {
+            SettingsItem(
+                title = stringResource(R.string.security_privacy),
+                icon = Icons.Default.Shield
+            ) { navController.navigate(Routes.Settings.SECURITY) }
+        }
+
+        item {
+            SettingsItem(
+                title = stringResource(R.string.backup_restore),
+                icon = Icons.Default.Backup,
+                enabled = false,
+                comingSoon = true
+            ) { navController.navigate(Routes.Settings.BACKUP) }
+        }
+
+        item {
+            SettingsItem(
+                title = stringResource(R.string.settings_language_title),
+                icon = Icons.Default.Language,
+                onClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        openSystemLanguageSettings(ctx)
+                    } else {
+                        navController.navigate(Routes.Settings.LANGUAGE)
                     }
-                )
-            }
-
-            item{
-                SettingsItem(
-                    title = stringResource(R.string.plugins),
-                    icon = Icons.Default.Extension
-                ) { navController.navigate(Routes.Settings.PLUGINS) }
-            }
-
-            if (isDebugModeEnabled) {
-                item {
-                    SettingsItem(
-                        title = stringResource(R.string.debug),
-                        icon = Icons.Default.BugReport
-                    ) { navController.navigate(Routes.Settings.DEBUG) }
                 }
-            }
+            )
+        }
 
+        item{
+            SettingsItem(
+                title = stringResource(R.string.plugins),
+                icon = Icons.Default.Extension
+            ) { navController.navigate(Routes.Settings.PLUGINS) }
+        }
 
-            item { TextDivider(stringResource(R.string.about)) }
-
+        if (isDebugModeEnabled) {
             item {
                 SettingsItem(
-                    title = stringResource(R.string.source_code),
-                    icon = Icons.Default.Code,
-                ) {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = "https://github.com/Elnix90/Notes".toUri()
-                    }
-                    ctx.startActivity(intent)
-                }
-            }
-
-            item {
-                SettingsItem(
-                    title = stringResource(R.string.check_for_update),
-                    icon = Icons.Default.Update
-                ) {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = "https://github.com/Elnix90/Notes/releases/latest".toUri()
-                    }
-                    ctx.startActivity(intent)
-                }
-            }
-
-            item {
-                SettingsItem(
-                    title = stringResource(R.string.report_a_bug),
-                    icon = Icons.Default.ReportProblem
-                ) {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = "https://github.com/Elnix90/Notes/issues/new".toUri()
-                    }
-                    ctx.startActivity(intent)
-                }
-            }
-
-
-            item {
-                TextDivider(
-                    stringResource(R.string.contributors),
-                    Modifier.padding(horizontal = 60.dp)
-                )
-            }
-
-            item {
-                ContributorItem(
-                    name = "Elnix90",
-                    imageRes = R.drawable.elnix90,
-                    description = stringResource(R.string.app_developer),
-                    githubUrl = "https://github.com/Elnix90"
-                )
-            }
-
-            item {
-                ContributorItem(
-                    name = "LuckyTheCookie",
-                    imageRes = R.drawable.lucky_the_cookie,
-                    description = stringResource(R.string.thanks_for_alphallm),
-                    githubUrl = "https://github.com/LuckyTheCookie"
-                )
-            }
-
-
-            item {
-                Text(
-                    text = "${stringResource(R.string.version)} $versionName",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier
-                        .padding(top = 8.dp, bottom = 16.dp)
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            toast?.cancel()
-
-                            when {
-                                isDebugModeEnabled -> {
-                                    toast = Toast.makeText(
-                                        ctx,
-                                        "Debug Mode is already enabled",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                    toast?.show()
-                                }
-
-                                !showUserConfirmEnableDebug -> scope.launch {
-                                    DebugSettingsStore.setDebugMode(
-                                        ctx,
-                                        true
-                                    )
-                                }
-
-                                timesClickedOnVersion < 6 -> {
-                                    timesClickedOnVersion++
-                                    if (timesClickedOnVersion > 2) {
-                                        toast = Toast.makeText(
-                                            ctx,
-                                            "${7 - timesClickedOnVersion} more times to enable Debug Mode",
-                                            Toast.LENGTH_SHORT
-                                        )
-                                    }
-                                    toast?.show()
-                                }
-
-                                else -> {
-                                    showDebugModeUserValidation = true
-                                }
-                            }
-                        }
-                )
+                    title = stringResource(R.string.debug),
+                    icon = Icons.Default.BugReport
+                ) { navController.navigate(Routes.Settings.DEBUG) }
             }
         }
+
+
+        item { TextDivider(stringResource(R.string.about)) }
+
+        item {
+            SettingsItem(
+                title = stringResource(R.string.source_code),
+                icon = Icons.Default.Code,
+            ) {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = "https://github.com/Elnix90/Notes".toUri()
+                }
+                ctx.startActivity(intent)
+            }
+        }
+
+        item {
+            SettingsItem(
+                title = stringResource(R.string.check_for_update),
+                icon = Icons.Default.Update
+            ) {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = "https://github.com/Elnix90/Notes/releases/latest".toUri()
+                }
+                ctx.startActivity(intent)
+            }
+        }
+
+        item {
+            SettingsItem(
+                title = stringResource(R.string.report_a_bug),
+                icon = Icons.Default.ReportProblem
+            ) {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = "https://github.com/Elnix90/Notes/issues/new".toUri()
+                }
+                ctx.startActivity(intent)
+            }
+        }
+
+
+        item {
+            TextDivider(
+                stringResource(R.string.contributors),
+                Modifier.padding(horizontal = 60.dp)
+            )
+        }
+
+        item {
+            ContributorItem(
+                name = "Elnix90",
+                imageRes = R.drawable.elnix90,
+                description = stringResource(R.string.app_developer),
+                githubUrl = "https://github.com/Elnix90"
+            )
+        }
+
+        item {
+            ContributorItem(
+                name = "LuckyTheCookie",
+                imageRes = R.drawable.lucky_the_cookie,
+                description = stringResource(R.string.thanks_for_alphallm),
+                githubUrl = "https://github.com/LuckyTheCookie"
+            )
+        }
+
+
+        item {
+            Text(
+                text = "${stringResource(R.string.version)} $versionName",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .padding(top = 8.dp, bottom = 16.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        toast?.cancel()
+
+                        when {
+                            isDebugModeEnabled -> {
+                                toast = Toast.makeText(
+                                    ctx,
+                                    "Debug Mode is already enabled",
+                                    Toast.LENGTH_SHORT
+                                )
+                                toast?.show()
+                            }
+
+                            !showUserConfirmEnableDebug -> scope.launch {
+                                DebugSettingsStore.setDebugMode(
+                                    ctx,
+                                    true
+                                )
+                            }
+
+                            timesClickedOnVersion < 6 -> {
+                                timesClickedOnVersion++
+                                if (timesClickedOnVersion > 2) {
+                                    toast = Toast.makeText(
+                                        ctx,
+                                        "${7 - timesClickedOnVersion} more times to enable Debug Mode",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                }
+                                toast?.show()
+                            }
+
+                            else -> {
+                                showDebugModeUserValidation = true
+                            }
+                        }
+                    }
+            )
+        }
+    }
 
     if (showDebugModeUserValidation) {
         UserValidation(

@@ -219,4 +219,5 @@
     <string name="failed_to_reset_settings">Failed to reset settings</string>
     <string name="failed_to_update_setting">Failed to update setting</string>
     <string name="are_you_sure_to_reset_this_toolbar">Are you sure to reset this toolbar?</string>
+    <string name="main_settings">Main settings</string>
 </resources>

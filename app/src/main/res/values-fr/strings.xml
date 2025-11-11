@@ -220,4 +220,5 @@
     <string name="failed_to_reset_settings">Échec de la réinitialisation des paramètres</string>
     <string name="failed_to_update_setting">Échec de la mise à jour du paramètre</string>
     <string name="are_you_sure_to_reset_this_toolbar">Êtes-vous sûr de vouloir réinitialiser cette barre d\'outils ?</string>
+    <string name="main_settings">Paramètres Principaux</string>
 </resources>

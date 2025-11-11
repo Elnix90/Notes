@@ -75,7 +75,7 @@ fun CustomisationTab(
                 label = stringResource(R.string.swipe_right_action),
                 options = NotesActions.entries,
                 selected = settings.rightAction,
-                optionLabel = { it.name }
+                optionLabel = { noteActionName(ctx, it) }
             ) {
                 scope.launch { ActionSettingsStore.setSwipeRightAction(ctx, it) }
             }
@@ -87,7 +87,7 @@ fun CustomisationTab(
                 label = stringResource(R.string.click_action),
                 options = NotesActions.entries,
                 selected = settings.clickAction,
-                optionLabel = { it.name }
+                optionLabel = { noteActionName(ctx, it) }
             ) {
                 scope.launch { ActionSettingsStore.setClickAction(ctx, it) }
             }
@@ -99,7 +99,7 @@ fun CustomisationTab(
                 label = stringResource(R.string.long_click_action),
                 options = NotesActions.entries,
                 selected = settings.longClickAction,
-                optionLabel = { it.name }
+                optionLabel = { noteActionName(ctx, it) }
             ) {
                 scope.launch { ActionSettingsStore.setLongClickAction(ctx, it) }
             }
@@ -112,7 +112,7 @@ fun CustomisationTab(
                 options = NotesActions.entries,
                 selected = settings.typeButtonAction,
                 enabled = showNoteTypeIcon,
-                optionLabel = { it.name }
+                optionLabel = { noteActionName(ctx, it) }
             ) {
                 scope.launch { ActionSettingsStore.setTypeButtonAction(ctx, it) }
             }

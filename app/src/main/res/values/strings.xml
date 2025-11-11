@@ -218,4 +218,5 @@
     <string name="secutity_explanation">Here you can protect you app by biomatrics or device password. I\'m not responsible for ANY data loss or any trouble you might get into</string>
     <string name="failed_to_reset_settings">Failed to reset settings</string>
     <string name="failed_to_update_setting">Failed to update setting</string>
+    <string name="are_you_sure_to_reset_this_toolbar">Are you sure to reset this toolbar?</string>
 </resources>

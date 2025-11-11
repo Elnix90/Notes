@@ -16,11 +16,13 @@ import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.NotesActions
 import org.elnix.notes.data.helpers.noteActionName
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
+import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.settings.SettingsItem
+import org.elnix.notes.ui.helpers.toolbars.SliderToolbarSetting
 import org.elnix.notes.ui.settings.SettingsLazyHeader
 
 @Composable
@@ -36,8 +38,9 @@ fun CustomisationTab(
     val showDeleteButton by UiSettingsStore.getShowDeleteButton(ctx).collectAsState(initial = true)
     val showNoteTypeIcon by UiSettingsStore.getShowNoteTypeIcon(ctx).collectAsState(initial = true)
 
-    val showTagSelector by UiSettingsStore.getShowTagSelector(ctx).collectAsState(initial = true)
     val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx).collectAsState(initial = true)
+
+    val toolbarsSpacing by ToolbarsSettingsStore.getToolbarsSpacing(ctx).collectAsState(initial = 8)
 
 
     SettingsLazyHeader(
@@ -136,17 +139,8 @@ fun CustomisationTab(
             }
         }
 
-        // New Tags Category
+        // Tags Category
         item { TextDivider(stringResource(R.string.tags)) }
-
-        item {
-            SwitchRow(
-                showTagSelector,
-                stringResource(R.string.show_tag_selector),
-            ) {
-                scope.launch { UiSettingsStore.setShowTagSelector(ctx, it) }
-            }
-        }
 
         item {
             SwitchRow(
@@ -157,6 +151,8 @@ fun CustomisationTab(
             }
         }
 
+        item { TextDivider(stringResource(R.string.toolbars)) }
+
         item {
             SettingsItem(
                 title = stringResource(R.string.toolbars),
@@ -165,5 +161,22 @@ fun CustomisationTab(
                 navController.navigate(Routes.Settings.CustomisationSub.TOOLBARS)
             }
         }
+
+        item {
+            // Toolbars spacing
+            SliderToolbarSetting(
+                label = { value ->
+                    "${stringResource(R.string.toolbars_spacing)}: $value px"
+                },
+                initialValue = toolbarsSpacing,
+                valueRange = 0f..100.toFloat(),
+                steps = 99,
+                onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, 8) } },
+                onValueChangeFinished = { v ->
+                    scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, v) }
+                }
+            )
+        }
+
     }
 }

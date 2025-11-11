@@ -8,6 +8,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CardDefaults.elevatedCardElevation
 import androidx.compose.material3.Checkbox
@@ -60,7 +60,6 @@ import org.elnix.notes.data.helpers.toolbarName
 import org.elnix.notes.data.settings.stores.ToolbarSetting
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
-import org.elnix.notes.ui.helpers.toolbars.SliderToolbarSetting
 import org.elnix.notes.ui.helpers.toolbars.ToolbarColorSelectorDialog
 import org.elnix.notes.ui.helpers.toolbars.UnifiedToolbar
 import org.elnix.notes.ui.settings.SettingsLazyHeader
@@ -84,9 +83,6 @@ fun ToolbarsOrderTab(
         .collectAsState(initial = ToolbarsSettingsStore.defaultList)
 
     val uiList = remember { mutableStateListOf<ToolbarSetting>() }
-
-    val toolbarsSpacing by ToolbarsSettingsStore.getToolbarsSpacing(ctx).collectAsState(initial = 8)
-
 
     // Sync sourceList -> uiList safely and only when changed
     LaunchedEffect(sourceList) {
@@ -139,16 +135,22 @@ fun ToolbarsOrderTab(
             ReorderableItem(state = reorderState, key = bar.toolbar.name) { isDraggingItem ->
                 val scale by animateFloatAsState(if (isDraggingItem) 1.03f else 1f)
                 val elevation by animateDpAsState(if (isDraggingItem) 16.dp else 0.dp)
-                val bgColor = cardColor.copy(alpha = if (isDraggingItem) 0.2f else 1f)
-                val borderColor = MaterialTheme.colorScheme.surface.copy(alpha = if (isDraggingItem) 0.2f else 1f)
 
                 ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .scale(scale)
+                        .clickable {
+                            if (bar.toolbar != ToolBars.SEPARATOR) {
+                                scope.launch {
+                                    ToolbarsSettingsStore.setToolbars(ctx, uiList)
+                                    navController.navigate("${Routes.Settings.CustomisationSub.TOOLBAR_EDITOR}?toolbar=${bar.toolbar.name}")
+                                }
+                            }
+                        }
                         .padding(vertical = 4.dp)
-                        .background(bgColor, RoundedCornerShape(12.dp))
-                        .border(BorderStroke(2.dp, borderColor), RoundedCornerShape(12.dp))
+                        .background(cardColor, RoundedCornerShape(12.dp))
+                        .border(BorderStroke(2.dp, MaterialTheme.colorScheme.surface), RoundedCornerShape(12.dp))
                         .padding(vertical = 15.dp),
                     elevation = elevatedCardElevation(elevation)
                 ) {
@@ -233,20 +235,20 @@ fun ToolbarsOrderTab(
                                     )
                                 }
 
-                                IconButton(
-                                    onClick = {
-                                        scope.launch {
-                                            ToolbarsSettingsStore.resetToolbar(ctx, uiList[index].toolbar)
-                                        }
-                                    },
-                                    colors = AppObjectsColors.iconButtonColors(),
-                                    shape = CircleShape
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Restore,
-                                        contentDescription = stringResource(R.string.reset),
-                                    )
-                                }
+//                                IconButton(
+//                                    onClick = {
+//                                        scope.launch {
+//                                            ToolbarsSettingsStore.resetToolbar(ctx, uiList[index].toolbar)
+//                                        }
+//                                    },
+//                                    colors = AppObjectsColors.iconButtonColors(),
+//                                    shape = CircleShape
+//                                ) {
+//                                    Icon(
+//                                        imageVector = Icons.Default.Restore,
+//                                        contentDescription = stringResource(R.string.reset),
+//                                    )
+//                                }
 
                                 Spacer(Modifier.weight(1f))
 
@@ -272,24 +274,6 @@ fun ToolbarsOrderTab(
                     }
                 }
             }
-        }
-
-        item { TextDivider(stringResource(R.string.toolbars_spacing)) }
-
-        item {
-            // Toolbars spacing
-            SliderToolbarSetting(
-                label = { value ->
-                    "${stringResource(R.string.toolbars_spacing)}: $value px"
-                },
-                initialValue = toolbarsSpacing,
-                valueRange = 0f..100.toFloat(),
-                steps = 99,
-                onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, 8) } },
-                onValueChangeFinished = { v ->
-                    scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, v) }
-                }
-            )
         }
     }
     if (showColorPickerDialog && editToolbar != null) {

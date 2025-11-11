@@ -1,8 +1,6 @@
 package org.elnix.notes.ui.settings.customisation
 
 import android.content.Context
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
@@ -10,7 +8,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -62,6 +59,7 @@ fun ToolbarCustomisationTab(
         title = stringResource(R.string.toolbar_customization),
         onBack = onBack,
         helpText = stringResource(R.string.toolbars_customisation_text),
+        resetText = stringResource(R.string.are_you_sure_to_reset_this_toolbar),
         onReset = {
             scope.launch {
                 ToolbarItemsSettingsStore.resetToolbar(ctx, toolbarSetting.toolbar)
@@ -88,41 +86,18 @@ fun ToolbarCustomisationTab(
 
 
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(15.dp)
+            Button(
+                onClick = { showColorPickerDialog = true },
+                colors = AppObjectsColors.buttonColors(),
+                shape = CircleShape,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Button(
-                    onClick = { showColorPickerDialog = true },
-                    colors = AppObjectsColors.buttonColors(),
-                    shape = CircleShape,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ColorLens,
-                        contentDescription = stringResource(R.string.toolbar_color),
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    Text(stringResource(R.string.toolbar_color))
-                }
-
-                Button(
-                    onClick = {
-                        scope.launch {
-                            ToolbarsSettingsStore.resetToolbar(ctx, toolbarSetting.toolbar)
-                        }
-                    },
-                    colors = AppObjectsColors.buttonColors(),
-                    shape = CircleShape,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Restore,
-                        contentDescription = stringResource(R.string.reset),
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    Text(stringResource(R.string.reset))
-                }
+                Icon(
+                    imageVector = Icons.Default.ColorLens,
+                    contentDescription = stringResource(R.string.toolbar_color),
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(stringResource(R.string.toolbar_color))
             }
         }
 

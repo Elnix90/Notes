@@ -130,7 +130,7 @@
     <string name="show_tags_in_notes">Afficher les tags dans les notes</string>
     <string name="filtered_bote_number">Nombre de notes filtrées</string>
     <string name="reset_filters">Réinitialiser les filtres</string>
-    <string name="toolbars">Boîtes à outils</string>
+    <string name="toolbars">Barres d\'outils</string>
     <string name="add_tag">Ajouter un tag</string>
     <string name="delete">Suprimer</string>
     <string name="edit">Editer</string>
@@ -219,4 +219,5 @@
     <string name="secutity_explanation">Ici, vous pouvez protéger votre application à l\'aide de données biométriques ou d\'un mot de passe. Je ne suis pas responsable des pertes de données ou des problèmes que vous pourriez rencontrer.</string>
     <string name="failed_to_reset_settings">Échec de la réinitialisation des paramètres</string>
     <string name="failed_to_update_setting">Échec de la mise à jour du paramètre</string>
+    <string name="are_you_sure_to_reset_this_toolbar">Êtes-vous sûr de vouloir réinitialiser cette barre d\'outils ?</string>
 </resources>

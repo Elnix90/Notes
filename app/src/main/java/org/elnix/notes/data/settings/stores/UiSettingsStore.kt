@@ -77,13 +77,6 @@ object UiSettingsStore {
     suspend fun setShowTagsDropdownEditor(ctx: Context, enabled: Boolean) {
         ctx.dataStore.edit { it[SHOW_TAGS_DROPDOWN_EDITORS] = enabled }
     }
-    
-    private val SHOW_TAG_SELECTOR = booleanPreferencesKey("show_tag_selector")
-    fun getShowTagSelector(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW_TAG_SELECTOR] ?: true }
-    suspend fun setShowTagSelector(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[SHOW_TAG_SELECTOR] = enabled }
-    }
 
     private val SHOW_TAGS_IN_NOTES = booleanPreferencesKey("show_tags_in_notes")
     fun getShowTagsInNotes(ctx: Context): Flow<Boolean> =

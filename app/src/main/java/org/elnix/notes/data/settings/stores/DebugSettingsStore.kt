@@ -17,7 +17,7 @@ object DebugSettingsStore {
 
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
-            prefs.clear()
+            prefs.remove(DEBUG_MODE_ENABLED)
         }
     }
 }

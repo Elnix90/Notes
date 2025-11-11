@@ -221,4 +221,13 @@
     <string name="failed_to_update_setting">Échec de la mise à jour du paramètre</string>
     <string name="are_you_sure_to_reset_this_toolbar">Êtes-vous sûr de vouloir réinitialiser cette barre d\'outils ?</string>
     <string name="main_settings">Paramètres Principaux</string>
+    <string name="pick_a_offset">Choississez une durée</string>
+    <string name="create_new_offset">Crééer une nouvelle durée</string>
+    <string name="delete_offset">Supprimer la durée</string>
+    <string name="are_you_sure_to_delete_offset">Êtes-vous sûr de vouloir supprimer cette Durée ? ?</string>
+    <string name="edit_offset">Editer la Durée</string>
+    <string name="custom_date">Date personalisée</string>
+    <string name="default_reminders">Rappels par défaut</string>
+    <string name="customize_offsets">Customiser les Durées</string>
+    <string name="offsets">Durées</string>
 </resources>

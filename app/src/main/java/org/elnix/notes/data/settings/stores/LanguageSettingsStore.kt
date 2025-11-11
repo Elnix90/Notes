@@ -23,7 +23,7 @@ object LanguageSettingsStore {
 
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
-            prefs.clear()
+            prefs.remove(KEY_LANG)
         }
     }
 }

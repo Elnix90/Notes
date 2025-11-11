@@ -55,7 +55,10 @@ object LockSettingsStore {
 
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
-            prefs.clear()
+            prefs.remove(USE_BIOMETRICS)
+            prefs.remove(USE_DEVICE_CREDENTIAL)
+            prefs.remove(LOCK_TIMEOUT_SECONDS)
+            prefs.remove(LAST_UNLOCK_TIMESTAMP)
         }
     }
 }

@@ -87,7 +87,17 @@ object UiSettingsStore {
 
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
-            prefs.clear()
+            prefs.remove(SHOW_NOTES_NUMBER)
+            prefs.remove(SHOW_DELETE_BUTTON)
+            prefs.remove(NOTE_VIEW_TYPE)
+            prefs.remove(FULLSCREEN)
+            prefs.remove(SHOW_NOTE_TYPE_ICON)
+            prefs.remove(SHOW_COLOR_DROPDOWN_EDITORS)
+            prefs.remove(SHOW_REMINDER_DROPDOWN_EDITORS)
+            prefs.remove(SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS)
+            prefs.remove(SHOW_TAGS_DROPDOWN_EDITORS)
+            prefs.remove(SHOW_TAGS_IN_NOTES)
         }
     }
+
 }

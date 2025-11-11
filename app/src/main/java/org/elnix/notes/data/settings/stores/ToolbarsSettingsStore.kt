@@ -138,8 +138,11 @@ object ToolbarsSettingsStore {
     }
 
     suspend fun resetAll(ctx: Context) {
-        ctx.dataStore.edit { prefs ->
-            prefs.clear()
+        withContext(Dispatchers.IO) {
+            ctx.dataStore.edit { prefs ->
+                prefs.remove(TOOLBARS_KEY)
+                prefs.remove(TOOLBARS_SPACING)
+            }
         }
     }
 }

@@ -3,16 +3,28 @@ package org.elnix.notes.ui.helpers.reminders
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.ReminderEntity
+import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
 import org.elnix.notes.ui.NoteViewModel
+import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.cancelReminderNotification
 import org.elnix.notes.utils.scheduleReminderNotification
 
@@ -20,13 +32,17 @@ import org.elnix.notes.utils.scheduleReminderNotification
 @Composable
 fun RemindersSection(
     reminders: List<ReminderEntity>,
+    activity: FragmentActivity,
     currentId: Long?,
     title: String,
     vm: NoteViewModel
 ) {
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
+    val ctx = LocalContext.current
     val reminderText = stringResource(R.string.reminder)
+
+    var showOffsetPicker by remember { mutableStateOf(false) }
+    val allOffsets by OffsetsSettingsStore.getOffsets(ctx).collectAsState(initial = emptyList())
 
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -34,34 +50,48 @@ fun RemindersSection(
         itemVerticalAlignment = Alignment.CenterVertically
     ) {
         reminders.forEach { reminder ->
-            ReminderBubble(
+            TimeBubble(
                 reminder = reminder,
-                onToggle = { enabled ->
+                onClick = {
                     scope.launch {
-                        val updatedReminder = reminder.copy(enabled = enabled)
+                        val updatedReminder = reminder.copy(enabled = !reminder.enabled)
                         vm.updateReminder(updatedReminder)
-                        if (enabled) {
+                        if (reminder.enabled) {
                             scheduleReminderNotification(
-                                context,
+                                ctx,
                                 updatedReminder,
                                 title = title.ifBlank { reminderText }
                             )
                         } else {
-                            cancelReminderNotification(context, reminder.id)
+                            cancelReminderNotification(ctx, reminder.id)
                         }
                     }
                 },
                 onDelete = {
                     scope.launch {
                         vm.deleteReminder(reminder)
-                        cancelReminderNotification(context, reminder.id)
+                        cancelReminderNotification(ctx, reminder.id)
                     }
                 }
             )
         }
+        IconButton(
+            onClick = { showOffsetPicker = true },
+            colors = AppObjectsColors.iconButtonColors()
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = stringResource(R.string.pick_a_offset),
+            )
+        }
+    }
 
-        // The "Add new reminder" picker
-        ReminderPicker { picked ->
+    if (showOffsetPicker) {
+        OffsetPickerDialog(
+            offsets = allOffsets,
+            activity = activity,
+            onDismiss = { showOffsetPicker = false }
+        ) { picked ->
             currentId?.let { noteId ->
                 val reminderEntity = ReminderEntity(
                     noteId = noteId,
@@ -71,12 +101,13 @@ fun RemindersSection(
                 scope.launch {
                     val id = vm.addReminder(reminderEntity)
                     scheduleReminderNotification(
-                        context,
+                        ctx,
                         reminderEntity.copy(id = id),
                         title = title.ifBlank { reminderText }
                     )
                 }
             }
+            showOffsetPicker = false
         }
     }
 }

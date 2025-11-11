@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
@@ -84,30 +83,19 @@ fun UserValidation(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surface.copy(0.5f))
+                        .padding(8.dp)
+
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colorScheme.surface.copy(0.5f))
-                            .padding(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = titleIcon,
-                            contentDescription = "Warning",
-                            tint = titleColor
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            color = titleColor
                         )
-
-                        Spacer(Modifier.width(12.dp))
-
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                color = titleColor
-                            )
-                        )
-                    }
-
+                    )
                 }
             }
         },
@@ -146,7 +134,13 @@ fun UserValidation(
                     }
                 }
             }
-
+        },
+        icon = {
+            Icon(
+                imageVector = titleIcon,
+                contentDescription = "Warning",
+                tint = titleColor
+            )
         },
         containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 6.dp,

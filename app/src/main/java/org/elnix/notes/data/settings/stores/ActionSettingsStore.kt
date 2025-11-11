@@ -56,8 +56,11 @@ object ActionSettingsStore {
 
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
-            prefs.clear()
+            prefs.remove(SWIPE_LEFT_ACTION)
+            prefs.remove(SWIPE_RIGHT_ACTION)
+            prefs.remove(CLICK_ACTION)
+            prefs.remove(LONG_CLICK_ACTION)
+            prefs.remove(TYPE_BUTTON_ACTION)
         }
     }
-
 }

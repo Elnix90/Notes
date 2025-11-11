@@ -71,7 +71,7 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
             composable(Routes.NOTES) { NotesScreen(vm, navController) }
 
             // SETTINGS NAV GRAPH
-            settingsNavGraph(navController, vm)
+            settingsNavGraph(navController, vm, activity)
 
             // CREATE NOTE
             composable(
@@ -87,6 +87,7 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                 when (noteType) {
                     NoteType.TEXT, NoteType.CHECKLIST -> UnifiedTextualNotesEditor(
                         vm = vm,
+                        activity = activity,
                         navController = navController,
                         noteId = null,
                         noteType = noteType
@@ -119,6 +120,7 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
                 when (noteType) {
                     NoteType.TEXT, NoteType.CHECKLIST -> UnifiedTextualNotesEditor(
                         vm = vm,
+                        activity = activity,
                         navController = navController,
                         noteId = noteId,
                         noteType = noteType
@@ -136,7 +138,7 @@ fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
 }
 
 // -------------------- SETTINGS NAV GRAPH --------------------
-fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteViewModel) {
+fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteViewModel, activity: FragmentActivity) {
     navigation(
         startDestination = Routes.Settings.ROOT,
         route = "settings_graph"
@@ -163,7 +165,7 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteV
             )
         }
 
-        composable(Routes.Settings.REMINDER) { RemindersSettingsScreen(navController) }
+        composable(Routes.Settings.REMINDER) { RemindersSettingsScreen(navController, activity) }
         composable(Routes.Settings.SECURITY) { SecuritySettingsScreen(navController) }
         composable(Routes.Settings.BACKUP) { BackupSettingsScreen(navController) }
         composable(Routes.Settings.LANGUAGE) { LanguageSettingsScreen(navController) }

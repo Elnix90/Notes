@@ -30,16 +30,19 @@ object UserConfirmSettingsStore {
         ctx.dataStore.edit { it[SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE] = enabled }
     }
 
-    private val SHOW_ENABLE_DEBUG_ = booleanPreferencesKey("show_enable_debug")
+    private val SHOW_ENABLE_DEBUG = booleanPreferencesKey("show_enable_debug")
     fun getShowEnableDebug(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW_ENABLE_DEBUG_] ?: true }
+        ctx.dataStore.data.map { it[SHOW_ENABLE_DEBUG] ?: true }
     suspend fun setShowEnableDebug(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[SHOW_ENABLE_DEBUG_] = enabled }
+        ctx.dataStore.edit { it[SHOW_ENABLE_DEBUG] = enabled }
     }
 
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
-            prefs.clear()
+            prefs.remove(SHOW_ENABLE_DEBUG)
+            prefs.remove(SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE)
+            prefs.remove(SHOW_USER_VALIDATION_DELETE_NOTE)
+            prefs.remove(SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE)
         }
     }
 }

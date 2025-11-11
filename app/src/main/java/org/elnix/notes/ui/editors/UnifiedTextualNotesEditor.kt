@@ -48,6 +48,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -79,6 +80,7 @@ import org.elnix.notes.ui.theme.adjustBrightness
 @Composable
 fun UnifiedTextualNotesEditor(
     vm: NoteViewModel,
+    activity: FragmentActivity,
     navController: NavController,
     noteId: Long?,
     noteType: NoteType,
@@ -327,7 +329,13 @@ fun UnifiedTextualNotesEditor(
                     horizontalAlignment = Alignment.Start,
                     onExpand = { scope.launch { UiSettingsStore.setShowReminderDropdownEditor(ctx, it) } }
                 ) {
-                    RemindersSection(reminders, currentNote.id, title, vm)
+                    RemindersSection(
+                        reminders = reminders,
+                        activity = activity,
+                        currentId = currentNote.id,
+                        title = title,
+                        vm = vm
+                    )
                 }
             }
 

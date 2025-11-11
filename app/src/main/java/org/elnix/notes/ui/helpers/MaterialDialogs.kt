@@ -1,10 +1,13 @@
 package org.elnix.notes.ui.helpers
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,8 +34,14 @@ fun StyledReminderDialogs(
     var showDate by remember { mutableStateOf(false) }
     var showTime by remember { mutableStateOf(false) }
 
-    Button(onClick = { showDate = true }) {
-        Text(stringResource(R.string.add_reminder))
+    IconButton(
+        onClick = { showDate = true },
+        colors = AppObjectsColors.iconButtonColors()
+    ) {
+        Icon(
+            imageVector = Icons.Default.CalendarMonth,
+            contentDescription = stringResource(R.string.custom_date)
+        )
     }
 
     if (showDate) {

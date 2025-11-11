@@ -206,9 +206,29 @@ object ColorSettingsStore {
     }
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
-            prefs.clear()
+            prefs.remove(PRIMARY_COLOR)
+            prefs.remove(ON_PRIMARY_COLOR)
+            prefs.remove(SECONDARY_COLOR)
+            prefs.remove(ON_SECONDARY_COLOR)
+            prefs.remove(TERTIARY_COLOR)
+            prefs.remove(ON_TERTIARY_COLOR)
+            prefs.remove(BACKGROUND_COLOR)
+            prefs.remove(ON_BACKGROUND_COLOR)
+            prefs.remove(SURFACE_COLOR)
+            prefs.remove(ON_SURFACE_COLOR)
+            prefs.remove(ERROR_COLOR)
+            prefs.remove(ON_ERROR_COLOR)
+            prefs.remove(OUTLINE_COLOR)
+            prefs.remove(DELETE_COLOR)
+            prefs.remove(EDIT_COLOR)
+            prefs.remove(COMPLETE_COLOR)
+            prefs.remove(SELECT_COLOR)
+            prefs.remove(NOTE_TYPE_CHECKLIST)
+            prefs.remove(NOTE_TYPE_TEXT)
+            prefs.remove(NOTE_TYPE_DRAWING)
         }
     }
+
 
 }
 

@@ -3,15 +3,15 @@ package org.elnix.notes.utils
 import java.util.Calendar
 
 data class ReminderOffset(
-    val minutesFromNow: Long? = null,
+    val secondsFromNow: Long? = null,
     val hourOfDay: Int? = null,
     val minute: Int? = null
 ) {
     fun toCalendar(): Calendar {
         val cal = Calendar.getInstance()
 
-        minutesFromNow?.let {
-            cal.add(Calendar.MINUTE, it.toInt())
+        secondsFromNow?.let {
+            cal.add(Calendar.SECOND, it.toInt())
         } ?: run {
             cal.set(Calendar.HOUR_OF_DAY, hourOfDay ?: cal.get(Calendar.HOUR_OF_DAY))
             cal.set(Calendar.MINUTE, minute ?: cal.get(Calendar.MINUTE))
@@ -27,8 +27,8 @@ data class ReminderOffset(
 
     fun applyTo(calendar: Calendar) {
         when {
-            minutesFromNow != null -> {
-                calendar.add(Calendar.MINUTE, minutesFromNow.toInt())
+            secondsFromNow != null -> {
+                calendar.add(Calendar.SECOND, secondsFromNow.toInt())
             }
             hourOfDay != null && minute != null -> {
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)

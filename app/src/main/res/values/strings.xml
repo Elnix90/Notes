@@ -220,4 +220,13 @@
     <string name="failed_to_update_setting">Failed to update setting</string>
     <string name="are_you_sure_to_reset_this_toolbar">Are you sure to reset this toolbar?</string>
     <string name="main_settings">Main settings</string>
+    <string name="pick_a_offset">Pick a offest</string>
+    <string name="create_new_offset">Create new Offet</string>
+    <string name="delete_offset">Delete Offset</string>
+    <string name="are_you_sure_to_delete_offset">Are you sure to delete this Offset?</string>
+    <string name="edit_offset">Edit Offset</string>
+    <string name="custom_date">Custom Date</string>
+    <string name="default_reminders">Default Reminders</string>
+    <string name="customize_offsets">Customize Offsets</string>
+    <string name="offsets">Offsets</string>
 </resources>

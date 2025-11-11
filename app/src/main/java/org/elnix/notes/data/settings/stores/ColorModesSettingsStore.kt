@@ -17,7 +17,6 @@ object ColorModesSettingsStore {
             prefs[COLOR_PICKER_MODE]?.let { ColorPickerMode.valueOf(it) }
                 ?: ColorPickerMode.SLIDERS
         }
-
     suspend fun setColorPickerMode(ctx: Context, state: ColorPickerMode) {
         ctx.dataStore.edit { it[COLOR_PICKER_MODE] = state.name}
     }
@@ -29,7 +28,6 @@ object ColorModesSettingsStore {
             prefs[COLOR_CUSTOMISATION_MODE]?.let { ColorCustomisationMode.valueOf(it) }
                 ?: ColorCustomisationMode.DEFAULT
         }
-
     suspend fun setColorCustomisationMode(ctx: Context, state: ColorCustomisationMode) {
         ctx.dataStore.edit { it[COLOR_CUSTOMISATION_MODE] = state.name }
     }
@@ -40,14 +38,15 @@ object ColorModesSettingsStore {
             prefs[DEFAULT_THEME]?.let { DefaultThemes.valueOf(it) }
                 ?: DefaultThemes.AMOLED
         }
-
     suspend fun setDefaultTheme(ctx: Context, state: DefaultThemes) {
         ctx.dataStore.edit { it[DEFAULT_THEME] = state.name }
     }
 
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
-            prefs.clear()
+            prefs.remove(COLOR_PICKER_MODE)
+            prefs.remove(COLOR_CUSTOMISATION_MODE)
+            prefs.remove(DEFAULT_THEME)
         }
     }
 }

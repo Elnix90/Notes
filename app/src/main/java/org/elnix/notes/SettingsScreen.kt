@@ -38,21 +38,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.datastore.preferences.core.edit
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.helpers.ToolBars
-import org.elnix.notes.data.settings.stores.ActionSettingsStore
-import org.elnix.notes.data.settings.stores.ColorModesSettingsStore
-import org.elnix.notes.data.settings.stores.ColorSettingsStore
+import org.elnix.notes.data.settings.dataStore
 import org.elnix.notes.data.settings.stores.DebugSettingsStore
-import org.elnix.notes.data.settings.stores.LanguageSettingsStore
-import org.elnix.notes.data.settings.stores.LockSettingsStore
-import org.elnix.notes.data.settings.stores.PluginsSettingsStore
-import org.elnix.notes.data.settings.stores.ReminderSettingsStore
-import org.elnix.notes.data.settings.stores.TagsSettingsStore
-import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
-import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
-import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.TextDivider
@@ -106,21 +98,9 @@ fun SettingsListScreen(
         resetText = stringResource(R.string.reset_all_default_settings_text),
         onReset = {
             scope.launch {
-                ActionSettingsStore.resetAll(ctx)
-                ColorModesSettingsStore.resetAll(ctx)
-                ColorSettingsStore.resetAll(ctx)
-                DebugSettingsStore.resetAll(ctx)
-                LanguageSettingsStore.resetAll(ctx)
-                LockSettingsStore.resetAll(ctx)
-                PluginsSettingsStore.resetAll(ctx)
-                ReminderSettingsStore.resetAll(ctx)
-                TagsSettingsStore.resetAll(ctx)
-                ToolBars.entries.forEach {
-                    ToolbarItemsSettingsStore.resetToolbar(ctx, it)
+                ctx.dataStore.edit { prefs ->
+                    prefs.clear()
                 }
-                ToolbarsSettingsStore.resetAll(ctx)
-                UiSettingsStore.resetAll(ctx)
-                UserConfirmSettingsStore.resetAll(ctx)
             }
         }
     ) {
@@ -348,10 +328,10 @@ fun ColorSelectorSettingsScreen(navController: NavController) {
     }
 }
 @Composable
-fun RemindersSettingsScreen(navController: NavController) {
+fun RemindersSettingsScreen(navController: NavController, activity: FragmentActivity) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    RemindersTab(ctx, scope) {
+    RemindersTab(ctx, activity, scope) {
         navController.navigate(Routes.Settings.ROOT)
     }
 }

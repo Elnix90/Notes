@@ -17,7 +17,10 @@ import org.elnix.notes.ui.theme.AppObjectsColors
 fun RemindersDebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, onBack: (() -> Unit)) {
     SettingsLazyHeader(
         title = "Debug -> Reminders",
-        onBack = onBack
+        onBack = onBack,
+        helpText = "Debug, too busy to make a translated explanation",
+        onReset = null,
+        resetText = null
     ) {
 
         item {

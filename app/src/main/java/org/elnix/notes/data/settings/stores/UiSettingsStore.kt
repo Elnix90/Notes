@@ -6,10 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import org.elnix.notes.data.helpers.ColorPickerMode
 import org.elnix.notes.data.helpers.NoteViewType
-import org.elnix.notes.data.settings.ColorCustomisationMode
-import org.elnix.notes.data.settings.DefaultThemes
 import org.elnix.notes.data.settings.dataStore
 
 object UiSettingsStore {
@@ -22,57 +19,11 @@ object UiSettingsStore {
         ctx.dataStore.edit { it[SHOW_NOTES_NUMBER] = state}
     }
 
-
-
-    private val COLOR_PICKER_MODE = stringPreferencesKey("color_picker_mode")
-    fun getColorPickerMode(ctx: Context): Flow<ColorPickerMode> =
-        ctx.dataStore.data.map { prefs ->
-            prefs[COLOR_PICKER_MODE]?.let { ColorPickerMode.valueOf(it) }
-                ?: ColorPickerMode.SLIDERS
-        }
-
-    suspend fun setColorPickerMode(ctx: Context, state: ColorPickerMode) {
-        ctx.dataStore.edit { it[COLOR_PICKER_MODE] = state.name}
-    }
-
-
-    private val COLOR_CUSTOMISATION_MODE = stringPreferencesKey("color_customisation_mode")
-    fun getColorCustomisationMode(ctx: Context): Flow<ColorCustomisationMode> =
-        ctx.dataStore.data.map { prefs ->
-            prefs[COLOR_CUSTOMISATION_MODE]?.let { ColorCustomisationMode.valueOf(it) }
-                ?: ColorCustomisationMode.DEFAULT
-        }
-
-    suspend fun setColorCustomisationMode(ctx: Context, state: ColorCustomisationMode) {
-        ctx.dataStore.edit { it[COLOR_CUSTOMISATION_MODE] = state.name }
-    }
-
-    private val DEFAULT_THEME = stringPreferencesKey("default_theme")
-    fun getDefaultTheme(ctx: Context): Flow<DefaultThemes> =
-        ctx.dataStore.data.map { prefs ->
-            prefs[DEFAULT_THEME]?.let { DefaultThemes.valueOf(it) }
-                ?: DefaultThemes.AMOLED
-        }
-
-    suspend fun setDefaultTheme(ctx: Context, state: DefaultThemes) {
-        ctx.dataStore.edit { it[DEFAULT_THEME] = state.name }
-    }
-
-
-    private val DEBUG_MODE_ENABLED = booleanPreferencesKey("debug_mode_enabled")
-    fun getDebugMode(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[DEBUG_MODE_ENABLED] ?: false }
-
-    suspend fun setDebugMode(ctx: Context, state: Boolean) {
-        ctx.dataStore.edit { it[DEBUG_MODE_ENABLED] = state}
-    }
-
-
     private val SHOW_DELETE_BUTTON = booleanPreferencesKey("show_delete_button")
     fun getShowDeleteButton(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[SHOW_DELETE_BUTTON] ?: true }
     suspend fun setShowDeleteButton(ctx: Context, state: Boolean) {
         ctx.dataStore.edit { it[SHOW_DELETE_BUTTON] = state}
     }
-
 
     private val NOTE_VIEW_TYPE = stringPreferencesKey("note_view_type")
     fun getNoteViewType(ctx: Context): Flow<NoteViewType> =
@@ -83,7 +34,6 @@ object UiSettingsStore {
     suspend fun setNoteViewType(ctx: Context, state: NoteViewType) {
         ctx.dataStore.edit { it[NOTE_VIEW_TYPE] = state.name }
     }
-
 
     // Fullscreen options
     private val FULLSCREEN = booleanPreferencesKey("fullscreen")
@@ -127,13 +77,12 @@ object UiSettingsStore {
     suspend fun setShowTagsDropdownEditor(ctx: Context, enabled: Boolean) {
         ctx.dataStore.edit { it[SHOW_TAGS_DROPDOWN_EDITORS] = enabled }
     }
-
-
-    private val SHOW__TAG_SELECTOR = booleanPreferencesKey("show_tag_selector")
+    
+    private val SHOW_TAG_SELECTOR = booleanPreferencesKey("show_tag_selector")
     fun getShowTagSelector(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW__TAG_SELECTOR] ?: true }
+        ctx.dataStore.data.map { it[SHOW_TAG_SELECTOR] ?: true }
     suspend fun setShowTagSelector(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[SHOW__TAG_SELECTOR] = enabled }
+        ctx.dataStore.edit { it[SHOW_TAG_SELECTOR] = enabled }
     }
 
     private val SHOW_TAGS_IN_NOTES = booleanPreferencesKey("show_tags_in_notes")
@@ -141,5 +90,11 @@ object UiSettingsStore {
         ctx.dataStore.data.map { it[SHOW_TAGS_IN_NOTES] ?: true }
     suspend fun setShowTagsInNotes(ctx: Context, enabled: Boolean) {
         ctx.dataStore.edit { it[SHOW_TAGS_IN_NOTES] = enabled }
+    }
+
+    suspend fun resetAll(ctx: Context) {
+        ctx.dataStore.edit { prefs ->
+            prefs.clear()
+        }
     }
 }

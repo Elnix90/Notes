@@ -123,6 +123,12 @@ fun ToolbarsOrderTab(
     SettingsLazyHeader(
         title = stringResource(R.string.toolbars_order),
         onBack = onBack,
+        helpText = stringResource(R.string.toolbars_order_help_explanation),
+        onReset = {
+            scope.launch {
+                ToolbarsSettingsStore.resetAll(ctx)
+            }
+        },
         reorderState = reorderState
     ) {
         items(

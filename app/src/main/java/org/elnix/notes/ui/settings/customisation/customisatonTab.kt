@@ -14,6 +14,7 @@ import org.elnix.notes.R
 import org.elnix.notes.Routes
 import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.NotesActions
+import org.elnix.notes.data.helpers.noteActionName
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
@@ -41,7 +42,14 @@ fun CustomisationTab(
 
     SettingsLazyHeader(
         title = stringResource(R.string.customisation),
-        onBack = onBack
+        onBack = onBack,
+        helpText = stringResource(R.string.customisation_text),
+        onReset = {
+            scope.launch {
+                UiSettingsStore.resetAll(ctx)
+                ActionSettingsStore.resetAll(ctx)
+            }
+        }
     ) {
 
         item { TextDivider(stringResource(R.string.note_actions)) }
@@ -52,7 +60,7 @@ fun CustomisationTab(
                 label = stringResource(R.string.swipe_left_action),
                 options = NotesActions.entries,
                 selected = settings.leftAction,
-                optionLabel = { it.name }
+                optionLabel = { noteActionName(ctx, it) }
             ) {
                 scope.launch { ActionSettingsStore.setSwipeLeftAction(ctx, it) }
             }

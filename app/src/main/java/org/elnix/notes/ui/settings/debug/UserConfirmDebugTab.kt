@@ -26,7 +26,10 @@ fun UserConfirmDebugTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit
 
     SettingsLazyHeader(
         title = "Debug -> User Confirm",
-        onBack = onBack
+        onBack = onBack,
+        helpText = "Debug, too busy to make a translated explanation",
+        onReset = null,
+        resetText = null
     ) {
         item {
             Button(

@@ -34,7 +34,13 @@ fun AppearanceTab(
 
     SettingsLazyHeader(
         title = stringResource(R.string.appearance),
-        onBack = onBack
+        onBack = onBack,
+        helpText = stringResource(R.string.appearance_tab_text),
+        onReset = {
+            scope.launch {
+                UiSettingsStore.resetAll(ctx)
+            }
+        }
     ) {
 
         item {

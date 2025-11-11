@@ -41,8 +41,8 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.ColorPickerMode
 import org.elnix.notes.data.helpers.colorPickerText
-import org.elnix.notes.data.settings.stores.UiSettingsStore.getColorPickerMode
-import org.elnix.notes.data.settings.stores.UiSettingsStore.setColorPickerMode
+import org.elnix.notes.data.settings.stores.ColorModesSettingsStore.getColorPickerMode
+import org.elnix.notes.data.settings.stores.ColorModesSettingsStore.setColorPickerMode
 import org.elnix.notes.ui.helpers.randomColor
 import org.elnix.notes.ui.theme.adjustBrightness
 

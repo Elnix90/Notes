@@ -9,7 +9,6 @@ import org.elnix.notes.data.settings.dataStore
 import org.elnix.notes.utils.ReminderOffset
 import org.json.JSONArray
 import org.json.JSONObject
-import kotlin.collections.forEach
 
 object ReminderSettingsStore {
     private val DEFAULT_REMINDERS = stringPreferencesKey("default_reminders")
@@ -41,5 +40,11 @@ object ReminderSettingsStore {
         }.toString()
 
         ctx.dataStore.edit { it[DEFAULT_REMINDERS] = jsonStr }
+    }
+
+    suspend fun resetAll(ctx: Context) {
+        ctx.dataStore.edit { prefs ->
+            prefs.clear()
+        }
     }
 }

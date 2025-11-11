@@ -27,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.ReminderEntity
+import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore.getDefaultRemindersFlow
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore.setDefaultReminders
 import org.elnix.notes.ui.helpers.reminders.ReminderBubble
@@ -43,7 +44,13 @@ fun RemindersTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
 
     SettingsLazyHeader(
         title = stringResource(R.string.security_privacy),
-        onBack = onBack
+        onBack = onBack,
+        helpText = stringResource(R.string.reminders_help_text),
+        onReset = {
+            scope.launch {
+                ReminderSettingsStore.resetAll(ctx)
+            }
+        }
     ) {
 
         item {

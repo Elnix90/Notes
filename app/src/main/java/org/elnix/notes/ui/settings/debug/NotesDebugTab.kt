@@ -29,7 +29,10 @@ fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
 
     SettingsLazyHeader(
         title = "Debug -> Notes",
-        onBack = onBack
+        onBack = onBack,
+        helpText = "Debug, too busy to make a translated explanation",
+        onReset = null,
+        resetText = null
     ) {
 
         item {

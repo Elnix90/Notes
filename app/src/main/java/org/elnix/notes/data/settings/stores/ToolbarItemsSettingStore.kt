@@ -13,9 +13,7 @@ import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.helpers.GlobalNotesActions
 import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.helpers.defaultToolbarItems
-
-// Extension property to create DataStore instance in Context
-private val Context.dataStore by preferencesDataStore(name = "toolbar_items_prefs")
+import org.elnix.notes.data.settings.dataStore
 
 data class ToolbarItemState(
     val action: GlobalNotesActions,
@@ -73,6 +71,14 @@ object ToolbarItemsSettingsStore {
             }
 
             prefs[key] = gson.toJson(updatedItems)
+        }
+    }
+
+
+    suspend fun resetToolbar(ctx: Context, toolbar: ToolBars) {
+        val key = prefsKeyForToolbar(toolbar)
+        ctx.dataStore.edit { prefs ->
+            prefs[key] = Gson().toJson(defaultToolbarItems(toolbar))
         }
     }
 

@@ -24,8 +24,8 @@ import org.elnix.notes.R
 @Composable
 fun SettingsTitle(
     title: String,
-    resetIcon: (() -> Unit)? = null,
-    helpIcon: (() -> Unit)? = null,
+    resetIcon: () -> Unit,
+    helpIcon: () -> Unit,
     onBack: () -> Unit
 ) {
     Row(
@@ -52,32 +52,26 @@ fun SettingsTitle(
             style = MaterialTheme.typography.titleLarge
         )
 
-        if (resetIcon != null) {
-            Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(
-                onClick = { resetIcon() },
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Restore,
-                    contentDescription = stringResource(R.string.reset),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+        IconButton(
+            onClick = { resetIcon() },
+        ) {
+            Icon(
+                imageVector = Icons.Default.Restore,
+                contentDescription = stringResource(R.string.reset),
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
 
-        if (helpIcon != null) {
-            Spacer(modifier = Modifier.weight(1f))
-
-            IconButton(
-                onClick = { helpIcon() },
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Help,
-                    contentDescription = stringResource(R.string.help),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+        IconButton(
+            onClick = { helpIcon() },
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.Help,
+                contentDescription = stringResource(R.string.help),
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }

@@ -203,6 +203,20 @@
     <string name="toolbar_quick_actions">Barre d\'outils actions rapider</string>
     <string name="toolbar_tags">Barre d\'outils tags</string>
     <string name="toolbars_order_help">Aide sur l\'ordre des barres d\'outils</string>
-    <string name="tolbars_order_help_explanation">Ce menu vous permet de réorganiser et de personnaliser chaque barre d\'outils individuellement. Vous pouvez les placer où vous le souhaitez, modifier leur couleur, leur apparence, les activer ou les désactiver, faites ce que vous voulez et profitez en. J\'ai travaillé dur pour vous offrir cette fonctionnalité :)</string>
+    <string name="toolbars_order_help_explanation">Ce menu vous permet de réorganiser et de personnaliser chaque barre d\'outils individuellement. Vous pouvez les placer où vous le souhaitez, modifier leur couleur, leur apparence, les activer ou les désactiver, faites ce que vous voulez et profitez en. J\'ai travaillé dur pour vous offrir cette fonctionnalité :)</string>
     <string name="help">Aide</string>
+    <string name="main_settings_text">Cette application est principalement axée sur la personnalisation, n\'hésitez pas à explorer tous les différents paramètres, vous pourriez trouver quelque chose qui vous intéresse.</string>
+    <string name="reset_default_settings">Réinitialiser les paramètres par défaut</string>
+    <string name="reset_all_default_settings_text">Êtes-vous sûr de vouloir réinitialiser TOUS les paramètres par défaut ?</string>
+    <string name="appearance_tab_text">Ce sont les paramètres pour l\'apparence de l\'application.</string>
+    <string name="reset_settings_in_this_tab">Êtes-vous sûr de vouloir réinitialiser TOUS les paramètres de cette page ?</string>
+    <string name="color_selector_text">Ce sont toutes les couleurs de l\'application. Si vous choisissez « Toutes », vous pourrez modifier CHAQUE couleur de mon application.</string>
+    <string name="backup_text">Ici, vous pouvez choisir de sauvegarder ou de restaurer vos notes ou vos paramètres à partir d\'un fichier. Veillez à conserver soigneusement vos sauvegardes, car vous n\'avez aucun autre moyen de les récupérer.</string>
+    <string name="customisation_text">Vous trouverez ici presque tous les paramètres de personnalisation de mon application. Cela peut sembler compliqué au premier abord, mais rien ne vous empêche d\'utiliser les paramètres par défaut et de les modifier si vous le souhaitez.</string>
+    <string name="toolbars_customisation_text">Vous trouverez ici toutes les options pour personnaliser votre barre d\'outils, les couleurs, les bordures, l\'espacement... Profitez-en :)</string>
+    <string name="choose_your_app_language">Choisissez la langue de votre application</string>
+    <string name="plugins_explanation">Certains plugins externes que vous pouvez choisir d\'activer utilise ContentProvider pour transmettre des informations.</string>
+    <string name="secutity_explanation">Ici, vous pouvez protéger votre application à l\'aide de données biométriques ou d\'un mot de passe. Je ne suis pas responsable des pertes de données ou des problèmes que vous pourriez rencontrer.</string>
+    <string name="failed_to_reset_settings">Échec de la réinitialisation des paramètres</string>
+    <string name="failed_to_update_setting">Échec de la mise à jour du paramètre</string>
 </resources>

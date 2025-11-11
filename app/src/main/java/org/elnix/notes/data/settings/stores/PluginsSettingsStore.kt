@@ -23,4 +23,10 @@ object PluginsSettingsStore {
             .putBoolean("allow_alphallm_access", allowed)
             .apply()
     }
+
+    suspend fun resetAll(ctx: Context) {
+        ctx.dataStore.edit { prefs ->
+            prefs.clear()
+        }
+    }
 }

@@ -13,9 +13,8 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val store = LanguageSettingsStore()
         CoroutineScope(Dispatchers.Default).launch {
-            val tag = store.getLanguageTag(this@MyApplication)
+            val tag = LanguageSettingsStore.getLanguageTag(this@MyApplication)
             if (!tag.isNullOrEmpty()) {
                 AppCompatDelegate.setApplicationLocales(
                     LocaleListCompat.forLanguageTags(tag)

@@ -613,7 +613,7 @@ fun performAction(
             if (note.isCompleted) vm.markUnCompleted(note)
             else vm.markCompleted(note)
         }
-        NotesActions.EDIT -> navController.navigate("${Routes.EDIT}/${note.id}?type=${note.type.name}")
+        NotesActions.EDIT -> navController.navigate("edit/${note.id}?type=${note.type.name}")
         NotesActions.SELECT -> onSelectStart?.invoke()
     }
 }

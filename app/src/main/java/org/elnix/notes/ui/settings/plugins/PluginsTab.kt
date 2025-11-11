@@ -22,7 +22,13 @@ fun PluginsTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {
 
     SettingsLazyHeader(
         title = stringResource(R.string.plugins),
-        onBack = onBack
+        onBack = onBack,
+        helpText = stringResource(R.string.plugins_explanation),
+        onReset = {
+            scope.launch {
+                PluginsSettingsStore.resetAll(ctx)
+            }
+        }
     ) {
 
         // AlphaLM App Access Toggle

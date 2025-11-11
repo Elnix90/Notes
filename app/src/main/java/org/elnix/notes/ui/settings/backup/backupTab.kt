@@ -13,7 +13,10 @@ fun BackupTab(ctx: Context, onBack: (() -> Unit)) {
 
     SettingsLazyHeader(
         title = stringResource(R.string.security_privacy),
-        onBack = onBack
+        onBack = onBack,
+        helpText = stringResource(R.string.color_selector_text),
+        resetText = null,
+        onReset = null
     ) {
         item { ExportImportRow() }
         item { NotesExportImportRow(ctx) }

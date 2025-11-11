@@ -28,6 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.ToolBars
+import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.toolbars.SliderToolbarSetting
@@ -59,7 +60,13 @@ fun ToolbarCustomisationTab(
 
     SettingsLazyHeader(
         title = stringResource(R.string.toolbar_customization),
-        onBack = onBack
+        onBack = onBack,
+        helpText = stringResource(R.string.toolbars_customisation_text),
+        onReset = {
+            scope.launch {
+                ToolbarItemsSettingsStore.resetToolbar(ctx, toolbarSetting.toolbar)
+            }
+        }
     ) {
 
         item {

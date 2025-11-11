@@ -87,4 +87,9 @@ object TagsSettingsStore {
         saveTags(ctx, updatedTags)
     }
 
+    suspend fun resetAll(ctx: Context) {
+        ctx.dataStore.edit { prefs ->
+            prefs.clear()
+        }
+    }
 }

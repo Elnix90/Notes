@@ -41,6 +41,17 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.helpers.ToolBars
+import org.elnix.notes.data.settings.stores.ActionSettingsStore
+import org.elnix.notes.data.settings.stores.ColorModesSettingsStore
+import org.elnix.notes.data.settings.stores.ColorSettingsStore
+import org.elnix.notes.data.settings.stores.DebugSettingsStore
+import org.elnix.notes.data.settings.stores.LanguageSettingsStore
+import org.elnix.notes.data.settings.stores.LockSettingsStore
+import org.elnix.notes.data.settings.stores.PluginsSettingsStore
+import org.elnix.notes.data.settings.stores.ReminderSettingsStore
+import org.elnix.notes.data.settings.stores.TagsSettingsStore
+import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
+import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.NoteViewModel
@@ -75,7 +86,7 @@ fun SettingsListScreen(
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
 
-    val isDebugModeEnabled by UiSettingsStore.getDebugMode(ctx).collectAsState(initial = false)
+    val isDebugModeEnabled by DebugSettingsStore.getDebugMode(ctx).collectAsState(initial = false)
 
     var timesClickedOnVersion by remember { mutableIntStateOf(0) }
     val showUserConfirmEnableDebug by UserConfirmSettingsStore.getShowEnableDebug(ctx)
@@ -90,7 +101,28 @@ fun SettingsListScreen(
 
     SettingsLazyHeader(
         title = stringResource(R.string.settings),
-        onBack = { onBack() }
+        onBack = { onBack() },
+        helpText = stringResource(R.string.main_settings_text),
+        resetText = stringResource(R.string.reset_all_default_settings_text),
+        onReset = {
+            scope.launch {
+                ActionSettingsStore.resetAll(ctx)
+                ColorModesSettingsStore.resetAll(ctx)
+                ColorSettingsStore.resetAll(ctx)
+                DebugSettingsStore.resetAll(ctx)
+                LanguageSettingsStore.resetAll(ctx)
+                LockSettingsStore.resetAll(ctx)
+                PluginsSettingsStore.resetAll(ctx)
+                ReminderSettingsStore.resetAll(ctx)
+                TagsSettingsStore.resetAll(ctx)
+                ToolBars.entries.forEach {
+                    ToolbarItemsSettingsStore.resetToolbar(ctx, it)
+                }
+                ToolbarsSettingsStore.resetAll(ctx)
+                UiSettingsStore.resetAll(ctx)
+                UserConfirmSettingsStore.resetAll(ctx)
+            }
+        }
     ) {
             item {
                 SettingsItem(
@@ -248,7 +280,7 @@ fun SettingsListScreen(
                                 }
 
                                 !showUserConfirmEnableDebug -> scope.launch {
-                                    UiSettingsStore.setDebugMode(
+                                    DebugSettingsStore.setDebugMode(
                                         ctx,
                                         true
                                     )
@@ -285,7 +317,7 @@ fun SettingsListScreen(
             }
         ) {
             scope.launch{
-                UiSettingsStore.setDebugMode(ctx, true)
+                DebugSettingsStore.setDebugMode(ctx, true)
                 showDebugModeUserValidation = false
             }
         }

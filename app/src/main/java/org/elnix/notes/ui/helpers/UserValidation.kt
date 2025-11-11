@@ -1,6 +1,7 @@
 package org.elnix.notes.ui.helpers
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
@@ -36,8 +39,10 @@ fun UserValidation(
     title: String? = null,
     message: String,
     validateText: String = stringResource(R.string.ok),
-    cancelText: String = stringResource(R.string.cancel),
+    cancelText: String? = stringResource(R.string.cancel),
     doNotRemindMeAgain: (() -> Unit)? = null,
+    titleIcon: ImageVector = Icons.Default.Warning,
+    titleColor: Color = MaterialTheme.colorScheme.error,
     onCancel: () -> Unit,
     onAgree: () -> Unit
 ) {
@@ -50,15 +55,17 @@ fun UserValidation(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(horizontal = 8.dp)
             ) {
-                TextButton(
-                    onClick = onCancel,
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        cancelText,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                if (cancelText != null) {
+                    TextButton(
+                        onClick = onCancel,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            cancelText,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
                 }
                 Button(
                     onClick = { onAgree(); if (doNotRemindMeAgain != null && doNotRemindMeAgainChecked) doNotRemindMeAgain() },
@@ -86,9 +93,9 @@ fun UserValidation(
                             .padding(8.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Warning,
+                            imageVector = titleIcon,
                             contentDescription = "Warning",
-                            tint = MaterialTheme.colorScheme.error
+                            tint = titleColor
                         )
 
                         Spacer(Modifier.width(12.dp))
@@ -96,7 +103,7 @@ fun UserValidation(
                         Text(
                             text = title,
                             style = MaterialTheme.typography.titleLarge.copy(
-                                color = MaterialTheme.colorScheme.error
+                                color = titleColor
                             )
                         )
                     }
@@ -116,7 +123,12 @@ fun UserValidation(
                     Spacer(Modifier.height(15.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable {
+                            doNotRemindMeAgainChecked = !doNotRemindMeAgainChecked
+                        }
                     ) {
                         Checkbox(
                             checked = doNotRemindMeAgainChecked,

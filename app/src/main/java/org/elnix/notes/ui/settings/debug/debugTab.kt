@@ -15,7 +15,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.Routes
-import org.elnix.notes.data.settings.stores.UiSettingsStore
+import org.elnix.notes.data.settings.stores.DebugSettingsStore
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.settings.SettingsItem
@@ -26,11 +26,14 @@ fun DebugTab(navController: NavController, onBack: (() -> Unit)) {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
 
-    val isDebugModeEnabled by UiSettingsStore.getDebugMode(ctx).collectAsState(initial = false)
+    val isDebugModeEnabled by DebugSettingsStore.getDebugMode(ctx).collectAsState(initial = false)
 
     SettingsLazyHeader(
         title = stringResource(R.string.debug),
-        onBack = onBack
+        onBack = onBack,
+        helpText = "Debug, too busy to make a translated explanation",
+        onReset = null,
+        resetText = null
     ) {
 
         item{
@@ -40,7 +43,7 @@ fun DebugTab(navController: NavController, onBack: (() -> Unit)) {
                 defaultValue = true
             ) {
                 scope.launch {
-                    UiSettingsStore.setDebugMode(ctx, false)
+                    DebugSettingsStore.setDebugMode(ctx, false)
                 }
                 navController.popBackStack()
             }

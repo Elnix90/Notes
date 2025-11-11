@@ -204,6 +204,11 @@ object ColorSettingsStore {
         setNoteTypeChecklist(ctx, random().toArgb())
         setNoteTypeDrawing(ctx, random().toArgb())
     }
+    suspend fun resetAll(ctx: Context) {
+        ctx.dataStore.edit { prefs ->
+            prefs.clear()
+        }
+    }
 
 }
 

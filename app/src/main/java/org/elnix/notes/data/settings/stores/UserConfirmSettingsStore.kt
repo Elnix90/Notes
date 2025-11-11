@@ -36,4 +36,10 @@ object UserConfirmSettingsStore {
     suspend fun setShowEnableDebug(ctx: Context, enabled: Boolean) {
         ctx.dataStore.edit { it[SHOW_ENABLE_DEBUG_] = enabled }
     }
+
+    suspend fun resetAll(ctx: Context) {
+        ctx.dataStore.edit { prefs ->
+            prefs.clear()
+        }
+    }
 }

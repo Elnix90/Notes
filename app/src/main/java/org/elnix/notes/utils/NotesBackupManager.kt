@@ -3,7 +3,6 @@ package org.elnix.notes.utils
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray

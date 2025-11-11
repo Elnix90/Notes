@@ -28,7 +28,7 @@ import org.elnix.notes.ui.settings.SettingsLazyHeader
 
 @Composable
 fun LanguageTab(onBack: () -> Unit) {
-    val context = LocalContext.current
+    val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
 
     // Available languages
@@ -41,12 +41,18 @@ fun LanguageTab(onBack: () -> Unit) {
 
     // Load current language tag
     LaunchedEffect(Unit) {
-        selectedTag = LanguageSettingsStore().getLanguageTag(context)
+        selectedTag = LanguageSettingsStore.getLanguageTag(ctx)
     }
 
     SettingsLazyHeader(
         title = stringResource(R.string.settings_language_title),
-        onBack = onBack
+        onBack = onBack,
+        helpText = stringResource(R.string.choose_your_app_language),
+        onReset = {
+            scope.launch {
+                LanguageSettingsStore.resetAll(ctx)
+            }
+        }
     ) {
 
         items(availableLanguages) { (tag, name) ->
@@ -55,7 +61,7 @@ fun LanguageTab(onBack: () -> Unit) {
                     .fillMaxWidth()
                     .clickable {
                         scope.launch {
-                            LanguageSettingsStore().setLanguageTag(context, tag)
+                            LanguageSettingsStore.setLanguageTag(ctx, tag)
                             applyLocale(tag)
                             selectedTag = tag
                         }
@@ -66,7 +72,7 @@ fun LanguageTab(onBack: () -> Unit) {
                     selected = tag == selectedTag,
                     onClick = {
                         scope.launch {
-                            LanguageSettingsStore().setLanguageTag(context, tag)
+                            LanguageSettingsStore.setLanguageTag(ctx, tag)
                             applyLocale(tag)
                             selectedTag = tag
                         }
@@ -84,7 +90,7 @@ fun LanguageTab(onBack: () -> Unit) {
                     .fillMaxWidth()
                     .clickable {
                         scope.launch {
-                            LanguageSettingsStore().setLanguageTag(context, null)
+                            LanguageSettingsStore.setLanguageTag(ctx, null)
                             applyLocale(null)
                             selectedTag = null
                         }
@@ -95,7 +101,7 @@ fun LanguageTab(onBack: () -> Unit) {
                     selected = selectedTag == null,
                     onClick = {
                         scope.launch {
-                            LanguageSettingsStore().setLanguageTag(context, null)
+                            LanguageSettingsStore.setLanguageTag(ctx, null)
                             applyLocale(null)
                             selectedTag = null
                         }

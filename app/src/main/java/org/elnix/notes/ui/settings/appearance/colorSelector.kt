@@ -49,8 +49,8 @@ import org.elnix.notes.data.settings.DefaultThemes
 import org.elnix.notes.data.settings.applyDefaultThemeColors
 import org.elnix.notes.data.settings.colorCustomizationModeName
 import org.elnix.notes.data.settings.defaultThemeName
+import org.elnix.notes.data.settings.stores.ColorModesSettingsStore
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
-import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.colors.ColorPickerRow
@@ -99,15 +99,21 @@ fun ColorSelectorTab(
     val noteTypeDrawing by ColorSettingsStore.getNoteTypeDrawing(ctx).collectAsState(initial = null)
 
 
-    val colorCustomisationMode by UiSettingsStore.getColorCustomisationMode(ctx).collectAsState(initial = ColorCustomisationMode.DEFAULT)
-    val selectedDefaultTheme by UiSettingsStore.getDefaultTheme(ctx).collectAsState(initial = DefaultThemes.DARK)
+    val colorCustomisationMode by ColorModesSettingsStore.getColorCustomisationMode(ctx).collectAsState(initial = ColorCustomisationMode.DEFAULT)
+    val selectedDefaultTheme by ColorModesSettingsStore.getDefaultTheme(ctx).collectAsState(initial = DefaultThemes.DARK)
 
     var showResetValidation by remember { mutableStateOf(false) }
     var showRandomColorsValidation by remember { mutableStateOf(false) }
 
     SettingsLazyHeader(
         title = stringResource(R.string.color_selector),
-        onBack = onBack
+        onBack = onBack,
+        helpText = stringResource(R.string.color_selector_text),
+        onReset = {
+            scope.launch {
+                ColorSettingsStore.resetAll(ctx)
+            }
+        }
     ) {
 
         item {
@@ -131,7 +137,7 @@ fun ColorSelectorTab(
                             .clip(RoundedCornerShape(12.dp))
                             .clickable {
                                 scope.launch {
-                                    UiSettingsStore.setColorCustomisationMode(ctx, it)
+                                    ColorModesSettingsStore.setColorCustomisationMode(ctx, it)
                                 }
                             }
                             .padding(5.dp),
@@ -174,7 +180,7 @@ fun ColorSelectorTab(
                             selected = colorCustomisationMode == it,
                             onClick = {
                                 scope.launch {
-                                    UiSettingsStore.setColorCustomisationMode(ctx, it)
+                                    ColorModesSettingsStore.setColorCustomisationMode(ctx, it)
                                 }
                             },
                             colors = AppObjectsColors.radioButtonColors()
@@ -477,7 +483,7 @@ fun ColorSelectorTab(
                                     .clip(RoundedCornerShape(12.dp))
                                     .clickable {
                                         scope.launch {
-                                            UiSettingsStore.setDefaultTheme(ctx, it)
+                                            ColorModesSettingsStore.setDefaultTheme(ctx, it)
                                             applyDefaultThemeColors(ctx, it)
                                         }
                                     }
@@ -527,7 +533,7 @@ fun ColorSelectorTab(
                                     selected = selectedDefaultTheme == it,
                                     onClick = {
                                         scope.launch {
-                                            UiSettingsStore.setDefaultTheme(ctx, it)
+                                            ColorModesSettingsStore.setDefaultTheme(ctx, it)
                                             applyDefaultThemeColors(ctx, it)
                                         }
                                     },

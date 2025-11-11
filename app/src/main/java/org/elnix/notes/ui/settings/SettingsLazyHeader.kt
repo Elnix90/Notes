@@ -13,25 +13,42 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.reorderable
+import org.elnix.notes.R
+import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.settings.SettingsTitle
 
 @Composable
 fun SettingsLazyHeader(
     title: String,
     onBack: () -> Unit,
+    helpText: String,
+    onReset: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    resetTitle: String = stringResource(R.string.reset_default_settings),
+    resetText: String? = stringResource(R.string.reset_settings_in_this_tab),
     reorderState: ReorderableLazyListState? = null,
     content: LazyListScope.() -> Unit
 ) {
+
+    var showHelpDialog by remember { mutableStateOf(false) }
+    var showResetDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,7 +59,11 @@ fun SettingsLazyHeader(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Surface(color = MaterialTheme.colorScheme.background) {
-            SettingsTitle(title) { onBack() }
+            SettingsTitle(
+                title,
+                helpIcon = { showHelpDialog = true },
+                resetIcon = { showResetDialog = true },
+            ) { onBack() }
         }
 
         LazyColumn(
@@ -57,6 +78,29 @@ fun SettingsLazyHeader(
             state = reorderState?.listState ?: rememberLazyListState()
         ) {
             content()
+        }
+    }
+
+    if (showHelpDialog) {
+        UserValidation(
+            title = "$title ${stringResource(R.string.help)}",
+            message = helpText,
+            cancelText = null,
+            onCancel = { showHelpDialog = false },
+            titleIcon = Icons.AutoMirrored.Filled.Help,
+            titleColor = MaterialTheme.colorScheme.onSurface
+        ) {
+            showHelpDialog = false
+        }
+    }
+    if (showResetDialog && resetText != null && onReset != null) {
+        UserValidation(
+            title = resetTitle,
+            message = resetText,
+            onCancel = { showResetDialog = false }
+        ) {
+            onReset()
+            showResetDialog = false
         }
     }
 }

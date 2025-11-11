@@ -1,5 +1,6 @@
 package org.elnix.notes.ui.settings.security
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -43,7 +44,30 @@ fun SecurityTab(onBack: (() -> Unit)) {
 
     SettingsLazyHeader(
         title = stringResource(R.string.security_privacy),
-        onBack = onBack
+        onBack = onBack,
+        helpText = stringResource(R.string.secutity_explanation),
+        onReset = {
+            if (settings.useBiometrics || settings.useDeviceCredential) {
+                scope.launch {
+                    BiometricManagerHelper.authenticateUser(
+                        activity = activity,
+                        useBiometrics = settings.useBiometrics,
+                        useDeviceCredential = settings.useDeviceCredential,
+                        title = ctx.getString(R.string.verification),
+                        onSuccess = {
+                            scope.launch {
+                                LockSettingsStore.resetAll(ctx)
+                            }
+                        },
+                        onFailure = {
+                            Toast.makeText(ctx,ctx.getString(R.string.failed_to_reset_settings), Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            } else scope.launch {
+                LockSettingsStore.resetAll(ctx)
+            }
+        }
     ) {
 
         item {
@@ -69,7 +93,9 @@ fun SecurityTab(onBack: (() -> Unit)) {
                                 )
                             }
                         },
-                        onFailure = {}
+                        onFailure = {
+                            Toast.makeText(ctx,ctx.getString(R.string.failed_to_update_setting), Toast.LENGTH_SHORT).show()
+                        }
                     )
                 }
             }

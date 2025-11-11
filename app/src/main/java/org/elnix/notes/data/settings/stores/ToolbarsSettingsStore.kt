@@ -136,4 +136,10 @@ object ToolbarsSettingsStore {
     suspend fun setToolbarsSpacing(ctx: Context, size: Int) {
         ctx.dataStore.edit { it[TOOLBARS_SPACING] = size }
     }
+
+    suspend fun resetAll(ctx: Context) {
+        ctx.dataStore.edit { prefs ->
+            prefs.clear()
+        }
+    }
 }

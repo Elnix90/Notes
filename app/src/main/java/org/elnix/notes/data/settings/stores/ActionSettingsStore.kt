@@ -53,4 +53,11 @@ object ActionSettingsStore {
     suspend fun setTypeButtonAction(ctx: Context, action: NotesActions) {
         ctx.dataStore.edit { it[TYPE_BUTTON_ACTION] = action.name }
     }
+
+    suspend fun resetAll(ctx: Context) {
+        ctx.dataStore.edit { prefs ->
+            prefs.clear()
+        }
+    }
+
 }

@@ -52,6 +52,12 @@ object LockSettingsStore {
     suspend fun setUnitSelected(ctx: Context, state: TimeoutOptions) {
         ctx.dataStore.edit { it[SELECTED_UNIT] = state.name }
     }
+
+    suspend fun resetAll(ctx: Context) {
+        ctx.dataStore.edit { prefs ->
+            prefs.clear()
+        }
+    }
 }
 
 

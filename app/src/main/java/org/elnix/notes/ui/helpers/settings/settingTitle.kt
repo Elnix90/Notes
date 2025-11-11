@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,7 @@ import org.elnix.notes.R
 @Composable
 fun SettingsTitle(
     title: String,
+    resetIcon: (() -> Unit)? = null,
     helpIcon: (() -> Unit)? = null,
     onBack: () -> Unit
 ) {
@@ -50,6 +52,20 @@ fun SettingsTitle(
             style = MaterialTheme.typography.titleLarge
         )
 
+        if (resetIcon != null) {
+            Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = { resetIcon() },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Restore,
+                    contentDescription = stringResource(R.string.reset),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
         if (helpIcon != null) {
             Spacer(modifier = Modifier.weight(1f))
 
@@ -58,7 +74,7 @@ fun SettingsTitle(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Help,
-                    contentDescription = stringResource(R.string.reminders_help),
+                    contentDescription = stringResource(R.string.help),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

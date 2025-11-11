@@ -202,4 +202,7 @@
     <string name="toolbar_select">Barre d\'outils séléctionner</string>
     <string name="toolbar_quick_actions">Barre d\'outils actions rapider</string>
     <string name="toolbar_tags">Barre d\'outils tags</string>
+    <string name="toolbars_order_help">Aide sur l\'ordre des barres d\'outils</string>
+    <string name="tolbars_order_help_explanation">Ce menu vous permet de réorganiser et de personnaliser chaque barre d\'outils individuellement. Vous pouvez les placer où vous le souhaitez, modifier leur couleur, leur apparence, les activer ou les désactiver, faites ce que vous voulez et profitez en. J\'ai travaillé dur pour vous offrir cette fonctionnalité :)</string>
+    <string name="help">Aide</string>
 </resources>

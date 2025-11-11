@@ -56,6 +56,30 @@ object ToolbarsSettingsStore {
         }
     }
 
+
+    suspend fun resetToolbar(ctx: Context, toolbar: ToolBars) {
+        withContext(Dispatchers.IO) {
+            ctx.dataStore.edit { prefs ->
+                val raw = prefs[TOOLBARS_KEY]
+                val currentList = if (raw.isNullOrBlank()) {
+                    defaultList
+                } else {
+                    runCatching { gson.fromJson<List<ToolbarSetting>>(raw, listType) }
+                        .getOrDefault(defaultList)
+                }
+
+                val defaultSetting = defaultList.find { it.toolbar == toolbar }
+                    ?: return@edit // nothing to reset
+
+                val updatedList = currentList.map {
+                    if (it.toolbar == toolbar) defaultSetting else it
+                }
+
+                prefs[TOOLBARS_KEY] = gson.toJson(updatedList)
+            }
+        }
+    }
+
     suspend fun updateToolbarColor(
         ctx: Context,
         toolbar: ToolBars,
@@ -106,41 +130,9 @@ object ToolbarsSettingsStore {
     }
 
 
-
-//    private val TOOLBARS_BORDER = intPreferencesKey("toolbars_border")
-//    fun getToolbarsBorder(ctx: Context): Flow<Int> =
-//        ctx.dataStore.data.map { it[TOOLBARS_BORDER] ?: 2 }
-//    suspend fun setToolbarsBorder(ctx: Context, size: Int) {
-//        ctx.dataStore.edit { it[TOOLBARS_BORDER] = size }
-//    }
-//
-//    private val TOOLBARS_CORNER = intPreferencesKey("toolbars_corner")
-//    fun getToolbarsCorner(ctx: Context): Flow<Int> =
-//        ctx.dataStore.data.map { it[TOOLBARS_CORNER] ?: 50 }
-//    suspend fun setToolbarsCorner(ctx: Context, size: Int) {
-//        ctx.dataStore.edit { it[TOOLBARS_CORNER] = size }
-//    }
-//
-//    // Paddings
-//    private val TOOLBARS_PADDING_LEFT = intPreferencesKey("toolbars_padding_left")
-//    private val TOOLBARS_PADDING_RIGHT = intPreferencesKey("toolbars_padding_right")
     private val TOOLBARS_SPACING = intPreferencesKey("toolbars_spacing")
-//
-//
-//    fun getToolbarsPaddingLeft(ctx: Context): Flow<Int> =
-//        ctx.dataStore.data.map { it[TOOLBARS_PADDING_LEFT] ?: 16 }
-//    fun getToolbarsPaddingRight(ctx: Context): Flow<Int> =
-//        ctx.dataStore.data.map { it[TOOLBARS_PADDING_RIGHT] ?: 16 }
     fun getToolbarsSpacing(ctx: Context): Flow<Int> =
         ctx.dataStore.data.map { it[TOOLBARS_SPACING] ?: 8 }
-//
-//
-//    suspend fun setToolbarsPaddingLeft(ctx: Context, size: Int) {
-//        ctx.dataStore.edit { it[TOOLBARS_PADDING_LEFT] = size }
-//    }
-//    suspend fun setToolbarsPaddingRight(ctx: Context, size: Int) {
-//        ctx.dataStore.edit { it[TOOLBARS_PADDING_RIGHT] = size }
-//    }
     suspend fun setToolbarsSpacing(ctx: Context, size: Int) {
         ctx.dataStore.edit { it[TOOLBARS_SPACING] = size }
     }

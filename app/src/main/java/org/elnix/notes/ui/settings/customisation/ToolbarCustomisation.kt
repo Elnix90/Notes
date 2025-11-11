@@ -1,32 +1,27 @@
 package org.elnix.notes.ui.settings.customisation
 
-import android.R.attr.spacing
 import android.content.Context
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
@@ -35,11 +30,12 @@ import org.elnix.notes.R
 import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.toolbars.SliderToolbarSetting
+import org.elnix.notes.ui.helpers.toolbars.ToolbarColorSelectorDialog
 import org.elnix.notes.ui.helpers.toolbars.ToolbarItemsEditor
 import org.elnix.notes.ui.helpers.toolbars.UnifiedToolbar
 import org.elnix.notes.ui.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
-import kotlin.math.roundToInt
 
 @Composable
 fun ToolbarCustomisationTab(
@@ -52,7 +48,14 @@ fun ToolbarCustomisationTab(
 
     val toolbarsFlow = remember { ToolbarsSettingsStore.getToolbarsFlow(ctx) }
     val toolbars by toolbarsFlow.collectAsState(initial = emptyList())
-    val toolbar = toolbars.find { it.toolbar == toolbar }!!
+    val toolbarSetting = toolbars.find { it.toolbar == toolbar }
+
+    if (toolbarSetting == null) {
+        return
+    }
+
+    var showColorPickerDialog by remember { mutableStateOf(false) }
+
 
     SettingsLazyHeader(
         title = stringResource(R.string.toolbar_customization),
@@ -62,20 +65,59 @@ fun ToolbarCustomisationTab(
         item {
             UnifiedToolbar(
                 ctx = ctx,
-                toolbar = toolbar.toolbar,
+                toolbar = toolbarSetting.toolbar,
                 scrollState = rememberScrollState(),
                 isSearchExpanded = false,
-                color = toolbar.color,
-                borderColor = toolbar.borderColor,
-                borderWidth = toolbar.borderWidth,
-                borderRadius = toolbar.borderRadius,
-                elevation = toolbar.elevation,
-                paddingLeft = toolbar.leftPadding,
-                paddingRight = toolbar.rightPadding,
+                color = toolbarSetting.color,
+                borderColor = toolbarSetting.borderColor,
+                borderWidth = toolbarSetting.borderWidth,
+                borderRadius = toolbarSetting.borderRadius,
+                elevation = toolbarSetting.elevation,
+                paddingLeft = toolbarSetting.leftPadding,
+                paddingRight = toolbarSetting.rightPadding,
                 ghosted = true
             )
         }
 
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
+                Button(
+                    onClick = { showColorPickerDialog = true },
+                    colors = AppObjectsColors.buttonColors(),
+                    shape = CircleShape,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ColorLens,
+                        contentDescription = stringResource(R.string.toolbar_color),
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Text(stringResource(R.string.toolbar_color))
+                }
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            ToolbarsSettingsStore.resetToolbar(ctx, toolbarSetting.toolbar)
+                        }
+                    },
+                    colors = AppObjectsColors.buttonColors(),
+                    shape = CircleShape,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Restore,
+                        contentDescription = stringResource(R.string.reset),
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Text(stringResource(R.string.reset))
+                }
+            }
+        }
 
         // Border slider
         item {
@@ -85,14 +127,14 @@ fun ToolbarCustomisationTab(
                         "${stringResource(R.string.toolbars_border)}:  $value px"
                     else stringResource(R.string.no_border)
                 },
-                initialValue = toolbar.borderWidth,
+                initialValue = toolbarSetting.borderWidth,
                 valueRange = 0f..20f,
                 steps = 19,
                 onReset = {
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                              ctx = ctx,
-                             toolbar = toolbar.toolbar
+                             toolbar = toolbarSetting.toolbar
                         ) { it.copy(borderWidth = 2) }
                     }
                 },
@@ -100,7 +142,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbar.toolbar
+                            toolbar = toolbarSetting.toolbar
                         ) { it.copy(borderWidth = v) }
                     }
                 }
@@ -115,14 +157,14 @@ fun ToolbarCustomisationTab(
                         "${stringResource(R.string.corner_radius)}:  ${value * 2} %"
                     else stringResource(R.string.rectangle)
                 },
-                initialValue = toolbar.borderRadius,
+                initialValue = toolbarSetting.borderRadius,
                 valueRange = 0f..50f,
                 steps = 49,
                 onReset = {
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbar.toolbar
+                            toolbar = toolbarSetting.toolbar
                         ) { it.copy(borderRadius = 50) }
                     }
                 },
@@ -130,7 +172,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbar.toolbar
+                            toolbar = toolbarSetting.toolbar
                         ) { it.copy(borderRadius = v) }
                     }
                 }
@@ -143,14 +185,14 @@ fun ToolbarCustomisationTab(
                 label = { value ->
                     "${stringResource(R.string.padding)} ${stringResource(R.string.left)}: $value px"
                 },
-                initialValue = toolbar.leftPadding,
+                initialValue = toolbarSetting.leftPadding,
                 valueRange = 0f..maxPadding.toFloat(),
                 steps = maxPadding - 1,
                 onReset = {
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbar.toolbar
+                            toolbar = toolbarSetting.toolbar
                         ) { it.copy(leftPadding = 16) }
                     }
                 },
@@ -158,7 +200,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbar.toolbar
+                            toolbar = toolbarSetting.toolbar
                         ) { it.copy(leftPadding = v) }
                     }
                 }
@@ -171,14 +213,14 @@ fun ToolbarCustomisationTab(
                 label = { value ->
                     "${stringResource(R.string.padding)} ${stringResource(R.string.right)}: $value px"
                 },
-                initialValue = toolbar.rightPadding,
+                initialValue = toolbarSetting.rightPadding,
                 valueRange = 0f..maxPadding.toFloat(),
                 steps = maxPadding - 1,
                 onReset = {
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbar.toolbar
+                            toolbar = toolbarSetting.toolbar
                         ) { it.copy(rightPadding = 16) }
                     }
                 },
@@ -186,7 +228,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbar.toolbar
+                            toolbar = toolbarSetting.toolbar
                         ) { it.copy(rightPadding = v) }
                     }
                 }
@@ -199,14 +241,14 @@ fun ToolbarCustomisationTab(
                 label = { value ->
                     "${stringResource(R.string.toolbar_evevation)}: $value px"
                 },
-                initialValue = toolbar.elevation,
+                initialValue = toolbarSetting.elevation,
                 valueRange = 0f..maxPadding.toFloat(),
                 steps = maxPadding - 1,
                 onReset = {
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbar.toolbar
+                            toolbar = toolbarSetting.toolbar
                         ) { it.copy(elevation = 3) }
                     }
                 },
@@ -214,25 +256,9 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbar.toolbar
+                            toolbar = toolbarSetting.toolbar
                         ) { it.copy(elevation = v) }
                     }
-                }
-            )
-        }
-
-        // Toolbars spacing
-        item {
-            SliderToolbarSetting(
-                label = { value ->
-                    "${stringResource(R.string.toolbars_spacing)}: $value px"
-                },
-                initialValue = spacing,
-                valueRange = 0f..maxPadding.toFloat(),
-                steps = maxPadding - 1,
-                onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, 8) } },
-                onValueChangeFinished = { v ->
-                    scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, v) }
                 }
             )
         }
@@ -241,63 +267,23 @@ fun ToolbarCustomisationTab(
             TextDivider(stringResource(R.string.toolbars_items_and_order))
         }
 
-        item { ToolbarItemsEditor(ctx, toolbar.toolbar) }
-    }
-}
-
-
-@Composable
-private fun SliderToolbarSetting(
-    label: @Composable (Int) -> String,
-    initialValue: Int,
-    valueRange: ClosedFloatingPointRange<Float>,
-    steps: Int,
-    onReset: () -> Unit,
-    onValueChangeFinished: (Int) -> Unit
-) {
-    var currentValue by remember { mutableIntStateOf(initialValue) }
-
-    LaunchedEffect(initialValue) {
-        currentValue = initialValue
+        item { ToolbarItemsEditor(ctx, toolbarSetting.toolbar) }
     }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(8.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = label(currentValue),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-            Spacer(Modifier.weight(1f))
-            IconButton(onClick = onReset) {
-                Icon(
-                    imageVector = Icons.Default.Restore,
-                    contentDescription = stringResource(R.string.reset),
-                    tint = MaterialTheme.colorScheme.outline
+    if (showColorPickerDialog) {
+        ToolbarColorSelectorDialog(
+            toolbar = toolbarSetting,
+            onDismiss = { showColorPickerDialog = false }
+        ) { color, borderColor ->
+            scope.launch {
+                ToolbarsSettingsStore.updateToolbarColor(
+                    ctx = ctx,
+                    toolbar = toolbarSetting.toolbar,
+                    color = Color(color),
+                    borderColor = Color(borderColor)
                 )
             }
+            showColorPickerDialog = false
         }
-
-        Slider(
-            value = currentValue.toFloat(),
-            onValueChange = { newValue ->
-                currentValue = newValue.roundToInt()
-            },
-            onValueChangeFinished = { onValueChangeFinished(currentValue) },
-            valueRange = valueRange,
-            steps = steps,
-            colors = AppObjectsColors.sliderColors(
-                backgroundColor = MaterialTheme.colorScheme.background
-            ),
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
     }
 }

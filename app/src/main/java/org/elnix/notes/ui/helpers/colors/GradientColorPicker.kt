@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.SliderWithLabel
-import org.elnix.notes.ui.theme.AppObjectsColors
+import org.elnix.notes.ui.helpers.ValidateCancelButtons
 import android.graphics.Color as AndroidColor
 
 
@@ -204,33 +202,19 @@ fun GradientColorPicker(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // --- Buttons ---
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            Button(
-                onClick = { onColorSelected(selectedColor.copy(alpha = alpha)) },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(stringResource(R.string.apply), color = MaterialTheme.colorScheme.onPrimary)
+        ValidateCancelButtons(
+            validateText = stringResource(R.string.apply),
+            cancelText = stringResource(R.string.reset),
+            onValidate = { onColorSelected(selectedColor.copy(alpha = alpha)) },
+            onCancel = {
+                selectedColor = defaultColor
+                alpha = defaultColor.alpha
+                hue = hsvArray[0]
+                sat = hsvArray[1]
+                value = hsvArray[2]
+                hexText = toHexWithAlpha(defaultColor)
             }
-
-            OutlinedButton(
-                onClick = {
-                    selectedColor = defaultColor
-                    alpha = defaultColor.alpha
-                    hue = hsvArray[0]
-                    sat = hsvArray[1]
-                    value = hsvArray[2]
-                    hexText = toHexWithAlpha(defaultColor)
-                },
-                modifier = Modifier.weight(1f),
-                colors = AppObjectsColors.cancelButtonColors(MaterialTheme.colorScheme.surface)
-            ) {
-                Text(stringResource(R.string.reset), color = MaterialTheme.colorScheme.error)
-            }
-        }
+        )
     }
 }
 

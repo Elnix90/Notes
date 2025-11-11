@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.AlertDialog
@@ -76,7 +77,10 @@ fun ColorPickerRow(
         if(showLabel){
             Text(
                 text = label,
-                color = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (enabled) 1f else 0.5f)
+                color = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (enabled) 1f else 0.5f),
+                modifier = Modifier.weight(1f),
+                maxLines = Int.MAX_VALUE,
+                softWrap = true
             )
         }
 
@@ -130,7 +134,25 @@ fun ColorPickerRow(
     if (showPicker) {
         AlertDialog(
             onDismissRequest = { showPicker = false },
-            title = { Text(text = "${stringResource(R.string.pick_a)} $label ${stringResource(R.string.color_text_literal)}", color = MaterialTheme.colorScheme.onSurface) },
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(R.string.close),
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.clickable { showPicker = false }
+                    )
+
+                    Spacer(Modifier.width(15.dp))
+
+                    Text(
+                        text = "${stringResource(R.string.pick_a)} $label ${stringResource(R.string.color_text_literal)}",
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            },
             text = {
                 ColorPicker(
                     initialColor = Color(currentColor),

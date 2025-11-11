@@ -1,6 +1,5 @@
 package org.elnix.notes.ui.helpers.colors
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,11 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,8 +28,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
+import org.elnix.notes.ui.helpers.ValidateCancelButtons
 import org.elnix.notes.ui.theme.AmoledDefault
-import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
 fun DefaultColorPicker(
@@ -117,33 +113,12 @@ fun DefaultColorPicker(
 
         Spacer(Modifier.height(16.dp))
 
-        // === Buttons ===
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            Button(
-                onClick = { onColorSelected(selectedColor) },
-                modifier = Modifier.weight(1f),
-                colors = AppObjectsColors.buttonColors()
-            ) {
-                Text(
-                    text = stringResource(R.string.apply),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            }
 
-            OutlinedButton(
-                onClick = { selectedColor = defaultColor },
-                modifier = Modifier.weight(1f),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
-                colors = AppObjectsColors.cancelButtonColors(MaterialTheme.colorScheme.surface)
-            ) {
-                Text(
-                    text = stringResource(R.string.reset),
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        }
+        ValidateCancelButtons(
+            validateText = stringResource(R.string.apply),
+            cancelText = stringResource(R.string.reset),
+            onValidate = { onColorSelected(selectedColor) },
+            onCancel = { selectedColor = defaultColor }
+        )
     }
 }

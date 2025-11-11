@@ -26,11 +26,8 @@ import org.elnix.notes.ui.theme.AppObjectsColors
 @Composable
 fun CompletionToggle(
     note: NoteEntity,
-//    currentId: Long?,
-//    vm: NoteViewModel,
     onComplete: (Boolean) -> Unit
 ) {
-//    val scope = rememberCoroutineScope()
     var isCompleted by remember { mutableStateOf(note.isCompleted) }
 
     Surface(

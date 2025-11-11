@@ -112,10 +112,11 @@ fun ToolbarItemsEditor(
     ) {
         Text(
             text = "${stringResource(R.string.edit_toolbar)}: ${toolbarName(toolbar)}",
-            color = MaterialTheme.colorScheme.onSurface.copy(if (enabled) 1f else 0.5f)
+            color = MaterialTheme.colorScheme.onSurface.copy(if (enabled) 1f else 0.5f),
+            modifier = Modifier.weight(1f),
+            maxLines = Int.MAX_VALUE,
+            softWrap = true
         )
-
-        Spacer(Modifier.weight(1f))
 
         Button(
             onClick = {

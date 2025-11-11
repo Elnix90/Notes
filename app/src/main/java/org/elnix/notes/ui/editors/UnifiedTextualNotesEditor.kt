@@ -388,6 +388,7 @@ fun UnifiedTextualNotesEditor(
         // --- Validate/Cancel Buttons ---
         Surface(color = MaterialTheme.colorScheme.background, tonalElevation = 3.dp) {
             ValidateCancelButtons(
+                cancelContainerColor = MaterialTheme.colorScheme.background,
                 onValidate = { handleExit() },
                 onCancel = {
                     scope.launch {

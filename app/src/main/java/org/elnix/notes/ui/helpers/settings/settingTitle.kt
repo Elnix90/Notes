@@ -24,7 +24,7 @@ import org.elnix.notes.R
 @Composable
 fun SettingsTitle(
     title: String,
-    resetIcon: () -> Unit,
+    resetIcon:( () -> Unit)?,
     helpIcon: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -54,14 +54,16 @@ fun SettingsTitle(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        IconButton(
-            onClick = { resetIcon() },
-        ) {
-            Icon(
-                imageVector = Icons.Default.Restore,
-                contentDescription = stringResource(R.string.reset),
-                tint = MaterialTheme.colorScheme.primary
-            )
+        if (resetIcon != null){
+            IconButton(
+                onClick = { resetIcon() },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Restore,
+                    contentDescription = stringResource(R.string.reset),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
 
         IconButton(

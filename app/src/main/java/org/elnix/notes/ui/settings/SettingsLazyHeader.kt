@@ -62,7 +62,9 @@ fun SettingsLazyHeader(
             SettingsTitle(
                 title,
                 helpIcon = { showHelpDialog = true },
-                resetIcon = { showResetDialog = true },
+                resetIcon = if (onReset != null) {
+                    { showResetDialog = true }
+                } else null,
             ) { onBack() }
         }
 

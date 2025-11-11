@@ -127,8 +127,8 @@ fun UserValidation(
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
                             .clickable {
-                            doNotRemindMeAgainChecked = !doNotRemindMeAgainChecked
-                        }
+                                doNotRemindMeAgainChecked = !doNotRemindMeAgainChecked
+                            }
                     ) {
                         Checkbox(
                             checked = doNotRemindMeAgainChecked,
@@ -141,7 +141,7 @@ fun UserValidation(
                             text = stringResource(R.string.do_not_remind_me_again),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(top = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp)
                         )
                     }
                 }

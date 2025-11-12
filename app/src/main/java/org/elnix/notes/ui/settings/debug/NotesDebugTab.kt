@@ -14,6 +14,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.elnix.notes.data.AppDatabase
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.TextDivider
@@ -22,7 +24,11 @@ import org.elnix.notes.ui.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
-fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
+fun NotesDebugTab(
+    vm: NoteViewModel,
+    scope: CoroutineScope,
+    onBack: (() -> Unit)
+) {
     var showConfirmDeleteAllNotes by remember { mutableStateOf(false) }
 
     val ctx = LocalContext.current
@@ -37,7 +43,7 @@ fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
 
         item {
             Button(
-                onClick = { vm.createFakeNotes(10) },
+                onClick = { scope.launch { vm.createFakeNotes(10) } },
                 modifier = Modifier.fillMaxWidth(),
                 colors = AppObjectsColors.buttonColors()
             ) {
@@ -53,11 +59,11 @@ fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
             )
         }
 
-        item { RequestCreateManyNotesButon(100, vm) }
+        item { RequestCreateManyNotesButon(100, scope, vm) }
 
-        item { RequestCreateManyNotesButon(1000, vm) }
+        item { RequestCreateManyNotesButon(1000, scope, vm) }
 
-        item { RequestCreateManyNotesButon(100000, vm) }
+        item { RequestCreateManyNotesButon(100000, scope, vm) }
 
         item {
             OutlinedButton(
@@ -90,7 +96,11 @@ fun NotesDebugTab(vm: NoteViewModel, onBack: (() -> Unit)) {
 
 
 @Composable
-fun RequestCreateManyNotesButon(noteNumber: Int, vm: NoteViewModel) {
+fun RequestCreateManyNotesButon(
+    noteNumber: Int,
+    scope: CoroutineScope,
+    vm: NoteViewModel
+) {
     var showConfirm by remember { mutableStateOf(false) }
 
     OutlinedButton(
@@ -113,7 +123,7 @@ fun RequestCreateManyNotesButon(noteNumber: Int, vm: NoteViewModel) {
             onCancel = { showConfirm = false },
             onAgree = {
                 showConfirm = false
-                vm.createFakeNotes(noteNumber)
+                scope.launch{ vm.createFakeNotes(noteNumber) }
             }
         )
     }

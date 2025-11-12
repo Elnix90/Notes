@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -33,9 +34,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
+import org.elnix.notes.Routes
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
 import org.elnix.notes.data.settings.stores.OffsetsSettingsStore.getDefaultOffsetsFlow
@@ -47,6 +50,7 @@ import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.reminders.OffsetPickerDialog
 import org.elnix.notes.ui.helpers.reminders.ReminderPicker
 import org.elnix.notes.ui.helpers.reminders.TimeBubble
+import org.elnix.notes.ui.helpers.settings.SettingsItem
 import org.elnix.notes.ui.security.AskNotificationButton
 import org.elnix.notes.ui.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
@@ -57,6 +61,7 @@ fun RemindersTab(
     ctx: Context,
     activity: FragmentActivity,
     scope: CoroutineScope,
+    navController: NavController,
     onBack: (() -> Unit)
 ) {
     val defaultReminders by getDefaultRemindersFlow(ctx)
@@ -182,6 +187,15 @@ fun RemindersTab(
                 )
             }
             item { AskNotificationButton(activity) }
+        }
+
+        item { TextDivider(stringResource(R.string.notifications)) }
+
+        item {
+            SettingsItem(
+                title = stringResource(R.string.notifications),
+                icon = Icons.Default.Notifications,
+            ) { navController.navigate(Routes.Settings.RemindersSub.NOTIFICATIONS) }
         }
     }
     if (showOffsetPicker) {

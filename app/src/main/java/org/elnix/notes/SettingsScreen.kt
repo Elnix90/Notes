@@ -65,6 +65,7 @@ import org.elnix.notes.ui.settings.debug.RemindersDebugTab
 import org.elnix.notes.ui.settings.debug.UserConfirmDebugTab
 import org.elnix.notes.ui.settings.language.LanguageTab
 import org.elnix.notes.ui.settings.plugins.PluginsTab
+import org.elnix.notes.ui.settings.reminders.NotificationsCustomisationTab
 import org.elnix.notes.ui.settings.reminders.RemindersTab
 import org.elnix.notes.ui.settings.security.SecurityTab
 
@@ -329,8 +330,17 @@ fun ColorSelectorSettingsScreen(navController: NavController) {
 fun RemindersSettingsScreen(navController: NavController, activity: FragmentActivity) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
-    RemindersTab(ctx, activity, scope) {
+    RemindersTab(ctx, activity, scope, navController) {
         navController.navigate(Routes.Settings.ROOT)
+    }
+}
+
+@Composable
+fun NotificationsSettingsScreen(navController: NavController) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    NotificationsCustomisationTab(ctx, scope) {
+        navController.navigate(Routes.Settings.REMINDER)
     }
 }
 
@@ -410,7 +420,8 @@ fun DebugReminderSettingsScreen(navController: NavController, vm : NoteViewModel
 
 @Composable
 fun DebugNotesSettingsScreen(navController: NavController, vm : NoteViewModel) {
-    NotesDebugTab(vm) {
+    val scope = rememberCoroutineScope()
+    NotesDebugTab(vm, scope) {
         navController.navigate(Routes.Settings.DEBUG)
     }
 }

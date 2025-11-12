@@ -233,4 +233,5 @@
     <string name="default_offsets">Default Offsets</string>
     <string name="left_button_action">Left Button Action</string>
     <string name="right_button_action">Right Button Action</string>
+    <string name="notifications">Notifications</string>
 </resources>

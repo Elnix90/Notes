@@ -234,4 +234,5 @@
     <string name="default_offsets">Durées par défaut</string>
     <string name="left_button_action">Action du bouton de gauche</string>
     <string name="right_button_action">Action du bouton de droite</string>
+    <string name="notifications">Notifications</string>
 </resources>

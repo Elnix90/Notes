@@ -29,4 +29,6 @@ class ReminderRepository(private val dao: ReminderDao) {
             )
         }
     }
+
+    suspend fun getById(id: Long): ReminderEntity? = dao.getById(id)
 }

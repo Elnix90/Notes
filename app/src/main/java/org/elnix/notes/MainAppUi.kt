@@ -38,6 +38,10 @@ object Routes {
             const val TOOLBAR_EDITOR = "settings/customisation/toolbar"
         }
         const val REMINDER = "settings/reminder"
+
+        object RemindersSub {
+            const val NOTIFICATIONS = "settings/reminders/notifications"
+        }
         const val SECURITY = "settings/security"
         const val BACKUP = "settings/backup"
         const val DEBUG = "settings/debug"
@@ -55,17 +59,23 @@ object Routes {
 
 // -------------------- MAIN APP --------------------
 @Composable
-fun MainApp(vm: NoteViewModel, activity: FragmentActivity) {
+fun MainApp(
+    vm: NoteViewModel,
+    activity: FragmentActivity,
+    startNoteId: Long? = null,
+    startNoteType: NoteType = NoteType.TEXT
+) {
     val navController = rememberNavController()
     var unlocked by remember { mutableStateOf(false) }
 
     if (!unlocked) {
         LockScreen(activity) { unlocked = true }
     } else {
-
         NavHost(
             navController = navController,
-            startDestination = Routes.NOTES
+            startDestination = if(startNoteId != null) {
+                "edit/$startNoteId?type=${startNoteType.name}"
+            } else Routes.NOTES
         ) {
             // NOTES
             composable(Routes.NOTES) { NotesScreen(vm, navController) }
@@ -166,6 +176,8 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteV
         }
 
         composable(Routes.Settings.REMINDER) { RemindersSettingsScreen(navController, activity) }
+        composable(Routes.Settings.RemindersSub.NOTIFICATIONS) { NotificationsSettingsScreen(navController) }
+
         composable(Routes.Settings.SECURITY) { SecuritySettingsScreen(navController) }
         composable(Routes.Settings.BACKUP) { BackupSettingsScreen(navController) }
         composable(Routes.Settings.LANGUAGE) { LanguageSettingsScreen(navController) }

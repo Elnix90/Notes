@@ -102,7 +102,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.update(reminder) }
     fun deleteReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.delete(reminder) }
-    
+
 
     //  Deletes all notes that have both a blank title and description.
     suspend fun deleteAllEmptyNotes() {
@@ -146,17 +146,19 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // --- DEBUG FEATURES ---
-    fun createFakeNotes(number: Int) {
-        viewModelScope.launch {
-            repeat(number) { it ->
-                val id = Random.nextLong().toString()
-                val title = "Fake Note $id"
-                val description = "This is a description for fake note $id."
-                val possibleTypes = listOf(NoteType.CHECKLIST, NoteType.TEXT)
-                addNoteAndReturnId(title, description, type = possibleTypes.random())
-            }
+    suspend fun createFakeNotes(number: Int): List<Long> {
+        val ids = mutableListOf<Long>()
+        repeat(number) {
+            val id = Random.nextLong().toString()
+            val title = "Fake Note $id"
+            val description = "This is a description for fake note $id."
+            val possibleTypes = listOf(NoteType.CHECKLIST, NoteType.TEXT)
+            val noteId = addNoteAndReturnId(title, description, type = possibleTypes.random())
+            ids += noteId
         }
+        return ids
     }
+
 
 
     // Complete / Un-complete notes

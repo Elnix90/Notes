@@ -34,6 +34,7 @@ import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.elnix.notes.SwipeState
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.NoteActionSettings
+import org.elnix.notes.data.helpers.NotesActions
 import org.elnix.notes.data.helpers.noteActionColor
 import org.elnix.notes.data.helpers.noteActionIcon
 
@@ -47,26 +48,40 @@ fun SwipeableNoteCard(
     elevation: Dp,
     isDragging: Boolean,
     reorderState: ReorderableLazyListState,
-    onNoteClick: (NoteEntity) -> Unit,
-    onNoteLongClick: (NoteEntity) -> Unit,
+    leftAction: NotesActions,
+    rightAction: NotesActions,
+    onNoteClick: ((NoteEntity) -> Unit)?,
+    onNoteLongClick: ((NoteEntity) -> Unit)?,
     onRightAction: (NoteEntity) -> Unit,
     onLeftAction: (NoteEntity) -> Unit,
-    onButtonClick: (NoteEntity) -> Unit,
-    onTypeButtonClick: (NoteEntity) -> Unit,
+    onRightButtonClick: (NoteEntity) -> Unit,
+    onLeftButtonClick: (NoteEntity) -> Unit,
     actionSettings: NoteActionSettings
 ) {
+    val canSwipeLeft = actionSettings.leftAction != NotesActions.NONE
+    val canSwipeRight = actionSettings.rightAction != NotesActions.NONE
     val maxSwipePx = 80f
+
     var swipeOffset by remember { mutableFloatStateOf(0f) }
     var swipeState by remember { mutableStateOf(SwipeState.Default) }
 
     val draggableState = rememberDraggableState { delta ->
-        swipeOffset = (swipeOffset + delta).coerceIn(-maxSwipePx, maxSwipePx)
+        // Allow only valid directions
+        val newOffset = swipeOffset + delta
+        swipeOffset = when {
+            newOffset < 0 && canSwipeLeft -> newOffset.coerceIn(-maxSwipePx, 0f)
+            newOffset > 0 && canSwipeRight -> newOffset.coerceIn(0f, maxSwipePx)
+            else -> swipeOffset // block swipe if no action
+        }
+
+        // Update state continuously
         swipeState = when {
-            swipeOffset >= maxSwipePx - 20 -> SwipeState.RightAction
-            swipeOffset <= -maxSwipePx + 20 -> SwipeState.LeftAction
+            swipeOffset >= maxSwipePx - 10 -> SwipeState.RightAction
+            swipeOffset <= -maxSwipePx + 10 -> SwipeState.LeftAction
             else -> SwipeState.Default
         }
     }
+
 
     val selectionOffset by animateDpAsState(
         targetValue = if (selected) 40.dp else 0.dp,
@@ -144,7 +159,7 @@ fun SwipeableNoteCard(
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
-                    .clickable { onNoteClick(note) }
+                    .clickable { onNoteClick?.invoke(note) }
                     .padding(start = 12.dp)
                     .size(26.dp)
             )
@@ -159,10 +174,16 @@ fun SwipeableNoteCard(
             elevation = elevation,
             isDragging = isDragging,
             reorderState = reorderState,
-            onClick = { onNoteClick(note) },
-            onLongClick = { onNoteLongClick(note) },
-            onDeleteButtonClick = { onButtonClick(note) },
-            onTypeIconClick = { onTypeButtonClick(note) },
+            leftAction = leftAction,
+            rightAction = rightAction,
+            onClick = if (onNoteClick != null ) {
+                { onNoteClick(note) }
+            } else null,
+            onLongClick = if (onNoteLongClick != null ) {
+                { onNoteLongClick(note) }
+            } else null,
+            onRightButtonClick = { onRightButtonClick(note) },
+            onLeftButtonClick = { onLeftButtonClick(note) },
             modifier = Modifier.offset(x = swipeOffset.dp + selectionOffset)
         )
     }

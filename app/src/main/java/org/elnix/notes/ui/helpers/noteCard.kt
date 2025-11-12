@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -43,12 +42,14 @@ import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
 import org.elnix.notes.R
 import org.elnix.notes.data.NoteEntity
+import org.elnix.notes.data.helpers.NotesActions
+import org.elnix.notes.data.helpers.noteActionColor
+import org.elnix.notes.data.helpers.noteActionIcon
+import org.elnix.notes.data.helpers.noteActionName
 import org.elnix.notes.data.helpers.noteTypeColor
 import org.elnix.notes.data.helpers.noteTypeIcon
 import org.elnix.notes.data.settings.stores.TagsSettingsStore.getTags
 import org.elnix.notes.data.settings.stores.UiSettingsStore
-import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowDeleteButton
-import org.elnix.notes.data.settings.stores.UiSettingsStore.getShowNoteTypeIcon
 import org.elnix.notes.ui.helpers.tags.TagBubble
 import org.elnix.notes.ui.theme.LocalExtraColors
 import java.text.SimpleDateFormat
@@ -63,17 +64,16 @@ fun NoteCard(
     elevation: Dp,
     isDragging: Boolean,
     reorderState: ReorderableLazyListState,
-    onClick: () -> Unit,
-    onLongClick: () -> Unit,
-    onDeleteButtonClick: () -> Unit,
-    onTypeIconClick: () -> Unit,
+    leftAction: NotesActions,
+    rightAction: NotesActions,
+    onClick: (() -> Unit)?,
+    onLongClick: (() -> Unit)?,
+    onRightButtonClick: () -> Unit,
+    onLeftButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val ctx = LocalContext.current
-
-    val showDeleteButton by getShowDeleteButton(ctx).collectAsState(initial = true)
-    val showNoteTypeIcon by getShowNoteTypeIcon(ctx).collectAsState(initial = true)
 
     val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx).collectAsState(initial = true)
     val allTags by getTags(ctx).collectAsState(initial = emptyList())
@@ -104,8 +104,9 @@ fun NoteCard(
                 .then(
                     if (!isReorderMode) {
                         Modifier.combinedClickable(
-                            onLongClick = { onLongClick() },
-                            onClick = { onClick() }
+                            enabled = onClick != null || onLongClick != null,
+                            onLongClick = { onLongClick?.invoke() },
+                            onClick = { onClick?.invoke() }
                         )
                     } else Modifier
                 )
@@ -113,8 +114,15 @@ fun NoteCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            if (showNoteTypeIcon) {
-                val iconColor = noteTypeColor(note.type)
+            if (leftAction != NotesActions.NONE) {
+                val leftIconColor = when(leftAction){
+                    NotesActions.EDIT -> noteTypeColor(note.type)
+                    else -> noteActionColor(leftAction)
+                }
+                val leftIcon = when(leftAction){
+                    NotesActions.EDIT -> noteTypeIcon(note.type)
+                    else -> noteActionIcon(leftAction)
+                }
 
                 Box(
                     modifier = Modifier
@@ -124,15 +132,15 @@ fun NoteCard(
                             if (isSelectMode) {
                                 Modifier.pointerInput(Unit) {}
                             } else {
-                                Modifier.clickable { onTypeIconClick() }
+                                Modifier.clickable { onLeftButtonClick() }
                             }
                         )
-                        .background(iconColor)
+                        .background(leftIconColor)
                         .padding(5.dp)
                 ) {
                     Icon(
-                        imageVector = noteTypeIcon(note.type),
-                        contentDescription = "Note icon",
+                        imageVector = leftIcon,
+                        contentDescription = noteActionName(ctx, leftAction),
                         modifier = Modifier.size(25.dp),
                         tint = MaterialTheme.colorScheme.outline,
                     )
@@ -194,7 +202,16 @@ fun NoteCard(
                             .size(24.dp)
                             .detectReorder(reorderState)
                     )
-                } else if (showDeleteButton) {
+                } else if (rightAction != NotesActions.NONE) {
+                    val rightIconColor = when (rightAction) {
+                        NotesActions.EDIT -> noteTypeColor(note.type)
+                        else -> noteActionColor(rightAction)
+                    }
+                    val rightIcon = when (rightAction) {
+                        NotesActions.EDIT -> noteTypeIcon(note.type)
+                        else -> noteActionIcon(rightAction)
+                    }
+
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)
@@ -202,16 +219,17 @@ fun NoteCard(
                                 if (isSelectMode) {
                                     Modifier.pointerInput(Unit) {}
                                 } else {
-                                    Modifier.clickable { onDeleteButtonClick() }
+                                    Modifier.clickable { onRightButtonClick() }
                                 }
                             )
+                            .background(rightIconColor)
                             .padding(5.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.delete),
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
+                            imageVector = rightIcon,
+                            contentDescription = noteActionName(ctx, rightAction),
+                            modifier = Modifier.size(25.dp),
+                            tint = MaterialTheme.colorScheme.outline,
                         )
                     }
                 }

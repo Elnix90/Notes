@@ -5,14 +5,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,11 +36,14 @@ fun <T> ActionSelectorRow(
     options: List<T>,
     selected: T,
     enabled: Boolean = true,
+    switchEnabled: Boolean = true,
     label: String? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     surfaceColor: Color = MaterialTheme.colorScheme.surface,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     optionLabel: (T) -> String = { it.toString() },
+    onToggle: ((Boolean) -> Unit)? = null,
+    toggled: Boolean? = null,
     onSelected: (T) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -67,8 +75,33 @@ fun <T> ActionSelectorRow(
             color = textColor.adjustBrightness(if (enabled) 1f else 0.5f),
             style = MaterialTheme.typography.labelLarge
         )
+
+        // Right side toggle + divider wrapped in a clickable container
+        if (onToggle != null && toggled != null) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clickable(enabled = switchEnabled) { onToggle(!toggled) }
+            ) {
+                VerticalDivider(
+                    modifier = Modifier
+                        .height(50.dp)
+                        .padding(horizontal = 8.dp),
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f),
+                    thickness = 1.dp
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Switch(
+                    checked = toggled,
+                    enabled = switchEnabled,
+                    onCheckedChange = { onToggle(it) },
+                    colors = AppObjectsColors.switchColors()
+                )
+            }
+        }
     }
 
+    // Options dialog
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },

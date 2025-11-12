@@ -54,7 +54,6 @@ fun TagsSection(
         // + button opens picker
         IconButton(
             onClick = { showPicker = true },
-            modifier = Modifier.size(40.dp),
             colors = AppObjectsColors.iconButtonColors()
         ) {
             Icon(

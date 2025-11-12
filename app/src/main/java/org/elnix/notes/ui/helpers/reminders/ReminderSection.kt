@@ -49,7 +49,8 @@ fun RemindersSection(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         itemVerticalAlignment = Alignment.CenterVertically
     ) {
-        reminders.forEach { reminder ->
+        reminders.sortedBy { it.dueDateTime }
+            .forEach { reminder ->
             TimeBubble(
                 reminder = reminder,
                 onClick = {

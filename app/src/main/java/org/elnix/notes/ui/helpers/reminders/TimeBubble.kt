@@ -27,6 +27,8 @@ import org.elnix.notes.R
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.helpers.OffsetItem
 import kotlin.math.abs
+import java.text.DateFormat
+import java.util.*
 
 @Composable
 fun TimeBubble(
@@ -120,52 +122,38 @@ fun getTextAndRatioFromOffset(
 ): Pair<String, Float> {
     return when {
         offsetSeconds < 60 -> {
-            // Less than 1 minute: show seconds only
             "$offsetSeconds s" to 0f
         }
         offsetSeconds < 3600 -> {
-            // Minutes and seconds
             val minutes = offsetSeconds / 60
             val seconds = offsetSeconds % 60
-            if (seconds == 0) {
-                "$minutes min" to 0.1f
-            } else {
-                "$minutes min ${seconds}s" to 0.1f
-            }
+            if (seconds == 0) "$minutes min" to 0.1f
+            else "$minutes min ${seconds}s" to 0.1f
         }
         offsetSeconds < 86400 -> {
-            // Hours and remainder minutes
             val hours = offsetSeconds / 3600
             val minutes = (offsetSeconds % 3600) / 60
-            if (minutes == 0) {
-                "$hours h" to 0.3f
-            } else {
-                "$hours h ${minutes}min" to 0.3f
-            }
+            if (minutes == 0) "$hours h" to 0.3f
+            else "$hours h ${minutes}min" to 0.3f
         }
         offsetSeconds < 7 * 86400 -> {
-            // Days and remainder hours
             val days = offsetSeconds / 86400
             val hours = (offsetSeconds % 86400) / 3600
-            if (hours == 0) {
-                "$days d" to 0.6f
-            } else {
-                "$days d ${hours}h" to 0.6f
-            }
+            if (hours == 0) "$days d" to 0.6f
+            else "$days d ${hours}h" to 0.6f
         }
         else -> {
-            // Weeks and remainder days
-            val weeks = offsetSeconds / (7 * 86400)
-            val days = (offsetSeconds % (7 * 86400)) / 86400
-            if (days == 0) {
-                "$weeks wk" to 1f
-            } else {
-                "$weeks wk ${days}d" to 1f
-            }
+            // If more than one week, display actual date in local format
+            val futureTimeMillis = System.currentTimeMillis() + offsetSeconds * 1000L
+            val formattedDate = DateFormat.getDateTimeInstance(
+                DateFormat.MEDIUM,
+                DateFormat.SHORT,
+                Locale.getDefault()
+            ).format(Date(futureTimeMillis))
+            formattedDate to 1f
         }
     }
 }
-
 
 
 

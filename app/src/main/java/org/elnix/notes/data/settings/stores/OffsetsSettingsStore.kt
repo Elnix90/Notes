@@ -25,7 +25,12 @@ object OffsetsSettingsStore {
                         offset = obj.optInt("offset", 600),
                     )
                 }
-            } ?: emptyList()
+            } ?: listOf(
+                OffsetItem(offset = 600),
+                OffsetItem(offset = 1800),
+                OffsetItem(offset = 3600),
+                OffsetItem(offset = 86400)
+            )
         }
 
     private suspend fun saveOffsets(ctx: Context, offsets: List<OffsetItem>) {
@@ -39,6 +44,35 @@ object OffsetsSettingsStore {
         }.toString()
         ctx.dataStore.edit { it[OFFSETS_KEY] = jsonStr }
     }
+
+    private val DEFAULT_OFFSETS = stringPreferencesKey("default_offsets")
+
+    fun getDefaultOffsetsFlow(ctx: Context): Flow<List<OffsetItem>> =
+        ctx.dataStore.data.map { prefs ->
+            prefs[DEFAULT_OFFSETS]?.let { jsonStr ->
+                val arr = JSONArray(jsonStr)
+                List(arr.length()) { i ->
+                    val obj = arr.getJSONObject(i)
+                    OffsetItem(
+                        offset = if (obj.has("offset")) obj.getInt("offset") else 0,
+                    )
+                }
+            } ?: emptyList()
+        }
+
+    suspend fun setDefaultOffsets(ctx: Context, offsets: List<OffsetItem>) {
+        val jsonStr = JSONArray().apply {
+            offsets.forEach { o ->
+                put(JSONObject().apply {
+                    put("offset", o.offset )
+                })
+            }
+        }.toString()
+
+        ctx.dataStore.edit { it[DEFAULT_OFFSETS] = jsonStr }
+    }
+
+
 
     /** Get offsets once (suspend) */
     private suspend fun getOffsetsOnce(ctx: Context): MutableList<OffsetItem> =

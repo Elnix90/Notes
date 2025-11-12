@@ -7,13 +7,19 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import org.elnix.notes.R
@@ -23,7 +29,7 @@ import org.elnix.notes.ui.theme.AppObjectsColors
 fun AskNotificationButton(activity: FragmentActivity) {
     val ctx = LocalContext.current
 
-    IconButton(
+    Button(
         onClick = {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -46,11 +52,19 @@ fun AskNotificationButton(activity: FragmentActivity) {
                     .show()
             }
         },
-        colors = AppObjectsColors.iconButtonColors()
+        colors = AppObjectsColors.buttonColors()
     ) {
-        Icon(
-            imageVector = Icons.Default.CalendarMonth,
-            contentDescription = stringResource(R.string.allow_notif_perm)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+               imageVector = Icons.Default.CalendarMonth,
+               contentDescription = stringResource(R.string.allow_notif_perm)
+            )
+            Text(
+                text = stringResource(R.string.allow_notif_perm),
+                modifier = Modifier.padding(horizontal = 5.dp)
+            )
+        }
     }
 }

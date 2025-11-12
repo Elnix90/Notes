@@ -101,17 +101,22 @@ fun OffsetPickerDialog(
             onDismissRequest = onDismiss,
             title = {
                 Text(
-                    text = stringResource(R.string.pick_a_offset),
+                    text = stringResource(R.string.allow_notif_perm),
                     color = MaterialTheme.colorScheme.onSurface
                 )
             },
             text = {
-                AskNotificationButton(activity)
+                Column {
+                    Text(
+                        text = stringResource(R.string.this_feature_needs_notification)
+                    )
+                    AskNotificationButton(activity)
+                }
             },
             confirmButton = {
                 TextButton(onClick = onDismiss) {
                     Text(
-                        text = stringResource(R.string.close),
+                        text = stringResource(R.string.cancel),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }

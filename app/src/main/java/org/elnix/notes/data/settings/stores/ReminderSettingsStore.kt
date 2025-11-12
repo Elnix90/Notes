@@ -20,9 +20,7 @@ object ReminderSettingsStore {
                 List(arr.length()) { i ->
                     val obj = arr.getJSONObject(i)
                     ReminderOffset(
-                        secondsFromNow = if (obj.has("seconds")) obj.getLong("seconds") else null,
-                        hourOfDay = if (obj.has("hour")) obj.getInt("hour") else null,
-                        minute = if (obj.has("minute")) obj.getInt("minute") else null
+                        secondsFromNow = if (obj.has("seconds")) obj.getLong("seconds") else 0,
                     )
                 }
             } ?: emptyList()
@@ -32,9 +30,7 @@ object ReminderSettingsStore {
         val jsonStr = JSONArray().apply {
             reminders.forEach { r ->
                 put(JSONObject().apply {
-                    r.secondsFromNow?.let { put("seconds", it) }
-                    r.hourOfDay?.let { put("hour", it) }
-                    r.minute?.let { put("minute", it) }
+                    put("seconds", r.secondsFromNow)
                 })
             }
         }.toString()

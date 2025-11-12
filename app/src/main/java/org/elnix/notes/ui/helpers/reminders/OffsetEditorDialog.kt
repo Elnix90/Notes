@@ -102,7 +102,7 @@ fun OffsetEditorDialog(
             Button(
                 onClick = {
                     scope.launch {
-                        val total = hours * 3600 + minutes * 60 + seconds
+                        val total = days *86400 + hours * 3600 + minutes * 60 + seconds
                         val newOffset = initialOffset?.copy(offset = total)
                             ?: OffsetItem(offset = total)
                         if (initialOffset == null)
@@ -154,7 +154,7 @@ private fun OffsetWheelPicker(
     ) {
         WheelColumn(
             label = "d",
-            range = 0..23,
+            range = 0..100,
             selected = days,
             onSelected = { onChange(it, hours, minutes, seconds) }
         )
@@ -257,19 +257,6 @@ private fun WheelColumn(
                     Spacer(Modifier.height(itemHeight))
                 }
             }
-
-//            // Optional center highlight overlay
-//            Box(
-//                modifier = Modifier
-//                    .align(Alignment.Center)
-//                    .padding(horizontal = 5.dp)
-//                    .fillMaxWidth()
-//                    .height(itemHeight)
-//                    .background(
-//                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-//                        shape = MaterialTheme.shapes.small
-//                    )
-//            )
         }
         Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }

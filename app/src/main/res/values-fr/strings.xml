@@ -230,4 +230,6 @@
     <string name="default_reminders">Rappels par défaut</string>
     <string name="customize_offsets">Customiser les Durées</string>
     <string name="offsets">Durées</string>
+    <string name="this_feature_needs_notification">Cette fonctionnalité nécessite l\'autorisation d\'envoyer des notifications. Cliquez ci-dessous pour l\'autoriser.</string>
+    <string name="default_offsets">Durées par défaut</string>
 </resources>

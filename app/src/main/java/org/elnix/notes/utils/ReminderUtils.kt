@@ -1,40 +1,33 @@
 package org.elnix.notes.utils
 
+import org.elnix.notes.data.helpers.OffsetItem
 import java.util.Calendar
 
 data class ReminderOffset(
-    val secondsFromNow: Long? = null,
-    val hourOfDay: Int? = null,
-    val minute: Int? = null
+    val secondsFromNow: Long,
 ) {
     fun toCalendar(): Calendar {
         val cal = Calendar.getInstance()
 
-        secondsFromNow?.let {
+        secondsFromNow.let {
             cal.add(Calendar.SECOND, it.toInt())
-        } ?: run {
-            cal.set(Calendar.HOUR_OF_DAY, hourOfDay ?: cal.get(Calendar.HOUR_OF_DAY))
-            cal.set(Calendar.MINUTE, minute ?: cal.get(Calendar.MINUTE))
-            cal.set(Calendar.SECOND, 0)
-            cal.set(Calendar.MILLISECOND, 0)
-            if (cal.timeInMillis <= System.currentTimeMillis()) {
-                cal.add(Calendar.DAY_OF_YEAR, 1)
-            }
         }
-
         return cal
     }
 
+    fun toOffsetItem(): OffsetItem {
+        val cal = this.toCalendar()
+        val now = Calendar.getInstance()
+        val diffMillis = cal.timeInMillis - now.timeInMillis
+        val offsetSeconds = (diffMillis / 1000).toInt()
+
+        return OffsetItem(
+            id = System.currentTimeMillis(),
+            offset = offsetSeconds
+        )
+    }
+
     fun applyTo(calendar: Calendar) {
-        when {
-            secondsFromNow != null -> {
-                calendar.add(Calendar.SECOND, secondsFromNow.toInt())
-            }
-            hourOfDay != null && minute != null -> {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                calendar.set(Calendar.MINUTE, minute)
-                calendar.set(Calendar.SECOND, 0)
-            }
-        }
+        calendar.add(Calendar.SECOND, secondsFromNow.toInt())
     }
 }

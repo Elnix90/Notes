@@ -28,11 +28,16 @@ import java.util.Calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StyledReminderDialogs(
-    tempCalendar: Calendar,
+    initialMillis: Long,
     onPicked: (ReminderOffset) -> Unit
 ) {
     var showDate by remember { mutableStateOf(false) }
     var showTime by remember { mutableStateOf(false) }
+
+    // Store combined Calendar time as mutable state
+    var pickedCalendar by remember {
+        mutableStateOf(Calendar.getInstance().apply { timeInMillis = initialMillis })
+    }
 
     IconButton(
         onClick = { showDate = true },
@@ -45,21 +50,17 @@ fun StyledReminderDialogs(
     }
 
     if (showDate) {
-        val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = tempCalendar.timeInMillis
-        )
-
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = pickedCalendar.timeInMillis)
         DatePickerDialog(
             onDismissRequest = { showDate = false },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        val millis = datePickerState.selectedDateMillis
-                        if (millis != null) tempCalendar.timeInMillis = millis
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { selectedMillis ->
+                        pickedCalendar.timeInMillis = selectedMillis
                         showDate = false
                         showTime = true
                     }
-                ) { Text(stringResource(R.string.next)) }
+                }) { Text(stringResource(R.string.next)) }
             },
             dismissButton = {
                 TextButton(onClick = { showDate = false }) { Text(stringResource(R.string.cancel)) }
@@ -72,27 +73,31 @@ fun StyledReminderDialogs(
 
     if (showTime) {
         val timePickerState = rememberTimePickerState(
-            initialHour = tempCalendar.get(Calendar.HOUR_OF_DAY),
-            initialMinute = tempCalendar.get(Calendar.MINUTE),
+            initialHour = pickedCalendar.get(Calendar.HOUR_OF_DAY),
+            initialMinute = pickedCalendar.get(Calendar.MINUTE),
             is24Hour = true
         )
 
         AlertDialog(
             onDismissRequest = { showTime = false },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        tempCalendar.set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                        tempCalendar.set(Calendar.MINUTE, timePickerState.minute)
-                        showTime = false
-                        onPicked(
-                            ReminderOffset(
-                                hourOfDay = timePickerState.hour,
-                                minute = timePickerState.minute
-                            )
+                TextButton(onClick = {
+                    pickedCalendar.set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                    pickedCalendar.set(Calendar.MINUTE, timePickerState.minute)
+                    pickedCalendar.set(Calendar.SECOND, 0)
+                    pickedCalendar.set(Calendar.MILLISECOND, 0)
+                    showTime = false
+
+                    // Calculate seconds from now to picked time
+                    val now = Calendar.getInstance()
+                    val diffSeconds = ((pickedCalendar.timeInMillis - now.timeInMillis) / 1000).coerceAtLeast(0)
+
+                    onPicked(
+                        ReminderOffset(
+                            secondsFromNow = diffSeconds
                         )
-                    }
-                ) { Text(stringResource(R.string.ok)) }
+                    )
+                }) { Text(stringResource(R.string.ok)) }
             },
             dismissButton = {
                 TextButton(onClick = {

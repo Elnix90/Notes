@@ -18,7 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import org.elnix.notes.R
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.helpers.OffsetItem
 import kotlin.math.abs
@@ -89,7 +91,7 @@ fun TimeBubble(
             text = displayText,
             color = color.copy(alpha = if (enabled) 1f else 0.4f)
         )
-        if (onDelete != null && reminder != null) {
+        if (onDelete != null) {
             Spacer(Modifier.width(8.dp))
             IconButton(
                 onClick = onDelete,
@@ -97,7 +99,7 @@ fun TimeBubble(
             ) {
                 Icon(
                     imageVector = Icons.Default.Cancel,
-                    contentDescription = "Delete Reminder",
+                    contentDescription = stringResource(R.string.delete),
                     tint = color.copy(alpha = if (enabled) 1f else 0.4f)
                 )
             }

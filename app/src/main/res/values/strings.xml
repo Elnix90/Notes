@@ -229,4 +229,6 @@
     <string name="default_reminders">Default Reminders</string>
     <string name="customize_offsets">Customize Offsets</string>
     <string name="offsets">Offsets</string>
+    <string name="this_feature_needs_notification">This feature need notifications permission, click below to authorize it</string>
+    <string name="default_offsets">Default Offsets</string>
 </resources>

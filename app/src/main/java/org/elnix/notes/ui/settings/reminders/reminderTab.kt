@@ -1,6 +1,9 @@
 package org.elnix.notes.ui.settings.reminders
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -11,8 +14,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,12 +28,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
+import org.elnix.notes.data.settings.stores.OffsetsSettingsStore.getDefaultOffsetsFlow
+import org.elnix.notes.data.settings.stores.OffsetsSettingsStore.setDefaultOffsets
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore.getDefaultRemindersFlow
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore.setDefaultReminders
@@ -35,6 +47,7 @@ import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.reminders.OffsetPickerDialog
 import org.elnix.notes.ui.helpers.reminders.ReminderPicker
 import org.elnix.notes.ui.helpers.reminders.TimeBubble
+import org.elnix.notes.ui.security.AskNotificationButton
 import org.elnix.notes.ui.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 
@@ -49,8 +62,37 @@ fun RemindersTab(
     val defaultReminders by getDefaultRemindersFlow(ctx)
         .collectAsState(initial = emptyList())
 
+    val defaultOffsets by getDefaultOffsetsFlow(ctx)
+        .collectAsState(initial = emptyList())
+
     val allOffsets by OffsetsSettingsStore.getOffsets(ctx).collectAsState(initial = emptyList())
     var showOffsetPicker by remember { mutableStateOf(false) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var hasPermission by remember { mutableStateOf(false) }
+
+    fun checkPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED
+        } else {
+            NotificationManagerCompat.from(context).areNotificationsEnabled()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        hasPermission = checkPermission(ctx)
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                hasPermission = checkPermission(ctx)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     SettingsLazyHeader(
         title = stringResource(R.string.notification_reminders),
@@ -63,57 +105,83 @@ fun RemindersTab(
         }
     ) {
 
-        item { TextDivider(stringResource(R.string.default_reminders)) }
+        if (hasPermission){
+            item { TextDivider(stringResource(R.string.default_reminders)) }
 
-        item {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                defaultReminders.sortedBy { it.toCalendar().timeInMillis }
-                    .forEachIndexed { index, reminder ->
-                        TimeBubble(
-                            reminder = ReminderEntity(
-                                noteId = -1,
-                                dueDateTime = reminder.toCalendar(),
-                                enabled = true
-                            ),
-                            onDelete = {
-                                val newList =
-                                    defaultReminders.toMutableList().apply { removeAt(index) }
-                                scope.launch { setDefaultReminders(ctx, newList) }
-                            }
-                        )
-                    }
-            }
-        }
-        item {
-            ReminderPicker(activity) { picked ->
-                val newList = defaultReminders + picked
-                scope.launch { setDefaultReminders(ctx, newList) }
-            }
-        }
-
-
-        item { TextDivider(stringResource(R.string.offsets)) }
-
-        item {
-            Button(
-                onClick = { showOffsetPicker = true },
-                colors = AppObjectsColors.buttonColors()
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(15.dp),
-                    verticalAlignment = Alignment.CenterVertically
+            item {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Timer,
-                        contentDescription = stringResource(R.string.offsets)
-                    )
-                    Text(stringResource(R.string.customize_offsets))
+                    defaultReminders.sortedBy { it.toCalendar().timeInMillis }
+                        .forEachIndexed { index, reminder ->
+                            TimeBubble(
+                                reminder = ReminderEntity(
+                                    noteId = -1,
+                                    dueDateTime = reminder.toCalendar(),
+                                    enabled = true
+                                ),
+                                onDelete = {
+                                    val newList =
+                                        defaultReminders.toMutableList().apply { removeAt(index) }
+                                    scope.launch { setDefaultReminders(ctx, newList) }
+                                }
+                            )
+                        }
+
+                    ReminderPicker(activity) { picked ->
+                        val newList = defaultReminders + picked
+                        scope.launch { setDefaultReminders(ctx, newList) }
+                    }
                 }
             }
+
+            item { TextDivider(stringResource(R.string.default_offsets)) }
+
+            item {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    defaultOffsets.sortedBy { it.offset }
+                        .forEachIndexed { index, offset ->
+                            TimeBubble(
+                                offsetObject = offset,
+                                onDelete = {
+                                    val newList =
+                                        defaultOffsets.toMutableList().apply { removeAt(index) }
+                                    scope.launch { setDefaultOffsets(ctx, newList) }
+                                }
+                            )
+                        }
+
+                    Button(
+                        onClick = { showOffsetPicker = true },
+                        colors = AppObjectsColors.buttonColors()
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(15.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Timer,
+                                contentDescription = stringResource(R.string.offsets)
+                            )
+                            Text(stringResource(R.string.customize_offsets))
+                        }
+                    }
+                }
+            }
+        } else {
+            item {
+                Text(
+                    text = stringResource(R.string.this_feature_needs_notification),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+            item { AskNotificationButton(activity) }
         }
     }
     if (showOffsetPicker) {
@@ -122,7 +190,11 @@ fun RemindersTab(
             activity = activity,
             showDatePicker = false,
             onDismiss = { showOffsetPicker = false }
-        ) { showOffsetPicker = false }
+        ) { picked ->
+            val newList = defaultOffsets + picked.toOffsetItem()
+            scope.launch{ setDefaultOffsets(ctx, newList) }
+            showOffsetPicker = false
+        }
     }
 }
 

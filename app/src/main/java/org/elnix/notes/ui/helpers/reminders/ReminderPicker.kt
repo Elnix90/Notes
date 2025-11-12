@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,19 +55,25 @@ fun ReminderPicker(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    var tempCalendar by remember {
-        mutableStateOf(Calendar.getInstance().apply {
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            add(Calendar.HOUR_OF_DAY, 1)
-        })
+
+    var tempCalendarMillis by remember {
+        mutableLongStateOf(
+            Calendar.getInstance().apply {
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+                add(Calendar.HOUR_OF_DAY, 1)
+            }.timeInMillis
+        )
     }
 
     if (!hasPermission) {
         AskNotificationButton(activity)
     } else {
-        StyledReminderDialogs(tempCalendar = tempCalendar, onPicked = onPicked)
+        StyledReminderDialogs(
+            initialMillis = tempCalendarMillis,
+            onPicked = onPicked
+        )
     }
 }
 

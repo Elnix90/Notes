@@ -102,29 +102,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.update(reminder) }
     fun deleteReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.delete(reminder) }
-
-
-
-//    // --- Tags ---
-//    // Helper: resolve tags by ID
-//    fun resolveTags(note: NoteEntity, allTags: List<TagItem>): List<TagItem> {
-//        return allTags.filter { note.tagIds.contains(it.id) }
-//    }
-//
-//    // Add a tag to note
-//    fun addTagToNote(note: NoteEntity, tag: TagItem) = viewModelScope.launch {
-//        val updated = note.copy(tagIds = note.tagIds + tag.id)
-//        noteRepo.upsert(updated)
-//    }
-//
-//    // Remove tag from note
-//    fun deleteTagFromNote(note: NoteEntity, tag: TagItem) = viewModelScope.launch {
-//        val updated = note.copy(tagIds = note.tagIds.filterNot { it == tag.id })
-//        noteRepo.upsert(updated)
-//    }
-
-
-
+    
 
     //  Deletes all notes that have both a blank title and description.
     suspend fun deleteAllEmptyNotes() {

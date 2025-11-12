@@ -66,7 +66,7 @@ object ActionSettingsStore {
     }
 
     // --- Export all current settings as a map
-    suspend fun exportAll(ctx: Context): Map<String, String> {
+    suspend fun getAll(ctx: Context): Map<String, String> {
         val prefs = ctx.dataStore.data.first()
         return mapOf(
             "swipe_left_action" to (prefs[SWIPE_LEFT_ACTION] ?: NotesActions.DELETE.name),

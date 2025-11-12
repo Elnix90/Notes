@@ -138,8 +138,6 @@ fun SettingsListScreen(
             SettingsItem(
                 title = stringResource(R.string.backup_restore),
                 icon = Icons.Default.Backup,
-                enabled = false,
-                comingSoon = true
             ) { navController.navigate(Routes.Settings.BACKUP) }
         }
 

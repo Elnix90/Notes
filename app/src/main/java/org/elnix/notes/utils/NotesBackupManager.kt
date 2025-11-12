@@ -3,19 +3,26 @@ package org.elnix.notes.utils
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.elnix.notes.data.AppDatabase
+import org.elnix.notes.data.ChecklistItem
+import org.elnix.notes.data.NoteEntity
+import org.elnix.notes.data.ReminderEntity
+import org.elnix.notes.data.helpers.NoteType
 import org.json.JSONArray
 import org.json.JSONObject
-import org.elnix.notes.data.*
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 object NotesBackupManager {
 
     private const val TAG = "NotesBackupManager"
 
+    // ---------- EXPORT ----------
     suspend fun exportNotes(ctx: Context, outputStream: OutputStream) {
         withContext(Dispatchers.IO) {
             try {
@@ -33,8 +40,24 @@ object NotesBackupManager {
                                 put("id", note.id)
                                 put("title", note.title)
                                 put("desc", note.desc)
-                                put("createdAt", note.createdAt.time)
+                                put("checklist", JSONArray().apply {
+                                    note.checklist.forEach { item ->
+                                        put(JSONObject().apply {
+                                            put("text", item.text)
+                                            put("checked", item.checked)
+                                        })
+                                    }
+                                })
+                                put("tagIds", JSONArray(note.tagIds))
+                                put("bgColor", note.bgColor?.value ?: JSONObject.NULL)
+                                put("txtColor", note.txtColor?.value ?: JSONObject.NULL)
+                                put("autoTextColor", note.autoTextColor)
                                 put("isCompleted", note.isCompleted)
+                                put("type", note.type.name)
+                                put("dueDateTime", note.dueDateTime?.timeInMillis ?: JSONObject.NULL)
+                                put("createdAt", note.createdAt.time)
+                                put("lastEdit", note.lastEdit)
+                                put("orderIndex", note.orderIndex)
                             })
                         }
                     })
@@ -54,17 +77,18 @@ object NotesBackupManager {
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(ctx, "Notes exported successfully", Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, "Export successful, ${notes.size} notes and ${reminders.size} reminders exported.")
+                    Log.d(TAG, "Export successful: ${notes.size} notes, ${reminders.size} reminders.")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error exporting notes", e)
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(ctx, "Failed to export notes: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, "Export failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
 
+    // ---------- IMPORT ----------
     suspend fun importNotes(ctx: Context, inputStream: InputStream) {
         withContext(Dispatchers.IO) {
             try {
@@ -85,12 +109,44 @@ object NotesBackupManager {
                     val oldId = n.optLong("id", -1)
                     if (oldId == -1L) continue
 
+                    val checklist = n.optJSONArray("checklist")?.let { arr ->
+                        (0 until arr.length()).map { j ->
+                            val item = arr.getJSONObject(j)
+                            ChecklistItem(
+                                text = item.optString("text", ""),
+                                checked = item.optBoolean("checked", false)
+                            )
+                        }
+                    } ?: emptyList()
+
+                    val tagIds = n.optJSONArray("tagIds")?.let { arr ->
+                        (0 until arr.length()).map { arr.optLong(it) }
+                    } ?: emptyList()
+
+                    val bgColor = n.optLong("bgColor", Long.MIN_VALUE)
+                        .takeIf { it != Long.MIN_VALUE }?.let { Color(it) }
+
+                    val txtColor = n.optLong("txtColor", Long.MIN_VALUE)
+                        .takeIf { it != Long.MIN_VALUE }?.let { Color(it) }
+
                     val note = NoteEntity(
                         title = n.optString("title", ""),
                         desc = n.optString("desc", ""),
+                        checklist = checklist,
+                        tagIds = tagIds,
+                        bgColor = bgColor,
+                        txtColor = txtColor,
+                        autoTextColor = n.optBoolean("autoTextColor", true),
+                        isCompleted = n.optBoolean("isCompleted", false),
+                        type = NoteType.valueOf(n.optString("type", NoteType.TEXT.name)),
+                        dueDateTime = n.optLong("dueDateTime", -1).takeIf { it > 0 }?.let {
+                            Calendar.getInstance().apply { timeInMillis = it }
+                        },
                         createdAt = Date(n.optLong("createdAt", System.currentTimeMillis())),
-                        isCompleted = n.optBoolean("isCompleted", false)
+                        lastEdit = n.optLong("lastEdit", System.currentTimeMillis()),
+                        orderIndex = n.optInt("orderIndex", 0)
                     )
+
                     val newId = noteDao.upsert(note)
                     oldToNewNoteIds[oldId] = newId
                 }
@@ -102,9 +158,10 @@ object NotesBackupManager {
                     val newNoteId = oldToNewNoteIds[oldNoteId] ?: continue
 
                     val rem = ReminderEntity(
-                        id = 0,
                         noteId = newNoteId,
-                        dueDateTime = Calendar.getInstance().apply { timeInMillis = r.optLong("dueDateTime", System.currentTimeMillis()) },
+                        dueDateTime = Calendar.getInstance().apply {
+                            timeInMillis = r.optLong("dueDateTime", System.currentTimeMillis())
+                        },
                         enabled = r.optBoolean("enabled", true)
                     )
                     reminderDao.insert(rem)
@@ -117,7 +174,7 @@ object NotesBackupManager {
             } catch (e: Exception) {
                 Log.e(TAG, "Error importing notes", e)
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(ctx, "Failed to import notes: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, "Import failed: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
                 }
             }
         }

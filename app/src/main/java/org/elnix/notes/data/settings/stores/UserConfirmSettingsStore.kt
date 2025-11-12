@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.settings.dataStore
 
@@ -45,4 +46,24 @@ object UserConfirmSettingsStore {
             prefs.remove(SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE)
         }
     }
+
+    suspend fun getAll(ctx: Context): Map<String, Boolean> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[SHOW_USER_VALIDATION_DELETE_NOTE]?.let { put(SHOW_USER_VALIDATION_DELETE_NOTE.name, it) }
+            prefs[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE]?.let { put(SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE.name, it) }
+            prefs[SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE]?.let { put(SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE.name, it) }
+            prefs[SHOW_ENABLE_DEBUG]?.let { put(SHOW_ENABLE_DEBUG.name, it) }
+        }
+    }
+
+    suspend fun setAll(ctx: Context, data: Map<String, Boolean>) {
+        ctx.dataStore.edit { prefs ->
+            data[SHOW_USER_VALIDATION_DELETE_NOTE.name]?.let { prefs[SHOW_USER_VALIDATION_DELETE_NOTE] = it }
+            data[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE.name]?.let { prefs[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE] = it }
+            data[SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE.name]?.let { prefs[SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE] = it }
+            data[SHOW_ENABLE_DEBUG.name]?.let { prefs[SHOW_ENABLE_DEBUG] = it }
+        }
+    }
+
 }

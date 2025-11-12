@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.helpers.NoteViewType
 import org.elnix.notes.data.settings.dataStore
@@ -100,4 +101,32 @@ object UiSettingsStore {
         }
     }
 
+    suspend fun getAll(ctx: Context): Map<String, Boolean> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[SHOW_NOTES_NUMBER]?.let { put(SHOW_NOTES_NUMBER.name, it) }
+            prefs[SHOW_DELETE_BUTTON]?.let { put(SHOW_DELETE_BUTTON.name, it) }
+            prefs[FULLSCREEN]?.let { put(FULLSCREEN.name, it) }
+            prefs[SHOW_NOTE_TYPE_ICON]?.let { put(SHOW_NOTE_TYPE_ICON.name, it) }
+            prefs[SHOW_COLOR_DROPDOWN_EDITORS]?.let { put(SHOW_COLOR_DROPDOWN_EDITORS.name, it) }
+            prefs[SHOW_REMINDER_DROPDOWN_EDITORS]?.let { put(SHOW_REMINDER_DROPDOWN_EDITORS.name, it) }
+            prefs[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS]?.let { put(SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS.name, it) }
+            prefs[SHOW_TAGS_DROPDOWN_EDITORS]?.let { put(SHOW_TAGS_DROPDOWN_EDITORS.name, it) }
+            prefs[SHOW_TAGS_IN_NOTES]?.let { put(SHOW_TAGS_IN_NOTES.name, it) }
+        }
+    }
+
+    suspend fun setAll(ctx: Context, data: Map<String, Boolean>) {
+        ctx.dataStore.edit { prefs ->
+            data[SHOW_NOTES_NUMBER.name]?.let { prefs[SHOW_NOTES_NUMBER] = it }
+            data[SHOW_DELETE_BUTTON.name]?.let { prefs[SHOW_DELETE_BUTTON] = it }
+            data[FULLSCREEN.name]?.let { prefs[FULLSCREEN] = it }
+            data[SHOW_NOTE_TYPE_ICON.name]?.let { prefs[SHOW_NOTE_TYPE_ICON] = it }
+            data[SHOW_COLOR_DROPDOWN_EDITORS.name]?.let { prefs[SHOW_COLOR_DROPDOWN_EDITORS] = it }
+            data[SHOW_REMINDER_DROPDOWN_EDITORS.name]?.let { prefs[SHOW_REMINDER_DROPDOWN_EDITORS] = it }
+            data[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS.name]?.let { prefs[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS] = it }
+            data[SHOW_TAGS_DROPDOWN_EDITORS.name]?.let { prefs[SHOW_TAGS_DROPDOWN_EDITORS] = it }
+            data[SHOW_TAGS_IN_NOTES.name]?.let { prefs[SHOW_TAGS_IN_NOTES] = it }
+        }
+    }
 }

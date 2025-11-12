@@ -15,6 +15,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,10 +41,17 @@ fun TimeBubble(
         "Either reminder or offsetObject must be provided"
     }
 
+    val currentTime = remember { mutableLongStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(1000)
+            currentTime.longValue = System.currentTimeMillis()
+        }
+    }
+
     val (triple, color) = when {
         reminder != null -> {
-            val now = System.currentTimeMillis()
-            val diffMillis = reminder.dueDateTime.timeInMillis - now
+            val diffMillis = reminder.dueDateTime.timeInMillis - currentTime.longValue
             val isPast = diffMillis < 0
             val absDiffSec = (abs(diffMillis) / 1000).toInt()
             val (text, ratio) = getTextAndRatioFromOffset(absDiffSec)
@@ -53,28 +63,25 @@ fun TimeBubble(
         offsetObject != null -> {
             val absDiffSec = abs(offsetObject.offset)
             val (text, ratio) = getTextAndRatioFromOffset(absDiffSec)
-            val display = text
             val color = Color.hsv(120f * ratio, 0.9f, 0.9f)
-            Triple(display, ratio, false) to color
+            Triple(text, ratio, false) to color
         }
         else -> error("Invalid input")
     }
 
-    val displayText = triple.component1()
-
-    val bubbleModifier = Modifier
-        .padding(4.dp)
-        .then(
-            if (onClick != null || onLongClick != null) {
-                Modifier.combinedClickable(
-                    onClick = { onClick?.invoke() },
-                    onLongClick = onLongClick
-                )
-            } else Modifier
-        )
+    val displayText = triple.first
 
     Row(
-        modifier = bubbleModifier
+        modifier = Modifier
+            .padding(4.dp)
+            .then(
+                if (onClick != null || onLongClick != null) {
+                    Modifier.combinedClickable(
+                        onClick = { onClick?.invoke() },
+                        onLongClick = onLongClick
+                    )
+                } else Modifier
+            )
             .border(
                 width = 1.dp,
                 color = color.copy(alpha = if (enabled) 1f else 0.3f),

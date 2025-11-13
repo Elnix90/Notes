@@ -80,6 +80,7 @@ fun SettingsListScreen(
     val ctx = LocalContext.current
 
     val isDebugModeEnabled by DebugSettingsStore.getDebugMode(ctx).collectAsState(initial = false)
+    val forceAppLanguageSelector by DebugSettingsStore.getForceAppLanguageSelector(ctx).collectAsState(initial = false)
 
     var timesClickedOnVersion by remember { mutableIntStateOf(0) }
     val showUserConfirmEnableDebug by UserConfirmSettingsStore.getShowEnableDebug(ctx)
@@ -147,7 +148,7 @@ fun SettingsListScreen(
                 title = stringResource(R.string.settings_language_title),
                 icon = Icons.Default.Language,
                 onClick = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !forceAppLanguageSelector) {
                         openSystemLanguageSettings(ctx)
                     } else {
                         navController.navigate(Routes.Settings.LANGUAGE)

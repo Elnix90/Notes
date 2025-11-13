@@ -71,17 +71,17 @@ fun DebugTab(navController: NavController, onBack: (() -> Unit)) {
 
         item {
             SettingsItem(
-                title = "Other",
-                icon = Icons.Default.Build,
-                onClick = { navController.navigate(Routes.Settings.DebugSub.OTHER) }
+                title = "User Confirm",
+                icon = Icons.Default.VerifiedUser,
+                onClick = { navController.navigate(Routes.Settings.DebugSub.USER_CONFIRM) }
             )
         }
 
         item {
             SettingsItem(
-                title = "User Confirm",
-                icon = Icons.Default.VerifiedUser,
-                onClick = { navController.navigate(Routes.Settings.DebugSub.USER_CONFIRM) }
+                title = "Other",
+                icon = Icons.Default.Build,
+                onClick = { navController.navigate(Routes.Settings.DebugSub.OTHER) }
             )
         }
     }

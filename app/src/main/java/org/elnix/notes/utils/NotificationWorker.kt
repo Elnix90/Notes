@@ -14,7 +14,7 @@ import org.elnix.notes.MainActivity
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.settings.stores.NotificationActionType
-import org.elnix.notes.data.settings.stores.NotificationActionsStore
+import org.elnix.notes.data.settings.stores.NotificationsSettingsStore
 import kotlin.random.Random
 
 class NotificationWorker(
@@ -46,7 +46,7 @@ class NotificationWorker(
             .setAutoCancel(true)
 
         // Load enabled notification actions from the store
-        val actions = NotificationActionsStore.getSettingsFlow(applicationContext).first()
+        val actions = NotificationsSettingsStore.getSettingsFlow(applicationContext).first()
             .filter { it.enabled }
 
         actions.forEach { setting ->
@@ -62,15 +62,18 @@ class NotificationWorker(
 
             val pendingIntent = PendingIntent.getBroadcast(
                 applicationContext,
-                setting.actionType.name.hashCode() + reminderId.toInt(), // unique per reminder + action
+                setting.actionType.ordinal + reminderId.hashCode(),
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            builder.addAction(0, setting.actionType.name.replace("_", " "), pendingIntent)
+            builder.addAction(
+                android.R.drawable.ic_menu_send,
+                setting.actionType.name.replace("_", " "),
+                pendingIntent
+            )
         }
 
-        // inside NotificationWorker#doWork, before notify(...)
         val openIntent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             // This will be read by MainActivity to navigate

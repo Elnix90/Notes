@@ -17,7 +17,15 @@ data class NotificationActionSetting(
     val snoozeMinutes: Int = 10 // default snooze duration
 )
 
-object NotificationActionsStore {
+data class NotificationsBackup(
+    val markCompletedEnabled: Boolean,
+    val snoozeEnabled: Boolean,
+    val deleteEnabled: Boolean,
+    val snoozeDuration: Int
+)
+
+
+object NotificationsSettingsStore {
 
     private val MARK_COMPLETED_ENABLED = booleanPreferencesKey("mark_completed_enabled")
     private val SNOOZE_ENABLED = booleanPreferencesKey("snooze_enabled")
@@ -73,24 +81,23 @@ object NotificationActionsStore {
         }
     }
 
-    // --- Export all current settings as a map (Boolean + Int)
-    suspend fun getAll(ctx: Context): Map<String, Any> {
+    suspend fun getAll(ctx: Context): NotificationsBackup {
         val prefs = ctx.dataStore.data.first()
-        return mapOf(
-            "mark_completed_enabled" to (prefs[MARK_COMPLETED_ENABLED] ?: true),
-            "snooze_enabled" to (prefs[SNOOZE_ENABLED] ?: true),
-            "delete_enabled" to (prefs[DELETE_ENABLED] ?: true),
-            "snooze_duration" to (prefs[SNOOZE_DURATION] ?: 10)
+        return NotificationsBackup(
+            markCompletedEnabled = prefs[MARK_COMPLETED_ENABLED] ?: true,
+            snoozeEnabled = prefs[SNOOZE_ENABLED] ?: true,
+            deleteEnabled = prefs[DELETE_ENABLED] ?: true,
+            snoozeDuration = prefs[SNOOZE_DURATION] ?: 10
         )
     }
 
-    // --- Apply all settings from a backup map
-    suspend fun setAll(ctx: Context, backup: Map<String, Any>) {
+
+    suspend fun setAll(ctx: Context, backup: NotificationsBackup) {
         ctx.dataStore.edit { prefs ->
-            backup["mark_completed_enabled"]?.let { prefs[MARK_COMPLETED_ENABLED] = it as Boolean }
-            backup["snooze_enabled"]?.let { prefs[SNOOZE_ENABLED] = it as Boolean }
-            backup["delete_enabled"]?.let { prefs[DELETE_ENABLED] = it as Boolean }
-            backup["snooze_duration"]?.let { prefs[SNOOZE_DURATION] = it as Int }
+            prefs[MARK_COMPLETED_ENABLED] = backup.markCompletedEnabled
+            prefs[SNOOZE_ENABLED] = backup.snoozeEnabled
+            prefs[DELETE_ENABLED] = backup.deleteEnabled
+            prefs[SNOOZE_DURATION] = backup.snoozeDuration
         }
     }
 }

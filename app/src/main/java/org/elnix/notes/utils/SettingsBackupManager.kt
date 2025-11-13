@@ -11,6 +11,8 @@ import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.data.settings.stores.DebugSettingsStore
 import org.elnix.notes.data.settings.stores.LanguageSettingsStore
 import org.elnix.notes.data.settings.stores.LockSettingsStore
+import org.elnix.notes.data.settings.stores.NotificationsBackup
+import org.elnix.notes.data.settings.stores.NotificationsSettingsStore
 import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
 import org.elnix.notes.data.settings.stores.PluginsSettingsStore
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
@@ -28,6 +30,14 @@ object SettingsBackupManager {
 
     suspend fun exportSettings(ctx: Context, uri: Uri) {
         try {
+            val notif = NotificationsSettingsStore.getAll(ctx)
+            val notifJson = JSONObject().apply {
+                put("mark_completed_enabled", notif.markCompletedEnabled)
+                put("snooze_enabled", notif.snoozeEnabled)
+                put("delete_enabled", notif.deleteEnabled)
+                put("snooze_duration", notif.snoozeDuration)
+            }
+
             val json = JSONObject().apply {
                 put("actions", mapStringToJson(ActionSettingsStore.getAll(ctx)))
                 put("color_mode", mapStringToJson(ColorModesSettingsStore.getAll(ctx)))
@@ -35,6 +45,7 @@ object SettingsBackupManager {
                 put("debug", mapToJson(DebugSettingsStore.getAll(ctx)))
                 put("language", mapStringToJson(LanguageSettingsStore.getAll(ctx)))
                 put("lock", mapStringToJson(LockSettingsStore.getAll(ctx)))
+                put("notifications", notifJson)
                 put("offsets", mapStringToJson(OffsetsSettingsStore.getAll(ctx)))
                 put("plugins", mapToJson(PluginsSettingsStore.getAll(ctx)))
                 put("reminders", mapStringToJson(ReminderSettingsStore.getAll(ctx)))
@@ -81,6 +92,19 @@ object SettingsBackupManager {
                 obj.optJSONObject("debug")?.let { DebugSettingsStore.setAll(ctx, jsonToMap(it)) }
                 obj.optJSONObject("language")?.let { LanguageSettingsStore.setAll(ctx, jsonToMapString(it)) }
                 obj.optJSONObject("lock")?.let { LockSettingsStore.setAll(ctx, jsonToMapString(it)) }
+                obj.optJSONObject("notifications")?.let { notifJson ->
+                    val notifBackup = NotificationsBackup(
+                        markCompletedEnabled = notifJson.optBoolean(
+                            "mark_completed_enabled",
+                            true
+                        ),
+                        snoozeEnabled = notifJson.optBoolean("snooze_enabled", true),
+                        deleteEnabled = notifJson.optBoolean("delete_enabled", true),
+                        snoozeDuration = notifJson.optInt("snooze_duration", 10)
+                    )
+                    NotificationsSettingsStore.setAll(ctx, notifBackup)
+                }
+
                 obj.optJSONObject("offsets")?.let { OffsetsSettingsStore.setAll(ctx, jsonToMapString(it)) }
                 obj.optJSONObject("plugins")?.let { PluginsSettingsStore.setAll(ctx, jsonToMap(it)) }
                 obj.optJSONObject("reminders")?.let { ReminderSettingsStore.setAll(ctx, jsonToMapString(it)) }

@@ -28,7 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.settings.stores.NotificationActionType
-import org.elnix.notes.data.settings.stores.NotificationActionsStore
+import org.elnix.notes.data.settings.stores.NotificationsSettingsStore
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.ui.settings.SettingsLazyHeader
 
@@ -38,7 +38,7 @@ fun NotificationsCustomisationTab(
     scope: CoroutineScope,
     onBack: (() -> Unit)
 ) {
-    val settings by NotificationActionsStore.getSettingsFlow(ctx).collectAsState(initial = emptyList())
+    val settings by NotificationsSettingsStore.getSettingsFlow(ctx).collectAsState(initial = emptyList())
 
     SettingsLazyHeader(
         title = stringResource(R.string.notification_reminders),
@@ -75,12 +75,12 @@ fun NotificationsCustomisationTab(
                             Switch(
                                 checked = action.enabled,
                                 onCheckedChange = { enabled ->
-                                    scope.launch { NotificationActionsStore.setEnabled(ctx, action.actionType, enabled) }
+                                    scope.launch { NotificationsSettingsStore.setEnabled(ctx, action.actionType, enabled) }
                                 }
                             )
                             Button(onClick = {
                                 snoozeText.toIntOrNull()?.let { minutes ->
-                                    scope.launch { NotificationActionsStore.setSnoozeDuration(ctx, minutes) }
+                                    scope.launch { NotificationsSettingsStore.setSnoozeDuration(ctx, minutes) }
                                 }
                             }) {
                                 Text("Save")
@@ -91,7 +91,7 @@ fun NotificationsCustomisationTab(
                         Switch(
                             checked = action.enabled,
                             onCheckedChange = { enabled ->
-                                scope.launch { NotificationActionsStore.setEnabled(ctx, action.actionType, enabled) }
+                                scope.launch { NotificationsSettingsStore.setEnabled(ctx, action.actionType, enabled) }
                             }
                         )
                     }

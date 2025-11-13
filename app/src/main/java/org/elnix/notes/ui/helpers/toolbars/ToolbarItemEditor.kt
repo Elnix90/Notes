@@ -2,6 +2,7 @@ package org.elnix.notes.ui.helpers.toolbars
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -218,7 +219,7 @@ fun ToolbarItemsEditor(
                                         },
                                     )
                                     Spacer(Modifier.weight(1f))
-                                    when (action ) {
+                                    when (action) {
                                         GlobalNotesActions.TAGS -> TagBubble(
                                             TagItem(
                                                 name = stringResource(R.string.tags),
@@ -264,11 +265,19 @@ fun ToolbarItemsEditor(
 
                                             IconButton(
                                                 onClick = {
-                                                    scope.launch {
-                                                        ToolbarItemsSettingsStore.setToolbarItems(ctx, toolbar, toolbarItems)
+                                                    try{
+                                                        scope.launch {
+                                                            ToolbarItemsSettingsStore.setToolbarItems(
+                                                                ctx,
+                                                                toolbar,
+                                                                toolbarItems
+                                                            )
+                                                        }
+                                                        editAction = item
+                                                        showColorPickerDialog = true
+                                                    } catch (e: Exception) {
+                                                        Log.e("Error","got $e")
                                                     }
-                                                    editAction = item
-                                                    showColorPickerDialog = true
                                                 },
                                                 colors = AppObjectsColors.iconButtonColors(),
                                                 shape = CircleShape
@@ -300,7 +309,15 @@ fun ToolbarItemsEditor(
     }
 
     if (showColorPickerDialog && editAction != null) {
-        val actionToEdit = editAction!!
+        Log.e("Got here","got here")
+        val actionToEdit = try {
+            editAction!!
+        } catch (e: Exception) {
+            Log.e("Error","got $e")
+            ToolbarItemState(GlobalNotesActions.SETTINGS)
+        } finally {
+            ToolbarItemState(GlobalNotesActions.SETTINGS)
+        }
         ToolbarItemColorSelectorDialog(
             item = actionToEdit,
             onDismiss = { showColorPickerDialog = false }

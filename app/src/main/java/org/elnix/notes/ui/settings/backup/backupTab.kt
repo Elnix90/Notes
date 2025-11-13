@@ -6,6 +6,7 @@ import androidx.compose.ui.res.stringResource
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.ExportImportRow
 import org.elnix.notes.ui.helpers.NotesExportImportRow
+import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.settings.SettingsLazyHeader
 
 @Composable
@@ -18,7 +19,9 @@ fun BackupTab(ctx: Context, onBack: (() -> Unit)) {
         resetText = null,
         onReset = null
     ) {
+        item { TextDivider(stringResource(R.string.notes_backup_restore)) }
         item { ExportImportRow() }
+        item { TextDivider(stringResource(R.string.settings_backup_restore)) }
         item { NotesExportImportRow(ctx) }
     }
 }

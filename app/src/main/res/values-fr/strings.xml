@@ -235,4 +235,6 @@
     <string name="left_button_action">Action du bouton de gauche</string>
     <string name="right_button_action">Action du bouton de droite</string>
     <string name="notifications">Notifications</string>
+    <string name="notes_backup_restore">Notes Sauvegarder / Restaurer</string>
+    <string name="settings_backup_restore">Paramètres Sauvegarder / Restaurer</string>
 </resources>

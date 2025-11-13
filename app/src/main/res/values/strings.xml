@@ -234,4 +234,6 @@
     <string name="left_button_action">Left Button Action</string>
     <string name="right_button_action">Right Button Action</string>
     <string name="notifications">Notifications</string>
+    <string name="notes_backup_restore">Notes backup / restore</string>
+    <string name="settings_backup_restore">Settings Backup / Restore</string>
 </resources>

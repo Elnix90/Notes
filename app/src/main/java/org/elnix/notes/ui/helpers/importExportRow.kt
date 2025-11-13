@@ -53,7 +53,7 @@ fun ExportImportRow() {
 
     Row(
         Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
             onClick = { exportLauncher.launch("notes_settings_backup.json") },

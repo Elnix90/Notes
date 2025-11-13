@@ -66,7 +66,7 @@ fun NotesExportImportRow(ctx: Context) {
 
     Row(
         Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(onClick = { exportLauncher.launch("notes_backup.json") }, colors = AppObjectsColors.buttonColors()) {
             Text(stringResource(R.string.export_notes))

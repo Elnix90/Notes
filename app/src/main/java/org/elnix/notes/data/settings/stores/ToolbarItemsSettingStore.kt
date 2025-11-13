@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.helpers.GlobalNotesActions
 import org.elnix.notes.data.helpers.ToolBars
@@ -80,4 +81,19 @@ object ToolbarItemsSettingsStore {
             prefs[key] = Gson().toJson(defaultToolbarItems(toolbar))
         }
     }
+
+    suspend fun getAll(ctx: Context): Map<String, String> {
+        val prefs = ctx.dataStore.data.first()
+        return prefs.asMap().mapKeys { it.key.name }.mapValues { it.value as String }
+    }
+
+    suspend fun setAll(ctx: Context, data: Map<String, String>) {
+        ctx.dataStore.edit { prefs ->
+            data.forEach { (key, value) ->
+                val prefKey = stringPreferencesKey(key)
+                prefs[prefKey] = value
+            }
+        }
+    }
+
 }

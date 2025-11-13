@@ -135,7 +135,7 @@
     <string name="delete">Suprimer</string>
     <string name="edit">Editer</string>
     <string name="complete">Compléter</string>
-    <string name="select">Select</string>
+    <string name="select">Selectioner</string>
     <string name="clear_search">Effacer la recherche</string>
     <string name="plugins">Plugins</string>
     <string name="connected_apps">Applications Connectées</string>
@@ -232,4 +232,7 @@
     <string name="offsets">Durées</string>
     <string name="this_feature_needs_notification">Cette fonctionnalité nécessite l\'autorisation d\'envoyer des notifications. Cliquez ci-dessous pour l\'autoriser.</string>
     <string name="default_offsets">Durées par défaut</string>
+    <string name="left_button_action">Action du bouton de gauche</string>
+    <string name="right_button_action">Action du bouton de droite</string>
+    <string name="notifications">Notifications</string>
 </resources>

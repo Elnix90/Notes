@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.helpers.ColorPickerMode
 import org.elnix.notes.data.settings.ColorCustomisationMode
@@ -47,6 +48,23 @@ object ColorModesSettingsStore {
             prefs.remove(COLOR_PICKER_MODE)
             prefs.remove(COLOR_CUSTOMISATION_MODE)
             prefs.remove(DEFAULT_THEME)
+        }
+    }
+
+    suspend fun getAll(ctx: Context): Map<String, String> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[COLOR_PICKER_MODE]?.let { put(COLOR_PICKER_MODE.name, it) }
+            prefs[COLOR_CUSTOMISATION_MODE]?.let { put(COLOR_CUSTOMISATION_MODE.name, it) }
+            prefs[DEFAULT_THEME]?.let { put(DEFAULT_THEME.name, it) }
+        }
+    }
+
+    suspend fun setAll(ctx: Context, data: Map<String, String>) {
+        ctx.dataStore.edit { prefs ->
+            data[COLOR_PICKER_MODE.name]?.let { prefs[COLOR_PICKER_MODE] = it }
+            data[COLOR_CUSTOMISATION_MODE.name]?.let { prefs[COLOR_CUSTOMISATION_MODE] = it }
+            data[DEFAULT_THEME.name]?.let { prefs[DEFAULT_THEME] = it }
         }
     }
 }

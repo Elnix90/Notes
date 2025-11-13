@@ -36,8 +36,8 @@ fun NotesList(
     isReorderMode: Boolean,
     topBarsHeight: Dp,
     bottomBarsHeight: Dp,
-    onNoteClick: (NoteEntity) -> Unit,
-    onNoteLongClick: (NoteEntity) -> Unit,
+    onNoteClick: ((NoteEntity) -> Unit)?,
+    onNoteLongClick: ((NoteEntity) -> Unit)?,
     onRightAction: (NoteEntity) -> Unit,
     onLeftAction: (NoteEntity) -> Unit,
     onDeleteButtonClick: (NoteEntity) -> Unit,
@@ -104,12 +104,18 @@ fun NotesList(
                     scale = scale,
                     elevation = elevation,
                     isDragging = isDragging,
-                    onNoteClick = { onNoteClick(note) },
-                    onNoteLongClick = { onNoteLongClick(note) },
+                    leftAction = actionSettings.leftButtonAction,
+                    rightAction = actionSettings.rightButtonAction,
+                    onNoteClick = if (onNoteClick != null ) {
+                        { onNoteClick(note) }
+                    } else null,
+                    onNoteLongClick = if (onNoteLongClick != null ) {
+                        { onNoteLongClick(note) }
+                    } else null,
                     onRightAction = { onRightAction(note) },
                     onLeftAction = { onLeftAction(note) },
-                    onButtonClick = { onDeleteButtonClick(note) },
-                    onTypeButtonClick = { onTypeButtonClick(note) },
+                    onRightButtonClick = { onDeleteButtonClick(note) },
+                    onLeftButtonClick = { onTypeButtonClick(note) },
                     actionSettings = actionSettings
                 )
             }

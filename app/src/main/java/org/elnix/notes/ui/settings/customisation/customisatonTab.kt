@@ -1,12 +1,16 @@
 package org.elnix.notes.ui.settings.customisation
 
 import android.content.Context
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Route
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -32,16 +36,13 @@ fun CustomisationTab(
     navController: NavController,
     onBack: (() -> Unit)
 ) {
-    val settings by ActionSettingsStore.getActionSettingsFlow(ctx).collectAsState(initial = NoteActionSettings())
-
-
-    val showDeleteButton by UiSettingsStore.getShowDeleteButton(ctx).collectAsState(initial = true)
-    val showNoteTypeIcon by UiSettingsStore.getShowNoteTypeIcon(ctx).collectAsState(initial = true)
-
-    val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx).collectAsState(initial = true)
-
-    val toolbarsSpacing by ToolbarsSettingsStore.getToolbarsSpacing(ctx).collectAsState(initial = 8)
-
+    val settings by ActionSettingsStore.getActionSettingsFlow(ctx)
+        .collectAsState(initial = NoteActionSettings())
+    val showTagsInNotes by UiSettingsStore.getShowTagsInNotes(ctx)
+        .collectAsState(initial = true)
+    val toolbarsSpacing by ToolbarsSettingsStore.getToolbarsSpacing(ctx)
+        .collectAsState(initial = 8)
+    val actionsEntries = NotesActions.entries.filter { it != NotesActions.NONE }
 
     SettingsLazyHeader(
         title = stringResource(R.string.customisation),
@@ -54,101 +55,25 @@ fun CustomisationTab(
             }
         }
     ) {
-
         item { TextDivider(stringResource(R.string.note_actions)) }
 
-        // --- Swipe Left ---
+        // Unified item for all six actions
         item {
-            ActionSelectorRow(
-                label = stringResource(R.string.swipe_left_action),
-                options = NotesActions.entries,
-                selected = settings.leftAction,
-                optionLabel = { noteActionName(ctx, it) }
-            ) {
-                scope.launch { ActionSettingsStore.setSwipeLeftAction(ctx, it) }
-            }
+            ActionsItems(
+                ctx = ctx,
+                scope = scope,
+                settings = settings,
+                actionsEntries = actionsEntries
+            )
         }
 
-        // --- Swipe Right ---
-        item {
-            ActionSelectorRow(
-                label = stringResource(R.string.swipe_right_action),
-                options = NotesActions.entries,
-                selected = settings.rightAction,
-                optionLabel = { noteActionName(ctx, it) }
-            ) {
-                scope.launch { ActionSettingsStore.setSwipeRightAction(ctx, it) }
-            }
-        }
-
-        // --- Click Action ---
-        item {
-            ActionSelectorRow(
-                label = stringResource(R.string.click_action),
-                options = NotesActions.entries,
-                selected = settings.clickAction,
-                optionLabel = { noteActionName(ctx, it) }
-            ) {
-                scope.launch { ActionSettingsStore.setClickAction(ctx, it) }
-            }
-        }
-
-        // --- Long Click Action ---
-        item {
-            ActionSelectorRow(
-                label = stringResource(R.string.long_click_action),
-                options = NotesActions.entries,
-                selected = settings.longClickAction,
-                optionLabel = { noteActionName(ctx, it) }
-            ) {
-                scope.launch { ActionSettingsStore.setLongClickAction(ctx, it) }
-            }
-        }
-
-        // --- Type Button action ---
-        item {
-            ActionSelectorRow(
-                label = stringResource(R.string.type_button_action),
-                options = NotesActions.entries,
-                selected = settings.typeButtonAction,
-                enabled = showNoteTypeIcon,
-                optionLabel = { noteActionName(ctx, it) }
-            ) {
-                scope.launch { ActionSettingsStore.setTypeButtonAction(ctx, it) }
-            }
-        }
-
-        item { TextDivider(stringResource(R.string.buttons_display)) }
-
-
-        item {
-            SwitchRow(
-                showNoteTypeIcon,
-                stringResource(R.string.show_note_type_icon),
-            ) {
-                scope.launch { UiSettingsStore.setShowNoteTypeIcon(ctx, it) }
-            }
-        }
-
-        item {
-            SwitchRow(
-                showDeleteButton,
-                stringResource(R.string.show_delete_button),
-            ) {
-                scope.launch { UiSettingsStore.setShowDeleteButton(ctx, it) }
-            }
-        }
-
-        // Tags Category
         item { TextDivider(stringResource(R.string.tags)) }
 
         item {
             SwitchRow(
                 showTagsInNotes,
                 stringResource(R.string.show_tags_in_notes),
-            ) {
-                scope.launch { UiSettingsStore.setShowTagsInNotes(ctx, it) }
-            }
+            ) { scope.launch { UiSettingsStore.setShowTagsInNotes(ctx, it) } }
         }
 
         item { TextDivider(stringResource(R.string.toolbars)) }
@@ -163,13 +88,10 @@ fun CustomisationTab(
         }
 
         item {
-            // Toolbars spacing
             SliderToolbarSetting(
-                label = { value ->
-                    "${stringResource(R.string.toolbars_spacing)}: $value px"
-                },
+                label = { v -> "${stringResource(R.string.toolbars_spacing)}: $v px" },
                 initialValue = toolbarsSpacing,
-                valueRange = 0f..100.toFloat(),
+                valueRange = 0f..100f,
                 steps = 99,
                 onReset = { scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, 8) } },
                 onValueChangeFinished = { v ->
@@ -177,6 +99,65 @@ fun CustomisationTab(
                 }
             )
         }
+    }
+}
 
+/** Creates a single composable item with all note action selectors. */
+@Composable
+private fun ActionsItems(
+    ctx: Context,
+    scope: CoroutineScope,
+    settings: NoteActionSettings,
+    actionsEntries: List<NotesActions>
+) {
+    val items = listOf(
+        Triple(R.string.swipe_left_action, settings.leftAction, "left"),
+        Triple(R.string.swipe_right_action, settings.rightAction, "right"),
+        Triple(R.string.click_action, settings.clickAction, "click"),
+        Triple(R.string.long_click_action, settings.longClickAction, "long"),
+        Triple(R.string.left_button_action, settings.leftButtonAction, "leftBtn"),
+        Triple(R.string.right_button_action, settings.rightButtonAction, "rightBtn")
+    )
+
+    items.forEach { (labelRes, selectedAction, key) ->
+        ActionSelectorRow(
+            label = stringResource(labelRes),
+            options = actionsEntries,
+            selected = selectedAction,
+            optionLabel = { noteActionName(ctx, it) },
+            onToggle = { enabled ->
+                scope.launch {
+                    setAction(ctx, key, if (enabled) defaultAction(key) else NotesActions.NONE)
+                }
+            },
+            toggled = selectedAction != NotesActions.NONE
+        ) { newAction ->
+            scope.launch { setAction(ctx, key, newAction) }
+        }
+        Spacer(Modifier.height(12.dp))
+    }
+}
+
+private suspend fun setAction(ctx: Context, key: String, action: NotesActions) {
+    when (key) {
+        "left" -> ActionSettingsStore.setSwipeLeftAction(ctx, action)
+        "right" -> ActionSettingsStore.setSwipeRightAction(ctx, action)
+        "click" -> ActionSettingsStore.setClickAction(ctx, action)
+        "long" -> ActionSettingsStore.setLongClickAction(ctx, action)
+        "leftBtn" -> ActionSettingsStore.setLeftButtonAction(ctx, action)
+        "rightBtn" -> ActionSettingsStore.setRightButtonAction(ctx, action)
+    }
+}
+
+private fun defaultAction(action: String): NotesActions {
+    val settings = NoteActionSettings()
+    return when (action) {
+        "left" -> settings.leftAction
+        "right" -> settings.rightAction
+        "click" -> settings.clickAction
+        "long" -> settings.longClickAction
+        "leftBtn" -> settings.leftButtonAction
+        "rightBtn" -> settings.rightButtonAction
+        else -> settings.leftAction
     }
 }

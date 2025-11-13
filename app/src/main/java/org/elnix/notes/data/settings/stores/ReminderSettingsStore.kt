@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.settings.dataStore
 import org.elnix.notes.utils.ReminderOffset
@@ -41,6 +42,19 @@ object ReminderSettingsStore {
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
             prefs.remove(DEFAULT_REMINDERS)
+        }
+    }
+
+    suspend fun getAll(ctx: Context): Map<String, String> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[DEFAULT_REMINDERS]?.let { put(DEFAULT_REMINDERS.name, it) }
+        }
+    }
+
+    suspend fun setAll(ctx: Context, data: Map<String, String>) {
+        ctx.dataStore.edit { prefs ->
+            data[DEFAULT_REMINDERS.name]?.let { prefs[DEFAULT_REMINDERS] = it }
         }
     }
 }

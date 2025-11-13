@@ -92,4 +92,18 @@ object TagsSettingsStore {
             prefs.remove(TAGS_KEY)
         }
     }
+
+    suspend fun getAll(ctx: Context): Map<String, String> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[TAGS_KEY]?.let { put(TAGS_KEY.name, it) }
+        }
+    }
+
+    suspend fun setAll(ctx: Context, data: Map<String, String>) {
+        ctx.dataStore.edit { prefs ->
+            data[TAGS_KEY.name]?.let { prefs[TAGS_KEY] = it }
+        }
+    }
+
 }

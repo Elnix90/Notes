@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
@@ -52,6 +53,10 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             val ctx = LocalContext.current
+
+            val noteId = intent?.getLongExtra("open_note_id", -1L) ?: -1L
+            val noteTypeStr = intent?.getStringExtra("open_note_type") ?: NoteType.TEXT.name
+            val noteType = NoteType.valueOf(noteTypeStr)
 
             val primary by ColorSettingsStore.getPrimary(ctx).collectAsState(initial = null)
             val onPrimary by ColorSettingsStore.getOnPrimary(ctx).collectAsState(initial = null)
@@ -104,7 +109,12 @@ class MainActivity : AppCompatActivity() {
                 customNoteTypeCheckList = customNoteTypeChecklist,
                 customNoteTypeDrawing = customNoteTypeDrawing
             ) {
-                MainApp(vm, this)
+                MainApp(
+                    vm = vm,
+                    activity = this,
+                    startNoteId = noteId.takeIf { it != -1L },
+                    startNoteType = noteType
+                )
             }
         }
     }

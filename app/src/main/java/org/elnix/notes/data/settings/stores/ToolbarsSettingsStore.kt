@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.elnix.notes.data.helpers.ToolBars
@@ -145,4 +146,19 @@ object ToolbarsSettingsStore {
             }
         }
     }
+    suspend fun getAll(ctx: Context): Map<String, String> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[TOOLBARS_KEY]?.let { put(TOOLBARS_KEY.name, it) }
+            prefs[TOOLBARS_SPACING]?.let { put(TOOLBARS_SPACING.name, it.toString()) }
+        }
+    }
+
+    suspend fun setAll(ctx: Context, data: Map<String, String>) {
+        ctx.dataStore.edit { prefs ->
+            data[TOOLBARS_KEY.name]?.let { prefs[TOOLBARS_KEY] = it }
+            data[TOOLBARS_SPACING.name]?.let { prefs[TOOLBARS_SPACING] = it.toIntOrNull() ?: 8 }
+        }
+    }
+
 }

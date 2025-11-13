@@ -40,6 +40,11 @@
                 android:authorities="org.elnix.notes.provider"
                 android:exported="true">
         </provider>
+        <receiver
+            android:name=".utils.NotificationActionReceiver"
+            android:exported="true"
+            android:enabled="true" />
+
     </application>
 
 </manifest>

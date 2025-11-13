@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.NotesActions
@@ -14,7 +15,10 @@ object ActionSettingsStore {
     private val SWIPE_RIGHT_ACTION = stringPreferencesKey("swipe_right_action")
     private val CLICK_ACTION = stringPreferencesKey("click_action")
     private val LONG_CLICK_ACTION = stringPreferencesKey("long_click_action")
-    private val TYPE_BUTTON_ACTION = stringPreferencesKey("type_button_action")
+    private val LEFT_BUTTON_ACTION = stringPreferencesKey("left_button_action")
+    private val RIGHT_BUTTON_ACTION = stringPreferencesKey("right_button_action")
+
+
 
     // --- Combined model
     fun getActionSettingsFlow(ctx: Context): Flow<NoteActionSettings> =
@@ -28,8 +32,10 @@ object ActionSettingsStore {
                     ?: NotesActions.COMPLETE,
                 longClickAction = prefs[LONG_CLICK_ACTION]?.let { NotesActions.valueOf(it) }
                     ?: NotesActions.SELECT,
-                typeButtonAction = prefs[TYPE_BUTTON_ACTION]?.let { NotesActions.valueOf(it) }
-                    ?: NotesActions.EDIT
+                rightButtonAction = prefs[RIGHT_BUTTON_ACTION]?.let { NotesActions.valueOf(it) }
+                    ?: NotesActions.DELETE,
+                leftButtonAction = prefs[LEFT_BUTTON_ACTION]?.let { NotesActions.valueOf(it) }
+                    ?: NotesActions.EDIT,
             )
         }
 
@@ -50,8 +56,12 @@ object ActionSettingsStore {
         ctx.dataStore.edit { it[LONG_CLICK_ACTION] = action.name }
     }
 
-    suspend fun setTypeButtonAction(ctx: Context, action: NotesActions) {
-        ctx.dataStore.edit { it[TYPE_BUTTON_ACTION] = action.name }
+    suspend fun setLeftButtonAction(ctx: Context, action: NotesActions) {
+        ctx.dataStore.edit { it[LEFT_BUTTON_ACTION] = action.name }
+    }
+
+    suspend fun setRightButtonAction(ctx: Context, action: NotesActions) {
+        ctx.dataStore.edit { it[RIGHT_BUTTON_ACTION] = action.name }
     }
 
     suspend fun resetAll(ctx: Context) {
@@ -60,7 +70,32 @@ object ActionSettingsStore {
             prefs.remove(SWIPE_RIGHT_ACTION)
             prefs.remove(CLICK_ACTION)
             prefs.remove(LONG_CLICK_ACTION)
-            prefs.remove(TYPE_BUTTON_ACTION)
+            prefs.remove(RIGHT_BUTTON_ACTION)
+            prefs.remove(LEFT_BUTTON_ACTION)
+        }
+    }
+
+    // --- Export all current settings as a map
+    suspend fun getAll(ctx: Context): Map<String, String> {
+        val prefs = ctx.dataStore.data.first()
+        return mapOf(
+            "swipe_left_action" to (prefs[SWIPE_LEFT_ACTION] ?: NotesActions.DELETE.name),
+            "swipe_right_action" to (prefs[SWIPE_RIGHT_ACTION] ?: NotesActions.EDIT.name),
+            "click_action" to (prefs[CLICK_ACTION] ?: NotesActions.COMPLETE.name),
+            "left_click_action" to (prefs[LEFT_BUTTON_ACTION] ?: NotesActions.SELECT.name),
+            "right_click_action" to (prefs[RIGHT_BUTTON_ACTION] ?: NotesActions.DELETE.name)
+        )
+    }
+
+    // --- Apply all settings from a backup map
+    suspend fun setAll(ctx: Context, backup: Map<String, String>) {
+        ctx.dataStore.edit { prefs ->
+            backup["swipe_left_action"]?.let { prefs[SWIPE_LEFT_ACTION] = it }
+            backup["swipe_right_action"]?.let { prefs[SWIPE_RIGHT_ACTION] = it }
+            backup["click_action"]?.let { prefs[CLICK_ACTION] = it }
+            backup["long_click_action"]?.let { prefs[LONG_CLICK_ACTION] = it }
+            backup["left_click_action"]?.let { prefs[LEFT_BUTTON_ACTION] = it }
+            backup["right_click_action"]?.let { prefs[RIGHT_BUTTON_ACTION] = it }
         }
     }
 }

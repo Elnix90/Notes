@@ -505,8 +505,8 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         isReorderMode = isReorderMode,
                         topBarsHeight = topBarHeight,
                         bottomBarsHeight = bottomBarHeight,
-                        onNoteClick = ::onNoteClick,
-                        onNoteLongClick = ::onNoteLongClick,
+                        onNoteClick = if (actionSettings.clickAction != NotesActions.NONE) ::onNoteClick else null,
+                        onNoteLongClick = if (actionSettings.longClickAction != NotesActions.NONE) ::onNoteLongClick else null,
                         onRightAction = { note ->
                             if (actionSettings.rightAction == NotesActions.DELETE && showNoteDeleteConfirmation) noteToDelete = note
                             else performAction(actionSettings.rightAction, vm, navController, note, scope)
@@ -516,12 +516,12 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                             else performAction(actionSettings.leftAction, vm, navController, note, scope)
                         },
                         onDeleteButtonClick = { note ->
-                            if (showNoteDeleteConfirmation) noteToDelete = note
-                            else { scope.launch { vm.delete(note) } }
+                            if (actionSettings.rightButtonAction == NotesActions.DELETE && showNoteDeleteConfirmation) noteToDelete = note
+                            else performAction(actionSettings.rightButtonAction, vm, navController, note, scope)
                         },
                         onTypeButtonClick = { note ->
-                            if (actionSettings.typeButtonAction == NotesActions.DELETE && showNoteDeleteConfirmation) noteToDelete = note
-                            else performAction(actionSettings.typeButtonAction, vm, navController, note, scope)
+                            if (actionSettings.leftButtonAction == NotesActions.DELETE && showNoteDeleteConfirmation) noteToDelete = note
+                            else performAction(actionSettings.leftButtonAction, vm, navController, note, scope)
                         },
                         onOrderChanged = { newList -> vm.reorderNotes(newList) },
                         actionSettings = actionSettings
@@ -615,5 +615,6 @@ fun performAction(
         }
         NotesActions.EDIT -> navController.navigate("edit/${note.id}?type=${note.type.name}")
         NotesActions.SELECT -> onSelectStart?.invoke()
+        NotesActions.NONE -> return
     }
 }

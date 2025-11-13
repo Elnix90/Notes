@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.settings.dataStore
 
@@ -27,6 +28,20 @@ object PluginsSettingsStore {
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
             prefs.remove(ALLOW_ALPHALLM_ACCESS)
+        }
+    }
+
+    suspend fun getAll(ctx: Context): Map<String, Boolean> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[ALLOW_ALPHALLM_ACCESS]?.let { put(ALLOW_ALPHALLM_ACCESS.name, it) }
+
+        }
+    }
+
+    suspend fun setAll(ctx: Context, data: Map<String, Boolean>) {
+        ctx.dataStore.edit { prefs ->
+            data[ALLOW_ALPHALLM_ACCESS.name]?.let { prefs[ALLOW_ALPHALLM_ACCESS] = it }
         }
     }
 }

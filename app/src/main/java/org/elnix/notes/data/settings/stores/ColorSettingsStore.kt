@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.settings.ColorCustomisationMode
 import org.elnix.notes.data.settings.DefaultThemes
@@ -228,8 +229,56 @@ object ColorSettingsStore {
             prefs.remove(NOTE_TYPE_DRAWING)
         }
     }
+    suspend fun getAll(ctx: Context): Map<String, Int> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[PRIMARY_COLOR]?.let { put(PRIMARY_COLOR.name, it) }
+            prefs[ON_PRIMARY_COLOR]?.let { put(ON_PRIMARY_COLOR.name, it) }
+            prefs[SECONDARY_COLOR]?.let { put(SECONDARY_COLOR.name, it) }
+            prefs[ON_SECONDARY_COLOR]?.let { put(ON_SECONDARY_COLOR.name, it) }
+            prefs[TERTIARY_COLOR]?.let { put(TERTIARY_COLOR.name, it) }
+            prefs[ON_TERTIARY_COLOR]?.let { put(ON_TERTIARY_COLOR.name, it) }
+            prefs[BACKGROUND_COLOR]?.let { put(BACKGROUND_COLOR.name, it) }
+            prefs[ON_BACKGROUND_COLOR]?.let { put(ON_BACKGROUND_COLOR.name, it) }
+            prefs[SURFACE_COLOR]?.let { put(SURFACE_COLOR.name, it) }
+            prefs[ON_SURFACE_COLOR]?.let { put(ON_SURFACE_COLOR.name, it) }
+            prefs[ERROR_COLOR]?.let { put(ERROR_COLOR.name, it) }
+            prefs[ON_ERROR_COLOR]?.let { put(ON_ERROR_COLOR.name, it) }
+            prefs[OUTLINE_COLOR]?.let { put(OUTLINE_COLOR.name, it) }
+            prefs[DELETE_COLOR]?.let { put(DELETE_COLOR.name, it) }
+            prefs[EDIT_COLOR]?.let { put(EDIT_COLOR.name, it) }
+            prefs[COMPLETE_COLOR]?.let { put(COMPLETE_COLOR.name, it) }
+            prefs[SELECT_COLOR]?.let { put(SELECT_COLOR.name, it) }
+            prefs[NOTE_TYPE_TEXT]?.let { put(NOTE_TYPE_TEXT.name, it) }
+            prefs[NOTE_TYPE_CHECKLIST]?.let { put(NOTE_TYPE_CHECKLIST.name, it) }
+            prefs[NOTE_TYPE_DRAWING]?.let { put(NOTE_TYPE_DRAWING.name, it) }
+        }
+    }
 
-
+    suspend fun setAll(ctx: Context, data: Map<String, Int>) {
+        ctx.dataStore.edit { prefs ->
+            data[PRIMARY_COLOR.name]?.let { prefs[PRIMARY_COLOR] = it }
+            data[ON_PRIMARY_COLOR.name]?.let { prefs[ON_PRIMARY_COLOR] = it }
+            data[SECONDARY_COLOR.name]?.let { prefs[SECONDARY_COLOR] = it }
+            data[ON_SECONDARY_COLOR.name]?.let { prefs[ON_SECONDARY_COLOR] = it }
+            data[TERTIARY_COLOR.name]?.let { prefs[TERTIARY_COLOR] = it }
+            data[ON_TERTIARY_COLOR.name]?.let { prefs[ON_TERTIARY_COLOR] = it }
+            data[BACKGROUND_COLOR.name]?.let { prefs[BACKGROUND_COLOR] = it }
+            data[ON_BACKGROUND_COLOR.name]?.let { prefs[ON_BACKGROUND_COLOR] = it }
+            data[SURFACE_COLOR.name]?.let { prefs[SURFACE_COLOR] = it }
+            data[ON_SURFACE_COLOR.name]?.let { prefs[ON_SURFACE_COLOR] = it }
+            data[ERROR_COLOR.name]?.let { prefs[ERROR_COLOR] = it }
+            data[ON_ERROR_COLOR.name]?.let { prefs[ON_ERROR_COLOR] = it }
+            data[OUTLINE_COLOR.name]?.let { prefs[OUTLINE_COLOR] = it }
+            data[DELETE_COLOR.name]?.let { prefs[DELETE_COLOR] = it }
+            data[EDIT_COLOR.name]?.let { prefs[EDIT_COLOR] = it }
+            data[COMPLETE_COLOR.name]?.let { prefs[COMPLETE_COLOR] = it }
+            data[SELECT_COLOR.name]?.let { prefs[SELECT_COLOR] = it }
+            data[NOTE_TYPE_TEXT.name]?.let { prefs[NOTE_TYPE_TEXT] = it }
+            data[NOTE_TYPE_CHECKLIST.name]?.let { prefs[NOTE_TYPE_CHECKLIST] = it }
+            data[NOTE_TYPE_DRAWING.name]?.let { prefs[NOTE_TYPE_DRAWING] = it }
+        }
+    }
 }
 
 

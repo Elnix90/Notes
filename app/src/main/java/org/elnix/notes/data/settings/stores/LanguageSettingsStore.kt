@@ -26,4 +26,19 @@ object LanguageSettingsStore {
             prefs.remove(KEY_LANG)
         }
     }
+
+    suspend fun getAll(ctx: Context): Map<String, String> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[KEY_LANG]?.let { put(KEY_LANG.name, it) }
+
+        }
+    }
+
+    suspend fun setAll(ctx: Context, data: Map<String, String>) {
+        ctx.dataStore.edit { prefs ->
+            data[KEY_LANG.name]?.let { prefs[KEY_LANG] = it }
+
+        }
+    }
 }

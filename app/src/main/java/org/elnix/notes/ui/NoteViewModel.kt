@@ -104,28 +104,6 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteReminder(reminder: ReminderEntity) = viewModelScope.launch { reminderRepo.delete(reminder) }
 
 
-
-//    // --- Tags ---
-//    // Helper: resolve tags by ID
-//    fun resolveTags(note: NoteEntity, allTags: List<TagItem>): List<TagItem> {
-//        return allTags.filter { note.tagIds.contains(it.id) }
-//    }
-//
-//    // Add a tag to note
-//    fun addTagToNote(note: NoteEntity, tag: TagItem) = viewModelScope.launch {
-//        val updated = note.copy(tagIds = note.tagIds + tag.id)
-//        noteRepo.upsert(updated)
-//    }
-//
-//    // Remove tag from note
-//    fun deleteTagFromNote(note: NoteEntity, tag: TagItem) = viewModelScope.launch {
-//        val updated = note.copy(tagIds = note.tagIds.filterNot { it == tag.id })
-//        noteRepo.upsert(updated)
-//    }
-
-
-
-
     //  Deletes all notes that have both a blank title and description.
     suspend fun deleteAllEmptyNotes() {
         val allNotes = noteRepo.observeAll().first() // get current list
@@ -168,17 +146,19 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // --- DEBUG FEATURES ---
-    fun createFakeNotes(number: Int) {
-        viewModelScope.launch {
-            repeat(number) { it ->
-                val id = Random.nextLong().toString()
-                val title = "Fake Note $id"
-                val description = "This is a description for fake note $id."
-                val possibleTypes = listOf(NoteType.CHECKLIST, NoteType.TEXT)
-                addNoteAndReturnId(title, description, type = possibleTypes.random())
-            }
+    suspend fun createFakeNotes(number: Int): List<Long> {
+        val ids = mutableListOf<Long>()
+        repeat(number) {
+            val id = Random.nextLong().toString()
+            val title = "Fake Note $id"
+            val description = "This is a description for fake note $id."
+            val possibleTypes = listOf(NoteType.CHECKLIST, NoteType.TEXT)
+            val noteId = addNoteAndReturnId(title, description, type = possibleTypes.random())
+            ids += noteId
         }
+        return ids
     }
+
 
 
     // Complete / Un-complete notes

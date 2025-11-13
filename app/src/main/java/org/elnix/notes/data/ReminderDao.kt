@@ -31,4 +31,7 @@ interface ReminderDao {
 
     @Query("DELETE FROM reminders WHERE noteId = :noteId")
     suspend fun deleteByNoteId(noteId: Long)
+
+    @Query("SELECT * FROM reminders WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): ReminderEntity?
 }

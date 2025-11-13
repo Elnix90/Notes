@@ -102,10 +102,25 @@ object OffsetsSettingsStore {
         saveOffsets(ctx, offsets)
     }
 
-    /** Reset only offset preferences */
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
             prefs.remove(OFFSETS_KEY)
         }
     }
+
+    suspend fun getAll(ctx: Context): Map<String, String> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[OFFSETS_KEY]?.let { put(OFFSETS_KEY.name, it) }
+            prefs[DEFAULT_OFFSETS]?.let { put(DEFAULT_OFFSETS.name, it) }
+        }
+    }
+
+    suspend fun setAll(ctx: Context, data: Map<String, String>) {
+        ctx.dataStore.edit { prefs ->
+            data[OFFSETS_KEY.name]?.let { prefs[OFFSETS_KEY] = it }
+            data[DEFAULT_OFFSETS.name]?.let { prefs[DEFAULT_OFFSETS] = it }
+        }
+    }
+
 }

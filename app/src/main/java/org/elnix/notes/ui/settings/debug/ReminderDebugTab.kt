@@ -9,9 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
+import org.elnix.notes.utils.scheduleReminderNotification
+import java.util.Calendar
 
 @Composable
 fun RemindersDebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, onBack: (() -> Unit)) {
@@ -72,6 +75,32 @@ fun RemindersDebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, on
                     text = "Cancel All Pending Notifications",
                     color = MaterialTheme.colorScheme.onPrimary
                 )
+            }
+        }
+
+        item {
+
+            Button(
+                onClick = {
+                    scope.launch{
+                        val noteId = vm.createFakeNotes(1).first()
+
+                        scheduleReminderNotification(
+                            ctx,
+                            ReminderEntity(
+                                noteId = noteId,
+                                dueDateTime = Calendar.getInstance().apply {
+                                    add(Calendar.SECOND, 1)
+                                }
+                            ),
+                            "Test"
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = AppObjectsColors.buttonColors()
+            ) {
+                Text("Create fake Note and trigger notification now")
             }
         }
     }

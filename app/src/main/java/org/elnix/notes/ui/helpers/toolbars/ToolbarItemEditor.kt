@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -56,6 +57,7 @@ import org.elnix.notes.data.helpers.GlobalActionIcon
 import org.elnix.notes.data.helpers.GlobalNotesActions
 import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.ToolBars
+import org.elnix.notes.data.helpers.globalActionColor
 import org.elnix.notes.data.helpers.toolbarName
 import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
@@ -303,17 +305,21 @@ fun ToolbarItemsEditor(
 
     if (editAction != null) {
         val actionToEdit = editAction!!
+        val defaultColor = globalActionColor(actionToEdit.action)
         ToolbarItemColorSelectorDialog(
             item = actionToEdit,
+            defaultColor = defaultColor,
             onDismiss = { editAction = null }
         ) { color ->
-            scope.launch {
-                ToolbarItemsSettingsStore.updateToolbarItemColor(
-                    ctx = ctx,
-                    toolbar = toolbar,
-                    action = actionToEdit.action,
-                    newColor = Color(color)
-                )
+            if (color != defaultColor.toArgb()) {
+                scope.launch {
+                    ToolbarItemsSettingsStore.updateToolbarItemColor(
+                        ctx = ctx,
+                        toolbar = toolbar,
+                        action = actionToEdit.action,
+                        newColor = Color(color)
+                    )
+                }
             }
             editAction = null
         }

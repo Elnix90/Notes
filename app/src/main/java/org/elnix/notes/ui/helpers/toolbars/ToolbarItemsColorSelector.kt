@@ -13,12 +13,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
-import org.elnix.notes.data.helpers.globalActionColor
 import org.elnix.notes.data.helpers.globalActionName
 import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.ui.helpers.colors.ColorPickerRow
@@ -27,11 +27,11 @@ import org.elnix.notes.ui.theme.adjustBrightness
 @Composable
 fun ToolbarItemColorSelectorDialog(
     item: ToolbarItemState,
+    defaultColor: Color,
     onDismiss: () -> Unit,
     onValidate: (Int) -> Unit
 ) {
     val ctx = LocalContext.current
-    val defaultColor = globalActionColor(item.action)
 
     var colorInt by remember {
         mutableIntStateOf(item.color?.toArgb() ?: defaultColor.toArgb())
@@ -55,7 +55,7 @@ fun ToolbarItemColorSelectorDialog(
                     defaultColor = defaultColor,
                     currentColor = colorInt,
                     backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
-                    onColorPicked = { colorInt = it }
+                    onColorPicked = { colorInt = it}
                 )
             }
         },

@@ -2,7 +2,6 @@ package org.elnix.notes.ui.helpers.toolbars
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -97,7 +96,6 @@ fun ToolbarItemsEditor(
         }
     )
 
-//    var showColorPickerDialog by remember { mutableStateOf(false) }
     var editAction by remember { mutableStateOf<ToolbarItemState?>(null) }
 
     Row(
@@ -265,20 +263,14 @@ fun ToolbarItemsEditor(
 
                                             IconButton(
                                                 onClick = {
-                                                    Log.e("Got here","got in onClick lens button")
-                                                    try{
-                                                        scope.launch {
-                                                            ToolbarItemsSettingsStore.setToolbarItems(
-                                                                ctx,
-                                                                toolbar,
-                                                                toolbarItems
-                                                            )
-                                                        }
-                                                        editAction = item
-//                                                        showColorPickerDialog = true
-                                                    } catch (e: Exception) {
-                                                        Log.e("Error","got $e")
+                                                    scope.launch {
+                                                        ToolbarItemsSettingsStore.setToolbarItems(
+                                                            ctx,
+                                                            toolbar,
+                                                            toolbarItems
+                                                        )
                                                     }
+                                                    editAction = item
                                                 },
                                                 colors = AppObjectsColors.iconButtonColors(),
                                                 shape = CircleShape
@@ -310,17 +302,7 @@ fun ToolbarItemsEditor(
     }
 
     if (editAction != null) {
-        Log.e("Got here","got in test show color picker")
-        val actionToEdit = try {
-            editAction!!
-        } catch (e: Exception) {
-            Log.e("Error","got $e")
-            ToolbarItemState(GlobalNotesActions.SETTINGS)
-        } finally {
-            ToolbarItemState(GlobalNotesActions.SETTINGS)
-        }
-
-        Log.e("Got here","prepare to enter toolbarItemState, with item = $actionToEdit")
+        val actionToEdit = editAction!!
         ToolbarItemColorSelectorDialog(
             item = actionToEdit,
             onDismiss = { editAction = null }

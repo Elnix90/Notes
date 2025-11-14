@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.ui.NoteViewModel
-import org.elnix.notes.ui.settings.SettingsLazyHeader
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.scheduleReminderNotification
 import java.util.Calendar

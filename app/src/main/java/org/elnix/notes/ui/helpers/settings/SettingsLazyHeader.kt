@@ -1,4 +1,4 @@
-package org.elnix.notes.ui.settings
+package org.elnix.notes.ui.helpers.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -16,7 +17,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +31,6 @@ import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.reorderable
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.UserValidation
-import org.elnix.notes.ui.helpers.settings.SettingsTitle
 
 @Composable
 fun SettingsLazyHeader(
@@ -43,6 +42,7 @@ fun SettingsLazyHeader(
     resetTitle: String = stringResource(R.string.reset_default_settings),
     resetText: String? = stringResource(R.string.reset_settings_in_this_tab),
     reorderState: ReorderableLazyListState? = null,
+    titleContent: @Composable (() -> Unit)? = null,
     content: LazyListScope.() -> Unit
 ) {
 
@@ -58,7 +58,12 @@ fun SettingsLazyHeader(
             .imePadding(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Surface(color = MaterialTheme.colorScheme.background) {
+        Column (
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background),
+            verticalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
             SettingsTitle(
                 title,
                 helpIcon = { showHelpDialog = true },
@@ -66,6 +71,8 @@ fun SettingsLazyHeader(
                     { showResetDialog = true }
                 } else null,
             ) { onBack() }
+
+            if (titleContent != null) titleContent()
         }
 
         LazyColumn(

@@ -12,7 +12,7 @@ import org.elnix.notes.R
 import org.elnix.notes.data.settings.stores.PluginsSettingsStore
 import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.helpers.SwitchRow
-import org.elnix.notes.ui.settings.SettingsLazyHeader
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 
 @Composable
 fun PluginsTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {

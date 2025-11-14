@@ -20,7 +20,7 @@ import org.elnix.notes.data.AppDatabase
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
-import org.elnix.notes.ui.settings.SettingsLazyHeader
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable

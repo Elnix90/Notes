@@ -52,7 +52,7 @@ import org.elnix.notes.ui.helpers.reminders.ReminderPicker
 import org.elnix.notes.ui.helpers.reminders.TimeBubble
 import org.elnix.notes.ui.helpers.settings.SettingsItem
 import org.elnix.notes.ui.security.AskNotificationButton
-import org.elnix.notes.ui.settings.SettingsLazyHeader
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)

@@ -28,7 +28,7 @@ import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsOutlinedField
 import org.elnix.notes.ui.helpers.SwitchRow
-import org.elnix.notes.ui.settings.SettingsLazyHeader
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.adjustBrightness
 import java.time.Instant
 

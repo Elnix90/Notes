@@ -173,7 +173,7 @@
     <string name="bottom">Dessous</string>
     <string name="padding">Espacement</string>
     <string name="toolbars_spacing">Espacement des barres d\'outils</string>
-    <string name="toolbars_preview">Apercu des barres d\'outils</string>
+    <string name="toolbar_preview">Apercu de la barre d\'outils</string>
     <string name="toolbars_items_and_order">Ordre et éléments des barres d\'outils</string>
     <string name="toolbars_appearance">Apparence des barres d\'outils</string>
     <string name="toolbars_order">Ordre des barres d\'outils</string>

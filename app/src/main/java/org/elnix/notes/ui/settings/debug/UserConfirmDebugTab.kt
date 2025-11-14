@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.helpers.SwitchRow
-import org.elnix.notes.ui.settings.SettingsLazyHeader
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 
 @Composable
 fun UserConfirmDebugTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit)) {

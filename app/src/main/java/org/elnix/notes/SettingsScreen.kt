@@ -51,7 +51,7 @@ import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.settings.ContributorItem
 import org.elnix.notes.ui.helpers.settings.SettingsItem
-import org.elnix.notes.ui.settings.SettingsLazyHeader
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.settings.appearance.AppearanceTab
 import org.elnix.notes.ui.settings.appearance.ColorSelectorTab
 import org.elnix.notes.ui.settings.backup.BackupTab

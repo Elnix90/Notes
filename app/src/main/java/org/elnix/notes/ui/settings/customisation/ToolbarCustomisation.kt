@@ -28,11 +28,11 @@ import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.helpers.toolbars.SliderToolbarSetting
 import org.elnix.notes.ui.helpers.toolbars.ToolbarColorSelectorDialog
 import org.elnix.notes.ui.helpers.toolbars.ToolbarItemsEditor
 import org.elnix.notes.ui.helpers.toolbars.UnifiedToolbar
-import org.elnix.notes.ui.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
@@ -64,10 +64,9 @@ fun ToolbarCustomisationTab(
             scope.launch {
                 ToolbarItemsSettingsStore.resetToolbar(ctx, toolbarSetting.toolbar)
             }
-        }
-    ) {
-
-        item {
+        },
+        titleContent = {
+            TextDivider(stringResource(R.string.toolbar_preview))
             UnifiedToolbar(
                 ctx = ctx,
                 toolbar = toolbarSetting.toolbar,
@@ -83,7 +82,7 @@ fun ToolbarCustomisationTab(
                 ghosted = true
             )
         }
-
+    ) {
 
         item {
             Button(

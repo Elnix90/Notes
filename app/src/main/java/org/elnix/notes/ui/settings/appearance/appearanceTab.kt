@@ -18,7 +18,7 @@ import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.settings.SettingsItem
-import org.elnix.notes.ui.settings.SettingsLazyHeader
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 
 @Composable
 fun AppearanceTab(

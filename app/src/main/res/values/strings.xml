@@ -172,7 +172,7 @@
     <string name="bottom">Bottom</string>
     <string name="padding">Padding</string>
     <string name="toolbars_spacing">Toolbars Spacing</string>
-    <string name="toolbars_preview">toolbars preview</string>
+    <string name="toolbar_preview">Toolbar Preview</string>
     <string name="toolbars_items_and_order">Toolbars items and order</string>
     <string name="toolbars_appearance">Toolbars Appearance</string>
     <string name="toolbars_order">Toolbars Order</string>

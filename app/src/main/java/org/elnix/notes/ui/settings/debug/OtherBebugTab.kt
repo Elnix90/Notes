@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.settings.stores.DebugSettingsStore
 import org.elnix.notes.ui.helpers.SwitchRow
-import org.elnix.notes.ui.settings.SettingsLazyHeader
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable

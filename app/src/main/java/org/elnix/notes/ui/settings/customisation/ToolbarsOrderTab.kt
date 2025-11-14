@@ -62,7 +62,7 @@ import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.toolbars.ToolbarColorSelectorDialog
 import org.elnix.notes.ui.helpers.toolbars.UnifiedToolbar
-import org.elnix.notes.ui.settings.SettingsLazyHeader
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.LocalExtraColors
 import org.elnix.notes.ui.theme.adjustBrightness

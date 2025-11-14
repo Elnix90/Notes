@@ -97,7 +97,7 @@ fun ToolbarItemsEditor(
         }
     )
 
-    var showColorPickerDialog by remember { mutableStateOf(false) }
+//    var showColorPickerDialog by remember { mutableStateOf(false) }
     var editAction by remember { mutableStateOf<ToolbarItemState?>(null) }
 
     Row(
@@ -265,6 +265,7 @@ fun ToolbarItemsEditor(
 
                                             IconButton(
                                                 onClick = {
+                                                    Log.e("Got here","got in onClick lens button")
                                                     try{
                                                         scope.launch {
                                                             ToolbarItemsSettingsStore.setToolbarItems(
@@ -274,7 +275,7 @@ fun ToolbarItemsEditor(
                                                             )
                                                         }
                                                         editAction = item
-                                                        showColorPickerDialog = true
+//                                                        showColorPickerDialog = true
                                                     } catch (e: Exception) {
                                                         Log.e("Error","got $e")
                                                     }
@@ -308,8 +309,8 @@ fun ToolbarItemsEditor(
         )
     }
 
-    if (showColorPickerDialog && editAction != null) {
-        Log.e("Got here","got here")
+    if (editAction != null) {
+        Log.e("Got here","got in test show color picker")
         val actionToEdit = try {
             editAction!!
         } catch (e: Exception) {
@@ -318,9 +319,11 @@ fun ToolbarItemsEditor(
         } finally {
             ToolbarItemState(GlobalNotesActions.SETTINGS)
         }
+
+        Log.e("Got here","prepare to enter toolbarItemState, with item = $actionToEdit")
         ToolbarItemColorSelectorDialog(
             item = actionToEdit,
-            onDismiss = { showColorPickerDialog = false }
+            onDismiss = { editAction = null }
         ) { color ->
             scope.launch {
                 ToolbarItemsSettingsStore.updateToolbarItemColor(
@@ -330,7 +333,7 @@ fun ToolbarItemsEditor(
                     newColor = Color(color)
                 )
             }
-            showColorPickerDialog = false
+            editAction = null
         }
     }
 }

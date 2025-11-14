@@ -1,6 +1,7 @@
 package org.elnix.notes.ui.helpers.toolbars
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.AlertDialog
@@ -21,8 +22,6 @@ import org.elnix.notes.R
 import org.elnix.notes.data.helpers.globalActionColor
 import org.elnix.notes.data.helpers.globalActionName
 import org.elnix.notes.data.settings.stores.ToolbarItemState
-import org.elnix.notes.ui.helpers.colors.ColorPickerRow
-import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
 fun ToolbarItemColorSelectorDialog(
@@ -30,14 +29,18 @@ fun ToolbarItemColorSelectorDialog(
     onDismiss: () -> Unit,
     onValidate: (Int) -> Unit
 ) {
+    Log.e("Got here","got in test show color picker, got item: $item")
     val ctx = LocalContext.current
 
     val defaultColor = globalActionColor(item.action)
+
+    Log.e("Got here","got defaultColor: $defaultColor")
 
     var colorInt by remember {
         mutableIntStateOf(item.color?.toArgb() ?: defaultColor.toArgb())
     }
 
+    Log.e("Got here","got colorInt: $colorInt")
 
     AlertDialog(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -52,14 +55,15 @@ fun ToolbarItemColorSelectorDialog(
             Column(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-
-                ColorPickerRow(
-                    label = stringResource(R.string.toolbar_color),
-                    defaultColor = defaultColor,
-                    currentColor = colorInt,
-                    backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
-                    onColorPicked = { colorInt = it }
-                )
+                Log.e("Got here","got defaultColor: $defaultColor")
+                Text("placeholder")
+//                ColorPickerRow(
+//                    label = stringResource(R.string.toolbar_color),
+//                    defaultColor = defaultColor,
+//                    currentColor = colorInt,
+//                    backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
+//                    onColorPicked = { colorInt = it }
+//                )
             }
         },
         confirmButton = {

@@ -31,13 +31,11 @@ fun ToolbarItemColorSelectorDialog(
     onValidate: (Int) -> Unit
 ) {
     val ctx = LocalContext.current
-
     val defaultColor = globalActionColor(item.action)
 
     var colorInt by remember {
         mutableIntStateOf(item.color?.toArgb() ?: defaultColor.toArgb())
     }
-
 
     AlertDialog(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -52,7 +50,6 @@ fun ToolbarItemColorSelectorDialog(
             Column(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-
                 ColorPickerRow(
                     label = stringResource(R.string.toolbar_color),
                     defaultColor = defaultColor,

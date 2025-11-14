@@ -13,7 +13,7 @@ import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 fun BackupTab(ctx: Context, onBack: (() -> Unit)) {
 
     SettingsLazyHeader(
-        title = stringResource(R.string.security_privacy),
+        title = stringResource(R.string.backup_restore),
         onBack = onBack,
         helpText = stringResource(R.string.color_selector_text),
         resetText = null,

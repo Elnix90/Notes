@@ -237,4 +237,5 @@
     <string name="notifications">Notifications</string>
     <string name="notes_backup_restore">Notes Sauvegarder / Restaurer</string>
     <string name="settings_backup_restore">Paramètres Sauvegarder / Restaurer</string>
+    <string name="notifications_help_text">Ici, vous pouvez personnaliser l\'apparence des notifications.</string>
 </resources>

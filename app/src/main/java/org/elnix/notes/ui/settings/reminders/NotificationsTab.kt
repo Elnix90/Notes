@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -42,9 +43,9 @@ fun NotificationsCustomisationTab(
     val settings by NotificationsSettingsStore.getSettingsFlow(ctx).collectAsState(initial = emptyList())
 
     SettingsLazyHeader(
-        title = stringResource(R.string.notification_reminders),
+        title = stringResource(R.string.notifications),
         onBack = onBack,
-        helpText = stringResource(R.string.reminders_help_text),
+        helpText = stringResource(R.string.notifications_help_text),
         onReset = {
             scope.launch {
                 ReminderSettingsStore.resetAll(ctx)
@@ -59,7 +60,10 @@ fun NotificationsCustomisationTab(
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(action.actionType.name.replace("_", " "))
+                Text(
+                    text = action.actionType.name.replace("_", " "),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
                 when(action.actionType) {
                     NotificationActionType.SNOOZE -> {
                         Row(verticalAlignment = Alignment.CenterVertically) {

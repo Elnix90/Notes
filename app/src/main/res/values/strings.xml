@@ -236,4 +236,5 @@
     <string name="notifications">Notifications</string>
     <string name="notes_backup_restore">Notes backup / restore</string>
     <string name="settings_backup_restore">Settings Backup / Restore</string>
+    <string name="notifications_help_text">Here, you can customize the appearance of notifications.</string>
 </resources>

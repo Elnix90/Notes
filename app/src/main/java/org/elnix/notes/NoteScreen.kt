@@ -76,11 +76,9 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     //Other settings got by settingsStores
     val showNoteDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationDeleteNote(ctx).collectAsState(initial = true)
     val showMultipleDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationMultipleDeleteNote(ctx).collectAsState(initial = true)
-    val showMultipleEditConfirmation by UserConfirmSettingsStore.getShowUserValidationEditMultipleNote(ctx).collectAsState(initial = true)
 
     var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
     var showMultipleDeleteDialog by remember { mutableStateOf(false) }
-    var showMultipleEditDialog by remember { mutableStateOf(false) }
 
     val toolbarsSpacing by ToolbarsSettingsStore.getToolbarsSpacing(ctx).collectAsState(initial = 8)
 
@@ -155,15 +153,6 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    fun performGroupEdit() {
-        scope.launch {
-            selectedNotes.forEach { note -> performAction(NotesActions.EDIT, vm, navController, note, scope) }
-            selectedNotes = emptySet()
-            isMultiSelectMode = false
-        }
-    }
-
-
     fun onGroupAction(action: NotesActions) {
         when(action) {
             NotesActions.DELETE -> {
@@ -171,13 +160,6 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                     showMultipleDeleteDialog = true
                 } else {
                     performGroupDelete()
-                }
-            }
-            NotesActions.EDIT -> {
-                if (showMultipleEditConfirmation) {
-                    showMultipleEditDialog = true
-                } else {
-                    performGroupEdit()
                 }
             }
             else -> {
@@ -205,20 +187,6 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         )
     }
 
-    if (showMultipleEditDialog) {
-        UserValidation(
-            title = stringResource(R.string.edit_multiple_notes),
-            message = "${stringResource(R.string.are_you_sure_to_edit)} ${selectedNotes.size} notes ? ${stringResource(R.string.it_will_open_several_editors)}!",
-            onCancel = { showMultipleEditDialog = false },
-            doNotRemindMeAgain = {
-                scope.launch { UserConfirmSettingsStore.setShowUserValidationEditMultipleNote(ctx, false) }
-            },
-            onAgree = {
-                showMultipleEditDialog = false
-                performGroupEdit()
-            }
-        )
-    }
 
     if (noteToDelete != null) {
         UserValidation(

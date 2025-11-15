@@ -24,13 +24,6 @@ object UserConfirmSettingsStore {
         ctx.dataStore.edit { it[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE] = enabled }
     }
 
-    private val SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE = booleanPreferencesKey("show_user_validation_edit_multiple_note")
-    fun getShowUserValidationEditMultipleNote(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE] ?: true }
-    suspend fun setShowUserValidationEditMultipleNote(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE] = enabled }
-    }
-
     private val SHOW_ENABLE_DEBUG = booleanPreferencesKey("show_enable_debug")
     fun getShowEnableDebug(ctx: Context): Flow<Boolean> =
         ctx.dataStore.data.map { it[SHOW_ENABLE_DEBUG] ?: true }
@@ -41,7 +34,6 @@ object UserConfirmSettingsStore {
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
             prefs.remove(SHOW_ENABLE_DEBUG)
-            prefs.remove(SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE)
             prefs.remove(SHOW_USER_VALIDATION_DELETE_NOTE)
             prefs.remove(SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE)
         }
@@ -52,7 +44,6 @@ object UserConfirmSettingsStore {
         return buildMap {
             prefs[SHOW_USER_VALIDATION_DELETE_NOTE]?.let { put(SHOW_USER_VALIDATION_DELETE_NOTE.name, it) }
             prefs[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE]?.let { put(SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE.name, it) }
-            prefs[SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE]?.let { put(SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE.name, it) }
             prefs[SHOW_ENABLE_DEBUG]?.let { put(SHOW_ENABLE_DEBUG.name, it) }
         }
     }
@@ -61,7 +52,6 @@ object UserConfirmSettingsStore {
         ctx.dataStore.edit { prefs ->
             data[SHOW_USER_VALIDATION_DELETE_NOTE.name]?.let { prefs[SHOW_USER_VALIDATION_DELETE_NOTE] = it }
             data[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE.name]?.let { prefs[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE] = it }
-            data[SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE.name]?.let { prefs[SHOW_USER_VALIDATION_EDIT_MULTIPLE_NOTE] = it }
             data[SHOW_ENABLE_DEBUG.name]?.let { prefs[SHOW_ENABLE_DEBUG] = it }
         }
     }

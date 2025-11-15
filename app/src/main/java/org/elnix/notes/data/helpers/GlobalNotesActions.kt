@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.QuestionMark
@@ -42,7 +43,7 @@ import org.elnix.notes.R
 import org.elnix.notes.ui.theme.LocalExtraColors
 
 enum class GlobalNotesActions {
-    SEARCH, SORT, SETTINGS, DESELECT_ALL, ADD_NOTE, REORDER, EDIT_NOTE, DELETE_NOTE, COMPLETE_NOTE, TAG_FILTER, ADD_TAG, TAGS, SPACER1, SPACER2, SPACER3
+    SEARCH, SORT, SETTINGS, DESELECT_ALL, ADD_NOTE, REORDER, EDIT_NOTE, DELETE_NOTE, COMPLETE_NOTE, DUPLICATE_NOTE, TAG_FILTER, ADD_TAG, TAGS, SPACER1, SPACER2, SPACER3
 }
 
 
@@ -56,6 +57,7 @@ fun neededCLickTypeForAction (action: GlobalNotesActions): List<ClickType>? = wh
     GlobalNotesActions.EDIT_NOTE -> listOf(ClickType.NORMAL)
     GlobalNotesActions.DELETE_NOTE -> listOf(ClickType.NORMAL)
     GlobalNotesActions.COMPLETE_NOTE -> listOf(ClickType.NORMAL)
+    GlobalNotesActions.DUPLICATE_NOTE -> listOf(ClickType.NORMAL)
     GlobalNotesActions.TAG_FILTER -> listOf(ClickType.NORMAL, ClickType.LONG)
     GlobalNotesActions.ADD_TAG -> listOf(ClickType.NORMAL)
     GlobalNotesActions.TAGS -> listOf(ClickType.NORMAL)
@@ -74,6 +76,7 @@ fun globalActionIcon(action: GlobalNotesActions): ImageVector = when (action) {
     GlobalNotesActions.EDIT_NOTE -> Icons.Default.Edit
     GlobalNotesActions.DELETE_NOTE -> Icons.Default.Delete
     GlobalNotesActions.COMPLETE_NOTE -> Icons.Default.CheckCircle
+    GlobalNotesActions.DUPLICATE_NOTE -> Icons.Default.ContentCopy
     GlobalNotesActions.TAG_FILTER -> Icons.Default.SelectAll
     GlobalNotesActions.ADD_TAG -> Icons.Default.AddCircle
     GlobalNotesActions.TAGS,
@@ -95,6 +98,7 @@ fun globalActionColor(action: GlobalNotesActions): Color {
         GlobalNotesActions.EDIT_NOTE -> extras.edit
         GlobalNotesActions.DELETE_NOTE -> extras.delete
         GlobalNotesActions.COMPLETE_NOTE -> extras.complete
+        GlobalNotesActions.DUPLICATE_NOTE -> extras.complete
         GlobalNotesActions.TAG_FILTER -> extras.select
         GlobalNotesActions.ADD_TAG -> extras.edit
         GlobalNotesActions.TAGS,
@@ -114,6 +118,7 @@ fun globalActionName(ctx: Context, action: GlobalNotesActions): String = when (a
     GlobalNotesActions.EDIT_NOTE -> ctx.getString(R.string.edit)
     GlobalNotesActions.DELETE_NOTE -> ctx.getString(R.string.delete)
     GlobalNotesActions.COMPLETE_NOTE -> ctx.getString(R.string.complete)
+    GlobalNotesActions.DUPLICATE_NOTE -> ctx.getString(R.string.duplicate)
     GlobalNotesActions.TAG_FILTER -> ctx.getString(R.string.reset_filters)
     GlobalNotesActions.ADD_TAG -> ctx.getString(R.string.add_tag)
     GlobalNotesActions.TAGS -> ctx.getString(R.string.tags)

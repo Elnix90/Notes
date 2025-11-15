@@ -16,6 +16,7 @@ fun defaultEnabledItems (toolbar: ToolBars): List<GlobalNotesActions>? = when (t
     ToolBars.SELECT -> listOf(
         GlobalNotesActions.DESELECT_ALL,
         GlobalNotesActions.SPACER1,
+        GlobalNotesActions.DUPLICATE_NOTE,
         GlobalNotesActions.EDIT_NOTE,
         GlobalNotesActions.COMPLETE_NOTE,
         GlobalNotesActions.DELETE_NOTE

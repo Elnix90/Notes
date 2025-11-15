@@ -230,6 +230,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             GlobalNotesActions.EDIT_NOTE -> onGroupAction(NotesActions.EDIT)
             GlobalNotesActions.DELETE_NOTE -> onGroupAction(NotesActions.DELETE)
             GlobalNotesActions.COMPLETE_NOTE -> onGroupAction(NotesActions.COMPLETE)
+            GlobalNotesActions.DUPLICATE_NOTE -> onGroupAction(NotesActions.DUPLICATE)
             GlobalNotesActions.TAG_FILTER -> when (clickType) {
                 ClickType.NORMAL ->  scope.launch {
                     TagsSettingsStore.setAllTagsSelected(ctx, true)
@@ -604,6 +605,7 @@ fun performAction(
         }
         NotesActions.EDIT -> navController.navigate("edit/${note.id}?type=${note.type.name}")
         NotesActions.SELECT -> onSelectStart?.invoke()
+        NotesActions.DUPLICATE -> scope.launch { navController.navigate("edit/${vm.duplicateNote(note.id)}?type=${note.type.name}") }
         NotesActions.NONE -> return
     }
 }

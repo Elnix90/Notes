@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.QuestionMark
@@ -12,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import org.elnix.notes.R
 import org.elnix.notes.ui.theme.LocalExtraColors
 
-enum class NotesActions { DELETE, COMPLETE, EDIT, SELECT, NONE }
+enum class NotesActions { DELETE, COMPLETE, EDIT, SELECT, DUPLICATE, NONE }
 
     data class NoteActionSettings(
     val leftAction: NotesActions = NotesActions.DELETE,
@@ -31,6 +32,7 @@ fun noteActionColor(action: NotesActions): Color {
         NotesActions.EDIT -> extras.edit
         NotesActions.COMPLETE -> extras.complete
         NotesActions.SELECT -> extras.select
+        NotesActions.DUPLICATE -> extras.complete
         NotesActions.NONE -> Color.Transparent
     }
 }
@@ -41,6 +43,7 @@ fun noteActionName(ctx: Context, action: NotesActions) =  when (action) {
     NotesActions.EDIT -> ctx.getString(R.string.edit)
     NotesActions.COMPLETE -> ctx.getString(R.string.complete)
     NotesActions.SELECT -> ctx.getString(R.string.select)
+    NotesActions.DUPLICATE -> ctx.getString(R.string.duplicate)
     NotesActions.NONE -> ""
 }
 
@@ -50,5 +53,6 @@ fun noteActionIcon(action: NotesActions) = when (action) {
     NotesActions.EDIT -> Icons.Default.Edit
     NotesActions.COMPLETE -> Icons.Default.CheckBox
     NotesActions.SELECT -> Icons.Default.CheckCircle
+    NotesActions.DUPLICATE -> Icons.Default.ContentCopy
     NotesActions.NONE -> Icons.Default.QuestionMark
 }

@@ -15,13 +15,11 @@ android {
         applicationId = "org.elnix.notes"
         minSdk = 26
         targetSdk = 36
-        versionCode = 13
-        versionName = "0.10.1-alpha"
+        versionCode = 14
+        versionName = "0.11-alpha"
     }
 
-    lint {
-        baseline = file("lint-baseline.xml")
-    }
+
 
     buildTypes {
         release {

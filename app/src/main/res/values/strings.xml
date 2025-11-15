@@ -215,7 +215,7 @@
     <string name="toolbars_customisation_text">Here you\'ll find all the options to customise your toolbar, colors, border, padding… Enjoy :)</string>
     <string name="choose_your_app_language">Choose your app language</string>
     <string name="plugins_explanation">Some external plugins you can chose to enable, it uses ContentProvider to transmit data</string>
-    <string name="secutity_explanation">Here you can protect you app by biometrics or device password. I\'m not responsible for ANY data loss or any trouble you might get into</string>
+    <string name="security_explanation">Here you can protect you app by biometrics or device password. I\'m not responsible for ANY data loss or any trouble you might get into</string>
     <string name="failed_to_reset_settings">Failed to reset settings</string>
     <string name="failed_to_update_setting">Failed to update setting</string>
     <string name="are_you_sure_to_reset_this_toolbar">Are you sure to reset this toolbar?</string>

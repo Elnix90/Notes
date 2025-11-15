@@ -6,16 +6,22 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
-fun scheduleReminderNotification(context: Context, reminder: ReminderEntity, title: String) {
+fun scheduleReminderNotification(context: Context, reminder: ReminderEntity, note: NoteEntity, title: String) {
     val now = Calendar.getInstance()
     val delay = reminder.dueDateTime.timeInMillis - now.timeInMillis
     if (delay <= 0) return
 
-    val data = workDataOf("title" to title)
+    val data = workDataOf(
+        "title" to title,
+        "note_id" to note.id,
+        "note_type" to note.type.name,
+        "reminder_id" to reminder.id
+    )
 
     val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
         .setInputData(data)

@@ -22,8 +22,6 @@ import java.util.concurrent.TimeUnit
 class NotificationActionReceiver : BroadcastReceiver() {
 
     override fun onReceive(ctx: Context, intent: Intent) {
-        Log.d("Notification Intent", "Received intent: $intent")
-
 
         val actionTypeName = intent.getStringExtra("action_type") ?: return
         val reminderId = intent.getLongExtra("reminder_id", -1)
@@ -41,11 +39,10 @@ class NotificationActionReceiver : BroadcastReceiver() {
             val reminder: ReminderEntity = reminderRepo.getById(reminderId) ?: return@launch
             val note = noteRepo.getById(reminder.noteId) ?: return@launch
 
-            Log.d("NotificationAction", "Received action: $actionTypeName")
-
             when (actionType) {
                 NotificationActionType.MARK_COMPLETED -> {
                     noteRepo.upsert(note.copy(isCompleted = true))
+                    Log.e("Note completing","Note ${note.id} (${note.title} marked as complete")
                     showToast(ctx, "Note marked as completed!")
                 }
 

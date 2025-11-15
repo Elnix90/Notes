@@ -330,6 +330,7 @@ fun UnifiedTextualNotesEditor(
                     onExpand = { scope.launch { UiSettingsStore.setShowReminderDropdownEditor(ctx, it) } }
                 ) {
                     RemindersSection(
+                        note = currentNote,
                         reminders = reminders,
                         activity = activity,
                         currentId = currentNote.id,

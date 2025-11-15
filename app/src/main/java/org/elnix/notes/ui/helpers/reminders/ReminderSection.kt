@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
+import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
 import org.elnix.notes.ui.NoteViewModel
@@ -31,6 +32,7 @@ import org.elnix.notes.utils.scheduleReminderNotification
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RemindersSection(
+    note: NoteEntity,
     reminders: List<ReminderEntity>,
     activity: FragmentActivity,
     currentId: Long?,
@@ -59,8 +61,9 @@ fun RemindersSection(
                         vm.updateReminder(updatedReminder)
                         if (reminder.enabled) {
                             scheduleReminderNotification(
-                                ctx,
-                                updatedReminder,
+                                context = ctx,
+                                reminder = updatedReminder,
+                                note = note,
                                 title = title.ifBlank { reminderText }
                             )
                         } else {
@@ -102,8 +105,9 @@ fun RemindersSection(
                 scope.launch {
                     val id = vm.addReminder(reminderEntity)
                     scheduleReminderNotification(
-                        ctx,
-                        reminderEntity.copy(id = id),
+                        context = ctx,
+                        reminder = reminderEntity.copy(id = id),
+                        note = note,
                         title = title.ifBlank { reminderText }
                     )
                 }

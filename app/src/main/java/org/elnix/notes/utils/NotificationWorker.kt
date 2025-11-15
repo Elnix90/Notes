@@ -12,10 +12,8 @@ import androidx.work.WorkerParameters
 import kotlinx.coroutines.flow.first
 import org.elnix.notes.MainActivity
 import org.elnix.notes.R
-import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.settings.stores.NotificationActionType
 import org.elnix.notes.data.settings.stores.NotificationsSettingsStore
-import kotlin.random.Random
 
 class NotificationWorker(
     context: Context,
@@ -24,7 +22,11 @@ class NotificationWorker(
 
     override suspend fun doWork(): Result {
         val title = inputData.getString("title") ?: return Result.failure()
-        val reminderId = inputData.getLong("reminder_id", Random.nextLong())
+        val noteId = inputData.getLong("note_id", -1L)
+        val noteType = inputData.getString("note_type") ?: return Result.failure()
+        val reminderId = inputData.getLong("reminder_id", -1L)
+
+        if (noteId == -1L || reminderId == -1L) return  Result.failure()
 
         val notificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -77,8 +79,8 @@ class NotificationWorker(
         val openIntent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             // This will be read by MainActivity to navigate
-            putExtra("open_note_id", reminderId)
-            putExtra("open_note_type", NoteType.TEXT.name) // or pass actual type if available
+            putExtra("open_note_id", noteId)
+            putExtra("open_note_type", noteType)
         }
 
         val openPendingIntent = PendingIntent.getActivity(

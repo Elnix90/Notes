@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
@@ -86,14 +87,15 @@ fun RemindersDebugTab(ctx: Context, scope: CoroutineScope, vm: NoteViewModel, on
                         val noteId = vm.createFakeNotes(1).first()
 
                         scheduleReminderNotification(
-                            ctx,
-                            ReminderEntity(
+                            context = ctx,
+                            reminder = ReminderEntity(
                                 noteId = noteId,
                                 dueDateTime = Calendar.getInstance().apply {
                                     add(Calendar.SECOND, 1)
                                 }
                             ),
-                            "Test"
+                            note = NoteEntity(),
+                            title = "Test"
                         )
                     }
                 },

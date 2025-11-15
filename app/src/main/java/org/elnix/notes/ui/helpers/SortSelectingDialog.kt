@@ -82,13 +82,13 @@ fun SortSelectorDialog(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 4.dp)
                                 .clickable {
                                     scope.launch {
                                         SortSettingsStore.setSortType(ctx, type)
                                         onClose()
                                     }
                                 }
+                                .padding(horizontal = 4.dp)
                         ) {
                             RadioButton(
                                 selected = (currentSortType == type),
@@ -137,12 +137,12 @@ fun SortSelectorDialog(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 4.dp)
                                 .clickable {
                                     scope.launch {
                                         SortSettingsStore.setSortMode(ctx, mode)
                                     }
                                 }
+                                .padding(horizontal = 4.dp)
                         ) {
                             RadioButton(
                                 selected = (currentSortMode == mode),

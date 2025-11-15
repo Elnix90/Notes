@@ -8,14 +8,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.settings.dataStore
 
+
 object PluginsSettingsStore {
 
     // AlphaLM app access permission
     private val ALLOW_ALPHALLM_ACCESS = booleanPreferencesKey("allow_alphallm_access")
-    
     fun getAllowAlphaLMAccess(ctx: Context): Flow<Boolean> =
         ctx.dataStore.data.map { it[ALLOW_ALPHALLM_ACCESS] ?: false }
-
     suspend fun setAllowAlphaLMAccess(ctx: Context, allowed: Boolean) {
         ctx.dataStore.edit { it[ALLOW_ALPHALLM_ACCESS] = allowed }
         // Also write to SharedPreferences for synchronous access in ContentProvider
@@ -35,7 +34,6 @@ object PluginsSettingsStore {
         val prefs = ctx.dataStore.data.first()
         return buildMap {
             prefs[ALLOW_ALPHALLM_ACCESS]?.let { put(ALLOW_ALPHALLM_ACCESS.name, it) }
-
         }
     }
 

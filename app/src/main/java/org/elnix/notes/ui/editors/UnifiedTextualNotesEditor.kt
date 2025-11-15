@@ -1,7 +1,11 @@
 package org.elnix.notes.ui.editors
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -58,6 +62,7 @@ import org.elnix.notes.Routes
 import org.elnix.notes.data.ChecklistItem
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.NoteType
+import org.elnix.notes.data.settings.stores.DebugSettingsStore
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
@@ -88,6 +93,8 @@ fun UnifiedTextualNotesEditor(
 ) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    val showNoteIdInEditor by DebugSettingsStore.getShowNoteIdInEditor(ctx).collectAsState(initial = false)
 
     // --- State ---
     var note by remember { mutableStateOf<NoteEntity?>(null) }
@@ -175,6 +182,7 @@ fun UnifiedTextualNotesEditor(
                 .weight(1f)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(bottom = 150.dp)
         ) {
             // --- Title ---
@@ -387,6 +395,22 @@ fun UnifiedTextualNotesEditor(
                                     vm.delete(currentNote)
                                     navController.navigate(Routes.NOTES)
                                 }
+                            }
+                        }
+                    )
+                }
+            }
+            item {
+                if (showNoteIdInEditor) {
+                    Text(
+                        text = "Note ID: ${noteId ?: " no ID"}",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.clickable(enabled = noteId != null) {
+                            noteId?.let {
+                                val clipboard = ctx.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val clip = ClipData.newPlainText("Note ID", it.toString())
+                                clipboard.setPrimaryClip(clip)
+                                Toast.makeText(ctx, "Id copied to clipboard", Toast.LENGTH_SHORT).show()
                             }
                         }
                     )

@@ -28,6 +28,8 @@ fun OtherDebugTab(onBack: (() -> Unit)) {
     val forceAppLanguageSelector by DebugSettingsStore.getForceAppLanguageSelector(ctx).collectAsState(initial = false)
     val isForceSwitchToggled = forceAppLanguageSelector || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
 
+    val showNoteIdInEditor by DebugSettingsStore.getShowNoteIdInEditor(ctx).collectAsState(initial = false)
+
     SettingsLazyHeader(
         title = "Debug -> Other",
         onBack = onBack,
@@ -55,6 +57,13 @@ fun OtherDebugTab(onBack: (() -> Unit)) {
                 text = "Force app language selector",
                 enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             ) { scope.launch { DebugSettingsStore.setForceAppLanguageSelector(ctx, it) } }
+        }
+
+        item {
+            SwitchRow(
+                state = showNoteIdInEditor ,
+                text = "Show note ID in editor",
+            ) { scope.launch { DebugSettingsStore.setShowNoteIdInEditor(ctx, it) } }
         }
 
         item {

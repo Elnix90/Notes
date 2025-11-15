@@ -1,103 +1,146 @@
 package org.elnix.notes.data.settings.stores
 
 import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import org.elnix.notes.R
 import org.elnix.notes.data.settings.dataStore
 
 enum class NotificationActionType { MARK_COMPLETED, SNOOZE, DELETE }
 
+fun notificationActionName(ctx: Context, notifAction: NotificationActionType) = when (notifAction) {
+    NotificationActionType.MARK_COMPLETED -> ctx.getString(R.string.complete)
+    NotificationActionType.SNOOZE -> ctx.getString(R.string.snooze)
+    NotificationActionType.DELETE -> ctx.getString(R.string.delete)
+}
+
 data class NotificationActionSetting(
-    val enabled: Boolean = true,
     val actionType: NotificationActionType,
-    val snoozeMinutes: Int = 10 // default snooze duration
+    val enabled: Boolean = true,
+    val snoozeMinutes: Int = 10
 )
-
-data class NotificationsBackup(
-    val markCompletedEnabled: Boolean,
-    val snoozeEnabled: Boolean,
-    val deleteEnabled: Boolean,
-    val snoozeDuration: Int
-)
-
 
 object NotificationsSettingsStore {
 
-    private val MARK_COMPLETED_ENABLED = booleanPreferencesKey("mark_completed_enabled")
-    private val SNOOZE_ENABLED = booleanPreferencesKey("snooze_enabled")
-    private val DELETE_ENABLED = booleanPreferencesKey("delete_enabled")
-    private val SNOOZE_DURATION = intPreferencesKey("snooze_duration") // in minutes
+    private val KEY = stringPreferencesKey("notification_actions")
+    private val gson = Gson()
 
+    private val listType = object : TypeToken<List<NotificationActionSetting>>() {}.type
+
+    val defaultList = listOf(
+        NotificationActionSetting(NotificationActionType.MARK_COMPLETED, enabled = true),
+        NotificationActionSetting(NotificationActionType.SNOOZE, enabled = true, snoozeMinutes = 10),
+        NotificationActionSetting(NotificationActionType.DELETE, enabled = true)
+    )
+
+    // -------------------------------------------------------------------------
+    // Flow (full list, including order)
+    // -------------------------------------------------------------------------
     fun getSettingsFlow(ctx: Context): Flow<List<NotificationActionSetting>> =
         ctx.dataStore.data.map { prefs ->
-            listOf(
-                NotificationActionSetting(
-                    enabled = prefs[MARK_COMPLETED_ENABLED] ?: true,
-                    actionType = NotificationActionType.MARK_COMPLETED
-                ),
-                NotificationActionSetting(
-                    enabled = prefs[SNOOZE_ENABLED] ?: true,
-                    actionType = NotificationActionType.SNOOZE,
-                    snoozeMinutes = prefs[SNOOZE_DURATION] ?: 10
-                ),
-                NotificationActionSetting(
-                    enabled = prefs[DELETE_ENABLED] ?: true,
-                    actionType = NotificationActionType.DELETE
-                )
-            )
+            val raw = prefs[KEY]
+            if (raw.isNullOrBlank()) {
+                defaultList
+            } else {
+                runCatching { gson.fromJson<List<NotificationActionSetting>>(raw, listType) }
+                    .getOrDefault(defaultList)
+            }
         }
 
-    suspend fun setEnabled(ctx: Context, actionType: NotificationActionType, enabled: Boolean) {
-        ctx.dataStore.edit { prefs ->
-            when(actionType) {
-                NotificationActionType.MARK_COMPLETED -> prefs[MARK_COMPLETED_ENABLED] = enabled
-                NotificationActionType.SNOOZE -> prefs[SNOOZE_ENABLED] = enabled
-                NotificationActionType.DELETE -> prefs[DELETE_ENABLED] = enabled
+    // -------------------------------------------------------------------------
+    // Enable/Disable a specific action
+    // -------------------------------------------------------------------------
+    suspend fun setEnabled(ctx: Context, type: NotificationActionType, enabled: Boolean) {
+        update(ctx) { list ->
+            list.map {
+                if (it.actionType == type) it.copy(enabled = enabled)
+                else it
             }
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Update snooze minutes
+    // -------------------------------------------------------------------------
     suspend fun setSnoozeDuration(ctx: Context, minutes: Int) {
-        ctx.dataStore.edit { prefs ->
-            prefs[SNOOZE_DURATION] = minutes
+        update(ctx) { list ->
+            list.map {
+                if (it.actionType == NotificationActionType.SNOOZE) it.copy(snoozeMinutes = minutes)
+                else it
+            }
         }
     }
 
     suspend fun getSnoozeDuration(ctx: Context): Int {
-        val prefs = ctx.dataStore.data.first()
-        return prefs[SNOOZE_DURATION] ?: 600
+        val current = getList(ctx)
+        return current.find { it.actionType == NotificationActionType.SNOOZE }?.snoozeMinutes ?: 10
     }
 
-    suspend fun resetAll(ctx: Context) {
-        ctx.dataStore.edit { prefs ->
-            prefs.remove(MARK_COMPLETED_ENABLED)
-            prefs.remove(SNOOZE_ENABLED)
-            prefs.remove(DELETE_ENABLED)
-            prefs.remove(SNOOZE_DURATION)
+    // -------------------------------------------------------------------------
+    // Reorder: replace list in new order
+    // -------------------------------------------------------------------------
+    suspend fun setActionOrder(ctx: Context, order: List<NotificationActionType>) {
+        update(ctx) { list ->
+            val map = list.associateBy { it.actionType }
+            order.mapNotNull { map[it] }
         }
     }
 
-    suspend fun getAll(ctx: Context): NotificationsBackup {
-        val prefs = ctx.dataStore.data.first()
-        return NotificationsBackup(
-            markCompletedEnabled = prefs[MARK_COMPLETED_ENABLED] ?: true,
-            snoozeEnabled = prefs[SNOOZE_ENABLED] ?: true,
-            deleteEnabled = prefs[DELETE_ENABLED] ?: true,
-            snoozeDuration = prefs[SNOOZE_DURATION] ?: 10
-        )
+    // -------------------------------------------------------------------------
+    // Get the list (one-shot)
+    // -------------------------------------------------------------------------
+    suspend fun getList(ctx: Context): List<NotificationActionSetting> {
+        val raw = ctx.dataStore.data.first()[KEY]
+        if (raw.isNullOrBlank()) return defaultList
+        return runCatching { gson.fromJson<List<NotificationActionSetting>>(raw, listType) }
+            .getOrDefault(defaultList)
     }
 
+    // -------------------------------------------------------------------------
+    // Internal update helper (mirrors ToolbarsSettingsStore.updateToolbarSetting)
+    // -------------------------------------------------------------------------
+    private suspend fun update(
+        ctx: Context,
+        modifier: (List<NotificationActionSetting>) -> List<NotificationActionSetting>
+    ) {
+        withContext(Dispatchers.IO) {
+            ctx.dataStore.edit { prefs ->
+                val raw = prefs[KEY]
+                val current = if (raw.isNullOrBlank()) {
+                    defaultList
+                } else {
+                    runCatching { gson.fromJson<List<NotificationActionSetting>>(raw, listType) }
+                        .getOrDefault(defaultList)
+                }
 
-    suspend fun setAll(ctx: Context, backup: NotificationsBackup) {
+                val updated = modifier(current)
+                prefs[KEY] = gson.toJson(updated)
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Reset + Backup/Restore (same structure as Toolbars)
+    // -------------------------------------------------------------------------
+    suspend fun resetAll(ctx: Context) {
+        ctx.dataStore.edit { prefs -> prefs.remove(KEY) }
+    }
+
+    suspend fun getAll(ctx: Context): String? {
+        return ctx.dataStore.data.first()[KEY]
+    }
+
+    suspend fun setAll(ctx: Context, data: String?) {
         ctx.dataStore.edit { prefs ->
-            prefs[MARK_COMPLETED_ENABLED] = backup.markCompletedEnabled
-            prefs[SNOOZE_ENABLED] = backup.snoozeEnabled
-            prefs[DELETE_ENABLED] = backup.deleteEnabled
-            prefs[SNOOZE_DURATION] = backup.snoozeDuration
+            if (data != null) prefs[KEY] = data
+            else prefs.remove(KEY)
         }
     }
 }

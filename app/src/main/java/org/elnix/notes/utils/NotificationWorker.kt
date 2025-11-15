@@ -14,6 +14,7 @@ import org.elnix.notes.MainActivity
 import org.elnix.notes.R
 import org.elnix.notes.data.settings.stores.NotificationActionType
 import org.elnix.notes.data.settings.stores.NotificationsSettingsStore
+import org.elnix.notes.data.settings.stores.notificationActionName
 
 class NotificationWorker(
     context: Context,
@@ -71,7 +72,7 @@ class NotificationWorker(
 
             builder.addAction(
                 android.R.drawable.ic_menu_send,
-                setting.actionType.name.replace("_", " "),
+                notificationActionName(applicationContext, setting.actionType),
                 pendingIntent
             )
         }

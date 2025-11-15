@@ -244,4 +244,6 @@
     <string name="sort_type">Sort Order</string>
     <string name="sort_mode">Sort Mode</string>
     <string name="select_a_sort_option">Select a Sort Option</string>
+    <string name="snooze">Snooze</string>
+    <string name="notifications_buttons">Notifications Buttons</string>
 </resources>

@@ -1,5 +1,6 @@
 package org.elnix.notes.utils
 
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -29,6 +30,10 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         if (reminderId == -1L) return
 
+        val notificationManager =
+            ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(reminderId.toInt())
+
         val actionType = NotificationActionType.valueOf(actionTypeName)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -41,7 +46,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
             when (actionType) {
                 NotificationActionType.MARK_COMPLETED -> {
-                    noteRepo.upsert(note.copy(isCompleted = true))
+                    noteRepo.upsert(note.copy(isCompleted = !note.isCompleted))
                     Log.e("Note completing","Note ${note.id} (${note.title} marked as complete")
                     showToast(ctx, "Note marked as completed!")
                 }

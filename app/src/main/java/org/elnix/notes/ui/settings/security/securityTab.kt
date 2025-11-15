@@ -45,7 +45,7 @@ fun SecurityTab(onBack: (() -> Unit)) {
     SettingsLazyHeader(
         title = stringResource(R.string.security_privacy),
         onBack = onBack,
-        helpText = stringResource(R.string.secutity_explanation),
+        helpText = stringResource(R.string.security_explanation),
         onReset = {
             if (settings.useBiometrics || settings.useDeviceCredential) {
                 scope.launch {

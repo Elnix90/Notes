@@ -71,6 +71,7 @@ fun ToolbarCustomisationTab(
                 ctx = ctx,
                 toolbar = toolbarSetting.toolbar,
                 scrollState = rememberScrollState(),
+                isMultiSelect = false,
                 isSearchExpanded = false,
                 color = toolbarSetting.color,
                 borderColor = toolbarSetting.borderColor,

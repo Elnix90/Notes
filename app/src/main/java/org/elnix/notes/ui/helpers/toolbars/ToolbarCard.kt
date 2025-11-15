@@ -63,6 +63,7 @@ fun ToolbarCard(
     ctx: Context,
     items: List<ToolbarItemState>,
     scrollState: ScrollState,
+    isMultiSelect: Boolean,
     isSearchExpanded: Boolean,
     height: Dp,
     backgroundColor: Color,
@@ -165,7 +166,9 @@ fun ToolbarCard(
                                                 .clip(CircleShape)
                                                 .padding(5.dp)
                                                 .background(searchBoxColor)
-                                                .clickable { searchText = ""; onSearchChange?.invoke("") },
+                                                .clickable {
+                                                    searchText = ""; onSearchChange?.invoke("")
+                                                },
                                             tint = MaterialTheme.colorScheme.error.copy(0.7f)
                                         )
                                     } else
@@ -194,24 +197,24 @@ fun ToolbarCard(
                             )
                         }
                     }
-
                     else -> {
-                        GlobalActionIcon(
-                            ctx = ctx,
-                            color = item.color,
-                            action = action,
-                            ghosted = ghosted,
-                            scale = scale,
-                            showButtonLabel = item.showLabel,
-                            onClick = { onActionClick(action, ClickType.NORMAL, null) },
-                            onLongClick = if (ClickType.LONG in neededClickTypes) {
-                                { onActionClick(action, ClickType.LONG, null) }
-                            } else null,
-                            onDoubleClick = if (ClickType.DOUBLE in neededClickTypes) {
-                                { onActionClick(action, ClickType.DOUBLE, null) }
-                            } else null,
-                        )
-
+                        if (!(isMultiSelect && action == GlobalNotesActions.EDIT_NOTE)) {
+                            GlobalActionIcon(
+                                ctx = ctx,
+                                color = item.color,
+                                action = action,
+                                ghosted = ghosted,
+                                scale = scale,
+                                showButtonLabel = item.showLabel,
+                                onClick = { onActionClick(action, ClickType.NORMAL, null) },
+                                onLongClick = if (ClickType.LONG in neededClickTypes) {
+                                    { onActionClick(action, ClickType.LONG, null) }
+                                } else null,
+                                onDoubleClick = if (ClickType.DOUBLE in neededClickTypes) {
+                                    { onActionClick(action, ClickType.DOUBLE, null) }
+                                } else null
+                            )
+                        }
                     }
                 }
             }

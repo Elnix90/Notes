@@ -16,7 +16,6 @@ fun UserConfirmDebugTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit
 
     val showNoteDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationDeleteNote(ctx).collectAsState(initial = true)
     val showMultipleDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationMultipleDeleteNote(ctx).collectAsState(initial = true)
-    val showMultipleEditConfirmation by UserConfirmSettingsStore.getShowUserValidationEditMultipleNote(ctx).collectAsState(initial = true)
     val showUserConfirmEnableDebug by UserConfirmSettingsStore.getShowEnableDebug(ctx).collectAsState(initial = true)
 
     SettingsLazyHeader(
@@ -47,20 +46,6 @@ fun UserConfirmDebugTab(ctx: Context, scope: CoroutineScope, onBack: (() -> Unit
             ) { checked ->
                 scope.launch {
                     UserConfirmSettingsStore.setShowUserValidationMultipleDeleteNote(
-                        ctx,
-                        checked
-                    )
-                }
-            }
-        }
-
-        item {
-            SwitchRow(
-                showMultipleEditConfirmation,
-                "Show multiple edit confirmation"
-            ) { checked ->
-                scope.launch {
-                    UserConfirmSettingsStore.setShowUserValidationEditMultipleNote(
                         ctx,
                         checked
                     )

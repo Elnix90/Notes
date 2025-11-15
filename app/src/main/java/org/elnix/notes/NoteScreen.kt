@@ -86,6 +86,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     // Manage selection state
     val isSelectingEnabled = toolbars.find { it.toolbar == ToolBars.SELECT }!!.enabled
     var selectedNotes by remember { mutableStateOf<Set<NoteEntity>>(emptySet()) }
+    val isSeveralSelectedNotes = selectedNotes.size > 1
     var isMultiSelectMode by remember { mutableStateOf(false) }
     var isReorderMode by remember { mutableStateOf(false) }
     var showAddNoteMenu by remember { mutableStateOf(false) }
@@ -303,6 +304,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         ctx,
                         toolbar = ToolBars.SELECT,
                         scrollState = rememberScrollState(),
+                        isMultiSelect = isSeveralSelectedNotes,
                         isSearchExpanded = isSearchExpandedSelect,
                         color = bar.color,
                         borderColor = bar.borderColor,
@@ -322,6 +324,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         ctx = ctx,
                         toolbar = ToolBars.TAGS,
                         scrollState = rememberScrollState(),
+                        isMultiSelect = isSeveralSelectedNotes,
                         isSearchExpanded = isSearchExpandedTags,
                         color = bar.color,
                         borderColor = bar.borderColor,
@@ -341,6 +344,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         ctx = ctx,
                         toolbar = ToolBars.QUICK_ACTIONS,
                         scrollState = rememberScrollState(),
+                        isMultiSelect = isSeveralSelectedNotes,
                         isSearchExpanded = isSearchExpandedQuickActions,
                         color = bar.color,
                         borderColor = bar.borderColor,borderWidth = bar.borderWidth,

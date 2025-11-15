@@ -169,6 +169,7 @@ fun ToolbarsOrderTab(
                                 ctx = ctx,
                                 toolbar = bar.toolbar,
                                 scrollState = scrollState,
+                                isMultiSelect = false,
                                 isSearchExpanded = false,
                                 color = bar.color,
                                 borderColor = bar.borderColor,

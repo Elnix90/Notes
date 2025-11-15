@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
@@ -18,8 +19,11 @@ import org.elnix.notes.data.NoteRepository
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.ReminderRepository
 import org.elnix.notes.data.helpers.NoteType
+import org.elnix.notes.data.helpers.SortMode
+import org.elnix.notes.data.helpers.SortType
 import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
+import org.elnix.notes.data.settings.stores.SortSettingsStore
 import org.elnix.notes.utils.ReminderOffset
 import kotlin.random.Random
 
@@ -29,7 +33,32 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     private val noteRepo = NoteRepository(AppDatabase.get(ctx).noteDao())
     private val reminderRepo = ReminderRepository(AppDatabase.get(ctx).reminderDao())
 
-    val notes = noteRepo.observeAll()
+    val sortModeFlow = SortSettingsStore.getSortMode(ctx)
+    val sortTypeFlow = SortSettingsStore.getSortType(ctx)
+
+    val notes = combine(
+        noteRepo.observeAll(),
+        sortTypeFlow,
+        sortModeFlow
+    ) { notes, type, mode ->
+
+        val sorted = when (type) {
+
+            SortType.CUSTOM -> notes.sortedBy { it.orderIndex }
+
+            SortType.DATE -> notes.sortedBy { it.lastEdit }
+
+            SortType.TITLE -> notes.sortedBy { it.title.lowercase() }
+
+            SortType.COMPLETED -> notes.sortedBy { note ->
+                val done = note.checklist.count { it.checked }
+                val total = note.checklist.size.coerceAtLeast(1)
+                done.toFloat() / total
+            }
+        }
+
+        if (mode == SortMode.ASC) sorted else sorted.reversed()
+    }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
 

@@ -23,6 +23,7 @@ fun defaultEnabledItems (toolbar: ToolBars): List<GlobalNotesActions>? = when (t
     ToolBars.QUICK_ACTIONS -> listOf(
         GlobalNotesActions.SEARCH,
         GlobalNotesActions.ADD_NOTE,
+        GlobalNotesActions.SORT,
         GlobalNotesActions.SPACER2,
         GlobalNotesActions.SETTINGS
     )

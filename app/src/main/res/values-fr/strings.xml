@@ -213,7 +213,7 @@
     <string name="color_selector_text">Ce sont toutes les couleurs de l\'application. Si vous choisissez « Toutes », vous pourrez modifier CHAQUE couleur de mon application.</string>
     <string name="backup_text">Ici, vous pouvez choisir de sauvegarder ou de restaurer vos notes ou vos paramètres à partir d\'un fichier. Veillez à conserver soigneusement vos sauvegardes, car vous n\'avez aucun autre moyen de les récupérer.</string>
     <string name="customisation_text">Vous trouverez ici presque tous les paramètres de personnalisation de mon application. Cela peut sembler compliqué au premier abord, mais rien ne vous empêche d\'utiliser les paramètres par défaut et de les modifier si vous le souhaitez.</string>
-    <string name="toolbars_customisation_text">Vous trouverez ici toutes les options pour personnaliser votre barre d\'outils, les couleurs, les bordures, l\'espacement... Profitez-en :)</string>
+    <string name="toolbars_customisation_text">Vous trouverez ici toutes les options pour personnaliser votre barre d\'outils, les couleurs, les bordures, l\'espacement… Profitez-en :)</string>
     <string name="choose_your_app_language">Choisissez la langue de votre application</string>
     <string name="plugins_explanation">Certains plugins externes que vous pouvez choisir d\'activer utilise ContentProvider pour transmettre des informations.</string>
     <string name="secutity_explanation">Ici, vous pouvez protéger votre application à l\'aide de données biométriques ou d\'un mot de passe. Je ne suis pas responsable des pertes de données ou des problèmes que vous pourriez rencontrer.</string>
@@ -238,4 +238,11 @@
     <string name="notes_backup_restore">Notes Sauvegarder / Restaurer</string>
     <string name="settings_backup_restore">Paramètres Sauvegarder / Restaurer</string>
     <string name="notifications_help_text">Ici, vous pouvez personnaliser l\'apparence des notifications.</string>
+    <string name="sort_type">Ordre de tri</string>
+    <string name="date">Date</string>
+    <string name="custom_sort_order_text">Customisé (votre arrangement)</string>
+    <string name="asc">Ascendant</string>
+    <string name="desc">Descendant</string>
+    <string name="sort_mode">Mode de tri</string>
+    <string name="select_a_sort_option">Séléctionnez une option de tri</string>
 </resources>

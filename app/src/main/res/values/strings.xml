@@ -208,20 +208,20 @@
     <string name="reset_default_settings">Reset Default Settings</string>
     <string name="reset_all_default_settings_text">Are you sure you want to reset ALL settings to default?</string>
     <string name="appearance_tab_text">Those are the settings for the app\'s look</string>
-    <string name="reset_settings_in_this_tab">Are you sure to reset ALL settigns in this page?</string>
+    <string name="reset_settings_in_this_tab">Are you sure to reset ALL settings in this page?</string>
     <string name="color_selector_text">These are all the colors in the application. If you choose “All,” you will be able to change EVERY color in my application.</string>
     <string name="backup_text">Here, you can choose to back up or restore your notes or settings from a file. Be sure to keep your backups safe, as there is no other way to recover them.</string>
     <string name="customisation_text">Here you will find almost all of the customization settings for my application. It may seem complicated at first, but there is nothing stopping you from using the default settings and changing them if you wish.</string>
-    <string name="toolbars_customisation_text">Here you\'ll find all the options to customise your toolbar, colors, border, padding... Enjoy :)</string>
+    <string name="toolbars_customisation_text">Here you\'ll find all the options to customise your toolbar, colors, border, padding… Enjoy :)</string>
     <string name="choose_your_app_language">Choose your app language</string>
     <string name="plugins_explanation">Some external plugins you can chose to enable, it uses ContentProvider to transmit data</string>
-    <string name="secutity_explanation">Here you can protect you app by biomatrics or device password. I\'m not responsible for ANY data loss or any trouble you might get into</string>
+    <string name="secutity_explanation">Here you can protect you app by biometrics or device password. I\'m not responsible for ANY data loss or any trouble you might get into</string>
     <string name="failed_to_reset_settings">Failed to reset settings</string>
     <string name="failed_to_update_setting">Failed to update setting</string>
     <string name="are_you_sure_to_reset_this_toolbar">Are you sure to reset this toolbar?</string>
     <string name="main_settings">Main settings</string>
     <string name="pick_a_offset">Pick a offest</string>
-    <string name="create_new_offset">Create new Offet</string>
+    <string name="create_new_offset">Create new Offset</string>
     <string name="delete_offset">Delete Offset</string>
     <string name="are_you_sure_to_delete_offset">Are you sure to delete this Offset?</string>
     <string name="edit_offset">Edit Offset</string>
@@ -237,4 +237,11 @@
     <string name="notes_backup_restore">Notes backup / restore</string>
     <string name="settings_backup_restore">Settings Backup / Restore</string>
     <string name="notifications_help_text">Here, you can customize the appearance of notifications.</string>
+    <string name="date">Date</string>
+    <string name="custom_sort_order_text">Custom (your order)</string>
+    <string name="asc">Ascending</string>
+    <string name="desc">Descending</string>
+    <string name="sort_type">Sort Order</string>
+    <string name="sort_mode">Sort Mode</string>
+    <string name="select_a_sort_option">Select a Sort Option</string>
 </resources>

@@ -52,6 +52,7 @@ import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.AddNoteFab
+import org.elnix.notes.ui.helpers.SortSelectorDialog
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.tags.TagEditorDialog
 import org.elnix.notes.ui.helpers.toolbars.UnifiedToolbar
@@ -96,6 +97,9 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     var isSearchExpandedTags by remember { mutableStateOf(false) }
     var isSearchExpandedSelect by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf<String?>(null) }
+
+    // Sort
+    var showSortDialog by remember { mutableStateOf(false) }
 
 
     // Which notes to show is dependent on tag selector
@@ -243,10 +247,17 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 ToolBars.QUICK_ACTIONS -> isSearchExpandedQuickActions = !isSearchExpandedQuickActions
                 else ->  return
             }
-            GlobalNotesActions.SORT -> return //TODO
+            GlobalNotesActions.SORT -> showSortDialog = !showSortDialog
             GlobalNotesActions.SETTINGS -> navController.navigate(Routes.Settings.ROOT)
             GlobalNotesActions.DESELECT_ALL -> onGroupAction(NotesActions.SELECT)
-            GlobalNotesActions.REORDER -> Toast.makeText(ctx, ctx.getString(R.string.reorder_function_doesnt_work_yet), Toast.LENGTH_SHORT).show() /*isReorderMode = !isReorderMode*/ // TODO
+            GlobalNotesActions.REORDER -> {
+                Toast.makeText(
+                    ctx,
+                    ctx.getString(R.string.reorder_function_doesnt_work_yet),
+                    Toast.LENGTH_SHORT
+                ).show()
+                /*isReorderMode = !isReorderMode*/ // TODO
+            }
             GlobalNotesActions.EDIT_NOTE -> onGroupAction(NotesActions.EDIT)
             GlobalNotesActions.DELETE_NOTE -> onGroupAction(NotesActions.DELETE)
             GlobalNotesActions.COMPLETE_NOTE -> onGroupAction(NotesActions.COMPLETE)
@@ -581,6 +592,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             scope = scope,
             onDismiss = { showCreator = false }
         )
+    }
+
+    if (showSortDialog) {
+        SortSelectorDialog { showSortDialog = false }
+
     }
 
     if (showTagDeleteConfirm && editTag != null) {

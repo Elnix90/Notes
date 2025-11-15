@@ -100,11 +100,12 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
 
     // Which notes to show is dependent on tag selector
     val showTagSelector = toolbars.any { it.toolbar == ToolBars.TAGS && it.enabled }
+
     val notesToShow =
         if ( !showTagSelector || enabledTagIds.size == allTags.size ) notes
         else notes.filter { note -> note.tagIds.any { it in enabledTagIds } }
 
-    val filteredNotes = remember(notes, searchText) {
+    val filteredNotes = remember(notesToShow, searchText) {
         if (searchText.isNullOrBlank()) notesToShow
         else {
             val query = searchText!!.trim().lowercase()

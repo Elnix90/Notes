@@ -1,5 +1,7 @@
 package org.elnix.notes
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -89,7 +91,7 @@ fun SettingsListScreen(
 
     var toast by remember { mutableStateOf<Toast?>(null) }
 
-    val versionName = ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName
+    val versionName = ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName ?: "unknown"
 
     BackHandler { onBack() }
 
@@ -253,6 +255,15 @@ fun SettingsListScreen(
                         toast?.cancel()
 
                         when {
+
+                            timesClickedOnVersion == 0 -> {
+                                val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val clip = ClipData.newPlainText("Notes Version name", versionName)
+                                clipboard.setPrimaryClip(clip)
+                                Toast.makeText(ctx, "Version name copied to clipboard", Toast.LENGTH_SHORT).show()
+                                timesClickedOnVersion += 1
+                            }
+
                             isDebugModeEnabled -> {
                                 toast = Toast.makeText(
                                     ctx,

@@ -76,7 +76,10 @@ fun globalActionIcon(action: GlobalNotesActions): ImageVector = when (action) {
     GlobalNotesActions.COMPLETE_NOTE -> Icons.Default.CheckCircle
     GlobalNotesActions.TAG_FILTER -> Icons.Default.SelectAll
     GlobalNotesActions.ADD_TAG -> Icons.Default.AddCircle
-    else -> Icons.Default.QuestionMark
+    GlobalNotesActions.TAGS,
+    GlobalNotesActions.SPACER1,
+    GlobalNotesActions.SPACER2,
+    GlobalNotesActions.SPACER3 -> Icons.Default.QuestionMark
 }
 
 @Composable
@@ -94,7 +97,10 @@ fun globalActionColor(action: GlobalNotesActions): Color {
         GlobalNotesActions.COMPLETE_NOTE -> extras.complete
         GlobalNotesActions.TAG_FILTER -> extras.select
         GlobalNotesActions.ADD_TAG -> extras.edit
-        else -> MaterialTheme.colorScheme.outline
+        GlobalNotesActions.TAGS,
+        GlobalNotesActions.SPACER1,
+        GlobalNotesActions.SPACER2,
+        GlobalNotesActions.SPACER3 -> MaterialTheme.colorScheme.outline
     }
 }
 
@@ -110,7 +116,10 @@ fun globalActionName(ctx: Context, action: GlobalNotesActions): String = when (a
     GlobalNotesActions.COMPLETE_NOTE -> ctx.getString(R.string.complete)
     GlobalNotesActions.TAG_FILTER -> ctx.getString(R.string.reset_filters)
     GlobalNotesActions.ADD_TAG -> ctx.getString(R.string.add_tag)
-    else -> ctx.getString(R.string.spacer)
+    GlobalNotesActions.TAGS -> ctx.getString(R.string.tags)
+    GlobalNotesActions.SPACER1,
+    GlobalNotesActions.SPACER2,
+    GlobalNotesActions.SPACER3 -> ctx.getString(R.string.spacer)
 }
 
 

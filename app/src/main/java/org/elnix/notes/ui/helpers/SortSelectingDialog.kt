@@ -176,7 +176,7 @@ fun SortSelectorDialog(
 
         dismissButton = {
             Text(
-                text = stringResource(R.string.cancel),
+                text = stringResource(R.string.ok),
                 color = textColor,
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier

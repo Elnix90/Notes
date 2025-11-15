@@ -68,7 +68,7 @@ fun globalActionIcon(action: GlobalNotesActions): ImageVector = when (action) {
     GlobalNotesActions.SEARCH -> Icons.Default.Search
     GlobalNotesActions.SORT -> Icons.AutoMirrored.Filled.Sort
     GlobalNotesActions.SETTINGS -> Icons.Default.Settings
-    GlobalNotesActions.DESELECT_ALL -> Icons.Default.Close
+    GlobalNotesActions.DESELECT_ALL -> Icons.AutoMirrored.Filled.ArrowBack
     GlobalNotesActions.ADD_NOTE -> Icons.Default.Add
     GlobalNotesActions.REORDER -> Icons.Default.Reorder
     GlobalNotesActions.EDIT_NOTE -> Icons.Default.Edit

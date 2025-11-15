@@ -51,9 +51,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
             SortType.TITLE -> notes.sortedBy { it.title.lowercase() }
 
             SortType.COMPLETED -> notes.sortedBy { note ->
-                val done = note.checklist.count { it.checked }
-                val total = note.checklist.size.coerceAtLeast(1)
-                done.toFloat() / total
+                !note.isCompleted
             }
         }
 

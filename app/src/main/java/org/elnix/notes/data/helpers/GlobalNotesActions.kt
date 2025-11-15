@@ -18,7 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -75,7 +75,7 @@ fun globalActionIcon(action: GlobalNotesActions): ImageVector = when (action) {
     GlobalNotesActions.REORDER -> Icons.Default.Reorder
     GlobalNotesActions.EDIT_NOTE -> Icons.Default.Edit
     GlobalNotesActions.DELETE_NOTE -> Icons.Default.Delete
-    GlobalNotesActions.COMPLETE_NOTE -> Icons.Default.CheckCircle
+    GlobalNotesActions.COMPLETE_NOTE -> Icons.Default.CheckBox
     GlobalNotesActions.DUPLICATE_NOTE -> Icons.Default.ContentCopy
     GlobalNotesActions.TAG_FILTER -> Icons.Default.SelectAll
     GlobalNotesActions.ADD_TAG -> Icons.Default.AddCircle
@@ -85,26 +85,29 @@ fun globalActionIcon(action: GlobalNotesActions): ImageVector = when (action) {
     GlobalNotesActions.SPACER3 -> Icons.Default.QuestionMark
 }
 
+
+// First color: icon, second: background of icon
 @Composable
-fun globalActionColor(action: GlobalNotesActions): Color {
+fun globalActionColor(action: GlobalNotesActions): Pair<Color, Color> {
     val extras = LocalExtraColors.current
+
     return when (action) {
-        GlobalNotesActions.SEARCH -> extras.edit
-        GlobalNotesActions.SORT -> extras.complete
-        GlobalNotesActions.SETTINGS -> extras.select
-        GlobalNotesActions.DESELECT_ALL -> extras.delete
-        GlobalNotesActions.ADD_NOTE -> extras.complete
-        GlobalNotesActions.REORDER -> extras.edit
-        GlobalNotesActions.EDIT_NOTE -> extras.edit
-        GlobalNotesActions.DELETE_NOTE -> extras.delete
-        GlobalNotesActions.COMPLETE_NOTE -> extras.complete
-        GlobalNotesActions.DUPLICATE_NOTE -> extras.complete
-        GlobalNotesActions.TAG_FILTER -> extras.select
-        GlobalNotesActions.ADD_TAG -> extras.edit
+        GlobalNotesActions.SEARCH -> MaterialTheme.colorScheme.outline to Color.Transparent
+        GlobalNotesActions.SORT -> Color(0xFFFFFFFF) to Color(0xFF4CAF50)
+        GlobalNotesActions.SETTINGS -> MaterialTheme.colorScheme.primary to Color.Transparent
+        GlobalNotesActions.DESELECT_ALL -> MaterialTheme.colorScheme.outline to Color.Transparent
+        GlobalNotesActions.ADD_NOTE -> Color.White to Color(0xFF178F0B)
+        GlobalNotesActions.REORDER -> extras.edit to Color(0xFF1A1A1A)
+        GlobalNotesActions.EDIT_NOTE -> Color(0xFFFFFFFF) to Color(0xFF2196F3)
+        GlobalNotesActions.DELETE_NOTE -> extras.delete to Color.Transparent
+        GlobalNotesActions.COMPLETE_NOTE -> Color(0xFF212121) to Color(0xFF00E676)
+        GlobalNotesActions.DUPLICATE_NOTE -> Color(0xFF1CDECC) to Color.Transparent
+        GlobalNotesActions.TAG_FILTER -> MaterialTheme.colorScheme.outline to extras.select
+        GlobalNotesActions.ADD_TAG -> MaterialTheme.colorScheme.outline to Color.Transparent
         GlobalNotesActions.TAGS,
         GlobalNotesActions.SPACER1,
         GlobalNotesActions.SPACER2,
-        GlobalNotesActions.SPACER3 -> MaterialTheme.colorScheme.outline
+        GlobalNotesActions.SPACER3 -> Color.Transparent to Color.Transparent
     }
 }
 
@@ -131,7 +134,8 @@ fun globalActionName(ctx: Context, action: GlobalNotesActions): String = when (a
 @Composable
 fun GlobalActionIcon(
     ctx: Context,
-    color: Color?,
+    onColor: Color?,
+    bgColor: Color?,
     action: GlobalNotesActions,
     ghosted: Boolean = false,
     scale: Float = 1f,
@@ -144,8 +148,9 @@ fun GlobalActionIcon(
 
     val label = globalActionName(ctx, action)
 
-    val onColor = MaterialTheme.colorScheme.outline
-    val bgColor = color ?: globalActionColor(action)
+
+    val (defaultIconColor, defaultBgColor) = globalActionColor(action)
+    val (onColor, bgColor) = Pair(onColor?: defaultIconColor, bgColor ?: defaultBgColor)
 
     // Create a clickable modifier that passes clicks through if ghosted
     val clickModifier = if (ghosted) {

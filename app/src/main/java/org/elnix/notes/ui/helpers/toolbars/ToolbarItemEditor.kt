@@ -127,12 +127,13 @@ fun ToolbarItemsEditor(
                             ctx = ctx,
                             toolbar = toolbar,
                             action = item.action,
-                            newColor = null
+                            newBgColor = null,
+                            newIconColor = null
                         )
                     }
                 }
             },
-            enabled = toolbarItems.any { it.color != null },
+            enabled = toolbarItems.any { it.bgColor != null },
             colors = AppObjectsColors.buttonColors(),
             shape = CircleShape
         ){
@@ -248,7 +249,8 @@ fun ToolbarItemsEditor(
                                         else -> {
                                             GlobalActionIcon(
                                                 ctx = ctx,
-                                                color = item.color,
+                                                onColor = item.onColor,
+                                                bgColor = item.bgColor,
                                                 action = action,
                                                 showButtonLabel = item.showLabel,
                                                 onClick = {
@@ -305,19 +307,21 @@ fun ToolbarItemsEditor(
 
     if (editAction != null) {
         val actionToEdit = editAction!!
-        val defaultColor = globalActionColor(actionToEdit.action)
+        val (defaultIconColor, defaultBgColor) = globalActionColor(actionToEdit.action)
         ToolbarItemColorSelectorDialog(
             item = actionToEdit,
-            defaultColor = defaultColor,
+            defaultIconColor = defaultIconColor,
+            defaultBgColor = defaultBgColor,
             onDismiss = { editAction = null }
-        ) { color ->
-            if (color != defaultColor.toArgb()) {
+        ) { onColor, bgColor ->
+            if (onColor != defaultIconColor.toArgb() && bgColor != defaultBgColor.toArgb()) {
                 scope.launch {
                     ToolbarItemsSettingsStore.updateToolbarItemColor(
                         ctx = ctx,
                         toolbar = toolbar,
                         action = actionToEdit.action,
-                        newColor = Color(color)
+                        newIconColor = Color(onColor),
+                        newBgColor = Color(bgColor)
                     )
                 }
             }

@@ -27,14 +27,19 @@ import org.elnix.notes.ui.theme.adjustBrightness
 @Composable
 fun ToolbarItemColorSelectorDialog(
     item: ToolbarItemState,
-    defaultColor: Color,
+    defaultIconColor: Color,
+    defaultBgColor: Color,
     onDismiss: () -> Unit,
-    onValidate: (Int) -> Unit
+    onValidate: (Int, Int) -> Unit
 ) {
     val ctx = LocalContext.current
 
-    var colorInt by remember {
-        mutableIntStateOf(item.color?.toArgb() ?: defaultColor.toArgb())
+    var onColorInt by remember {
+        mutableIntStateOf(item.bgColor?.toArgb() ?: defaultIconColor.toArgb())
+    }
+
+    var bgColorInt by remember {
+        mutableIntStateOf(item.bgColor?.toArgb() ?: defaultBgColor.toArgb())
     }
 
     AlertDialog(
@@ -52,15 +57,23 @@ fun ToolbarItemColorSelectorDialog(
             ) {
                 ColorPickerRow(
                     label = stringResource(R.string.toolbar_color),
-                    defaultColor = defaultColor,
-                    currentColor = colorInt,
+                    defaultColor = defaultIconColor,
+                    currentColor = onColorInt,
                     backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
-                    onColorPicked = { colorInt = it}
+                    onColorPicked = { onColorInt = it}
+                )
+
+                ColorPickerRow(
+                    label = stringResource(R.string.toolbar_color),
+                    defaultColor = defaultBgColor,
+                    currentColor = bgColorInt,
+                    backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
+                    onColorPicked = { bgColorInt = it}
                 )
             }
         },
         confirmButton = {
-            Button(onClick = { onValidate(colorInt) }
+            Button(onClick = { onValidate(onColorInt, bgColorInt) }
             ) {
                 Text(
                     text = stringResource(R.string.save),

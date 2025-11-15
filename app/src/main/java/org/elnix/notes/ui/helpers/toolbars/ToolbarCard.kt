@@ -139,7 +139,8 @@ fun ToolbarCard(
                             GlobalActionIcon(
                                 ctx = ctx,
                                 action = action,
-                                color = item.color,
+                                onColor = item.onColor,
+                                bgColor = item.bgColor,
                                 ghosted = ghosted,
                                 scale = scale,
                                 showButtonLabel = item.showLabel
@@ -201,7 +202,8 @@ fun ToolbarCard(
                         if (!(isMultiSelect && action == GlobalNotesActions.EDIT_NOTE)) {
                             GlobalActionIcon(
                                 ctx = ctx,
-                                color = item.color,
+                                onColor = item.onColor,
+                                bgColor = item.bgColor,
                                 action = action,
                                 ghosted = ghosted,
                                 scale = scale,

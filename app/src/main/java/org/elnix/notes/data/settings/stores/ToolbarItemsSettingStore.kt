@@ -19,7 +19,8 @@ data class ToolbarItemState(
     val action: GlobalNotesActions,
     val enabled: Boolean = false,
     val showLabel: Boolean = false,
-    val color: Color? = null
+    val bgColor: Color? = null,
+    val onColor: Color? = null
 )
 
 object ToolbarItemsSettingsStore {
@@ -54,7 +55,8 @@ object ToolbarItemsSettingsStore {
         ctx: Context,
         toolbar: ToolBars,
         action: GlobalNotesActions,
-        newColor: Color?
+        newIconColor: Color?,
+        newBgColor: Color?,
     ) {
         val key = prefsKeyForToolbar(toolbar)
         ctx.dataStore.edit { prefs ->
@@ -67,7 +69,7 @@ object ToolbarItemsSettingsStore {
             }
 
             val updatedItems = currentItems.map { item ->
-                if (item.action == action) item.copy(color = newColor) else item
+                if (item.action == action) item.copy(onColor = newIconColor, bgColor = newBgColor) else item
             }
 
             prefs[key] = gson.toJson(updatedItems)

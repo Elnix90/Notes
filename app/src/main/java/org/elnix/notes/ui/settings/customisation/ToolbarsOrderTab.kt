@@ -265,7 +265,7 @@ fun ToolbarsOrderTab(
                     } else {
                         TextDivider(
                             stringResource(R.string.notes_display),
-                            backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
+                            backgroundColor = cardColor,
                             thickness = 5.dp,
                             modifier = Modifier
                                 .background(cardColor)

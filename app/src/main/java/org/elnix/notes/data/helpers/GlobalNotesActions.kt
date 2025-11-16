@@ -103,7 +103,7 @@ fun globalActionColor(action: GlobalNotesActions): Pair<Color, Color> {
         GlobalNotesActions.COMPLETE_NOTE -> Color(0xFF212121) to Color(0xFF00E676)
         GlobalNotesActions.DUPLICATE_NOTE -> Color(0xFF1CDECC) to Color.Transparent
         GlobalNotesActions.TAG_FILTER -> MaterialTheme.colorScheme.outline to extras.select
-        GlobalNotesActions.ADD_TAG -> MaterialTheme.colorScheme.outline to Color.Transparent
+        GlobalNotesActions.ADD_TAG -> MaterialTheme.colorScheme.outline to Color(0xFF15312F)
         GlobalNotesActions.TAGS,
         GlobalNotesActions.SPACER1,
         GlobalNotesActions.SPACER2,

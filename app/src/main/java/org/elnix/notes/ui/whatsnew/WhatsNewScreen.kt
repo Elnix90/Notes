@@ -1,40 +1,40 @@
 package org.elnix.notes.ui.whatsnew
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.elnix.notes.R
+import org.elnix.notes.ui.theme.adjustBrightness
 
 data class Update(
     val version: String,
     val changes: List<String>
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhatsNewBottomSheet(
     updates: List<Update>,
@@ -42,92 +42,71 @@ fun WhatsNewBottomSheet(
 ) {
     val scope = rememberCoroutineScope()
 
-    val half = 0.5f
-    val full = 1f
-    val sheetRatio = remember { Animatable(half) }
 
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f))
-            .pointerInput(Unit) {
-                detectTapGestures { offset ->
-//                    val sheetTop = constraints.maxHeight * (1f - sheetRatio.value)
-//                    if (offset.y < sheetTop) {
-                        scope.launch {
-                            sheetRatio.animateTo(0f, tween(200))
-                            onDismiss()
-                        }
-//                    }
-                }
-            },
-        contentAlignment = Alignment.BottomCenter
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+
+
+    ModalBottomSheet(
+        containerColor = MaterialTheme.colorScheme.surface,
+        onDismissRequest = {
+            scope.launch {
+                sheetState.hide()
+                onDismiss()
+            }
+        },
+        sheetState = sheetState,
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .height(4.dp)
+                    .width(40.dp)
+                    .padding(vertical = 8.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.outline
+//                        shape = MaterialTheme.shapes.small
+                    )
+            )
+        }
     ) {
-        val screenHeightPx = constraints.maxHeight.toFloat()
-
-        val sheetHeightDp = (sheetRatio.value * screenHeightPx).dp
-
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(sheetHeightDp)
-                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .pointerInput(Unit) {
-                    detectVerticalDragGestures(
-                        onVerticalDrag = { change, dragAmount ->
-                            change.consume()
-                            val deltaRatio = dragAmount / screenHeightPx
-                            val newRatio = (sheetRatio.value - deltaRatio).coerceIn(0f, full)
-                            scope.launch { sheetRatio.snapTo(newRatio) }
-                        },
-                        onDragEnd = {
-                            scope.launch {
-                                when {
-                                    sheetRatio.value > (half + full) / 2 -> {
-                                        sheetRatio.animateTo(full, tween(250))
-                                    }
-                                    sheetRatio.value < half / 2 -> {
-                                        sheetRatio.animateTo(0f, tween(200))
-                                        onDismiss()
-                                    }
-                                    else -> {
-                                        sheetRatio.animateTo(half, tween(250))
-                                    }
-                                }
-                            }
-                        }
-                    )
-                }
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    // Only scroll when the sheet is full height
-                    .verticalScroll(
-                        rememberScrollState(),
-                        enabled = sheetRatio.value >= full * 0.999f
-                    )
-            ) {
-                updates.forEach { update ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.whats_new),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            updates.forEach { update ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(3.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.8f))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Version ${update.version}",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        update.changes.forEach { change ->
                             Text(
-                                text = "Version ${update.version}",
-                                style = MaterialTheme.typography.headlineSmall
+                                text = "• $change",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
-                            Spacer(Modifier.height(8.dp))
-                            update.changes.forEach { change ->
-                                Text("• $change", style = MaterialTheme.typography.bodyMedium)
-                            }
                         }
                     }
                 }

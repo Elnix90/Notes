@@ -3,6 +3,7 @@ package org.elnix.notes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +30,8 @@ import org.elnix.notes.ui.editors.DrawingEditorScreen
 import org.elnix.notes.ui.editors.UnifiedTextualNotesEditor
 import org.elnix.notes.ui.security.LockScreen
 import org.elnix.notes.ui.welcome.WelcomeScreen
+import org.elnix.notes.ui.whatsnew.Update
+import org.elnix.notes.ui.whatsnew.WhatsNewBottomSheet
 
 // -------------------- ROUTES --------------------
 object Routes {
@@ -81,14 +84,62 @@ fun MainApp(
     var unlocked by remember { mutableStateOf(false) }
 
     val hasSeenWelcome by UiSettingsStore.getHasShownWelcome(ctx).collectAsState(true)
-//    val lastSeenVersion by UiSettingsStore.getLastSeenVersion(ctx).collectAsState(0)
-//    val currentVersion = BuildConfig.VERSION_CODE
+    val lastSeenVersion by UiSettingsStore.getLastSeenVersion(ctx).collectAsState(0)
+    val currentVersion = BuildConfig.VERSION_CODE
 
 
 
-//    val updates = listOf(
-//        Update("0.12-alpha", listOf("Added what's new screen", "Added welcome screen", "Changed app icon")),
-//    )
+    val updates = listOf(
+        Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),
+        Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),
+        Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),
+        Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),Update(
+            "0.12-alpha",
+            listOf("Added what's new screen", "Added welcomeherghergerdged screen", "Changed app icon")
+        ),Update(
+            "0.12-alpha",
+            listOf("Added what'srgzergher new screen", "Added welcome screen", "Changed app icon")
+        ),Update(
+            "0.12-alpha",
+            listOf("Added what'sgzgedg new screen", "Added welcome screen", "Changed app icon")
+        ),Update(
+            "0.12-gsgsdgesdalpha",
+            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
+        ),Update(
+            "0.1ghsgsg2-alpha",
+            listOf("Added what's negzgsgw screen", "Added welcome screen", "Changed app icon")
+        ),
+    )
 
 
     when {
@@ -112,30 +163,30 @@ fun MainApp(
             ) {
                 // NOTES
                 composable(Routes.NOTES) {
-//                    var showWhatsNew by remember { mutableStateOf(false) }
-//
-//                    LaunchedEffect(lastSeenVersion, currentVersion) {
-//                        if (lastSeenVersion < currentVersion) {
-//                            showWhatsNew = true
-//                        }
-//                    }
+                    var showWhatsNew by remember { mutableStateOf(false) }
+
+                    LaunchedEffect(lastSeenVersion, currentVersion) {
+                        if (lastSeenVersion < currentVersion) {
+                            showWhatsNew = true
+                        }
+                    }
 
                     Box(modifier = Modifier.fillMaxSize()) {
                         // Main notes screen
                         NotesScreen(vm, navController)
 
-//                        // Overlay the "What's New" popup
-//                        if (showWhatsNew) {
-//                            WhatsNewBottomSheet(
-//                                updates = updates,
-//                                onDismiss = {
-//                                    scope.launch {
-//                                        UiSettingsStore.setLastSeenVersion(ctx, currentVersion)
-//                                        showWhatsNew = false
-//                                    }
-//                                }
-//                            )
-//                        }
+                        // Overlay the "What's New" popup
+                        if (showWhatsNew) {
+                            WhatsNewBottomSheet(
+                                updates = updates,
+                                onDismiss = {
+                                    scope.launch {
+                                        UiSettingsStore.setLastSeenVersion(ctx, currentVersion)
+                                        showWhatsNew = false
+                                    }
+                                }
+                            )
+                        }
                     }
 
                 }

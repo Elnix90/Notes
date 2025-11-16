@@ -440,7 +440,7 @@ fun DebugNotesSettingsScreen(navController: NavController, vm : NoteViewModel) {
 
 @Composable
 fun OtherSettingsScreen(navController: NavController) {
-    OtherDebugTab {
+    OtherDebugTab(navController) {
         navController.navigate(Routes.Settings.DEBUG)
     }
 }

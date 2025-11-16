@@ -9,7 +9,7 @@ reorderable = "0.9.6"
 room = "2.8.3"
 datastore = "1.1.7"
 coroutines = "1.10.2"
-navigation = "2.9.5"
+navigation = "2.9.6"
 material3Version = "1.4.0"
 appcompat = "1.7.1"
 

@@ -91,54 +91,9 @@ fun MainApp(
 
     val updates = listOf(
         Update(
-            "0.12-alpha",
+            "1.0.0",
             listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),
-        Update(
-            "0.12-alpha",
-            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),Update(
-            "0.12-alpha",
-            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),
-        Update(
-            "0.12-alpha",
-            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),
-        Update(
-            "0.12-alpha",
-            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),Update(
-            "0.12-alpha",
-            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),Update(
-            "0.12-alpha",
-            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),Update(
-            "0.12-alpha",
-            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),Update(
-            "0.12-alpha",
-            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),Update(
-            "0.12-alpha",
-            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),Update(
-            "0.12-alpha",
-            listOf("Added what's new screen", "Added welcomeherghergerdged screen", "Changed app icon")
-        ),Update(
-            "0.12-alpha",
-            listOf("Added what'srgzergher new screen", "Added welcome screen", "Changed app icon")
-        ),Update(
-            "0.12-alpha",
-            listOf("Added what'sgzgedg new screen", "Added welcome screen", "Changed app icon")
-        ),Update(
-            "0.12-gsgsdgesdalpha",
-            listOf("Added what's new screen", "Added welcome screen", "Changed app icon")
-        ),Update(
-            "0.1ghsgsg2-alpha",
-            listOf("Added what's negzgsgw screen", "Added welcome screen", "Changed app icon")
-        ),
+        )
     )
 
 

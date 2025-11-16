@@ -15,8 +15,8 @@ android {
         applicationId = "org.elnix.notes"
         minSdk = 26
         targetSdk = 36
-        versionCode = 14
-        versionName = "0.11-alpha"
+        versionCode = 15
+        versionName = "0.12-alpha"
     }
 
 

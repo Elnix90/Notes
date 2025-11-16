@@ -8,6 +8,9 @@ import androidx.compose.material.icons.filled.Route
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -16,15 +19,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.Routes
+import org.elnix.notes.data.helpers.GlobalNotesActions
 import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.NotesActions
+import org.elnix.notes.data.helpers.ToolBars
+import org.elnix.notes.data.helpers.defaultToolbarItems
 import org.elnix.notes.data.helpers.noteActionName
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
+import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.settings.SettingsItem
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.helpers.toolbars.SliderToolbarSetting
@@ -42,7 +50,20 @@ fun CustomisationTab(
         .collectAsState(initial = true)
     val toolbarsSpacing by ToolbarsSettingsStore.getToolbarsSpacing(ctx)
         .collectAsState(initial = 8)
+
+    val sourceList by remember { ToolbarsSettingsStore.getToolbarsFlow(ctx) }
+        .collectAsState(initial = ToolbarsSettingsStore.defaultList)
+    val showBottomSettings by UiSettingsStore.getShowBottomDeleteButton(ctx)
+        .collectAsState(initial = false)
+
+    val quickActionsItemsState = remember { ToolbarItemsSettingsStore.getToolbarItemsFlow(ctx, ToolBars.QUICK_ACTIONS) }
+        .collectAsState(initial = defaultToolbarItems(ToolBars.QUICK_ACTIONS))
+
+    val quickActionsItems = quickActionsItemsState.value
+
     val actionsEntries = NotesActions.entries.filter { it != NotesActions.NONE }
+
+    var showDangerAboutUnabilityToAccessSettings by remember { mutableStateOf(false) }
 
     SettingsLazyHeader(
         title = stringResource(R.string.customisation),
@@ -98,6 +119,36 @@ fun CustomisationTab(
                     scope.launch { ToolbarsSettingsStore.setToolbarsSpacing(ctx, v) }
                 }
             )
+        }
+
+        item {
+            if (
+                sourceList.any { it.toolbar == ToolBars.QUICK_ACTIONS && !it.enabled } ||
+                quickActionsItems.any { it.action == GlobalNotesActions.SETTINGS && !it.enabled }
+            ) {
+                SwitchRow(
+                    state = showBottomSettings,
+                    text = stringResource(R.string.show_bottom_settings)
+                ) {
+                    if (it) scope.launch { UiSettingsStore.setShowBottomDeleteButton(ctx, true) }
+                    else showDangerAboutUnabilityToAccessSettings = true
+                }
+            }
+        }
+    }
+
+    if (showDangerAboutUnabilityToAccessSettings) {
+        UserValidation(
+            title = stringResource(R.string.are_you_really_sure),
+            message = stringResource(R.string.you_wont_be_able_to_access_settings_anymore_unless),
+            onCancel = {
+                showDangerAboutUnabilityToAccessSettings = false
+            }
+        ) {
+            scope.launch {
+                UiSettingsStore.setShowBottomDeleteButton(ctx, false)
+                showDangerAboutUnabilityToAccessSettings = false
+            }
         }
     }
 }

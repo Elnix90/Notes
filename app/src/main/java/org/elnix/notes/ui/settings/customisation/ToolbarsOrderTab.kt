@@ -58,7 +58,9 @@ import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.helpers.toolbarName
 import org.elnix.notes.data.settings.stores.ToolbarSetting
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.helpers.toolbars.ToolbarColorSelectorDialog
 import org.elnix.notes.ui.helpers.toolbars.UnifiedToolbar
@@ -76,6 +78,8 @@ fun ToolbarsOrderTab(
 
     var showColorPickerDialog by remember { mutableStateOf(false) }
     var editToolbar by remember { mutableStateOf<ToolbarSetting?>(null) }
+
+    var showWarningAboutUnabilityToAccessSettings by remember { mutableStateOf(false) }
 
     val sourceList by remember { ToolbarsSettingsStore.getToolbarsFlow(ctx) }
         .collectAsState(initial = ToolbarsSettingsStore.defaultList)
@@ -187,10 +191,28 @@ fun ToolbarsOrderTab(
                             ) {
                                 Checkbox(
                                     checked = bar.enabled,
-                                    enabled = bar.toolbar != ToolBars.QUICK_ACTIONS,
                                     onCheckedChange = { checked ->
-                                        uiList[index] = bar.copy(enabled = checked)
-                                        scope.launch { ToolbarsSettingsStore.setToolbars(ctx, uiList) }
+
+                                        if (bar.toolbar != ToolBars.QUICK_ACTIONS || !bar.enabled){
+                                            uiList[index] = bar.copy(enabled = checked)
+                                            scope.launch {
+                                                ToolbarsSettingsStore.setToolbars(
+                                                    ctx,
+                                                    uiList
+                                                )
+                                            }
+                                        } else {
+                                            showWarningAboutUnabilityToAccessSettings = true
+                                        }
+
+                                        if (bar.toolbar == ToolBars.QUICK_ACTIONS || bar.enabled) {
+                                            scope.launch {
+                                                UiSettingsStore.setShowBottomDeleteButton(
+                                                    ctx,
+                                                    false
+                                                )
+                                            }
+                                        }
                                     }
                                 )
 
@@ -274,6 +296,30 @@ fun ToolbarsOrderTab(
                 )
             }
             showColorPickerDialog = false
+        }
+    }
+
+    if (showWarningAboutUnabilityToAccessSettings) {
+        UserValidation(
+            title = stringResource(R.string.remove_the_quick_actions_toolbar),
+            message = stringResource(R.string.this_may_remove_you_the_ability_to_access_settings),
+            onCancel = { showWarningAboutUnabilityToAccessSettings = false }
+        ) {
+            // Update uiList by disabling the quick actions toolbar
+            val updatedList = uiList.map {
+                if (it.toolbar == ToolBars.QUICK_ACTIONS) it.copy(enabled = false) else it
+            }
+            uiList.clear()
+            uiList.addAll(updatedList)
+
+            scope.launch {
+                ToolbarsSettingsStore.setToolbars(
+                    ctx,
+                    uiList
+                )
+                UiSettingsStore.setShowBottomDeleteButton(ctx, true)
+            }
+            showWarningAboutUnabilityToAccessSettings = false
         }
     }
 }

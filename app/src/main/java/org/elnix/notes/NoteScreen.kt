@@ -39,6 +39,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.helpers.ClickType
+import org.elnix.notes.data.helpers.GlobalActionIcon
 import org.elnix.notes.data.helpers.GlobalNotesActions
 import org.elnix.notes.data.helpers.NoteActionSettings
 import org.elnix.notes.data.helpers.NoteViewType
@@ -76,6 +77,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     //Other settings got by settingsStores
     val showNoteDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationDeleteNote(ctx).collectAsState(initial = true)
     val showMultipleDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationMultipleDeleteNote(ctx).collectAsState(initial = true)
+    val showBottomSettings by UiSettingsStore.getShowBottomDeleteButton(ctx).collectAsState(initial = false)
 
     var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
     var showMultipleDeleteDialog by remember { mutableStateOf(false) }
@@ -488,6 +490,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                         selectedNotes = selectedNotes,
                         isSelectMode = isMultiSelectMode,
                         isReorderMode = isReorderMode,
+                        showBottomSettings = showBottomSettings,
                         topBarsHeight = topBarHeight,
                         bottomBarsHeight = bottomBarHeight,
                         onNoteClick = if (actionSettings.clickAction != NotesActions.NONE) ::onNoteClick else null,
@@ -547,6 +550,21 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 toolbarsOnBottom = bottomBars.size,
                 onDismiss = { showAddNoteMenu = false }
             )
+        }
+
+        if (showBottomSettings) {
+            Box(
+                Modifier.align(Alignment.BottomEnd),
+                Alignment.Center
+            ){
+                GlobalActionIcon(
+                    ctx = ctx,
+                    onColor = null,
+                    bgColor = null,
+                    action = GlobalNotesActions.SETTINGS,
+                    showButtonLabel = false
+                ) { navController.navigate(Routes.Settings.ROOT) }
+            }
         }
     }
 

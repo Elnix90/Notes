@@ -61,7 +61,9 @@ import org.elnix.notes.data.helpers.globalActionColor
 import org.elnix.notes.data.helpers.toolbarName
 import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.tags.TagBubble
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
@@ -81,6 +83,10 @@ fun ToolbarItemsEditor(
     val selectedToolbarItems by selectedToolbarItemsFlow.collectAsState(initial = emptyList())
 
     var showDialog by remember { mutableStateOf(false) }
+
+    var showWarningAboutUnabilityToAccessSettings by remember { mutableStateOf(false) }
+    var pendingIndex by remember { mutableStateOf<Int?>(null) }
+    var pendingChecked by remember { mutableStateOf(false) }
 
 
     var toolbarItems by remember { mutableStateOf(selectedToolbarItems.toMutableList()) }
@@ -181,13 +187,6 @@ fun ToolbarItemsEditor(
                         val item = toolbarItems[index]
                         val action = item.action
 
-                        val isEnabled = when(toolbar) {
-                            ToolBars.SELECT -> true
-                            ToolBars.SEPARATOR -> false
-                            ToolBars.TAGS -> true
-                            ToolBars.QUICK_ACTIONS -> action != GlobalNotesActions.SETTINGS
-                        }
-
                         ReorderableItem(state = reorderState, key = action.name) { isDragging ->
                             val scale by animateFloatAsState(if (isDragging) 1.03f else 1f)
                             val elevation by animateDpAsState(if (isDragging) 16.dp else 0.dp)
@@ -211,14 +210,29 @@ fun ToolbarItemsEditor(
                                         .padding(horizontal = 12.dp, vertical = 8.dp)
                                 ) {
                                     Checkbox(
-                                        enabled = isEnabled,
                                         checked = item.enabled,
                                         onCheckedChange = { checked ->
-                                            toolbarItems = toolbarItems.toMutableList().apply {
-                                                this[index] = this[index].copy(enabled = checked)
+                                            if (!(item.action == GlobalNotesActions.SETTINGS && toolbar == ToolBars.QUICK_ACTIONS && item.enabled)) {
+                                                toolbarItems = toolbarItems.toMutableList().apply {
+                                                    this[index] = this[index].copy(enabled = checked)
+                                                }
+                                            } else {
+                                                pendingIndex = index
+                                                pendingChecked = checked
+                                                showWarningAboutUnabilityToAccessSettings = true
+                                            }
+
+                                            if (item.action == GlobalNotesActions.SETTINGS && toolbar == ToolBars.QUICK_ACTIONS && item.enabled) {
+                                                scope.launch {
+                                                    UiSettingsStore.setShowBottomDeleteButton(
+                                                        ctx,
+                                                        false
+                                                    )
+                                                }
                                             }
                                         },
                                     )
+
                                     Spacer(Modifier.weight(1f))
                                     when (action) {
                                         GlobalNotesActions.TAGS -> TagBubble(
@@ -326,6 +340,26 @@ fun ToolbarItemsEditor(
                 }
             }
             editAction = null
+        }
+    }
+
+    if (showWarningAboutUnabilityToAccessSettings) {
+        UserValidation(
+            title = stringResource(R.string.remove_the_quick_actions_toolbar),
+            message = stringResource(R.string.this_may_remove_you_the_ability_to_access_settings),
+            onCancel = {
+                showWarningAboutUnabilityToAccessSettings = false
+                pendingIndex = null
+            }
+        ) {
+            // Confirm button clicked, apply change
+            pendingIndex?.let { idx ->
+                toolbarItems = toolbarItems.toMutableList().apply {
+                    this[idx] = this[idx].copy(enabled = pendingChecked)
+                }
+            }
+            showWarningAboutUnabilityToAccessSettings = false
+            pendingIndex = null
         }
     }
 }

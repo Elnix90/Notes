@@ -34,6 +34,7 @@ fun NotesList(
     selectedNotes: Set<NoteEntity>,
     isSelectMode: Boolean,
     isReorderMode: Boolean,
+    showBottomSettings: Boolean,
     topBarsHeight: Dp,
     bottomBarsHeight: Dp,
     onNoteClick: ((NoteEntity) -> Unit)?,
@@ -71,7 +72,7 @@ fun NotesList(
 
     LazyColumn(
         state = reorderState.listState,
-        contentPadding = PaddingValues(top = topBarsHeight + 8.dp, bottom = bottomBarsHeight + 8.dp),
+        contentPadding = PaddingValues(top = topBarsHeight + 8.dp, bottom = bottomBarsHeight + 8.dp + if (showBottomSettings) 20.dp else 0.dp),
         modifier = Modifier
             .fillMaxSize()
             .then(

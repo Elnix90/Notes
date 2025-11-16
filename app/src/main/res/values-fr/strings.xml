@@ -247,4 +247,9 @@
     <string name="select_a_sort_option">Séléctionnez une option de tri</string>
     <string name="snooze">Répéter l\'alarme</string>
     <string name="notifications_buttons">Boutons des notifications</string>
+    <string name="remove_the_quick_actions_toolbar">Supprimer la barre d\'outils des actions rapides</string>
+    <string name="this_may_remove_you_the_ability_to_access_settings">La désactivation de cette barre d\'outils peut vous empêcher d\'accéder aux paramètres de manière normale. Si vous la désactivez, une icône de paramètres s\'affichera tout en bas de l\'écran pour vous permettre d\'y accéder malgré tout. Vous pouvez désactiver cette icône de paramètres en appuyant sur le nouveau bouton qui apparaît en bas de cet écran.</string>
+    <string name="show_bottom_settings">Afficher l\'icône des paramètres en bas</string>
+    <string name="are_you_really_sure">Êtes vous VRAIMENT sûr ?!!!</string>
+    <string name="you_wont_be_able_to_access_settings_anymore_unless">Vous ne pourrez plus accéder aux paramètres, sauf si vous avez défini le bouton Paramètres sur une autre barre d\'outils activée.</string>
 </resources>

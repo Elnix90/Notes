@@ -252,4 +252,9 @@
     <string name="show_bottom_settings">Afficher l\'icône des paramètres en bas</string>
     <string name="are_you_really_sure">Êtes vous VRAIMENT sûr ?!!!</string>
     <string name="you_wont_be_able_to_access_settings_anymore_unless">Vous ne pourrez plus accéder aux paramètres, sauf si vous avez défini le bouton Paramètres sur une autre barre d\'outils activée.</string>
+    <string name="welcome_to_notes">Bienvenue sur Notes</string>
+    <string name="app_description">Une application de prise de notes simple, épurée et personnalisable.</string>
+    <string name="look_and_feel">Apparence</string>
+    <string name="youre_all_set">Tout est prêt !</string>
+    <string name="lets_go">C\'est parti !</string>
 </resources>

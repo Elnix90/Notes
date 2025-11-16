@@ -251,4 +251,9 @@
     <string name="show_bottom_settings">Show bottom settings icon</string>
     <string name="are_you_really_sure">Are you REALLY sure?!!!</string>
     <string name="you_wont_be_able_to_access_settings_anymore_unless">You won\'t be able to access settings anymore, unless you have set the settings button on another enabled toolbar</string>
+    <string name="welcome_to_notes">Welcome to Notes</string>
+    <string name="app_description">A simple, clean and customizable note-taking app.</string>
+    <string name="look_and_feel">Look and Feel</string>
+    <string name="youre_all_set">You\'re all set!</string>
+    <string name="lets_go">Let\'s go!</string>
 </resources>

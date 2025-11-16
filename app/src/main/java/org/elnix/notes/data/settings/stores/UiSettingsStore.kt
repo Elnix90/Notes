@@ -3,6 +3,7 @@ package org.elnix.notes.data.settings.stores
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -11,6 +12,20 @@ import org.elnix.notes.data.helpers.NoteViewType
 import org.elnix.notes.data.settings.dataStore
 
 object UiSettingsStore {
+
+    data class UiSettingsBackup(
+        val showNotesNumber: Boolean = true,
+        val noteViewType: NoteViewType = NoteViewType.LIST,
+        val fullscreen: Boolean = false,
+        val showColorDropdownEditors: Boolean = false,
+        val showReminderDropdownEditors: Boolean = false,
+        val showQuickActionsDropdownEditors: Boolean = false,
+        val showTagsDropdownEditors: Boolean = false,
+        val showTagsInNotes: Boolean = true,
+        val showBottomDeleteButton: Boolean = false,
+        val hasShownWelcome: Boolean = false,
+        val lastSeenVersion: Int = 0
+    )
 
 
     private val SHOW_NOTES_NUMBER = booleanPreferencesKey("show_notes_number")
@@ -80,6 +95,20 @@ object UiSettingsStore {
         ctx.dataStore.edit { it[SHOW_BOTTOM_DELETE_BUTTON] = enabled }
     }
 
+    private val HAS_SHOWN_WELCOME = booleanPreferencesKey("has_shown_welcome")
+    fun getHasShownWelcome(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[HAS_SHOWN_WELCOME] ?: false }
+    suspend fun setHasShownWelcome(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[HAS_SHOWN_WELCOME] = enabled }
+    }
+
+    private val LAST_SEEN_VERSION = intPreferencesKey("last_seen_version")
+    fun getLastSeenVersion(ctx: Context): Flow<Int> =
+        ctx.dataStore.data.map { it[LAST_SEEN_VERSION] ?: 0 }
+    suspend fun setLastSeenVersion(ctx: Context, version: Int) {
+        ctx.dataStore.edit { it[LAST_SEEN_VERSION] = version }
+    }
+
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
             prefs.remove(SHOW_NOTES_NUMBER)
@@ -91,33 +120,44 @@ object UiSettingsStore {
             prefs.remove(SHOW_TAGS_DROPDOWN_EDITORS)
             prefs.remove(SHOW_TAGS_IN_NOTES)
             prefs.remove(SHOW_BOTTOM_DELETE_BUTTON)
+            prefs.remove(HAS_SHOWN_WELCOME)
+            prefs.remove(LAST_SEEN_VERSION)
         }
     }
 
-    suspend fun getAll(ctx: Context): Map<String, Boolean> {
+    suspend fun getAll(ctx: Context): UiSettingsBackup {
         val prefs = ctx.dataStore.data.first()
-        return buildMap {
-            prefs[SHOW_NOTES_NUMBER]?.let { put(SHOW_NOTES_NUMBER.name, it) }
-            prefs[FULLSCREEN]?.let { put(FULLSCREEN.name, it) }
-            prefs[SHOW_COLOR_DROPDOWN_EDITORS]?.let { put(SHOW_COLOR_DROPDOWN_EDITORS.name, it) }
-            prefs[SHOW_REMINDER_DROPDOWN_EDITORS]?.let { put(SHOW_REMINDER_DROPDOWN_EDITORS.name, it) }
-            prefs[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS]?.let { put(SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS.name, it) }
-            prefs[SHOW_TAGS_DROPDOWN_EDITORS]?.let { put(SHOW_TAGS_DROPDOWN_EDITORS.name, it) }
-            prefs[SHOW_TAGS_IN_NOTES]?.let { put(SHOW_TAGS_IN_NOTES.name, it) }
-            prefs[SHOW_BOTTOM_DELETE_BUTTON]?.let { put(SHOW_BOTTOM_DELETE_BUTTON.name, it) }
-        }
+        return UiSettingsBackup(
+            showNotesNumber = prefs[SHOW_NOTES_NUMBER] ?: true,
+            noteViewType = prefs[NOTE_VIEW_TYPE]?.let { NoteViewType.valueOf(it) } ?: NoteViewType.LIST,
+            fullscreen = prefs[FULLSCREEN] ?: false,
+            showColorDropdownEditors = prefs[SHOW_COLOR_DROPDOWN_EDITORS] ?: false,
+            showReminderDropdownEditors = prefs[SHOW_REMINDER_DROPDOWN_EDITORS] ?: false,
+            showQuickActionsDropdownEditors = prefs[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS] ?: false,
+            showTagsDropdownEditors = prefs[SHOW_TAGS_DROPDOWN_EDITORS] ?: false,
+            showTagsInNotes = prefs[SHOW_TAGS_IN_NOTES] ?: true,
+            showBottomDeleteButton = prefs[SHOW_BOTTOM_DELETE_BUTTON] ?: false,
+            hasShownWelcome = prefs[HAS_SHOWN_WELCOME] ?: false,
+            lastSeenVersion = prefs[LAST_SEEN_VERSION] ?: 0
+        )
     }
 
-    suspend fun setAll(ctx: Context, data: Map<String, Boolean>) {
+    // ----------------------------
+    // Set all from data class
+    // ----------------------------
+    suspend fun setAll(ctx: Context, settings: UiSettingsBackup) {
         ctx.dataStore.edit { prefs ->
-            data[SHOW_NOTES_NUMBER.name]?.let { prefs[SHOW_NOTES_NUMBER] = it }
-            data[FULLSCREEN.name]?.let { prefs[FULLSCREEN] = it }
-            data[SHOW_COLOR_DROPDOWN_EDITORS.name]?.let { prefs[SHOW_COLOR_DROPDOWN_EDITORS] = it }
-            data[SHOW_REMINDER_DROPDOWN_EDITORS.name]?.let { prefs[SHOW_REMINDER_DROPDOWN_EDITORS] = it }
-            data[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS.name]?.let { prefs[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS] = it }
-            data[SHOW_TAGS_DROPDOWN_EDITORS.name]?.let { prefs[SHOW_TAGS_DROPDOWN_EDITORS] = it }
-            data[SHOW_TAGS_IN_NOTES.name]?.let { prefs[SHOW_TAGS_IN_NOTES] = it }
-            data[SHOW_BOTTOM_DELETE_BUTTON.name]?.let { prefs[SHOW_BOTTOM_DELETE_BUTTON] = it }
+            prefs[SHOW_NOTES_NUMBER] = settings.showNotesNumber
+            prefs[NOTE_VIEW_TYPE] = settings.noteViewType.name
+            prefs[FULLSCREEN] = settings.fullscreen
+            prefs[SHOW_COLOR_DROPDOWN_EDITORS] = settings.showColorDropdownEditors
+            prefs[SHOW_REMINDER_DROPDOWN_EDITORS] = settings.showReminderDropdownEditors
+            prefs[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS] = settings.showQuickActionsDropdownEditors
+            prefs[SHOW_TAGS_DROPDOWN_EDITORS] = settings.showTagsDropdownEditors
+            prefs[SHOW_TAGS_IN_NOTES] = settings.showTagsInNotes
+            prefs[SHOW_BOTTOM_DELETE_BUTTON] = settings.showBottomDeleteButton
+            prefs[HAS_SHOWN_WELCOME] = settings.hasShownWelcome
+            prefs[LAST_SEEN_VERSION] = settings.lastSeenVersion
         }
     }
 }

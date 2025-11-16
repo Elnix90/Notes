@@ -1,10 +1,16 @@
 package org.elnix.notes
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -14,12 +20,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import kotlinx.coroutines.launch
 import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.helpers.ToolBars
+import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.editors.DrawingEditorScreen
 import org.elnix.notes.ui.editors.UnifiedTextualNotesEditor
 import org.elnix.notes.ui.security.LockScreen
+import org.elnix.notes.ui.welcome.WelcomeScreen
 
 // -------------------- ROUTES --------------------
 object Routes {
@@ -65,82 +74,135 @@ fun MainApp(
     startNoteId: Long? = null,
     startNoteType: NoteType = NoteType.TEXT
 ) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     val navController = rememberNavController()
     var unlocked by remember { mutableStateOf(false) }
 
-    if (!unlocked) {
-        LockScreen(activity) { unlocked = true }
-    } else {
-        NavHost(
-            navController = navController,
-            startDestination = if(startNoteId != null) {
-                "edit/$startNoteId?type=${startNoteType.name}"
-            } else Routes.NOTES
-        ) {
-            // NOTES
-            composable(Routes.NOTES) { NotesScreen(vm, navController) }
+    val hasSeenWelcome by UiSettingsStore.getHasShownWelcome(ctx).collectAsState(true)
+//    val lastSeenVersion by UiSettingsStore.getLastSeenVersion(ctx).collectAsState(0)
+//    val currentVersion = BuildConfig.VERSION_CODE
 
-            // SETTINGS NAV GRAPH
-            settingsNavGraph(navController, vm, activity)
 
-            // CREATE NOTE
-            composable(
-                route = "${Routes.CREATE}?type={type}",
-                arguments = listOf(navArgument("type") {
-                    type = NavType.StringType
-                    defaultValue = NoteType.TEXT.name
-                })
-            ) { backStackEntry ->
-                val typeArg = backStackEntry.arguments?.getString("type")
-                val noteType = NoteType.valueOf(typeArg ?: NoteType.TEXT.name)
 
-                when (noteType) {
-                    NoteType.TEXT, NoteType.CHECKLIST -> UnifiedTextualNotesEditor(
-                        vm = vm,
-                        activity = activity,
-                        navController = navController,
-                        noteId = null,
-                        noteType = noteType
-                    ) { navController.navigate(Routes.NOTES) }
+//    val updates = listOf(
+//        Update("0.12-alpha", listOf("Added what's new screen", "Added welcome screen", "Changed app icon")),
+//    )
 
-                    NoteType.DRAWING -> DrawingEditorScreen(
-                        vm,
-                        null,
-                        onSaved = { navController.navigate(Routes.NOTES)  },
-                        onCancel = { navController.navigate(Routes.NOTES)  }
-                    )
+
+    when {
+        !unlocked -> {
+            LockScreen(activity) { unlocked = true }
+        }
+
+        !hasSeenWelcome -> {
+            WelcomeScreen(
+                onFinish = { scope.launch{ UiSettingsStore.setHasShownWelcome(ctx, true) } }
+            )
+        }
+
+        else -> {
+
+            NavHost(
+                navController = navController,
+                startDestination = if (startNoteId != null) {
+                    "edit/$startNoteId?type=${startNoteType.name}"
+                } else Routes.NOTES
+            ) {
+                // NOTES
+                composable(Routes.NOTES) {
+//                    var showWhatsNew by remember { mutableStateOf(false) }
+//
+//                    LaunchedEffect(lastSeenVersion, currentVersion) {
+//                        if (lastSeenVersion < currentVersion) {
+//                            showWhatsNew = true
+//                        }
+//                    }
+
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        // Main notes screen
+                        NotesScreen(vm, navController)
+
+//                        // Overlay the "What's New" popup
+//                        if (showWhatsNew) {
+//                            WhatsNewBottomSheet(
+//                                updates = updates,
+//                                onDismiss = {
+//                                    scope.launch {
+//                                        UiSettingsStore.setLastSeenVersion(ctx, currentVersion)
+//                                        showWhatsNew = false
+//                                    }
+//                                }
+//                            )
+//                        }
+                    }
+
                 }
-            }
 
-            // EDIT NOTE
-            composable(
-                route = "${Routes.EDIT}?type={type}",
-                arguments = listOf(
-                    navArgument("noteId") { type = NavType.LongType },
-                    navArgument("type") {
+                // SETTINGS NAV GRAPH
+                settingsNavGraph(navController, vm, activity)
+
+                // CREATE NOTE
+                composable(
+                    route = "${Routes.CREATE}?type={type}",
+                    arguments = listOf(navArgument("type") {
                         type = NavType.StringType
                         defaultValue = NoteType.TEXT.name
-                    }
-                )
-            ) { backStackEntry ->
-                val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
-                val typeArg = backStackEntry.arguments?.getString("type") ?: NoteType.TEXT.name
-                val noteType = NoteType.valueOf(typeArg)
+                    })
+                ) { backStackEntry ->
+                    val typeArg = backStackEntry.arguments?.getString("type")
+                    val noteType = NoteType.valueOf(typeArg ?: NoteType.TEXT.name)
 
-                when (noteType) {
-                    NoteType.TEXT, NoteType.CHECKLIST -> UnifiedTextualNotesEditor(
-                        vm = vm,
-                        activity = activity,
-                        navController = navController,
-                        noteId = noteId,
-                        noteType = noteType
-                    ) { navController.navigate(Routes.NOTES) }
-                    NoteType.DRAWING -> DrawingEditorScreen(
-                        vm,
-                        noteId,
-                        onSaved = { navController.navigate(Routes.NOTES)  },
-                        onCancel = { navController.navigate(Routes.NOTES)  }
+                    when (noteType) {
+                        NoteType.TEXT, NoteType.CHECKLIST -> UnifiedTextualNotesEditor(
+                            vm = vm,
+                            activity = activity,
+                            navController = navController,
+                            noteId = null,
+                            noteType = noteType
+                        ) { navController.navigate(Routes.NOTES) }
+
+                        NoteType.DRAWING -> DrawingEditorScreen(
+                            vm,
+                            null,
+                            onSaved = { navController.navigate(Routes.NOTES) },
+                            onCancel = { navController.navigate(Routes.NOTES) }
+                        )
+                    }
+                }
+
+                // EDIT NOTE
+                composable(
+                    route = "${Routes.EDIT}?type={type}",
+                    arguments = listOf(
+                        navArgument("noteId") { type = NavType.LongType },
+                        navArgument("type") {
+                            type = NavType.StringType
+                            defaultValue = NoteType.TEXT.name
+                        }
                     )
+                ) { backStackEntry ->
+                    val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
+                    val typeArg = backStackEntry.arguments?.getString("type") ?: NoteType.TEXT.name
+                    val noteType = NoteType.valueOf(typeArg)
+
+                    when (noteType) {
+                        NoteType.TEXT, NoteType.CHECKLIST -> UnifiedTextualNotesEditor(
+                            vm = vm,
+                            activity = activity,
+                            navController = navController,
+                            noteId = noteId,
+                            noteType = noteType
+                        ) { navController.navigate(Routes.NOTES) }
+
+                        NoteType.DRAWING -> DrawingEditorScreen(
+                            vm,
+                            noteId,
+                            onSaved = { navController.navigate(Routes.NOTES) },
+                            onCancel = { navController.navigate(Routes.NOTES) }
+                        )
+                    }
                 }
             }
         }

@@ -5,6 +5,9 @@ import android.net.Uri
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.elnix.notes.data.helpers.NoteViewType
+import org.elnix.notes.data.helpers.SortMode
+import org.elnix.notes.data.helpers.SortType
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.ColorModesSettingsStore
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
@@ -15,6 +18,8 @@ import org.elnix.notes.data.settings.stores.NotificationsSettingsStore
 import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
 import org.elnix.notes.data.settings.stores.PluginsSettingsStore
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
+import org.elnix.notes.data.settings.stores.SortBackup
+import org.elnix.notes.data.settings.stores.SortSettingsStore
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
@@ -42,10 +47,11 @@ object SettingsBackupManager {
                 put("offsets", mapStringToJson(OffsetsSettingsStore.getAll(ctx)))
                 put("plugins", mapToJson(PluginsSettingsStore.getAll(ctx)))
                 put("reminders", mapStringToJson(ReminderSettingsStore.getAll(ctx)))
+                put("sort", sortBackupToJson(SortSettingsStore.getAll(ctx)))
                 put("tags", mapStringToJson(TagsSettingsStore.getAll(ctx)))
                 put("toolbar_items", mapStringToJson(ToolbarItemsSettingsStore.getAll(ctx)))
                 put("toolbars", mapStringToJson(ToolbarsSettingsStore.getAll(ctx)))
-                put("ui", mapToJson(UiSettingsStore.getAll(ctx)))
+                put("ui", uiBackupToJson(UiSettingsStore.getAll(ctx)))
                 put("user_confirm", mapToJson(UserConfirmSettingsStore.getAll(ctx)))
             }
 
@@ -92,10 +98,17 @@ object SettingsBackupManager {
                 obj.optJSONObject("offsets")?.let { OffsetsSettingsStore.setAll(ctx, jsonToMapString(it)) }
                 obj.optJSONObject("plugins")?.let { PluginsSettingsStore.setAll(ctx, jsonToMap(it)) }
                 obj.optJSONObject("reminders")?.let { ReminderSettingsStore.setAll(ctx, jsonToMapString(it)) }
+                obj.optJSONObject("sort")?.let {
+                    val backup = jsonToSortBackup(it)
+                    SortSettingsStore.setAll(ctx, backup)
+                }
                 obj.optJSONObject("tags")?.let { TagsSettingsStore.setAll(ctx, jsonToMapString(it)) }
                 obj.optJSONObject("toolbar_items")?.let { ToolbarItemsSettingsStore.setAll(ctx, jsonToMapString(it)) }
                 obj.optJSONObject("toolbars")?.let { ToolbarsSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("ui")?.let { UiSettingsStore.setAll(ctx, jsonToMap(it)) }
+                obj.optJSONObject("ui")?.let {
+                    UiSettingsStore.setAll(ctx, jsonToUiBackup(it))
+                }
+
                 obj.optJSONObject("user_confirm")?.let { UserConfirmSettingsStore.setAll(ctx, jsonToMap(it)) }
             }
 
@@ -129,4 +142,44 @@ object SettingsBackupManager {
     private fun jsonToMapString(obj: JSONObject) = buildMap {
         obj.keys().forEach { key -> put(key, obj.optString(key, "")) }
     }
+
+    private fun sortBackupToJson(backup: SortBackup) = JSONObject().apply {
+        put("mode", backup.sortMode.name)
+        put("type", backup.sortType.name)
+    }
+
+    private fun jsonToSortBackup(obj: JSONObject) = SortBackup(
+        sortMode = runCatching { SortMode.valueOf(obj.optString("mode")) }.getOrDefault(SortMode.DESC),
+        sortType = runCatching { SortType.valueOf(obj.optString("type")) }.getOrDefault(SortType.DATE)
+    )
+
+    private fun uiBackupToJson(b: UiSettingsStore.UiSettingsBackup) = JSONObject().apply {
+        put("showNotesNumber", b.showNotesNumber)
+        put("noteViewType", b.noteViewType.name)
+        put("fullscreen", b.fullscreen)
+        put("showColorDropdownEditors", b.showColorDropdownEditors)
+        put("showReminderDropdownEditors", b.showReminderDropdownEditors)
+        put("showQuickActionsDropdownEditors", b.showQuickActionsDropdownEditors)
+        put("showTagsDropdownEditors", b.showTagsDropdownEditors)
+        put("showTagsInNotes", b.showTagsInNotes)
+        put("showBottomDeleteButton", b.showBottomDeleteButton)
+        put("hasShownWelcome", b.hasShownWelcome)
+        put("lastSeenVersion", b.lastSeenVersion)
+    }
+
+    private fun jsonToUiBackup(obj: JSONObject) = UiSettingsStore.UiSettingsBackup(
+        showNotesNumber = obj.optBoolean("showNotesNumber", true),
+        noteViewType = runCatching {
+            NoteViewType.valueOf(obj.optString("noteViewType", NoteViewType.LIST.name))
+        }.getOrDefault(NoteViewType.LIST),
+        fullscreen = obj.optBoolean("fullscreen", false),
+        showColorDropdownEditors = obj.optBoolean("showColorDropdownEditors", false),
+        showReminderDropdownEditors = obj.optBoolean("showReminderDropdownEditors", false),
+        showQuickActionsDropdownEditors = obj.optBoolean("showQuickActionsDropdownEditors", false),
+        showTagsDropdownEditors = obj.optBoolean("showTagsDropdownEditors", false),
+        showTagsInNotes = obj.optBoolean("showTagsInNotes", true),
+        showBottomDeleteButton = obj.optBoolean("showBottomDeleteButton", false),
+        hasShownWelcome = obj.optBoolean("hasShownWelcome", false),
+        lastSeenVersion = obj.optInt("lastSeenVersion", 0)
+    )
 }

@@ -1,7 +1,6 @@
 package org.elnix.notes.data.settings
 
 import android.content.Context
-import android.content.res.Configuration
 import androidx.compose.ui.graphics.toArgb
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.ui.theme.AmoledDefault
@@ -17,14 +16,14 @@ fun getDefaultColorScheme(ctx: Context, theme: DefaultThemes) = when (theme) {
         DefaultThemes.LIGHT -> LightDefault
         DefaultThemes.DARK -> DarkDefault
         DefaultThemes.AMOLED -> AmoledDefault
-        DefaultThemes.SYSTEM -> {
-            val nightModeFlags = ctx.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-                DarkDefault
-            } else {
-                LightDefault
-            }
-        }
+//        DefaultThemes.SYSTEM -> {
+//            val nightModeFlags = ctx.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+//            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+//                DarkDefault
+//            } else {
+//                LightDefault
+//            }
+//        }
     }
 
 

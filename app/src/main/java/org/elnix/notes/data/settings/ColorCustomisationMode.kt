@@ -6,7 +6,7 @@ import org.elnix.notes.R
 
 enum class ColorCustomisationMode { DEFAULT, NORMAL, ALL }
 
-enum class DefaultThemes { LIGHT, DARK, AMOLED, SYSTEM }
+enum class DefaultThemes { LIGHT, DARK, AMOLED }
 
 @Composable
 fun colorCustomizationModeName(mode: ColorCustomisationMode) =
@@ -23,5 +23,5 @@ fun defaultThemeName(mode: DefaultThemes) =
         DefaultThemes.LIGHT -> stringResource(R.string.light_theme)
         DefaultThemes.DARK -> stringResource(R.string.dark_theme)
         DefaultThemes.AMOLED -> stringResource(R.string.amoled_theme)
-        DefaultThemes.SYSTEM -> stringResource(R.string.system_theme)
+//        DefaultThemes.SYSTEM -> stringResource(R.string.system_theme)
     }

@@ -513,13 +513,13 @@ fun ColorSelectorTab(
                                             .background(Color.White)
                                             .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
                                     )
-                                    DefaultThemes.SYSTEM -> Box(
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .clip(CircleShape)
-                                            .background(MaterialTheme.colorScheme.primary)
-                                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
-                                    )
+//                                    DefaultThemes.SYSTEM -> Box(
+//                                        modifier = Modifier
+//                                            .size(40.dp)
+//                                            .clip(CircleShape)
+//                                            .background(MaterialTheme.colorScheme.primary)
+//                                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
+//                                    )
                                 }
 
                                 Spacer(Modifier.height(5.dp))

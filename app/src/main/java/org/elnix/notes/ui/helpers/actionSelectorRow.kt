@@ -55,7 +55,7 @@ fun <T> ActionSelectorRow(
         horizontalArrangement = if (label != null) Arrangement.SpaceBetween else Arrangement.Center,
         modifier = baseModifier
             .background(
-                color = backgroundColor.adjustBrightness(if (enabled) 1f else 0.5f),
+                color = backgroundColor.copy(if (enabled) 1f else 0.5f),
                 shape = RoundedCornerShape(14.dp)
             )
             .clickable(enabled) { showDialog = true }
@@ -64,7 +64,7 @@ fun <T> ActionSelectorRow(
         if (label != null) {
             Text(
                 text = label,
-                color = textColor.adjustBrightness(if (enabled) 1f else 0.5f),
+                color = textColor.copy(if (enabled) 1f else 0.5f),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )

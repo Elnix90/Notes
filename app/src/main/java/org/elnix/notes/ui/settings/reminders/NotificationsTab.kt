@@ -4,9 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -51,7 +49,6 @@ import org.elnix.notes.data.settings.stores.NotificationsSettingsStore
 import org.elnix.notes.data.settings.stores.notificationActionName
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
-import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
 fun NotificationsCustomisationTab(
@@ -86,7 +83,7 @@ fun NotificationsCustomisationTab(
         }
     )
 
-    val cardColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f)
+    val cardColor = MaterialTheme.colorScheme.surface
 
     SettingsLazyHeader(
         title = stringResource(R.string.notifications),
@@ -112,7 +109,6 @@ fun NotificationsCustomisationTab(
                         .scale(scale)
                         .padding(vertical = 4.dp)
                         .background(cardColor, RoundedCornerShape(12.dp))
-                        .border(BorderStroke(2.dp, MaterialTheme.colorScheme.surface), RoundedCornerShape(12.dp))
                         .padding(vertical = 12.dp),
                     elevation = elevatedCardElevation(elevation)
                 ) {

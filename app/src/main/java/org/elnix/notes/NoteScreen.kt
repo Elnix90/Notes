@@ -127,7 +127,6 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     var editTag by remember { mutableStateOf<TagItem?>(null) }
     var showEditor by remember { mutableStateOf(false) }
     var showCreator by remember { mutableStateOf(false) }
-    var initialTag by remember { mutableStateOf<TagItem?>(null) }
 
 
     // User actions
@@ -571,7 +570,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     // --- Tags Dialogs ---
     if (showEditor) {
         TagEditorDialog(
-            initialTag = initialTag,
+            initialTag = editTag,
             scope = scope,
             onDismiss = { showEditor = false }
         )

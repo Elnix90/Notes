@@ -513,11 +513,12 @@ fun ColorSelectorTab(
                                             .background(Color.White)
                                             .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
                                     )
-                                    DefaultThemes.SYSTEM -> Icon(
-                                        imageVector = Icons.Default.InvertColors,
-                                        contentDescription = stringResource(R.string.dark_theme),
-                                        modifier = Modifier.size(40.dp),
-                                        tint = MaterialTheme.colorScheme.onSurface
+                                    DefaultThemes.SYSTEM -> Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(MaterialTheme.colorScheme.primary)
+                                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
                                     )
                                 }
 

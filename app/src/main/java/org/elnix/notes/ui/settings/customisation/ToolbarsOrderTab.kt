@@ -5,9 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -60,12 +59,11 @@ import org.elnix.notes.data.helpers.toolbarName
 import org.elnix.notes.data.settings.stores.ToolbarSetting
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.helpers.toolbars.ToolbarColorSelectorDialog
 import org.elnix.notes.ui.helpers.toolbars.UnifiedToolbar
-import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.LocalExtraColors
-import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
 fun ToolbarsOrderTab(
@@ -114,7 +112,7 @@ fun ToolbarsOrderTab(
         }
     )
 
-    val cardColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.6f)
+    val cardColor = MaterialTheme.colorScheme.surface
 
     SettingsLazyHeader(
         title = stringResource(R.string.toolbars_order),
@@ -140,6 +138,8 @@ fun ToolbarsOrderTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .scale(scale)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(cardColor)
                         .clickable {
                             if (bar.toolbar != ToolBars.SEPARATOR) {
                                 scope.launch {
@@ -148,9 +148,6 @@ fun ToolbarsOrderTab(
                                 }
                             }
                         }
-                        .padding(vertical = 4.dp)
-                        .background(cardColor, RoundedCornerShape(12.dp))
-                        .border(BorderStroke(2.dp, MaterialTheme.colorScheme.surface), RoundedCornerShape(12.dp))
                         .padding(vertical = 15.dp),
                     elevation = elevatedCardElevation(elevation)
                 ) {
@@ -235,21 +232,6 @@ fun ToolbarsOrderTab(
                                         contentDescription = stringResource(R.string.toolbar_color),
                                     )
                                 }
-
-//                                IconButton(
-//                                    onClick = {
-//                                        scope.launch {
-//                                            ToolbarsSettingsStore.resetToolbar(ctx, uiList[index].toolbar)
-//                                        }
-//                                    },
-//                                    colors = AppObjectsColors.iconButtonColors(),
-//                                    shape = CircleShape
-//                                ) {
-//                                    Icon(
-//                                        imageVector = Icons.Default.Restore,
-//                                        contentDescription = stringResource(R.string.reset),
-//                                    )
-//                                }
 
                                 Spacer(Modifier.weight(1f))
 

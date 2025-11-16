@@ -195,13 +195,13 @@ object AppObjectsColors {
             errorTrailingIconColor = colors.error,
 
             focusedLabelColor = colors.primary,
-            unfocusedLabelColor = colors.onSurfaceVariant,
-            disabledLabelColor = colors.surfaceVariant,
+            unfocusedLabelColor = colors.outline,
+            disabledLabelColor = colors.outline.copy(0.5f),
             errorLabelColor = colors.error,
 
-            focusedPlaceholderColor = colors.onSurfaceVariant,
-            unfocusedPlaceholderColor = colors.onSurfaceVariant,
-            disabledPlaceholderColor = colors.surfaceVariant,
+            focusedPlaceholderColor = colors.outline.copy(0.8f),
+            unfocusedPlaceholderColor = colors.outline.copy(0.5f),
+            disabledPlaceholderColor = colors.outline.copy(0.3f),
             errorPlaceholderColor = colors.error,
 
             focusedSupportingTextColor = colors.onSurfaceVariant,

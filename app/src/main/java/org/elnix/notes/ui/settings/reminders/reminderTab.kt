@@ -51,8 +51,8 @@ import org.elnix.notes.ui.helpers.reminders.OffsetPickerDialog
 import org.elnix.notes.ui.helpers.reminders.ReminderPicker
 import org.elnix.notes.ui.helpers.reminders.TimeBubble
 import org.elnix.notes.ui.helpers.settings.SettingsItem
-import org.elnix.notes.ui.security.AskNotificationButton
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
+import org.elnix.notes.ui.security.AskNotificationButton
 import org.elnix.notes.ui.theme.AppObjectsColors
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
@@ -135,7 +135,7 @@ fun RemindersTab(
                             )
                         }
 
-                    ReminderPicker(activity) { picked ->
+                    ReminderPicker(activity, showText = true) { picked ->
                         val newList = defaultReminders + picked
                         scope.launch { setDefaultReminders(ctx, newList) }
                     }

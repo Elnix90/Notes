@@ -257,4 +257,5 @@
     <string name="youre_all_set">You\'re all set!</string>
     <string name="lets_go">Let\'s go!</string>
     <string name="whats_new">What\'s new</string>
+    <string name="pick_a_reminder_date">Pick a reminder Date</string>
 </resources>

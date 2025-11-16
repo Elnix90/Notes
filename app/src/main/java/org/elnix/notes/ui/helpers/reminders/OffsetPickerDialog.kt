@@ -106,7 +106,9 @@ fun OffsetPickerDialog(
                 )
             },
             text = {
-                Column {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
                         text = stringResource(R.string.this_feature_needs_notification)
                     )

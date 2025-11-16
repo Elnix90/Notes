@@ -26,6 +26,7 @@ import java.util.Calendar
 @Composable
 fun ReminderPicker(
     activity: FragmentActivity,
+    showText: Boolean = false,
     onPicked: (ReminderOffset) -> Unit
 ) {
     val ctx = LocalContext.current
@@ -72,6 +73,7 @@ fun ReminderPicker(
     } else {
         StyledReminderDialogs(
             initialMillis = tempCalendarMillis,
+            showText = showText,
             onPicked = onPicked
         )
     }

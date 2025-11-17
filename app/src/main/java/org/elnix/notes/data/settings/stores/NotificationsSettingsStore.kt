@@ -1,6 +1,7 @@
 package org.elnix.notes.data.settings.stores
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.gson.Gson
@@ -126,8 +127,17 @@ object NotificationsSettingsStore {
         }
     }
 
+
+    private val CLICK_ON_NOTIFICATION_TO_OPEN_NOTE = booleanPreferencesKey("click_on_notification_to_open_note")
+    fun getClickOnNotificationToOpenNote(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[CLICK_ON_NOTIFICATION_TO_OPEN_NOTE] ?: true }
+    suspend fun setClickOnNotificationToOpenNote(ctx: Context, enabled: Boolean) {
+        ctx.dataStore.edit { it[CLICK_ON_NOTIFICATION_TO_OPEN_NOTE] = enabled }
+    }
+
+
     // -------------------------------------------------------------------------
-    // Reset + Backup/Restore (same structure as Toolbars)
+    // Reset + Backup/Restore
     // -------------------------------------------------------------------------
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs -> prefs.remove(KEY) }

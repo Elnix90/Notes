@@ -261,4 +261,5 @@
     <string name="unknown_error">Unknown error</string>
     <string name="export_successful">Export successful</string>
     <string name="import_successful">Import successful</string>
+    <string name="open_note_on_notification_click">Opens the note when you click on the notification</string>
 </resources>

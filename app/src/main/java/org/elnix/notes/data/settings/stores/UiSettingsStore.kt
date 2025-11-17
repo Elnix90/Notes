@@ -125,41 +125,6 @@ object UiSettingsStore {
         }
     }
 
-//    suspend fun getAll(ctx: Context): UiSettingsBackup {
-//        val prefs = ctx.dataStore.data.first()
-//        return UiSettingsBackup(
-//            showNotesNumber = prefs[SHOW_NOTES_NUMBER] ?: true,
-//            noteViewType = prefs[NOTE_VIEW_TYPE]?.let { NoteViewType.valueOf(it) } ?: NoteViewType.LIST,
-//            fullscreen = prefs[FULLSCREEN] ?: false,
-//            showColorDropdownEditors = prefs[SHOW_COLOR_DROPDOWN_EDITORS] ?: false,
-//            showReminderDropdownEditors = prefs[SHOW_REMINDER_DROPDOWN_EDITORS] ?: false,
-//            showQuickActionsDropdownEditors = prefs[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS] ?: false,
-//            showTagsDropdownEditors = prefs[SHOW_TAGS_DROPDOWN_EDITORS] ?: false,
-//            showTagsInNotes = prefs[SHOW_TAGS_IN_NOTES] ?: true,
-//            showBottomDeleteButton = prefs[SHOW_BOTTOM_DELETE_BUTTON] ?: false,
-//            hasShownWelcome = prefs[HAS_SHOWN_WELCOME] ?: false,
-//            lastSeenVersion = prefs[LAST_SEEN_VERSION] ?: 0
-//        )
-//    }
-//
-//    suspend fun setAll(ctx: Context, settings: UiSettingsBackup) {
-//        ctx.dataStore.edit { prefs ->
-//            prefs[SHOW_NOTES_NUMBER] = settings.showNotesNumber
-//            prefs[NOTE_VIEW_TYPE] = settings.noteViewType.name
-//            prefs[FULLSCREEN] = settings.fullscreen
-//            prefs[SHOW_COLOR_DROPDOWN_EDITORS] = settings.showColorDropdownEditors
-//            prefs[SHOW_REMINDER_DROPDOWN_EDITORS] = settings.showReminderDropdownEditors
-//            prefs[SHOW_QUICK_ACTIONS_DROPDOWN_EDITORS] = settings.showQuickActionsDropdownEditors
-//            prefs[SHOW_TAGS_DROPDOWN_EDITORS] = settings.showTagsDropdownEditors
-//            prefs[SHOW_TAGS_IN_NOTES] = settings.showTagsInNotes
-//            prefs[SHOW_BOTTOM_DELETE_BUTTON] = settings.showBottomDeleteButton
-//            prefs[HAS_SHOWN_WELCOME] = settings.hasShownWelcome
-//            prefs[LAST_SEEN_VERSION] = settings.lastSeenVersion
-//        }
-//    }
-
-
-
     suspend fun getAll(ctx: Context): Map<String, String> {
         val prefs = ctx.dataStore.data.first()
         val defaults = UiSettingsBackup()

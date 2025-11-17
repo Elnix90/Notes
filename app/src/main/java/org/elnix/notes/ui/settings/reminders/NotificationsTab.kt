@@ -47,6 +47,7 @@ import org.elnix.notes.data.settings.stores.NotificationActionSetting
 import org.elnix.notes.data.settings.stores.NotificationActionType
 import org.elnix.notes.data.settings.stores.NotificationsSettingsStore
 import org.elnix.notes.data.settings.stores.notificationActionName
+import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.theme.AppObjectsColors
 
@@ -57,6 +58,8 @@ fun NotificationsCustomisationTab(
     onBack: (() -> Unit)
 ) {
     val sourceList by NotificationsSettingsStore.getSettingsFlow(ctx).collectAsState(initial = emptyList())
+    val clickEnabled by NotificationsSettingsStore.getClickOnNotificationToOpenNote(ctx).collectAsState(initial = true)
+
     val uiList = remember { mutableStateListOf<NotificationActionSetting>() }
 
     // Sync sourceList -> uiList
@@ -92,7 +95,16 @@ fun NotificationsCustomisationTab(
         onReset = {
             scope.launch { NotificationsSettingsStore.resetAll(ctx) }
         },
-        reorderState = reorderState
+        reorderState = reorderState,
+        titleContent = {
+            SwitchRow(
+                state = clickEnabled,
+                text = stringResource(R.string.open_note_on_notification_click),
+                defaultValue = true
+            ) {
+                scope.launch { NotificationsSettingsStore.setClickOnNotificationToOpenNote(ctx, it) }
+            }
+        }
     ) {
         items(
             items = uiList,

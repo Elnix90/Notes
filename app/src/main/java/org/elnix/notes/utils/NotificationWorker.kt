@@ -77,22 +77,27 @@ class NotificationWorker(
             )
         }
 
-        val openIntent = Intent(applicationContext, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            // This will be read by MainActivity to navigate
-            putExtra("open_note_id", noteId)
-            putExtra("open_note_type", noteType)
+
+        val clickEnabled = NotificationsSettingsStore.getClickOnNotificationToOpenNote(applicationContext)
+            .first()
+        
+        if (clickEnabled) {
+            val openIntent = Intent(applicationContext, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                // This will be read by MainActivity to navigate
+                putExtra("open_note_id", noteId)
+                putExtra("open_note_type", noteType)
+            }
+
+            val openPendingIntent = PendingIntent.getActivity(
+                applicationContext,
+                reminderId.toInt(),
+                openIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            )
+
+            builder.setContentIntent(openPendingIntent)
         }
-
-        val openPendingIntent = PendingIntent.getActivity(
-            applicationContext,
-            reminderId.toInt(),
-            openIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-        )
-
-        builder.setContentIntent(openPendingIntent)
-
 
         // Show the notification
         notificationManager.notify(reminderId.toInt(), builder.build())

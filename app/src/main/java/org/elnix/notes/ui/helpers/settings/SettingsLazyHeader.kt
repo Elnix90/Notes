@@ -4,10 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -42,7 +44,8 @@ fun SettingsLazyHeader(
     resetTitle: String = stringResource(R.string.reset_default_settings),
     resetText: String? = stringResource(R.string.reset_settings_in_this_tab),
     reorderState: ReorderableLazyListState? = null,
-    titleContent: @Composable (() -> Unit)? = null,
+    titleContent: (LazyListScope.() -> Unit)? = null,
+    bottomContent: (LazyListScope.() -> Unit)? = null,
     content: LazyListScope.() -> Unit
 ) {
 
@@ -58,19 +61,21 @@ fun SettingsLazyHeader(
             .imePadding(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Column (
+        LazyColumn (
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background),
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            SettingsTitle(
-                title,
-                helpIcon = { showHelpDialog = true },
-                resetIcon = if (onReset != null) {
-                    { showResetDialog = true }
-                } else null,
-            ) { onBack() }
+            item {
+                SettingsTitle(
+                    title,
+                    helpIcon = { showHelpDialog = true },
+                    resetIcon = if (onReset != null) {
+                        { showResetDialog = true }
+                    } else null,
+                ) { onBack() }
+            }
 
             if (titleContent != null) titleContent()
         }
@@ -78,7 +83,7 @@ fun SettingsLazyHeader(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(bottom = 400.dp),
+            contentPadding = PaddingValues(bottom = if (bottomContent != null) 0.dp else 400.dp),
             modifier = if (reorderState != null) {
                 modifier
                     .reorderable(reorderState)
@@ -87,6 +92,18 @@ fun SettingsLazyHeader(
             state = reorderState?.listState ?: rememberLazyListState()
         ) {
             content()
+        }
+
+        bottomContent?.let {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                it()
+            }
+            Spacer(Modifier.height(400.dp))
         }
     }
 

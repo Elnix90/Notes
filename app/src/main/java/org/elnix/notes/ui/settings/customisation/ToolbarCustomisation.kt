@@ -66,22 +66,24 @@ fun ToolbarCustomisationTab(
             }
         },
         titleContent = {
-            TextDivider(stringResource(R.string.toolbar_preview))
-            UnifiedToolbar(
-                ctx = ctx,
-                toolbar = toolbarSetting.toolbar,
-                scrollState = rememberScrollState(),
-                isMultiSelect = false,
-                isSearchExpanded = false,
-                color = toolbarSetting.color,
-                borderColor = toolbarSetting.borderColor,
-                borderWidth = toolbarSetting.borderWidth,
-                borderRadius = toolbarSetting.borderRadius,
-                elevation = toolbarSetting.elevation,
-                paddingLeft = toolbarSetting.leftPadding,
-                paddingRight = toolbarSetting.rightPadding,
-                ghosted = true
-            )
+            item { TextDivider(stringResource(R.string.toolbar_preview)) }
+            item {
+                UnifiedToolbar(
+                    ctx = ctx,
+                    toolbar = toolbarSetting.toolbar,
+                    scrollState = rememberScrollState(),
+                    isMultiSelect = false,
+                    isSearchExpanded = false,
+                    color = toolbarSetting.color,
+                    borderColor = toolbarSetting.borderColor,
+                    borderWidth = toolbarSetting.borderWidth,
+                    borderRadius = toolbarSetting.borderRadius,
+                    elevation = toolbarSetting.elevation,
+                    paddingLeft = toolbarSetting.leftPadding,
+                    paddingRight = toolbarSetting.rightPadding,
+                    ghosted = true
+                )
+            }
         }
     ) {
 

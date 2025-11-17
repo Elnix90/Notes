@@ -96,13 +96,20 @@ fun NotificationsCustomisationTab(
             scope.launch { NotificationsSettingsStore.resetAll(ctx) }
         },
         reorderState = reorderState,
-        titleContent = {
-            SwitchRow(
-                state = clickEnabled,
-                text = stringResource(R.string.open_note_on_notification_click),
-                defaultValue = true
-            ) {
-                scope.launch { NotificationsSettingsStore.setClickOnNotificationToOpenNote(ctx, it) }
+        bottomContent = {
+            item {
+                SwitchRow(
+                    state = clickEnabled,
+                    text = stringResource(R.string.open_note_on_notification_click),
+                    defaultValue = true
+                ) {
+                    scope.launch {
+                        NotificationsSettingsStore.setClickOnNotificationToOpenNote(
+                            ctx,
+                            it
+                        )
+                    }
+                }
             }
         }
     ) {

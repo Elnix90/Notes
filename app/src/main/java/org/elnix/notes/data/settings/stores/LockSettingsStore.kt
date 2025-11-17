@@ -83,7 +83,4 @@ object LockSettingsStore {
             data[SELECTED_UNIT.name]?.let { prefs[SELECTED_UNIT] = it }
         }
     }
-
 }
-
-

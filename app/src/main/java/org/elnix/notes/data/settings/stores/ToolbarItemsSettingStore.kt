@@ -86,16 +86,27 @@ object ToolbarItemsSettingsStore {
 
     suspend fun getAll(ctx: Context): Map<String, String> {
         val prefs = ctx.dataStore.data.first()
-        return prefs.asMap().mapKeys { it.key.name }.mapValues { it.value as String }
+
+        return buildMap {
+            ToolBars.entries.forEach { toolbar ->
+                val key = prefsKeyForToolbar(toolbar)
+                prefs[key]?.let { json ->
+                    put(key.name, json)
+                }
+            }
+        }
     }
 
     suspend fun setAll(ctx: Context, data: Map<String, String>) {
         ctx.dataStore.edit { prefs ->
-            data.forEach { (key, value) ->
-                val prefKey = stringPreferencesKey(key)
-                prefs[prefKey] = value
+            ToolBars.entries.forEach { toolbar ->
+                val key = prefsKeyForToolbar(toolbar)
+                data[key.name]?.let { json ->
+                    prefs[key] = json
+                }
             }
         }
     }
+
 
 }

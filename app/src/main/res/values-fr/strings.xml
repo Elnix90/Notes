@@ -261,5 +261,5 @@
     <string name="pick_a_reminder_date">Choisissez une date de rappel</string>
     <string name="unknown_error">Erreur inconnue</string>
     <string name="export_successful">Exportation réussie</string>
-    <string name="import_sucessful">Importation réussie</string>
+    <string name="import_successful">Importation réussie</string>
 </resources>

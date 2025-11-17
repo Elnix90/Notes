@@ -259,6 +259,6 @@
     <string name="whats_new">What\'s new</string>
     <string name="pick_a_reminder_date">Pick a reminder Date</string>
     <string name="unknown_error">Unknown error</string>
-    <string name="export_successful">Export sucessful</string>
-    <string name="import_sucessful">Import sucessful</string>
+    <string name="export_successful">Export successful</string>
+    <string name="import_successful">Import successful</string>
 </resources>

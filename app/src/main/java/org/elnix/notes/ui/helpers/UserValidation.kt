@@ -148,7 +148,7 @@ fun UserValidation(
                                 imageVector = Icons.Default.ContentCopy,
                                 contentDescription = "Copy",
                                 modifier = Modifier
-                                    .padding(start = 8.dp)
+                                    .padding(8.dp)
                                     .clickable {
 
                                         val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

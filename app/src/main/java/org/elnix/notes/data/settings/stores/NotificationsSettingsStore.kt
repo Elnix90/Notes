@@ -133,14 +133,20 @@ object NotificationsSettingsStore {
         ctx.dataStore.edit { prefs -> prefs.remove(KEY) }
     }
 
-    suspend fun getAll(ctx: Context): String? {
-        return ctx.dataStore.data.first()[KEY]
+    suspend fun getAll(ctx: Context): Map<String, String> {
+        val prefs = ctx.dataStore.data.first()
+        return buildMap {
+            prefs[KEY]?.let { json ->
+                put(KEY.name, json)
+            }
+        }
     }
 
-    suspend fun setAll(ctx: Context, data: String?) {
+    suspend fun setAll(ctx: Context, data: Map<String, String>) {
         ctx.dataStore.edit { prefs ->
-            if (data != null) prefs[KEY] = data
-            else prefs.remove(KEY)
+            data[KEY.name]?.let {
+                prefs[KEY] = it
+            }
         }
     }
 }

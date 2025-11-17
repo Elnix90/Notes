@@ -78,24 +78,25 @@ object ActionSettingsStore {
     // --- Export all current settings as a map
     suspend fun getAll(ctx: Context): Map<String, String> {
         val prefs = ctx.dataStore.data.first()
-        return mapOf(
-            "swipe_left_action" to (prefs[SWIPE_LEFT_ACTION] ?: NotesActions.DELETE.name),
-            "swipe_right_action" to (prefs[SWIPE_RIGHT_ACTION] ?: NotesActions.EDIT.name),
-            "click_action" to (prefs[CLICK_ACTION] ?: NotesActions.COMPLETE.name),
-            "left_click_action" to (prefs[LEFT_BUTTON_ACTION] ?: NotesActions.SELECT.name),
-            "right_click_action" to (prefs[RIGHT_BUTTON_ACTION] ?: NotesActions.DELETE.name)
-        )
+        return buildMap {
+            prefs[SWIPE_LEFT_ACTION]?.let { put(SWIPE_LEFT_ACTION.name, it) }
+            prefs[SWIPE_RIGHT_ACTION]?.let { put(SWIPE_RIGHT_ACTION.name, it) }
+            prefs[CLICK_ACTION]?.let { put(CLICK_ACTION.name, it) }
+            prefs[LONG_CLICK_ACTION]?.let { put(LONG_CLICK_ACTION.name, it) }
+            prefs[LEFT_BUTTON_ACTION]?.let { put(LEFT_BUTTON_ACTION.name, it) }
+            prefs[RIGHT_BUTTON_ACTION]?.let { put(RIGHT_BUTTON_ACTION.name, it) }
+        }
     }
 
     // --- Apply all settings from a backup map
     suspend fun setAll(ctx: Context, backup: Map<String, String>) {
         ctx.dataStore.edit { prefs ->
-            backup["swipe_left_action"]?.let { prefs[SWIPE_LEFT_ACTION] = it }
-            backup["swipe_right_action"]?.let { prefs[SWIPE_RIGHT_ACTION] = it }
-            backup["click_action"]?.let { prefs[CLICK_ACTION] = it }
-            backup["long_click_action"]?.let { prefs[LONG_CLICK_ACTION] = it }
-            backup["left_click_action"]?.let { prefs[LEFT_BUTTON_ACTION] = it }
-            backup["right_click_action"]?.let { prefs[RIGHT_BUTTON_ACTION] = it }
+            backup[SWIPE_LEFT_ACTION.name]?.let { prefs[SWIPE_LEFT_ACTION] = it }
+            backup[SWIPE_RIGHT_ACTION.name]?.let { prefs[SWIPE_RIGHT_ACTION] = it }
+            backup[CLICK_ACTION.name]?.let { prefs[CLICK_ACTION] = it }
+            backup[LONG_CLICK_ACTION.name]?.let { prefs[LONG_CLICK_ACTION] = it }
+            backup[LEFT_BUTTON_ACTION.name]?.let { prefs[LEFT_BUTTON_ACTION] = it }
+            backup[RIGHT_BUTTON_ACTION.name]?.let { prefs[RIGHT_BUTTON_ACTION] = it }
         }
     }
 }

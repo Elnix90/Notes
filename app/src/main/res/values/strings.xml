@@ -264,4 +264,5 @@
     <string name="open_note_on_notification_click">Opens the note when you click on the notification</string>
     <string name="item_background">Item background color</string>
     <string name="item_color">Item color</string>
+    <string name="reset_toolbar_items">Reset toolbar items order</string>
 </resources>

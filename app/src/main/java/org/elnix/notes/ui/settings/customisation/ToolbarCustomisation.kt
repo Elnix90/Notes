@@ -8,8 +8,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -62,7 +64,7 @@ fun ToolbarCustomisationTab(
         resetText = stringResource(R.string.are_you_sure_to_reset_this_toolbar),
         onReset = {
             scope.launch {
-                ToolbarItemsSettingsStore.resetToolbar(ctx, toolbarSetting.toolbar)
+                ToolbarItemsSettingsStore.resetToolbar(ctx, toolbar)
             }
         },
         titleContent = {
@@ -70,7 +72,7 @@ fun ToolbarCustomisationTab(
             item {
                 UnifiedToolbar(
                     ctx = ctx,
-                    toolbar = toolbarSetting.toolbar,
+                    toolbar = toolbar,
                     scrollState = rememberScrollState(),
                     isMultiSelect = false,
                     isSearchExpanded = false,
@@ -118,7 +120,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                              ctx = ctx,
-                             toolbar = toolbarSetting.toolbar
+                             toolbar = toolbar
                         ) { it.copy(borderWidth = 2) }
                     }
                 },
@@ -126,7 +128,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbarSetting.toolbar
+                            toolbar = toolbar
                         ) { it.copy(borderWidth = v) }
                     }
                 }
@@ -148,7 +150,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbarSetting.toolbar
+                            toolbar = toolbar
                         ) { it.copy(borderRadius = 50) }
                     }
                 },
@@ -156,7 +158,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbarSetting.toolbar
+                            toolbar = toolbar
                         ) { it.copy(borderRadius = v) }
                     }
                 }
@@ -176,7 +178,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbarSetting.toolbar
+                            toolbar = toolbar
                         ) { it.copy(leftPadding = 16) }
                     }
                 },
@@ -184,7 +186,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbarSetting.toolbar
+                            toolbar = toolbar
                         ) { it.copy(leftPadding = v) }
                     }
                 }
@@ -204,7 +206,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbarSetting.toolbar
+                            toolbar = toolbar
                         ) { it.copy(rightPadding = 16) }
                     }
                 },
@@ -212,7 +214,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbarSetting.toolbar
+                            toolbar = toolbar
                         ) { it.copy(rightPadding = v) }
                     }
                 }
@@ -232,7 +234,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbarSetting.toolbar
+                            toolbar = toolbar
                         ) { it.copy(elevation = 3) }
                     }
                 },
@@ -240,7 +242,7 @@ fun ToolbarCustomisationTab(
                     scope.launch {
                         ToolbarsSettingsStore.updateToolbarSetting(
                             ctx = ctx,
-                            toolbar = toolbarSetting.toolbar
+                            toolbar = toolbar
                         ) { it.copy(elevation = v) }
                     }
                 }
@@ -251,7 +253,31 @@ fun ToolbarCustomisationTab(
             TextDivider(stringResource(R.string.toolbars_items_and_order))
         }
 
-        item { ToolbarItemsEditor(ctx, toolbarSetting.toolbar) }
+        item { ToolbarItemsEditor(ctx, toolbar) }
+
+        item {
+            Button(
+                onClick = {
+                    scope.launch {
+                        ToolbarItemsSettingsStore.resetToolbar(ctx, toolbar)
+                    }
+                },
+                colors = AppObjectsColors.buttonColors(),
+                shape = CircleShape,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Restore,
+                    contentDescription = stringResource(R.string.reset_toolbar_items)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.reset_toolbar_items),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+
     }
 
     if (showColorPickerDialog) {
@@ -262,7 +288,7 @@ fun ToolbarCustomisationTab(
             scope.launch {
                 ToolbarsSettingsStore.updateToolbarColor(
                     ctx = ctx,
-                    toolbar = toolbarSetting.toolbar,
+                    toolbar = toolbar,
                     color = Color(color),
                     borderColor = Color(borderColor)
                 )

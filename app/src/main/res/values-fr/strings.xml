@@ -265,5 +265,5 @@
     <string name="open_note_on_notification_click">Ouvre la note lorsque vous cliquez sur la notification.</string>
     <string name="item_background">Couleur du fond de l\'objet</string>
     <string name="item_color">Couleur de l\'objet</string>
-    <string name="reset_toolbar_items">Réinitialiser l\'ordre des éléments de la barre d\'outils</string>
+    <string name="reset_toolbar_items">Réinitialiser la barre d\'outils</string>
 </resources>

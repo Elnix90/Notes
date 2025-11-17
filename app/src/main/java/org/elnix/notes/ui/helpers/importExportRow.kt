@@ -1,6 +1,5 @@
 package org.elnix.notes.ui.helpers
 
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +18,10 @@ import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.SettingsBackupManager
 
 @Composable
-fun ExportImportRow() {
+fun ExportImportRow(
+    onError: (Boolean, String) -> Unit,
+    onSuccess: (Boolean) -> Unit
+) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -30,9 +32,11 @@ fun ExportImportRow() {
             scope.launch {
                 try {
                     SettingsBackupManager.importSettings(ctx, uri)
-                    Toast.makeText(ctx, R.string.settings_imported_successfully, Toast.LENGTH_LONG).show()
+                    onSuccess(false)
+//                    Toast.makeText(ctx, R.string.settings_imported_successfully, Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {
-                    Toast.makeText(ctx, "${ctx.getString(R.string.import_failed)}: ${e.message}", Toast.LENGTH_LONG).show()
+                    onError(false, e.message ?: "No error provided")
+//                    Toast.makeText(ctx, "${ctx.getString(R.string.import_failed)}: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -44,9 +48,11 @@ fun ExportImportRow() {
             scope.launch {
                 try {
                     SettingsBackupManager.exportSettings(ctx, uri)
-                    Toast.makeText(ctx, R.string.settings_exported_successfully, Toast.LENGTH_LONG).show()
+                    onSuccess(true)
+//                    Toast.makeText(ctx, R.string.settings_exported_successfully, Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {
-                    Toast.makeText(ctx, "${ctx.getString(R.string.export_failed)}: ${e.message}", Toast.LENGTH_LONG).show()
+                    onError(true, e.message ?: "No error provided")
+//                    Toast.makeText(ctx, "${ctx.getString(R.string.export_failed)}: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }

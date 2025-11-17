@@ -1,5 +1,8 @@
 package org.elnix.notes.ui.helpers
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -28,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
@@ -42,9 +47,11 @@ fun UserValidation(
     doNotRemindMeAgain: (() -> Unit)? = null,
     titleIcon: ImageVector = Icons.Default.Warning,
     titleColor: Color = MaterialTheme.colorScheme.error,
+    copy: Boolean = false,
     onCancel: () -> Unit,
     onAgree: () -> Unit
 ) {
+    val ctx = LocalContext.current
     var doNotRemindMeAgainChecked by remember { mutableStateOf(false) }
 
     AlertDialog(
@@ -107,7 +114,7 @@ fun UserValidation(
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(top = 8.dp)
                 )
-                if (doNotRemindMeAgain != null) {
+                if (doNotRemindMeAgain != null || copy) {
                     Spacer(Modifier.height(15.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -118,19 +125,41 @@ fun UserValidation(
                                 doNotRemindMeAgainChecked = !doNotRemindMeAgainChecked
                             }
                     ) {
-                        Checkbox(
-                            checked = doNotRemindMeAgainChecked,
-                            onCheckedChange = {
-                                doNotRemindMeAgainChecked = !doNotRemindMeAgainChecked
-                            },
-                            colors = AppObjectsColors.checkboxColors()
-                        )
-                        Text(
-                            text = stringResource(R.string.do_not_remind_me_again),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
+                        if (doNotRemindMeAgain != null) {
+                            Checkbox(
+                                checked = doNotRemindMeAgainChecked,
+                                onCheckedChange = {
+                                    doNotRemindMeAgainChecked = !doNotRemindMeAgainChecked
+                                },
+                                colors = AppObjectsColors.checkboxColors()
+                            )
+                            Text(
+                                text = stringResource(R.string.do_not_remind_me_again),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                        }
+
+                        Spacer(Modifier.weight(1f))
+
+                        if (copy) {
+                            Icon(
+                                imageVector = Icons.Default.ContentCopy,
+                                contentDescription = "Copy",
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .clickable {
+
+                                        val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                        val clip = ClipData.newPlainText("Notes Version name", message)
+                                        clipboard.setPrimaryClip(clip)
+
+//                                        clipboard.setText(AnnotatedString(message))
+                                    },
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             }

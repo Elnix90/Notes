@@ -365,8 +365,7 @@ fun SecuritySettingsScreen(navController: NavController) {
 
 @Composable
 fun BackupSettingsScreen(navController: NavController) {
-    val ctx = LocalContext.current
-    BackupTab(ctx) {
+    BackupTab {
         navController.navigate(Routes.Settings.ROOT)
     }
 }

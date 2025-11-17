@@ -259,4 +259,7 @@
     <string name="lets_go">C\'est parti !</string>
     <string name="whats_new">Nouveautés</string>
     <string name="pick_a_reminder_date">Choisissez une date de rappel</string>
+    <string name="unknown_error">Erreur inconnue</string>
+    <string name="export_successful">Exportation réussie</string>
+    <string name="import_sucessful">Importation réussie</string>
 </resources>

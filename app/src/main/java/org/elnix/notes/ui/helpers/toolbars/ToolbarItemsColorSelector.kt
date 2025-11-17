@@ -35,7 +35,7 @@ fun ToolbarItemColorSelectorDialog(
     val ctx = LocalContext.current
 
     var onColorInt by remember {
-        mutableIntStateOf(item.bgColor?.toArgb() ?: defaultIconColor.toArgb())
+        mutableIntStateOf(item.onColor?.toArgb() ?: defaultIconColor.toArgb())
     }
 
     var bgColorInt by remember {
@@ -56,7 +56,7 @@ fun ToolbarItemColorSelectorDialog(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 ColorPickerRow(
-                    label = stringResource(R.string.toolbar_color),
+                    label = stringResource(R.string.item_color),
                     defaultColor = defaultIconColor,
                     currentColor = onColorInt,
                     backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
@@ -64,7 +64,7 @@ fun ToolbarItemColorSelectorDialog(
                 )
 
                 ColorPickerRow(
-                    label = stringResource(R.string.toolbar_color),
+                    label = stringResource(R.string.item_background),
                     defaultColor = defaultBgColor,
                     currentColor = bgColorInt,
                     backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),

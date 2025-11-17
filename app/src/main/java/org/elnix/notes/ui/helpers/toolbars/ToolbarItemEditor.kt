@@ -43,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -328,16 +327,14 @@ fun ToolbarItemsEditor(
             defaultBgColor = defaultBgColor,
             onDismiss = { editAction = null }
         ) { onColor, bgColor ->
-            if (onColor != defaultIconColor.toArgb() && bgColor != defaultBgColor.toArgb()) {
-                scope.launch {
-                    ToolbarItemsSettingsStore.updateToolbarItemColor(
-                        ctx = ctx,
-                        toolbar = toolbar,
-                        action = actionToEdit.action,
-                        newIconColor = Color(onColor),
-                        newBgColor = Color(bgColor)
-                    )
-                }
+            scope.launch {
+                ToolbarItemsSettingsStore.updateToolbarItemColor(
+                    ctx = ctx,
+                    toolbar = toolbar,
+                    action = actionToEdit.action,
+                    newIconColor = Color(onColor),
+                    newBgColor = Color(bgColor)
+                )
             }
             editAction = null
         }

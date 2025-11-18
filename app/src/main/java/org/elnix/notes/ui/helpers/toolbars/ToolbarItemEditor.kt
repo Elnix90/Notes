@@ -60,6 +60,7 @@ import org.elnix.notes.data.helpers.globalActionColor
 import org.elnix.notes.data.helpers.toolbarName
 import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
+import org.elnix.notes.data.settings.stores.ToolbarSetting
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
@@ -71,12 +72,13 @@ import org.elnix.notes.ui.theme.adjustBrightness
 @Composable
 fun ToolbarItemsEditor(
     ctx: Context,
-    toolbar: ToolBars,
+    toolbarSettings: ToolbarSetting,
     enabled: Boolean = true,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     onDismiss: (() -> Unit)? = null
 ) {
     val scope = rememberCoroutineScope()
+    val toolbar = toolbarSettings.toolbar
 
     val selectedToolbarItemsFlow = remember { ToolbarItemsSettingsStore.getToolbarItemsFlow(ctx, toolbar) }
     val selectedToolbarItems by selectedToolbarItemsFlow.collectAsState(initial = emptyList())
@@ -117,7 +119,7 @@ fun ToolbarItemsEditor(
             .padding(horizontal = 16.dp, vertical = 14.dp)
     ) {
         Text(
-            text = "${stringResource(R.string.edit_toolbar)}: ${toolbarName(toolbar)}",
+            text = "${stringResource(R.string.edit_toolbar)}: ${toolbarName(toolbarSettings)}",
             color = MaterialTheme.colorScheme.onSurface.copy(if (enabled) 1f else 0.5f),
             modifier = Modifier.weight(1f),
             maxLines = Int.MAX_VALUE,

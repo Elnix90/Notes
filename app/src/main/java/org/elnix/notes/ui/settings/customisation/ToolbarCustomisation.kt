@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,13 +24,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.ToolBars
+import org.elnix.notes.data.helpers.toolbarName
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
+import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.helpers.toolbars.SliderToolbarSetting
@@ -64,7 +70,7 @@ fun ToolbarCustomisationTab(
         resetText = stringResource(R.string.are_you_sure_to_reset_this_toolbar),
         onReset = {
             scope.launch {
-                ToolbarItemsSettingsStore.resetToolbar(ctx, toolbar)
+                ToolbarsSettingsStore.resetToolbar(ctx, toolbar)
             }
         },
         titleContent = {
@@ -72,17 +78,10 @@ fun ToolbarCustomisationTab(
             item {
                 UnifiedToolbar(
                     ctx = ctx,
-                    toolbar = toolbar,
+                    toolbar = toolbarSetting,
                     scrollState = rememberScrollState(),
                     isMultiSelect = false,
                     isSearchExpanded = false,
-                    color = toolbarSetting.color,
-                    borderColor = toolbarSetting.borderColor,
-                    borderWidth = toolbarSetting.borderWidth,
-                    borderRadius = toolbarSetting.borderRadius,
-                    elevation = toolbarSetting.elevation,
-                    paddingLeft = toolbarSetting.leftPadding,
-                    paddingRight = toolbarSetting.rightPadding,
                     ghosted = true
                 )
             }
@@ -102,6 +101,39 @@ fun ToolbarCustomisationTab(
                 )
                 Spacer(Modifier.width(10.dp))
                 Text(stringResource(R.string.toolbar_color))
+            }
+        }
+
+        item {
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = toolbarName(toolbarSetting),
+                onValueChange = { newValue ->
+                    scope.launch { ToolbarsSettingsStore.updateToolbarSetting(
+                        ctx = ctx,
+                        toolbar = toolbar
+                    ) { it.copy(name = newValue) } }
+                },
+                label = { stringResource(R.string.toolbar_name) },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Unspecified,
+                    autoCorrectEnabled = false,
+                    imeAction = ImeAction.Done
+                ),
+                singleLine = true,
+                colors = AppObjectsColors.outlinedTextFieldColors(Color.Transparent)
+            )
+        }
+
+        item {
+            SwitchRow(
+                state = toolbarSetting.showName,
+                text = stringResource(R.string.show_toolbar_name)
+            ) { enabled ->
+                scope.launch { ToolbarsSettingsStore.updateToolbarSetting(
+                    ctx = ctx,
+                    toolbar = toolbar
+                ) { it.copy(showName = enabled) } }
             }
         }
 
@@ -253,7 +285,7 @@ fun ToolbarCustomisationTab(
             TextDivider(stringResource(R.string.toolbars_items_and_order))
         }
 
-        item { ToolbarItemsEditor(ctx, toolbar) }
+        item { ToolbarItemsEditor(ctx, toolbarSetting) }
 
         item {
             Button(

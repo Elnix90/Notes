@@ -1,5 +1,6 @@
 package org.elnix.notes
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -295,7 +296,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     val bottomBars = mutableListOf<@Composable () -> Unit>()
     var reachedSeparator = false
 
-    toolbars.filter { it.enabled }.forEach { bar ->
+    toolbars.filter { it.enabled || true }.forEach { bar ->
         if (bar.toolbar == ToolBars.SEPARATOR) {
             reachedSeparator = true
         }
@@ -304,17 +305,10 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 {
                     UnifiedToolbar(
                         ctx,
-                        toolbar = ToolBars.SELECT,
+                        toolbar = bar,
                         scrollState = rememberScrollState(),
                         isMultiSelect = isSeveralSelectedNotes,
                         isSearchExpanded = isSearchExpandedSelect,
-                        color = bar.color,
-                        borderColor = bar.borderColor,
-                        borderWidth = bar.borderWidth,
-                        borderRadius = bar.borderRadius,
-                        elevation = bar.elevation,
-                        paddingLeft = bar.leftPadding,
-                        paddingRight = bar.rightPadding,
                         onSearchChange = { if ( it.isNotBlank()) searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
@@ -324,17 +318,10 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 {
                     UnifiedToolbar(
                         ctx = ctx,
-                        toolbar = ToolBars.TAGS,
+                        toolbar = bar,
                         scrollState = rememberScrollState(),
                         isMultiSelect = isSeveralSelectedNotes,
                         isSearchExpanded = isSearchExpandedTags,
-                        color = bar.color,
-                        borderColor = bar.borderColor,
-                        borderWidth = bar.borderWidth,
-                        borderRadius = bar.borderRadius,
-                        elevation = bar.elevation,
-                        paddingLeft = bar.leftPadding,
-                        paddingRight = bar.rightPadding,
                         onSearchChange = { searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
@@ -344,27 +331,25 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                 {
                     UnifiedToolbar(
                         ctx = ctx,
-                        toolbar = ToolBars.QUICK_ACTIONS,
+                        toolbar = bar,
                         scrollState = rememberScrollState(),
                         isMultiSelect = isSeveralSelectedNotes,
                         isSearchExpanded = isSearchExpandedQuickActions,
-                        color = bar.color,
-                        borderColor = bar.borderColor,borderWidth = bar.borderWidth,
-                        borderRadius = bar.borderRadius,
-                        elevation = bar.elevation,
-                        paddingLeft = bar.leftPadding,
-                        paddingRight = bar.rightPadding,
                         onSearchChange = { searchText = it }
                     ) { action, clickType, tagItem, toolbar -> onGlobalToolbarAction(action, clickType, tagItem, toolbar) }
                 }
             }
             ToolBars.SEPARATOR -> null
         }
+        Log.e("toolbars",toolbarComposable.toString())
         if (toolbarComposable != null) {
             if (reachedSeparator) bottomBars.add(toolbarComposable)
             else topBars.add(toolbarComposable)
         }
     }
+
+    Log.e("toolbars",topBars.size.toString())
+    Log.e("toolbars",bottomBars.size.toString())
 
     val topBarHeight = ((85 * topBars.size) + toolbarsSpacing * maxOf(0, topBars.size - 1)).dp
     val bottomBarHeight = ((85 * bottomBars.size) + toolbarsSpacing * maxOf(0, bottomBars.size - 1)).dp

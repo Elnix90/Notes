@@ -24,7 +24,9 @@ data class ToolbarSetting(
     val borderWidth: Int = 2,
     val elevation: Int = 3,
     val leftPadding: Int = 16,
-    val rightPadding: Int = 16
+    val rightPadding: Int = 16,
+    val name: String? = null,
+    val showName: Boolean = false
 )
 
 object ToolbarsSettingsStore {
@@ -32,10 +34,10 @@ object ToolbarsSettingsStore {
     private val gson = Gson()
 
     val defaultList = listOf(
-        ToolbarSetting(ToolBars.SELECT),
-        ToolbarSetting(ToolBars.SEPARATOR),
-        ToolbarSetting(ToolBars.TAGS),
-        ToolbarSetting(ToolBars.QUICK_ACTIONS),
+        ToolbarSetting(ToolBars.SELECT, true),
+        ToolbarSetting(ToolBars.SEPARATOR, true),
+        ToolbarSetting(ToolBars.TAGS, true),
+        ToolbarSetting(ToolBars.QUICK_ACTIONS, true),
     )
 
     private val listType = object : TypeToken<List<ToolbarSetting>>() {}.type

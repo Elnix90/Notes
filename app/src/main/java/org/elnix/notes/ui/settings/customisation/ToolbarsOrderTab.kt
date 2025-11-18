@@ -168,17 +168,10 @@ fun ToolbarsOrderTab(
                         ) {
                             UnifiedToolbar(
                                 ctx = ctx,
-                                toolbar = bar.toolbar,
+                                toolbar = bar,
                                 scrollState = scrollState,
                                 isMultiSelect = false,
                                 isSearchExpanded = false,
-                                color = bar.color,
-                                borderColor = bar.borderColor,
-                                borderWidth = bar.borderWidth,
-                                borderRadius = bar.borderRadius,
-                                elevation = bar.elevation,
-                                paddingLeft = bar.leftPadding,
-                                paddingRight = bar.rightPadding,
                                 ghosted = true
                             )
                             HorizontalDivider(Modifier.padding(horizontal = 15.dp), color = MaterialTheme.colorScheme.outline)
@@ -233,7 +226,7 @@ fun ToolbarsOrderTab(
                                 }
 
                                 Text(
-                                    text = toolbarName(bar.toolbar),
+                                    text = toolbarName(bar),
                                     modifier = Modifier.wrapContentWidth(),
                                     style = MaterialTheme.typography.bodyLarge
                                 )

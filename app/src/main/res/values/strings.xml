@@ -269,4 +269,6 @@
     <string name="privacy">Privacy</string>
     <string name="block_screenshots_and_preview">Block Screenshots and hide app content in recents</string>
     <string name="authenticate">Authenticate</string>
+    <string name="show_toolbar_name">Show Toolbar Name</string>
+    <string name="toolbar_name">Toolbar Name</string>
 </resources>

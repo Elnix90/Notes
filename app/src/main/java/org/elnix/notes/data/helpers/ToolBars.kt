@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import org.elnix.notes.R
 import org.elnix.notes.data.settings.stores.ToolbarItemState
+import org.elnix.notes.data.settings.stores.ToolbarSetting
 
 enum class ToolBars {
     SELECT,
@@ -70,10 +71,11 @@ fun defaultToolbarItems(toolbar: ToolBars): List<ToolbarItemState> {
 }
 
 @Composable
-fun toolbarName(toolbar: ToolBars) = when (toolbar) {
-    ToolBars.SELECT -> stringResource(R.string.toolbar_select)
-    ToolBars.SEPARATOR -> ""
-    ToolBars.TAGS -> stringResource(R.string.toolbar_tags)
-    ToolBars.QUICK_ACTIONS -> stringResource(R.string.toolbar_quick_actions)
-}
+fun toolbarName(toolbar: ToolbarSetting) = toolbar.name
+    ?: when (toolbar.toolbar) {
+        ToolBars.SELECT -> stringResource(R.string.toolbar_select)
+        ToolBars.SEPARATOR -> ""
+        ToolBars.TAGS -> stringResource(R.string.toolbar_tags)
+        ToolBars.QUICK_ACTIONS -> stringResource(R.string.toolbar_quick_actions)
+    }
 

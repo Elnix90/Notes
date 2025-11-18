@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,7 +59,7 @@ import org.elnix.notes.ui.theme.adjustBrightness
 
 
 @Composable
-fun ToolbarCard(
+fun DebugToolbarCard(
     ctx: Context,
     items: List<ToolbarItemState>,
     scrollState: ScrollState,
@@ -103,18 +102,18 @@ fun ToolbarCard(
         border = if ( borderWidth > 0) BorderStroke(borderWidth.dp, borderColor) else null,
         elevation = CardDefaults.cardElevation(defaultElevation = elevation.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if(showName) {
-                Text(
-                    text = name,
-                    color = borderColor,
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
+//        Column(
+//            modifier = Modifier.fillMaxSize(),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.Center
+//        ) {
+//            if(showName) {
+//                Text(
+//                    text = name,
+//                    color = borderColor,
+//                    style = MaterialTheme.typography.labelSmall
+//                )
+//            }
         Row(
             modifier = Modifier
                 .padding(8.dp)
@@ -237,7 +236,7 @@ fun ToolbarCard(
             }
         }
     }
-    }
+//    }
 
     // --- Dialogs ---
     if (showEditor) {

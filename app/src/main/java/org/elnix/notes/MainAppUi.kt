@@ -125,7 +125,7 @@ fun MainApp(
 
                             for (item in listOf(
                                 TagItem(id = Random.nextLong(), name = "Imp", color = Color.Yellow),
-                                TagItem(id = Random.nextLong(), name = "example", color = Color.DarkGray),
+                                TagItem(id = Random.nextLong(), name = "Todo", color = Color.DarkGray),
                                 TagItem(id = Random.nextLong(), name = "Home", color = Color.Blue),
                                 TagItem(id = Random.nextLong(), name = "Work", color = Color.Red),
                             )) {

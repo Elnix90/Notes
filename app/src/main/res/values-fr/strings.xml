@@ -178,7 +178,7 @@
     <string name="toolbars_appearance">Apparence des barres d\'outils</string>
     <string name="toolbars_order">Ordre des barres d\'outils</string>
     <string name="toolbar_color">Couleur de la barre d\'outil</string>
-    <string name="toolbar_border_color">Couleur de la bordure de barre d\'outil</string>
+    <string name="toolbar_border">Bordure de barre d\'outil</string>
     <string name="toolbar_colors">Couleurs de la bordure de barre d\'outil</string>
     <string name="random_color">Couleur Aléatoire</string>
     <string name="make_every_colors_random">Mettre toutes les couleurs aléatoires</string>

@@ -36,12 +36,14 @@ import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.ui.helpers.SwitchRow
 import org.elnix.notes.ui.helpers.TextDivider
+import org.elnix.notes.ui.helpers.colors.ColorSelectorEntry
+import org.elnix.notes.ui.helpers.colors.UnifiedColorsSelectorDialog
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 import org.elnix.notes.ui.helpers.toolbars.SliderToolbarSetting
-import org.elnix.notes.ui.helpers.toolbars.ToolbarColorSelectorDialog
 import org.elnix.notes.ui.helpers.toolbars.ToolbarItemsEditor
 import org.elnix.notes.ui.helpers.toolbars.UnifiedToolbar
 import org.elnix.notes.ui.theme.AppObjectsColors
+import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
 fun ToolbarCustomisationTab(
@@ -313,10 +315,28 @@ fun ToolbarCustomisationTab(
     }
 
     if (showColorPickerDialog) {
-        ToolbarColorSelectorDialog(
-            toolbar = toolbarSetting,
+
+        val defaultSurfaceColor = MaterialTheme.colorScheme.surface
+        val defaultBorderColor = defaultSurfaceColor.adjustBrightness(3f)
+
+        UnifiedColorsSelectorDialog(
+            titleDialog = stringResource(R.string.toolbar_colors),
+            entries = listOf(
+                ColorSelectorEntry(
+                    label = stringResource(R.string.toolbars),
+                    defaultColor = defaultSurfaceColor,
+                    initialColor = toolbarSetting.color ?: defaultSurfaceColor
+                ),
+                ColorSelectorEntry(
+                    label = stringResource(R.string.toolbar_border),
+                    defaultColor = defaultBorderColor,
+                    initialColor = toolbarSetting.borderColor ?: defaultBorderColor
+                )
+            ),
             onDismiss = { showColorPickerDialog = false }
-        ) { color, borderColor ->
+        ) { colors ->
+            val color = colors[0]
+            val borderColor = colors[1]
             scope.launch {
                 ToolbarsSettingsStore.updateToolbarColor(
                     ctx = ctx,

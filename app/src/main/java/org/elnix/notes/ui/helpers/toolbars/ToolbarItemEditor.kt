@@ -57,6 +57,7 @@ import org.elnix.notes.data.helpers.GlobalNotesActions
 import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.helpers.globalActionColor
+import org.elnix.notes.data.helpers.globalActionName
 import org.elnix.notes.data.helpers.toolbarName
 import org.elnix.notes.data.settings.stores.ToolbarItemState
 import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
@@ -64,6 +65,8 @@ import org.elnix.notes.data.settings.stores.ToolbarSetting
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
+import org.elnix.notes.ui.helpers.colors.ColorSelectorEntry
+import org.elnix.notes.ui.helpers.colors.UnifiedColorsSelectorDialog
 import org.elnix.notes.ui.helpers.tags.TagBubble
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
@@ -323,18 +326,31 @@ fun ToolbarItemsEditor(
     if (editAction != null) {
         val actionToEdit = editAction!!
         val (defaultIconColor, defaultBgColor) = globalActionColor(actionToEdit.action)
-        ToolbarItemColorSelectorDialog(
-            item = actionToEdit,
-            defaultIconColor = defaultIconColor,
-            defaultBgColor = defaultBgColor,
-            onDismiss = { editAction = null }
-        ) { onColor, bgColor ->
+
+        UnifiedColorsSelectorDialog(
+            titleDialog = "${globalActionName(ctx,actionToEdit.action)} Colors",
+            entries = listOf(
+                ColorSelectorEntry(
+                    label = stringResource(R.string.item_color),
+                    defaultColor = defaultIconColor,
+                    initialColor = actionToEdit.onColor ?: defaultIconColor
+                ),
+                ColorSelectorEntry(
+                    label = stringResource(R.string.item_background),
+                    defaultColor = defaultBgColor,
+                    initialColor = actionToEdit.bgColor ?: defaultBgColor
+                )
+            ),
+            onDismiss = { editAction = null },
+        ) { colors ->
+            val iconColor = colors[0]
+            val bgColor = colors[1]
             scope.launch {
                 ToolbarItemsSettingsStore.updateToolbarItemColor(
                     ctx = ctx,
                     toolbar = toolbar,
                     action = actionToEdit.action,
-                    newIconColor = Color(onColor),
+                    newIconColor = Color(iconColor),
                     newBgColor = Color(bgColor)
                 )
             }

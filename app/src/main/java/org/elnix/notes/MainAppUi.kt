@@ -37,6 +37,7 @@ import org.elnix.notes.ui.security.LockScreen
 import org.elnix.notes.ui.welcome.WelcomeScreen
 import org.elnix.notes.ui.whatsnew.Update
 import org.elnix.notes.ui.whatsnew.WhatsNewBottomSheet
+import kotlin.random.Random
 
 // -------------------- ROUTES --------------------
 object Routes {
@@ -114,19 +115,19 @@ fun MainApp(
                         // Initialization block - Where I put all the vars that need an init state
                         if (!hasInitialized) {
                             for (offsetItem in listOf(
-                                OffsetItem(offset = 600),
-                                OffsetItem(offset = 1800),
-                                OffsetItem(offset = 3600),
-                                OffsetItem(offset = 86400)
+                                OffsetItem(id = Random.nextLong(), offset = 600),
+                                OffsetItem(id = Random.nextLong(), offset = 1800),
+                                OffsetItem(id = Random.nextLong(), offset = 3600),
+                                OffsetItem(id = Random.nextLong(), offset = 86400)
                             )) {
                                 OffsetsSettingsStore.addOffset(ctx, offsetItem)
                             }
 
                             for (item in listOf(
-                                TagItem(name = "Imp", color = Color.Yellow),
-                                TagItem(name = "example", color = Color.DarkGray),
-                                TagItem(name = "Home", color = Color.Blue),
-                                TagItem(name = "Work", color = Color.Red),
+                                TagItem(id = Random.nextLong(), name = "Imp", color = Color.Yellow),
+                                TagItem(id = Random.nextLong(), name = "example", color = Color.DarkGray),
+                                TagItem(id = Random.nextLong(), name = "Home", color = Color.Blue),
+                                TagItem(id = Random.nextLong(), name = "Work", color = Color.Red),
                             )) {
                                 TagsSettingsStore.addTag(ctx, item)
                             }

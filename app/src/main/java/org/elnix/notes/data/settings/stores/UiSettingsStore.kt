@@ -24,6 +24,7 @@ object UiSettingsStore {
         val showTagsInNotes: Boolean = true,
         val showBottomDeleteButton: Boolean = false,
         val hasShownWelcome: Boolean = false,
+        val hasInitialized: Boolean = false,
         val lastSeenVersion: Int = 0
     )
 
@@ -98,8 +99,15 @@ object UiSettingsStore {
     private val HAS_SHOWN_WELCOME = booleanPreferencesKey("has_shown_welcome")
     fun getHasShownWelcome(ctx: Context): Flow<Boolean> =
         ctx.dataStore.data.map { it[HAS_SHOWN_WELCOME] ?: false }
-    suspend fun setHasShownWelcome(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[HAS_SHOWN_WELCOME] = enabled }
+    suspend fun setHasShownWelcome(ctx: Context, hasShownWelcome: Boolean) {
+        ctx.dataStore.edit { it[HAS_SHOWN_WELCOME] = hasShownWelcome }
+    }
+
+    private val HAS_INITIALIZED = booleanPreferencesKey("has_initialized")
+    fun getHasInitialized(ctx: Context): Flow<Boolean> =
+        ctx.dataStore.data.map { it[HAS_INITIALIZED] ?: false }
+    suspend fun setHasInitialized(ctx: Context, hasInitialized: Boolean) {
+        ctx.dataStore.edit { it[HAS_INITIALIZED] = hasInitialized }
     }
 
     private val LAST_SEEN_VERSION = intPreferencesKey("last_seen_version")
@@ -121,6 +129,7 @@ object UiSettingsStore {
             prefs.remove(SHOW_TAGS_IN_NOTES)
             prefs.remove(SHOW_BOTTOM_DELETE_BUTTON)
             prefs.remove(HAS_SHOWN_WELCOME)
+            prefs.remove(HAS_INITIALIZED)
             prefs.remove(LAST_SEEN_VERSION)
         }
     }
@@ -187,6 +196,11 @@ object UiSettingsStore {
                 defaults.hasShownWelcome
             )
 
+            putIfNonDefault(HAS_INITIALIZED.name,
+                prefs[HAS_INITIALIZED],
+                defaults.hasInitialized
+            )
+
             putIfNonDefault(LAST_SEEN_VERSION.name,
                 prefs[LAST_SEEN_VERSION],
                 defaults.lastSeenVersion
@@ -236,6 +250,10 @@ object UiSettingsStore {
 
             backup[HAS_SHOWN_WELCOME.name]?.let {
                 prefs[HAS_SHOWN_WELCOME] = it.toBoolean()
+            }
+
+            backup[HAS_INITIALIZED.name]?.let {
+                prefs[HAS_INITIALIZED] = it.toBoolean()
             }
 
             backup[LAST_SEEN_VERSION.name]?.let {

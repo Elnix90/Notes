@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavGraphBuilder
@@ -23,7 +24,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.helpers.NoteType
+import org.elnix.notes.data.helpers.OffsetItem
+import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.ToolBars
+import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
+import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.editors.DrawingEditorScreen
@@ -84,6 +89,7 @@ fun MainApp(
     val locked by vm.locked.collectAsState()
 
     val hasSeenWelcome by UiSettingsStore.getHasShownWelcome(ctx).collectAsState(true)
+    val hasInitialized by UiSettingsStore.getHasInitialized(ctx).collectAsState(true)
     val lastSeenVersion by UiSettingsStore.getLastSeenVersion(ctx).collectAsState(0)
     val currentVersion = BuildConfig.VERSION_CODE
 
@@ -101,7 +107,35 @@ fun MainApp(
 
         !hasSeenWelcome -> {
             WelcomeScreen(
-                onFinish = { scope.launch{ UiSettingsStore.setHasShownWelcome(ctx, true) } }
+                onFinish = {
+                    scope.launch{
+                        UiSettingsStore.setHasShownWelcome(ctx, true)
+
+                        // Initialization block - Where I put all the vars that need an init state
+                        if (!hasInitialized) {
+                            for (offsetItem in listOf(
+                                OffsetItem(offset = 600),
+                                OffsetItem(offset = 1800),
+                                OffsetItem(offset = 3600),
+                                OffsetItem(offset = 86400)
+                            )) {
+                                OffsetsSettingsStore.addOffset(ctx, offsetItem)
+                            }
+
+                            for (item in listOf(
+                                TagItem(name = "Imp", color = Color.Yellow),
+                                TagItem(name = "example", color = Color.DarkGray),
+                                TagItem(name = "Home", color = Color.Blue),
+                                TagItem(name = "Work", color = Color.Red),
+                            )) {
+                                TagsSettingsStore.addTag(ctx, item)
+                            }
+
+
+                            UiSettingsStore.setHasInitialized(ctx, true)
+                        }
+                    }
+                }
             )
         }
 

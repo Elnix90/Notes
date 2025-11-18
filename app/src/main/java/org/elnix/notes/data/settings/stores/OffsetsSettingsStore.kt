@@ -25,12 +25,7 @@ object OffsetsSettingsStore {
                         offset = obj.optInt("offset", 600),
                     )
                 }
-            } ?: listOf(
-                OffsetItem(offset = 600),
-                OffsetItem(offset = 1800),
-                OffsetItem(offset = 3600),
-                OffsetItem(offset = 86400)
-            )
+            } ?: emptyList()
         }
 
     private suspend fun saveOffsets(ctx: Context, offsets: List<OffsetItem>) {

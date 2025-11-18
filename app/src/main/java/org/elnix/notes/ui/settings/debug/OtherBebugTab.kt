@@ -37,6 +37,7 @@ fun OtherDebugTab(
     val isForceSwitchToggled = forceAppLanguageSelector || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
 
     val showNoteIdInEditor by DebugSettingsStore.getShowNoteIdInEditor(ctx).collectAsState(initial = false)
+    val hasInitialised by UiSettingsStore.getHasInitialized(ctx).collectAsState(initial = true)
 
     SettingsLazyHeader(
         title = "Debug -> Other",
@@ -82,6 +83,15 @@ fun OtherDebugTab(
                 colors = AppObjectsColors.buttonColors()
             ) {
                 Text("Show welcome Screen")
+            }
+        }
+
+        item {
+            SwitchRow(
+                state = hasInitialised,
+                text = "Has Initialized (need to go to welcome screen to trigger)"
+            ) {
+                scope.launch { UiSettingsStore.setHasInitialized(ctx, false) }
             }
         }
 

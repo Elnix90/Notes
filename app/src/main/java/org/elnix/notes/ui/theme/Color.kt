@@ -43,7 +43,7 @@ object DarkDefault : ThemeColors {
     override val Surface = Primary.blendWith(Background, 0.75f)
     override val OnSurface = OnBackground
 
-    override val Error = Color(0xFFCF6679)
+    override val Error = Color.Red
     override val OnError = OnPrimary
 
     override val Outline = Color.White.copy(alpha = 0.8f)

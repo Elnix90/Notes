@@ -69,7 +69,7 @@ object LockSettingsStore {
             prefs[USE_BIOMETRICS]?.let { put(USE_BIOMETRICS.name, it.toString()) }
             prefs[USE_DEVICE_CREDENTIAL]?.let { put(USE_DEVICE_CREDENTIAL.name, it.toString()) }
             prefs[LOCK_TIMEOUT_SECONDS]?.let { put(LOCK_TIMEOUT_SECONDS.name, it.toString()) }
-            prefs[LAST_UNLOCK_TIMESTAMP]?.let { put(LAST_UNLOCK_TIMESTAMP.name, it.toString()) }
+//            prefs[LAST_UNLOCK_TIMESTAMP]?.let { put(LAST_UNLOCK_TIMESTAMP.name, it.toString()) }
             prefs[SELECTED_UNIT]?.let { put(SELECTED_UNIT.name, it) }
         }
     }
@@ -79,7 +79,7 @@ object LockSettingsStore {
             data[USE_BIOMETRICS.name]?.let { prefs[USE_BIOMETRICS] = it.toBoolean() }
             data[USE_DEVICE_CREDENTIAL.name]?.let { prefs[USE_DEVICE_CREDENTIAL] = it.toBoolean() }
             data[LOCK_TIMEOUT_SECONDS.name]?.let { prefs[LOCK_TIMEOUT_SECONDS] = it.toIntOrNull() ?: 300 }
-            data[LAST_UNLOCK_TIMESTAMP.name]?.let { prefs[LAST_UNLOCK_TIMESTAMP] = it.toLongOrNull() ?: 0L }
+//            data[LAST_UNLOCK_TIMESTAMP.name]?.let { prefs[LAST_UNLOCK_TIMESTAMP] = it.toLongOrNull() ?: 0L }
             data[SELECTED_UNIT.name]?.let { prefs[SELECTED_UNIT] = it }
         }
     }

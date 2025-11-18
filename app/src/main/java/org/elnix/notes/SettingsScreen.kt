@@ -99,6 +99,8 @@ fun SettingsListScreen(
 
     val versionName = ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName ?: "unknown"
 
+    val needAuthenticationToResetSettings = settings.useBiometrics || settings.useDeviceCredential
+
     BackHandler { onBack() }
 
     SettingsLazyHeader(
@@ -108,8 +110,28 @@ fun SettingsListScreen(
         resetText = stringResource(R.string.reset_all_default_settings_text),
         onReset = {
             scope.launch {
-                ctx.dataStore.edit { prefs ->
-                    prefs.clear()
+
+                if (needAuthenticationToResetSettings) {
+                    BiometricManagerHelper.authenticateUser(
+                        activity = activity,
+                        useBiometrics = settings.useBiometrics,
+                        useDeviceCredential = settings.useDeviceCredential,
+                        title = ctx.getString(R.string.verification),
+                        onSuccess = {
+                            scope.launch {
+                                ctx.dataStore.edit { prefs ->
+                                    prefs.clear()
+                                }
+                            }
+                        },
+                        onFailure = {
+                            Toast.makeText(ctx,ctx.getString(R.string.failed_to_reset_settings), Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                } else {
+                    ctx.dataStore.edit { prefs ->
+                        prefs.clear()
+                    }
                 }
             }
         }

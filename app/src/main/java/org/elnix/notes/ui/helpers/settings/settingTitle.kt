@@ -3,7 +3,6 @@ package org.elnix.notes.ui.helpers.settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -49,10 +48,10 @@ fun SettingsTitle(
         Text(
             text = title,
             color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.weight(1f)
         )
 
-        Spacer(modifier = Modifier.weight(1f))
 
         if (resetIcon != null){
             IconButton(

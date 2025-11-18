@@ -215,19 +215,21 @@ fun ColorSelectorTab(
                     )
                 }
 
-                IconButton(
-                    onClick = { showRandomColorsValidation = true },
-                    colors = AppObjectsColors.iconButtonColors(
-                        backgroundColor = MaterialTheme.colorScheme.primary.copy(0.5f)
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Shuffle,
-                        contentDescription = stringResource(R.string.make_every_colors_random),
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .padding(5.dp)
-                    )
+                if (colorCustomisationMode == ColorCustomisationMode.ALL){
+                    IconButton(
+                        onClick = { showRandomColorsValidation = true },
+                        colors = AppObjectsColors.iconButtonColors(
+                            backgroundColor = MaterialTheme.colorScheme.primary.copy(0.5f)
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Shuffle,
+                            contentDescription = stringResource(R.string.make_every_colors_random),
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .padding(5.dp)
+                        )
+                    }
                 }
             }
         }
@@ -497,21 +499,33 @@ fun ColorSelectorTab(
                                             .size(40.dp)
                                             .clip(CircleShape)
                                             .background(Color.Black)
-                                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
+                                            .border(
+                                                1.dp,
+                                                MaterialTheme.colorScheme.outline.copy(0.5f),
+                                                CircleShape
+                                            )
                                     )
                                     DefaultThemes.DARK -> Box(
                                         modifier = Modifier
                                             .size(40.dp)
                                             .clip(CircleShape)
                                             .background(Color.DarkGray)
-                                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
+                                            .border(
+                                                1.dp,
+                                                MaterialTheme.colorScheme.outline.copy(0.5f),
+                                                CircleShape
+                                            )
                                     )
                                     DefaultThemes.LIGHT -> Box(
                                         modifier = Modifier
                                             .size(40.dp)
                                             .clip(CircleShape)
                                             .background(Color.White)
-                                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f), CircleShape)
+                                            .border(
+                                                1.dp,
+                                                MaterialTheme.colorScheme.outline.copy(0.5f),
+                                                CircleShape
+                                            )
                                     )
 //                                    DefaultThemes.SYSTEM -> Box(
 //                                        modifier = Modifier

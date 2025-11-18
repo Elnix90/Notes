@@ -1,7 +1,6 @@
 package org.elnix.notes.ui.helpers
 
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,13 +10,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.ui.theme.AppObjectsColors
-import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
 fun SettingsOutlinedField(
@@ -70,6 +69,6 @@ fun SettingsOutlinedField(
         ),
         isError = isError,
         singleLine = true,
-        colors = AppObjectsColors.outlinedTextFieldColors(MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f))
+        colors = AppObjectsColors.outlinedTextFieldColors(Color.Transparent)
     )
 }

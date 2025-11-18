@@ -47,7 +47,7 @@
     <string name="complete_color">Terminé</string>
     <string name="authentication_cancelled">Échec ou annulation de l\'authentification</string>
     <string name="retry">Réessayer</string>
-    <string name="authenticating">Authentification en cours</string>
+    <string name="authenticating">Authentification en cours…</string>
     <string name="theme">Theme</string>
     <string name="reminders_help">Aide sur les rappels</string>
     <string name="swipe_left_action">Action du glissement vers la gauche</string>
@@ -266,4 +266,8 @@
     <string name="item_background">Couleur du fond de l\'objet</string>
     <string name="item_color">Couleur de l\'objet</string>
     <string name="reset_toolbar_items">Réinitialiser la barre d\'outils</string>
+    <string name="security">Sécurité</string>
+    <string name="privacy">Confidentialité</string>
+    <string name="block_screenshots_and_preview">Bloquer les captures d\'écran et masquer le contenu des applications dans les récentes</string>
+    <string name="authenticate">S\'authentifier</string>
 </resources>

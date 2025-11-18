@@ -105,5 +105,4 @@ object TagsSettingsStore {
             data[TAGS_KEY.name]?.let { prefs[TAGS_KEY] = it }
         }
     }
-
 }

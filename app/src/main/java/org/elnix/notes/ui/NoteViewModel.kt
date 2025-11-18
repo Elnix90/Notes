@@ -6,8 +6,10 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -21,6 +23,7 @@ import org.elnix.notes.data.ReminderRepository
 import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.helpers.SortMode
 import org.elnix.notes.data.helpers.SortType
+import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.data.settings.stores.SortSettingsStore
@@ -197,4 +200,32 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         noteRepo.upsert(note.copy(isCompleted = false))
     }
 
+    private val _locked = MutableStateFlow(true)
+    val locked = _locked.asStateFlow()
+
+    fun onAppBackground() {
+        _locked.value = true
+    }
+
+    fun onAppForeground() {
+        viewModelScope.launch {
+            val settings = LockSettingsStore.getLockSettings(ctx).first()
+            val lastUnlock = settings.lastUnlockTimestamp
+            val timeout = settings.lockTimeoutSeconds
+
+            // If timeout = 0 → lock immediately
+            if (timeout == 0) {
+                _locked.value = true
+                return@launch
+            }
+
+            val now = System.currentTimeMillis()
+            val elapsed = (now - lastUnlock) / 1000
+
+            _locked.value = elapsed >= timeout
+        }
+    }
+
+
+    fun unlock() { _locked.value = false }
 }

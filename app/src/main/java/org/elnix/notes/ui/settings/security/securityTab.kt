@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -24,12 +25,13 @@ import org.elnix.notes.R
 import org.elnix.notes.data.LockSettings
 import org.elnix.notes.data.settings.TimeoutOptions
 import org.elnix.notes.data.settings.stores.LockSettingsStore
+import org.elnix.notes.data.settings.stores.PrivacySettingsStore
 import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.helpers.ActionSelectorRow
 import org.elnix.notes.ui.helpers.SettingsOutlinedField
 import org.elnix.notes.ui.helpers.SwitchRow
+import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
-import org.elnix.notes.ui.theme.adjustBrightness
 import java.time.Instant
 
 @Composable
@@ -41,6 +43,8 @@ fun SecurityTab(onBack: (() -> Unit)) {
     val enabled = settings.useBiometrics || settings.useDeviceCredential
     val canBiometrics = BiometricManagerHelper.canBiometrics(activity)
     val canDeviceLock = BiometricManagerHelper.canDeviceLock(activity)
+
+    val blockScreenshots by PrivacySettingsStore.getBlockScreenshots(ctx).collectAsState(initial = false)
 
     SettingsLazyHeader(
         title = stringResource(R.string.security_privacy),
@@ -70,6 +74,7 @@ fun SecurityTab(onBack: (() -> Unit)) {
         }
     ) {
 
+        item { TextDivider(stringResource(R.string.security)) }
         item {
             SwitchRow(
                 settings.useBiometrics,
@@ -117,8 +122,6 @@ fun SecurityTab(onBack: (() -> Unit)) {
         }
 
 
-
-
         item {
             val selectedUnit by LockSettingsStore.getUnitSelected(ctx).collectAsState(initial = TimeoutOptions.MINUTES)
 
@@ -139,7 +142,7 @@ fun SecurityTab(onBack: (() -> Unit)) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
+                        color = MaterialTheme.colorScheme.surface.copy(if (enabled) 1f else 0.5f),
                         shape = RoundedCornerShape(12.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 10.dp),
@@ -155,8 +158,8 @@ fun SecurityTab(onBack: (() -> Unit)) {
                     modifier = Modifier
                         .weight(1f)
                         .background(
-                            color = MaterialTheme.colorScheme.surface.adjustBrightness(if (enabled) 1f else 0.5f),
-                            shape = RoundedCornerShape(12.dp)
+                            color = Color.Transparent,
+//                            shape = RoundedCornerShape(12.dp)
                         )
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     scope = scope,
@@ -183,6 +186,18 @@ fun SecurityTab(onBack: (() -> Unit)) {
                 ) { newOption ->
                     scope.launch { LockSettingsStore.setUnitSelected(ctx, newOption) }
                 }
+            }
+        }
+
+        item { TextDivider(stringResource(R.string.privacy)) }
+
+
+        item {
+            SwitchRow(
+                state = blockScreenshots,
+                text = stringResource(R.string.block_screenshots_and_preview)
+            ) {
+                scope.launch { PrivacySettingsStore.setBlockScreenshots(ctx, it) }
             }
         }
     }

@@ -2,11 +2,11 @@ package org.elnix.notes.ui.helpers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -38,14 +38,25 @@ fun SwitchRow(
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = text, color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.5f))
+        Text(
+            text = text,
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.5f)
+        )
+
         if (onToggle != null) {
-            Spacer(Modifier.weight(1f))
-            VerticalDivider(Modifier.padding(vertical = 5.dp), color = MaterialTheme.colorScheme.outline.copy(0.7f))
+            VerticalDivider(
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .align(Alignment.CenterVertically),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f)
+            )
+        } else {
+            Spacer(modifier = Modifier.width(12.dp))
         }
+
         Switch(
             checked = checked,
             enabled = enabled,
@@ -54,3 +65,4 @@ fun SwitchRow(
         )
     }
 }
+

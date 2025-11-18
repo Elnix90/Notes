@@ -2,6 +2,7 @@
 package org.elnix.notes
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -13,9 +14,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
+import org.elnix.notes.data.settings.stores.PrivacySettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.NotesTheme
@@ -47,6 +50,19 @@ class MainActivity : AppCompatActivity() {
                     )
                     controller.systemBarsBehavior =
                         WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            PrivacySettingsStore.getBlockScreenshots(this@MainActivity).collectLatest { enabled ->
+                if (enabled) {
+                    window.setFlags(
+                        WindowManager.LayoutParams.FLAG_SECURE,
+                        WindowManager.LayoutParams.FLAG_SECURE
+                    )
+                } else {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
                 }
             }
         }
@@ -115,6 +131,26 @@ class MainActivity : AppCompatActivity() {
                     startNoteId = noteId.takeIf { it != -1L },
                     startNoteType = noteType
                 )
+            }
+        }
+    }
+
+
+    override fun onPause() {
+        vm.onAppBackground()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onAppForeground()
+
+        lifecycleScope.launch {
+            val block = PrivacySettingsStore.getBlockScreenshots(this@MainActivity).first()
+            if (!block) {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            } else {
+                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
             }
         }
     }

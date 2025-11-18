@@ -34,7 +34,6 @@ import java.time.Instant
 @Composable
 fun LockScreen(activity: FragmentActivity, onUnlock: () -> Unit) {
     val ctx = LocalContext.current
-//    val activity = ctx.findFragmentActivity() ?: return
 
     val scope = rememberCoroutineScope()
     val settingsFlow = LockSettingsStore.getLockSettings(ctx)
@@ -80,32 +79,40 @@ fun LockScreen(activity: FragmentActivity, onUnlock: () -> Unit) {
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Spacer(Modifier.height(16.dp))
-                    Button(onClick = {
-                        authFailed = false
-                        settings?.let {
-                            startAuthentication(
-                                activity,
-                                ctx,
-                                it,
-                                scope,
-                                onSuccess = onUnlock,
-                                onFailure = {
-                                    authFailed = true
-                                    isAuthenticating = false
-                                }
-                            )
-                        }
-                    }) {
-                        Text(stringResource(R.string.retry))
-                    }
                 }
                 isAuthenticating -> {
                     Text(
                         stringResource(R.string.authenticating),
+                        color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
+                else ->
+                    Text(
+                        stringResource(R.string.authenticate),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+            }
+            Spacer(Modifier.height(16.dp))
+            Button(onClick = {
+                authFailed = false
+                settings?.let {
+                    isAuthenticating = true
+                    startAuthentication(
+                        activity,
+                        ctx,
+                        it,
+                        scope,
+                        onSuccess = onUnlock,
+                        onFailure = {
+                            authFailed = true
+                            isAuthenticating = false
+                        }
+                    )
+                }
+            }) {
+                Text(stringResource(R.string.retry))
             }
         }
     }
@@ -123,8 +130,7 @@ private fun startAuthentication(
     val now = Instant.now().toEpochMilli()
     val diffSeconds =
         if (settings.lastUnlockTimestamp == 0L) Long.MAX_VALUE
-        else (now - settings.lastUnlockTimestamp) / (1000 * 60)
-
+        else (now - settings.lastUnlockTimestamp) / 1000
     val canAuth = BiometricManagerHelper.canAuthenticate(
         activity,
         useBiometrics = settings.useBiometrics,

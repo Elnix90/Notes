@@ -81,12 +81,11 @@ fun MainApp(
     val scope = rememberCoroutineScope()
 
     val navController = rememberNavController()
-    var unlocked by remember { mutableStateOf(false) }
+    val locked by vm.locked.collectAsState()
 
     val hasSeenWelcome by UiSettingsStore.getHasShownWelcome(ctx).collectAsState(true)
     val lastSeenVersion by UiSettingsStore.getLastSeenVersion(ctx).collectAsState(0)
     val currentVersion = BuildConfig.VERSION_CODE
-
 
 
     val updates = listOf(
@@ -98,9 +97,7 @@ fun MainApp(
 
 
     when {
-        !unlocked -> {
-            LockScreen(activity) { unlocked = true }
-        }
+        locked -> LockScreen(activity) { vm.unlock() }
 
         !hasSeenWelcome -> {
             WelcomeScreen(

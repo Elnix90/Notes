@@ -32,10 +32,10 @@ object ToolbarsSettingsStore {
     private val gson = Gson()
 
     val defaultList = listOf(
-        ToolbarSetting(ToolBars.SELECT, true),
-        ToolbarSetting(ToolBars.SEPARATOR, true),
-        ToolbarSetting(ToolBars.TAGS, true),
-        ToolbarSetting(ToolBars.QUICK_ACTIONS, true),
+        ToolbarSetting(ToolBars.SELECT),
+        ToolbarSetting(ToolBars.SEPARATOR),
+        ToolbarSetting(ToolBars.TAGS),
+        ToolbarSetting(ToolBars.QUICK_ACTIONS),
     )
 
     private val listType = object : TypeToken<List<ToolbarSetting>>() {}.type

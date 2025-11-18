@@ -44,10 +44,13 @@ import androidx.datastore.preferences.core.edit
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import org.elnix.notes.data.LockSettings
 import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.dataStore
 import org.elnix.notes.data.settings.stores.DebugSettingsStore
+import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
+import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
@@ -80,9 +83,12 @@ fun SettingsListScreen(
 
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
+    val activity = ctx as FragmentActivity
 
     val isDebugModeEnabled by DebugSettingsStore.getDebugMode(ctx).collectAsState(initial = false)
     val forceAppLanguageSelector by DebugSettingsStore.getForceAppLanguageSelector(ctx).collectAsState(initial = false)
+
+    val settings by LockSettingsStore.getLockSettings(ctx).collectAsState(initial = LockSettings())
 
     var timesClickedOnVersion by remember { mutableIntStateOf(0) }
     val showUserConfirmEnableDebug by UserConfirmSettingsStore.getShowEnableDebug(ctx)
@@ -310,9 +316,27 @@ fun SettingsListScreen(
                 scope.launch { UserConfirmSettingsStore.setShowEnableDebug(ctx,false) }
             }
         ) {
-            scope.launch{
+            showDebugModeUserValidation = false
+            if (settings.useBiometrics || settings.useDeviceCredential) {
+
+                scope.launch {
+                    BiometricManagerHelper.authenticateUser(
+                        activity = activity,
+                        useBiometrics = settings.useBiometrics,
+                        useDeviceCredential = settings.useDeviceCredential,
+                        title = ctx.getString(R.string.verification),
+                        onSuccess = {
+                            scope.launch{
+                                DebugSettingsStore.setDebugMode(ctx, true)
+                            }
+                        },
+                        onFailure = {
+                            Toast.makeText(ctx,ctx.getString(R.string.failed_to_reset_settings), Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            } else  scope.launch{
                 DebugSettingsStore.setDebugMode(ctx, true)
-                showDebugModeUserValidation = false
             }
         }
     }
@@ -364,8 +388,8 @@ fun SecuritySettingsScreen(navController: NavController) {
 }
 
 @Composable
-fun BackupSettingsScreen(navController: NavController) {
-    BackupTab {
+fun BackupSettingsScreen(navController: NavController, activity: FragmentActivity) {
+    BackupTab(activity) {
         navController.navigate(Routes.Settings.ROOT)
     }
 }

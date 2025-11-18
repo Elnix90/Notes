@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.fragment.app.FragmentActivity
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.ExportImportRow
 import org.elnix.notes.ui.helpers.NotesExportImportRow
@@ -19,7 +20,7 @@ import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 
 @Composable
-fun BackupTab(onBack: (() -> Unit)) {
+fun BackupTab(activity: FragmentActivity, onBack: (() -> Unit)) {
 
     // UI state for showing dialogs
     var showValidation by remember { mutableStateOf(false) }
@@ -56,6 +57,7 @@ fun BackupTab(onBack: (() -> Unit)) {
         item { TextDivider(stringResource(R.string.settings_backup_restore)) }
         item {
             ExportImportRow(
+                activity,
                 onError = { export, message ->
                     isExport = export
                     isError = true

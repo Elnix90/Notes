@@ -12,6 +12,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.ui.theme.AppObjectsColors
@@ -19,6 +20,7 @@ import org.elnix.notes.utils.SettingsBackupManager
 
 @Composable
 fun ExportImportRow(
+    activity: FragmentActivity,
     onError: (Boolean, String) -> Unit,
     onSuccess: (Boolean) -> Unit
 ) {
@@ -31,7 +33,7 @@ fun ExportImportRow(
             if (uri == null) return@rememberLauncherForActivityResult
             scope.launch {
                 try {
-                    SettingsBackupManager.importSettings(ctx, uri)
+                    SettingsBackupManager.importSettings(ctx, uri, activity)
                     onSuccess(false)
 //                    Toast.makeText(ctx, R.string.settings_imported_successfully, Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {

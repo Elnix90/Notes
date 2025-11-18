@@ -3,6 +3,7 @@ package org.elnix.notes.utils
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.elnix.notes.data.settings.stores.ActionSettingsStore
@@ -21,6 +22,7 @@ import org.elnix.notes.data.settings.stores.ToolbarItemsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
+import org.elnix.notes.security.requireBiometricAuth
 import org.json.JSONObject
 import java.io.OutputStreamWriter
 
@@ -72,7 +74,7 @@ object SettingsBackupManager {
         }
     }
 
-    suspend fun importSettings(ctx: Context, uri: Uri) {
+    suspend fun importSettings(ctx: Context, uri: Uri, activity: FragmentActivity) {
         try {
             val json = withContext(Dispatchers.IO) {
                 ctx.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
@@ -86,23 +88,117 @@ object SettingsBackupManager {
             Log.d(TAG, "Loaded JSON: $json")
             val obj = JSONObject(json)
 
+
+            var biometricValidated = false
+            suspend fun ensureBiometricOnce(usesBiometrics: Boolean, usesDeviceCredentials: Boolean): Boolean {
+                if (!biometricValidated) {
+                    biometricValidated = requireBiometricAuth(activity,usesBiometrics, usesDeviceCredentials)
+                }
+                return biometricValidated
+            }
+
             withContext(Dispatchers.IO) {
-                obj.optJSONObject("actions")?.let { ActionSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("color_mode")?.let { ColorModesSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("color")?.let { ColorSettingsStore.setAll(ctx, jsonToMapInt(it)) }
-                obj.optJSONObject("debug")?.let { DebugSettingsStore.setAll(ctx, jsonToMap(it)) }
-                obj.optJSONObject("language")?.let { LanguageSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("lock")?.let { LockSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("notifications")?.let { NotificationsSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("offsets")?.let { OffsetsSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("plugins")?.let { PluginsSettingsStore.setAll(ctx, jsonToMap(it)) }
-                obj.optJSONObject("reminders")?.let { ReminderSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("sort")?.let { SortSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("tags")?.let { TagsSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("toolbar_items")?.let { ToolbarItemsSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("toolbars")?.let { ToolbarsSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("ui")?.let { UiSettingsStore.setAll(ctx, jsonToMapString(it)) }
-                obj.optJSONObject("user_confirm")?.let { UserConfirmSettingsStore.setAll(ctx, jsonToMap(it)) }
+
+                // ------------------ ACTIONS ------------------
+                obj.optJSONObject("actions")?.let {
+                    ActionSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ COLOR MODE ------------------
+                obj.optJSONObject("color_mode")?.let {
+                    ColorModesSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ COLOR ------------------
+                obj.optJSONObject("color")?.let {
+                    ColorSettingsStore.setAll(ctx, jsonToMapInt(it))
+                }
+
+                // ------------------ DEBUG ------------------
+                obj.optJSONObject("debug")?.let {
+                    DebugSettingsStore.setAll(ctx, jsonToMap(it))
+                }
+
+                // ------------------ LANGUAGE ------------------
+                obj.optJSONObject("language")?.let {
+                    LanguageSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ LOCK SETTINGS (biometric required) ------------------
+                obj.optJSONObject("lock")?.let { lockObj ->
+                    val map = jsonToMapString(lockObj)
+
+                    if (!ensureBiometricOnce(usesBiometrics = true, usesDeviceCredentials = false)) {
+                        Log.w(TAG, "Biometric authentication failed for lock settings")
+                        return@let
+                    }
+
+                    LockSettingsStore.setAll(ctx, map)
+                }
+
+                // ------------------ NOTIFICATIONS ------------------
+                obj.optJSONObject("notifications")?.let {
+                    NotificationsSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ OFFSETS ------------------
+                obj.optJSONObject("offsets")?.let {
+                    OffsetsSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ PLUGINS (biometric required if dangerous) ------------------
+                obj.optJSONObject("plugins")?.let { pluginObj ->
+                    val map = jsonToMap(pluginObj)
+
+                    val biometricRequired = map["allow_alphallm_access"] == true
+
+                    if (biometricRequired) {
+                        if (!ensureBiometricOnce(
+                                usesBiometrics = true,
+                                usesDeviceCredentials = false
+                            )) {
+                            Log.w(TAG, "Biometric authentication failed for plugins")
+                            return@let
+                        }
+                    }
+
+                    PluginsSettingsStore.setAll(ctx, map)
+                }
+
+                // ------------------ REMINDERS ------------------
+                obj.optJSONObject("reminders")?.let {
+                    ReminderSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ SORT ------------------
+                obj.optJSONObject("sort")?.let {
+                    SortSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ TAGS ------------------
+                obj.optJSONObject("tags")?.let {
+                    TagsSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ TOOLBAR ITEMS ------------------
+                obj.optJSONObject("toolbar_items")?.let {
+                    ToolbarItemsSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ TOOLBARS ------------------
+                obj.optJSONObject("toolbars")?.let {
+                    ToolbarsSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ UI ------------------
+                obj.optJSONObject("ui")?.let {
+                    UiSettingsStore.setAll(ctx, jsonToMapString(it))
+                }
+
+                // ------------------ USER CONFIRM ------------------
+                obj.optJSONObject("user_confirm")?.let {
+                    UserConfirmSettingsStore.setAll(ctx, jsonToMap(it))
+                }
             }
 
             Log.i(TAG, "Import completed successfully.")
@@ -135,44 +231,4 @@ object SettingsBackupManager {
     private fun jsonToMapString(obj: JSONObject) = buildMap {
         obj.keys().forEach { key -> put(key, obj.optString(key, "")) }
     }
-
-//    private fun sortBackupToJson(backup: SortBackup) = JSONObject().apply {
-//        put("mode", backup.sortMode.name)
-//        put("type", backup.sortType.name)
-//    }
-//
-//    private fun jsonToSortBackup(obj: JSONObject) = SortBackup(
-//        sortMode = runCatching { SortMode.valueOf(obj.optString("mode")) }.getOrDefault(SortMode.DESC),
-//        sortType = runCatching { SortType.valueOf(obj.optString("type")) }.getOrDefault(SortType.DATE)
-//    )
-//
-//    private fun uiBackupToJson(b: UiSettingsStore.UiSettingsBackup) = JSONObject().apply {
-//        put("showNotesNumber", b.showNotesNumber)
-//        put("noteViewType", b.noteViewType.name)
-//        put("fullscreen", b.fullscreen)
-//        put("showColorDropdownEditors", b.showColorDropdownEditors)
-//        put("showReminderDropdownEditors", b.showReminderDropdownEditors)
-//        put("showQuickActionsDropdownEditors", b.showQuickActionsDropdownEditors)
-//        put("showTagsDropdownEditors", b.showTagsDropdownEditors)
-//        put("showTagsInNotes", b.showTagsInNotes)
-//        put("showBottomDeleteButton", b.showBottomDeleteButton)
-//        put("hasShownWelcome", b.hasShownWelcome)
-//        put("lastSeenVersion", b.lastSeenVersion)
-//    }
-//
-//    private fun jsonToUiBackup(obj: JSONObject) = UiSettingsStore.UiSettingsBackup(
-//        showNotesNumber = obj.optBoolean("showNotesNumber", true),
-//        noteViewType = runCatching {
-//            NoteViewType.valueOf(obj.optString("noteViewType", NoteViewType.LIST.name))
-//        }.getOrDefault(NoteViewType.LIST),
-//        fullscreen = obj.optBoolean("fullscreen", false),
-//        showColorDropdownEditors = obj.optBoolean("showColorDropdownEditors", false),
-//        showReminderDropdownEditors = obj.optBoolean("showReminderDropdownEditors", false),
-//        showQuickActionsDropdownEditors = obj.optBoolean("showQuickActionsDropdownEditors", false),
-//        showTagsDropdownEditors = obj.optBoolean("showTagsDropdownEditors", false),
-//        showTagsInNotes = obj.optBoolean("showTagsInNotes", true),
-//        showBottomDeleteButton = obj.optBoolean("showBottomDeleteButton", false),
-//        hasShownWelcome = obj.optBoolean("hasShownWelcome", false),
-//        lastSeenVersion = obj.optInt("lastSeenVersion", 0)
-//    )
 }

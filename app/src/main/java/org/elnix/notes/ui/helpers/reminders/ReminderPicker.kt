@@ -73,9 +73,8 @@ fun ReminderPicker(
     } else {
         StyledReminderDialogs(
             initialMillis = tempCalendarMillis,
-            showText = showText,
-            onPicked = onPicked
-        )
+            showText = showText
+        ) { onPicked }
     }
 }
 

@@ -131,7 +131,8 @@ fun RemindersTab(
                                     val newList =
                                         defaultReminders.toMutableList().apply { remove(reminder) }
                                     scope.launch { setDefaultReminders(ctx, newList) }
-                                }
+                                },
+                                showAbsoluteDate = true
                             )
                         }
 

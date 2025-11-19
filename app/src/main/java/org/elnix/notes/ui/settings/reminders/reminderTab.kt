@@ -120,7 +120,7 @@ fun RemindersTab(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     defaultReminders.sortedBy { it.toCalendar().timeInMillis }
-                        .forEachIndexed { index, reminder ->
+                        .forEach { reminder ->
                             TimeBubble(
                                 reminder = ReminderEntity(
                                     noteId = -1,
@@ -129,7 +129,7 @@ fun RemindersTab(
                                 ),
                                 onDelete = {
                                     val newList =
-                                        defaultReminders.toMutableList().apply { removeAt(index) }
+                                        defaultReminders.toMutableList().apply { remove(reminder) }
                                     scope.launch { setDefaultReminders(ctx, newList) }
                                 }
                             )
@@ -151,12 +151,12 @@ fun RemindersTab(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     defaultOffsets.sortedBy { it.offset }
-                        .forEachIndexed { index, offset ->
+                        .forEach { offset ->
                             TimeBubble(
                                 offsetObject = offset,
                                 onDelete = {
                                     val newList =
-                                        defaultOffsets.toMutableList().apply { removeAt(index) }
+                                        defaultOffsets.toMutableList().apply { remove(offset) }
                                     scope.launch { setDefaultOffsets(ctx, newList) }
                                 }
                             )
@@ -206,8 +206,10 @@ fun RemindersTab(
             onDismiss = { showOffsetPicker = false }
         ) { picked ->
             val newList = defaultOffsets + picked.toOffsetItem()
-            scope.launch{ setDefaultOffsets(ctx, newList) }
-            showOffsetPicker = false
+            scope.launch{
+                setDefaultOffsets(ctx, newList)
+                showOffsetPicker = false
+            }
         }
     }
 }

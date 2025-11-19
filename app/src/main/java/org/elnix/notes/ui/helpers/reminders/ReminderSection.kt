@@ -76,7 +76,8 @@ fun RemindersSection(
                         vm.deleteReminder(reminder)
                         cancelReminderNotification(ctx, reminder.id)
                     }
-                }
+                },
+                enabled = reminder.enabled
             )
         }
         IconButton(

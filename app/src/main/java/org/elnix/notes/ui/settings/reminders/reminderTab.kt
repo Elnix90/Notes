@@ -39,16 +39,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.Routes
-import org.elnix.notes.data.ReminderEntity
-import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
-import org.elnix.notes.data.settings.stores.OffsetsSettingsStore.getDefaultOffsetsFlow
-import org.elnix.notes.data.settings.stores.OffsetsSettingsStore.setDefaultOffsets
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
-import org.elnix.notes.data.settings.stores.ReminderSettingsStore.getDefaultRemindersFlow
-import org.elnix.notes.data.settings.stores.ReminderSettingsStore.setDefaultReminders
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.reminders.OffsetPickerDialog
-import org.elnix.notes.ui.helpers.reminders.ReminderPicker
 import org.elnix.notes.ui.helpers.reminders.TimeBubble
 import org.elnix.notes.ui.helpers.settings.SettingsItem
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
@@ -64,13 +57,12 @@ fun RemindersTab(
     navController: NavController,
     onBack: (() -> Unit)
 ) {
-    val defaultReminders by getDefaultRemindersFlow(ctx)
+    val defaultReminders by ReminderSettingsStore.getDefaultRemindersFlow(ctx)
         .collectAsState(initial = emptyList())
 
-    val defaultOffsets by getDefaultOffsetsFlow(ctx)
-        .collectAsState(initial = emptyList())
+    val allOffsets by ReminderSettingsStore.getReminders(ctx).collectAsState(initial = emptyList())
 
-    val allOffsets by OffsetsSettingsStore.getOffsets(ctx).collectAsState(initial = emptyList())
+
     var showOffsetPicker by remember { mutableStateOf(false) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -122,43 +114,13 @@ fun RemindersTab(
                     defaultReminders.sortedBy { it.toCalendar().timeInMillis }
                         .forEach { reminder ->
                             TimeBubble(
-                                reminder = ReminderEntity(
-                                    noteId = -1,
-                                    dueDateTime = reminder.toCalendar(),
-                                    enabled = true
-                                ),
+                                reminderOffset = reminder,
                                 onDelete = {
                                     val newList =
                                         defaultReminders.toMutableList().apply { remove(reminder) }
-                                    scope.launch { setDefaultReminders(ctx, newList) }
-                                }
-                            )
-                        }
-
-                    ReminderPicker(activity, showText = true) { picked ->
-                        val newList = defaultReminders + picked
-                        scope.launch { setDefaultReminders(ctx, newList) }
-                    }
-                }
-            }
-
-            item { TextDivider(stringResource(R.string.default_offsets)) }
-
-            item {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    defaultOffsets.sortedBy { it.offset }
-                        .forEach { offset ->
-                            TimeBubble(
-                                offsetObject = offset,
-                                onDelete = {
-                                    val newList =
-                                        defaultOffsets.toMutableList().apply { remove(offset) }
-                                    scope.launch { setDefaultOffsets(ctx, newList) }
-                                }
+                                    scope.launch { ReminderSettingsStore.setDefaultReminders(ctx, newList) }
+                                },
+                                showAbsoluteDate = true
                             )
                         }
 
@@ -202,12 +164,11 @@ fun RemindersTab(
         OffsetPickerDialog(
             offsets = allOffsets,
             activity = activity,
-            showDatePicker = false,
             onDismiss = { showOffsetPicker = false }
         ) { picked ->
-            val newList = defaultOffsets + picked.toOffsetItem()
+            val newList = defaultReminders + picked
             scope.launch{
-                setDefaultOffsets(ctx, newList)
+                ReminderSettingsStore.setDefaultReminders(ctx, newList)
                 showOffsetPicker = false
             }
         }

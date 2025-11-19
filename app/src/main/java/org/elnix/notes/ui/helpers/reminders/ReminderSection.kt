@@ -23,9 +23,10 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.NoteEntity
 import org.elnix.notes.data.ReminderEntity
-import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
+import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.AppObjectsColors
+import org.elnix.notes.utils.ReminderOffset
 import org.elnix.notes.utils.cancelReminderNotification
 import org.elnix.notes.utils.scheduleReminderNotification
 
@@ -44,7 +45,7 @@ fun RemindersSection(
     val reminderText = stringResource(R.string.reminder)
 
     var showOffsetPicker by remember { mutableStateOf(false) }
-    val allOffsets by OffsetsSettingsStore.getOffsets(ctx).collectAsState(initial = emptyList())
+    val allOffsets by ReminderSettingsStore.getReminders(ctx).collectAsState(initial = emptyList())
 
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -54,7 +55,7 @@ fun RemindersSection(
         reminders.sortedBy { it.dueDateTime }
             .forEach { reminder ->
             TimeBubble(
-                reminder = reminder,
+                reminderOffset = ReminderOffset(absoluteTimeMillis = reminder.dueDateTime.timeInMillis),
                 onClick = {
                     scope.launch {
                         val updatedReminder = reminder.copy(enabled = !reminder.enabled)

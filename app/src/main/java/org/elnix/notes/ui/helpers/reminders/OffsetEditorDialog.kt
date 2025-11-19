@@ -1,6 +1,7 @@
 package org.elnix.notes.ui.helpers.reminders
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -35,26 +37,36 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
-import org.elnix.notes.data.helpers.OffsetItem
-import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
+import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.theme.AppObjectsColors
+import org.elnix.notes.utils.ReminderOffset
 
 @Composable
 fun OffsetEditorDialog(
-    initialOffset: OffsetItem? = null,
+    initialOffset: ReminderOffset? = null,
     scope: CoroutineScope,
     onDismiss: () -> Unit
 ) {
     val ctx = LocalContext.current
     var showConfirmDelete by remember { mutableStateOf(false) }
 
+    Log.i("debug", "initialOffset: $initialOffset")
+//    Log.i("debug", "tot sec: ${initialOffset!!.toCalendar().timeInMillis}")
+
     // Convert offset (seconds) to h/m/s
-    val totalSeconds = initialOffset?.offset ?: 600
+    val totalSeconds = initialOffset?.secondsFromNow?.toInt() ?: 600
     var days by remember { mutableIntStateOf(totalSeconds / 86400) }
     var hours by remember { mutableIntStateOf(totalSeconds / 3600) }
     var minutes by remember { mutableIntStateOf((totalSeconds % 3600) / 60) }
     var seconds by remember { mutableIntStateOf(totalSeconds % 60) }
+
+
+    Log.i("debug", "tot sec: $totalSeconds")
+    Log.i("debug", "days: $days")
+    Log.i("debug", "hours: $hours")
+    Log.i("debug", "min: $minutes")
+    Log.i("debug", "sec: $seconds")
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -86,9 +98,7 @@ fun OffsetEditorDialog(
                     OutlinedButton(
                         onClick = { showConfirmDelete = true },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = AppObjectsColors.cancelButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
+                        colors = AppObjectsColors.cancelButtonColors()
                     ) {
                         Text(
                             text = stringResource(R.string.delete_offset),
@@ -102,22 +112,27 @@ fun OffsetEditorDialog(
             Button(
                 onClick = {
                     scope.launch {
-                        val total = days *86400 + hours * 3600 + minutes * 60 + seconds
-                        val newOffset = initialOffset?.copy(offset = total)
-                            ?: OffsetItem(offset = total)
+                        val total = (days * 86400 + hours * 3600 + minutes * 60 + seconds).toLong()
+                        val newOffset = initialOffset?.copy(secondsFromNow = total)
+                            ?: ReminderOffset(secondsFromNow = total)
                         if (initialOffset == null)
-                            OffsetsSettingsStore.addOffset(ctx, newOffset)
+                            ReminderSettingsStore.addReminder(ctx, newOffset)
                         else
-                            OffsetsSettingsStore.updateOffset(ctx, newOffset)
+                            ReminderSettingsStore.updateReminder(ctx, initialOffset,newOffset)
                         onDismiss()
                     }
-                }
+                },
+                colors = AppObjectsColors.buttonColors(),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                colors = AppObjectsColors.cancelButtonColors()
+            ) {
                 Text(stringResource(R.string.cancel))
             }
         }
@@ -126,12 +141,12 @@ fun OffsetEditorDialog(
     if (showConfirmDelete && initialOffset != null) {
         UserValidation(
             title = stringResource(R.string.delete_offset),
-            message = "${stringResource(R.string.are_you_sure_to_delete_offset)} '${initialOffset.offset}'?",
+            message = "${stringResource(R.string.are_you_sure_to_delete_offset)} '${initialOffset.toCalendar().timeInMillis}'?",
             onCancel = { showConfirmDelete = false },
             onAgree = {
                 showConfirmDelete = false
                 scope.launch {
-                    OffsetsSettingsStore.deleteOffset(ctx, initialOffset)
+                    ReminderSettingsStore.deleteReminder(ctx, initialOffset)
                     onDismiss()
                 }
             }

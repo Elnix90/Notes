@@ -24,10 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.helpers.NoteType
-import org.elnix.notes.data.helpers.OffsetItem
 import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.helpers.ToolBars
-import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
+import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
 import org.elnix.notes.ui.NoteViewModel
@@ -37,6 +36,7 @@ import org.elnix.notes.ui.security.LockScreen
 import org.elnix.notes.ui.welcome.WelcomeScreen
 import org.elnix.notes.ui.whatsnew.Update
 import org.elnix.notes.ui.whatsnew.WhatsNewBottomSheet
+import org.elnix.notes.utils.ReminderOffset
 import kotlin.random.Random
 
 // -------------------- ROUTES --------------------
@@ -114,14 +114,15 @@ fun MainApp(
 
                         // Initialization block - Where I put all the vars that need an init state
                         if (!hasInitialized) {
-                            for (offsetItem in listOf(
-                                OffsetItem(id = Random.nextLong(), offset = 600),
-                                OffsetItem(id = Random.nextLong(), offset = 1800),
-                                OffsetItem(id = Random.nextLong(), offset = 3600),
-                                OffsetItem(id = Random.nextLong(), offset = 86400)
-                            )) {
-                                OffsetsSettingsStore.addOffset(ctx, offsetItem)
-                            }
+                            ReminderSettingsStore.setDefaultReminders(
+                                ctx,
+                                listOf(
+                                    ReminderOffset(secondsFromNow = 600),
+                                    ReminderOffset(secondsFromNow = 1800),
+                                    ReminderOffset(secondsFromNow = 3600),
+                                    ReminderOffset(secondsFromNow = 86400)
+                                )
+                            )
 
                             for (item in listOf(
                                 TagItem(id = Random.nextLong(), name = "Imp", color = Color.Yellow),

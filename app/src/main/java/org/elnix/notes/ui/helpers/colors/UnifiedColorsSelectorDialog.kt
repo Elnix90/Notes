@@ -61,7 +61,7 @@ fun UnifiedColorsSelectorDialog(
                         onValidate(entries.map { it.initialColor.toArgb() } )
                     },
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
-                    colors = AppObjectsColors.cancelButtonColors(containerColor = MaterialTheme.colorScheme.surface)
+                    colors = AppObjectsColors.cancelButtonColors()
                 ) {
                     Text(
                         text = stringResource(R.string.reset_to_default_colors),

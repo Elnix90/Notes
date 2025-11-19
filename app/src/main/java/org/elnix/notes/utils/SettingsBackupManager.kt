@@ -13,7 +13,6 @@ import org.elnix.notes.data.settings.stores.DebugSettingsStore
 import org.elnix.notes.data.settings.stores.LanguageSettingsStore
 import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.data.settings.stores.NotificationsSettingsStore
-import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
 import org.elnix.notes.data.settings.stores.PluginsSettingsStore
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.data.settings.stores.SortSettingsStore
@@ -47,7 +46,6 @@ object SettingsBackupManager {
                 putIfNotEmpty("language", mapStringToJson(LanguageSettingsStore.getAll(ctx)))
                 putIfNotEmpty("lock", mapStringToJson(LockSettingsStore.getAll(ctx)))
                 putIfNotEmpty("notifications", mapStringToJson(NotificationsSettingsStore.getAll(ctx)))
-                putIfNotEmpty("offsets", mapStringToJson(OffsetsSettingsStore.getAll(ctx)))
                 putIfNotEmpty("plugins", mapToJson(PluginsSettingsStore.getAll(ctx)))
                 putIfNotEmpty("reminders", mapStringToJson(ReminderSettingsStore.getAll(ctx)))
                 putIfNotEmpty("sort", mapStringToJson(SortSettingsStore.getAll(ctx)))
@@ -139,11 +137,6 @@ object SettingsBackupManager {
                 // ------------------ NOTIFICATIONS ------------------
                 obj.optJSONObject("notifications")?.let {
                     NotificationsSettingsStore.setAll(ctx, jsonToMapString(it))
-                }
-
-                // ------------------ OFFSETS ------------------
-                obj.optJSONObject("offsets")?.let {
-                    OffsetsSettingsStore.setAll(ctx, jsonToMapString(it))
                 }
 
                 // ------------------ PLUGINS (biometric required if dangerous) ------------------

@@ -23,12 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.elnix.notes.R
 import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.helpers.OffsetItem
-import kotlin.math.abs
 import java.text.DateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import kotlin.math.abs
 
 @Composable
 fun TimeBubble(
@@ -37,7 +40,9 @@ fun TimeBubble(
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     onDelete: (() -> Unit)? = null,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    showAbsoluteDate: Boolean = false,
+    expandToLargerUnits: Boolean = true
 ) {
     require(reminder != null || offsetObject != null) {
         "Either reminder or offsetObject must be provided"
@@ -46,32 +51,48 @@ fun TimeBubble(
     val currentTime = remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) {
         while (true) {
-            kotlinx.coroutines.delay(1000)
+            delay(1000)
             currentTime.longValue = System.currentTimeMillis()
         }
     }
 
-    val (triple, color) = when {
-        reminder != null -> {
+    val (displayText, color) =
+        if (reminder != null) {
             val diffMillis = reminder.dueDateTime.timeInMillis - currentTime.longValue
             val isPast = diffMillis < 0
-            val absDiffSec = (abs(diffMillis) / 1000).toInt()
-            val (text, ratio) = getTextAndRatioFromOffset(absDiffSec)
-            val display = if (isPast) "$text ago" else text
-            val color = if (isPast) Color(0xFF2196F3)
-            else Color.hsv(120f * ratio, 0.9f, 0.9f)
-            Triple(display, ratio, isPast) to color
-        }
-        offsetObject != null -> {
-            val absDiffSec = abs(offsetObject.offset)
-            val (text, ratio) = getTextAndRatioFromOffset(absDiffSec)
-            val color = Color.hsv(120f * ratio, 0.9f, 0.9f)
-            Triple(text, ratio, false) to color
-        }
-        else -> error("Invalid input")
-    }
+            val absSec = abs(diffMillis / 1000).toInt()
 
-    val displayText = triple.first
+            val text: String
+            val ratio: Float
+
+            // If absolute date requested
+            if (showAbsoluteDate) {
+                val formatted = formatAbsolute(reminder.dueDateTime)
+                text = "at $formatted"
+                ratio = 1f
+            } else {
+                val (t, r) = getDisplayTextWithFutureHandling(
+                    absSec,
+                    futureTimeMillis = reminder.dueDateTime.timeInMillis,
+                    expand = expandToLargerUnits
+                )
+                text = if (isPast) "$t ago" else t
+                ratio = r
+            }
+
+            val c = if (isPast) Color(0xFF2196F3)
+            else Color.hsv(120f * ratio, 0.9f, 0.9f)
+
+            text to c
+        } else {
+            val absSec = abs(offsetObject!!.offset)
+            val (t, r) = getDisplayTextWithFutureHandling(
+                absSec,
+                futureTimeMillis = System.currentTimeMillis() + absSec * 1000L,
+                expand = expandToLargerUnits
+            )
+            t to Color.hsv(120f * r, 0.9f, 0.9f)
+        }
 
     Row(
         modifier = Modifier
@@ -116,10 +137,56 @@ fun TimeBubble(
     }
 }
 
+/* ---------------------------------------------------------
+   DATE FORMATTERS + EXTENDED FAR-FUTURE HANDLING
+--------------------------------------------------------- */
 
-fun getTextAndRatioFromOffset(
-    offsetSeconds: Int
+private fun formatAbsolute(cal: Calendar): String {
+    return DateFormat.getDateTimeInstance(
+        DateFormat.MEDIUM,
+        DateFormat.SHORT,
+        Locale.getDefault()
+    ).format(cal.time)
+}
+
+private fun getDisplayTextWithFutureHandling(
+    seconds: Int,
+    futureTimeMillis: Long,
+    expand: Boolean
 ): Pair<String, Float> {
+    val oneMonthSec = 30 * 24 * 3600
+
+    return if (expand && seconds >= oneMonthSec) {
+        getLargeFutureUnit(seconds)
+    } else {
+        getTextAndRatioFromOffset(seconds)
+    }
+}
+
+/**
+ * Convert to weeks, months, or years.
+ */
+private fun getLargeFutureUnit(seconds: Int): Pair<String, Float> {
+    val days = seconds / 86400
+    val weeks = days / 7
+    val months = days / 30
+    val years = days / 365
+
+    return when {
+        days < 56 -> { // < 8 weeks
+            "$weeks wk" to 0.8f
+        }
+        days < 730 -> { // < 24 months
+            "$months mo" to 0.9f
+        }
+        else -> {
+            "$years yr" to 1f
+        }
+    }
+}
+
+
+fun getTextAndRatioFromOffset(offsetSeconds: Int): Pair<String, Float> {
     return when {
         offsetSeconds < 60 -> {
             "$offsetSeconds s" to 0f
@@ -143,21 +210,17 @@ fun getTextAndRatioFromOffset(
             else "$days d ${hours}h" to 0.6f
         }
         else -> {
-            // If more than one week, display actual date in local format
-            val futureTimeMillis = System.currentTimeMillis() + offsetSeconds * 1000L
+            val future = System.currentTimeMillis() + offsetSeconds * 1000L
             val formattedDate = DateFormat.getDateTimeInstance(
                 DateFormat.MEDIUM,
                 DateFormat.SHORT,
                 Locale.getDefault()
-            ).format(Date(futureTimeMillis))
+            ).format(Date(future))
             formattedDate to 1f
         }
     }
 }
 
-
-
 fun getTextOffset(offset: Int): String {
     return getTextAndRatioFromOffset(offset).first
 }
-

@@ -31,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +51,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
+import org.elnix.notes.data.settings.stores.UserConfirmEntry
+import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.helpers.StyledReminderDialogs
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.security.AskNotificationButton
@@ -74,6 +77,11 @@ fun OffsetPickerDialog(
 
     val lifecycleOwner = LocalLifecycleOwner.current
     var hasPermission by remember { mutableStateOf(false) }
+
+    val showDeleteOffsetConfirmation by UserConfirmSettingsStore.get(
+        ctx = ctx,
+        entry = UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_OFFSET
+    ).collectAsState(initial = true)
 
     fun checkPermission(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -176,8 +184,10 @@ fun OffsetPickerDialog(
                                     }
                                     IconButton(
                                         onClick = {
-                                            editOffest = offset
-                                            showDeleteConfirm = true
+                                            if (showDeleteOffsetConfirmation) {
+                                                editOffest = offset
+                                                showDeleteConfirm = true
+                                            } else scope.launch { ReminderSettingsStore.deleteReminder(ctx, offset) }
                                         }
                                     ) {
                                         Icon(
@@ -262,6 +272,11 @@ fun OffsetPickerDialog(
         UserValidation(
             title = stringResource(R.string.delete_offset),
             message = "${stringResource(R.string.are_you_sure_to_delete_offset)}?",
+            doNotRemindMeAgain = {
+                scope.launch {
+                    UserConfirmSettingsStore.set(ctx, UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_OFFSET, false)
+                }
+            },
             onCancel = { showDeleteConfirm = false },
             onAgree = {
                 showDeleteConfirm = false

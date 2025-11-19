@@ -65,6 +65,7 @@ import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.settings.stores.DebugSettingsStore
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
+import org.elnix.notes.data.settings.stores.UserConfirmEntry
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.ExpandableSection
@@ -133,7 +134,17 @@ fun UnifiedTextualNotesEditor(
     val showReminderDropdownEditor by UiSettingsStore.getShowReminderDropdownEditor(ctx).collectAsState(initial = false)
     val showQuick by UiSettingsStore.getShowQuickActionsDropdownEditor(ctx).collectAsState(initial = false)
     val showTags by UiSettingsStore.getShowTagsDropdownEditor(ctx).collectAsState(initial = false)
-    val showNoteDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationDeleteNote(ctx).collectAsState(initial = true)
+
+    val showNoteDeleteConfirmation by UserConfirmSettingsStore.get(
+        ctx = ctx,
+        entry = UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_NOTE
+    ).collectAsState(initial = true)
+    val showDeleteOffsetConfirmation by UserConfirmSettingsStore.get(
+        ctx = ctx,
+        entry = UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_OFFSET
+    ).collectAsState(initial = true)
+
+
     var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
 
     val surfaceColor = MaterialTheme.colorScheme.surface
@@ -440,7 +451,9 @@ fun UnifiedTextualNotesEditor(
             title = stringResource(R.string.delete_note),
             message = "${stringResource(R.string.are_you_sure_to_delete)} ${noteToDelete!!.title}? ${stringResource(R.string.this_cant_be_undone)}",
             onCancel = { noteToDelete = null },
-            doNotRemindMeAgain = { scope.launch { UserConfirmSettingsStore.setShowUserValidationDeleteNote(ctx, false) } },
+            doNotRemindMeAgain = { scope.launch {
+                UserConfirmSettingsStore.set(ctx, UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_NOTE, false)
+            } },
             onAgree = {
                 scope.launch {
                     vm.delete(noteToDelete!!)

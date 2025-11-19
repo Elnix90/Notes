@@ -49,6 +49,7 @@ import org.elnix.notes.data.helpers.ToolBars
 import org.elnix.notes.data.settings.dataStore
 import org.elnix.notes.data.settings.stores.DebugSettingsStore
 import org.elnix.notes.data.settings.stores.LockSettingsStore
+import org.elnix.notes.data.settings.stores.UserConfirmEntry
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.security.BiometricManagerHelper
 import org.elnix.notes.ui.NoteViewModel
@@ -91,7 +92,7 @@ fun SettingsListScreen(
     val settings by LockSettingsStore.getLockSettings(ctx).collectAsState(initial = LockSettings())
 
     var timesClickedOnVersion by remember { mutableIntStateOf(0) }
-    val showUserConfirmEnableDebug by UserConfirmSettingsStore.getShowEnableDebug(ctx)
+    val showUserConfirmEnableDebug by UserConfirmSettingsStore.get(ctx, UserConfirmEntry.SHOW_ENABLE_DEBUG)
         .collectAsState(initial = true)
     var showDebugModeUserValidation by remember { mutableStateOf(false) }
 
@@ -335,7 +336,7 @@ fun SettingsListScreen(
             message = stringResource(R.string.debug_mode_will_be_enabled),
             onCancel = { showDebugModeUserValidation = false},
             doNotRemindMeAgain = {
-                scope.launch { UserConfirmSettingsStore.setShowEnableDebug(ctx,false) }
+                scope.launch { UserConfirmSettingsStore.set(ctx, UserConfirmEntry.SHOW_ENABLE_DEBUG,false) }
             }
         ) {
             showDebugModeUserValidation = false

@@ -8,52 +8,65 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.elnix.notes.data.settings.dataStore
 
+/** Strongly-typed entries for user confirmation settings */
+object UserConfirmEntry {
+
+    val SHOW_USER_VALIDATION_DELETE_NOTE = UserConfirmSetting("show_user_validation_delete_note", true)
+    val SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE = UserConfirmSetting("show_user_validation_multiple_delete_note", true)
+    val SHOW_ENABLE_DEBUG = UserConfirmSetting("show_enable_debug", true)
+    val SHOW_USER_VALIDATION_DELETE_OFFSET = UserConfirmSetting("show_user_validation_delete_offset", true)
+    val SHOW_USER_VALIDATION_DELETE_TAG = UserConfirmSetting("show_user_validation_delete_tag", true)
+
+
+    /** All entries in a list for automatic operations */
+    val allEntries = listOf(
+        SHOW_USER_VALIDATION_DELETE_NOTE,
+        SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE,
+        SHOW_ENABLE_DEBUG,
+        SHOW_USER_VALIDATION_DELETE_OFFSET,
+        SHOW_USER_VALIDATION_DELETE_TAG
+    )
+}
+
+/** Represents a single setting entry */
+data class UserConfirmSetting(
+    val name: String,
+    val default: Boolean
+) {
+    val prefKey = booleanPreferencesKey(name)
+}
+
+/** The settings store */
 object UserConfirmSettingsStore {
 
-    private val SHOW_USER_VALIDATION_DELETE_NOTE = booleanPreferencesKey("show_user_validation_delete_note")
-    fun getShowUserValidationDeleteNote(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW_USER_VALIDATION_DELETE_NOTE] ?: true }
-    suspend fun setShowUserValidationDeleteNote(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[SHOW_USER_VALIDATION_DELETE_NOTE] = enabled }
+    /** Generic flow getter */
+    fun get(ctx: Context, entry: UserConfirmSetting): Flow<Boolean> =
+        ctx.dataStore.data.map { it[entry.prefKey] ?: entry.default }
+
+    /** Generic setter */
+    suspend fun set(ctx: Context, entry: UserConfirmSetting, value: Boolean) {
+        ctx.dataStore.edit { it[entry.prefKey] = value }
     }
 
-    private val SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE = booleanPreferencesKey("show_user_validation_multiple_delete_note")
-    fun getShowUserValidationMultipleDeleteNote(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE] ?: true }
-    suspend fun setShowUserValidationMultipleDeleteNote(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE] = enabled }
-    }
-
-    private val SHOW_ENABLE_DEBUG = booleanPreferencesKey("show_enable_debug")
-    fun getShowEnableDebug(ctx: Context): Flow<Boolean> =
-        ctx.dataStore.data.map { it[SHOW_ENABLE_DEBUG] ?: true }
-    suspend fun setShowEnableDebug(ctx: Context, enabled: Boolean) {
-        ctx.dataStore.edit { it[SHOW_ENABLE_DEBUG] = enabled }
-    }
-
+    /** Reset all settings */
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
-            prefs.remove(SHOW_ENABLE_DEBUG)
-            prefs.remove(SHOW_USER_VALIDATION_DELETE_NOTE)
-            prefs.remove(SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE)
+            UserConfirmEntry.allEntries.forEach { prefs.remove(it.prefKey) }
         }
     }
 
+    /** Export all settings as a map */
     suspend fun getAll(ctx: Context): Map<String, Boolean> {
         val prefs = ctx.dataStore.data.first()
-        return buildMap {
-            prefs[SHOW_USER_VALIDATION_DELETE_NOTE]?.let { put(SHOW_USER_VALIDATION_DELETE_NOTE.name, it) }
-            prefs[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE]?.let { put(SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE.name, it) }
-            prefs[SHOW_ENABLE_DEBUG]?.let { put(SHOW_ENABLE_DEBUG.name, it) }
-        }
+        return UserConfirmEntry.allEntries.associate { it.name to (prefs[it.prefKey] ?: it.default) }
     }
 
+    /** Import settings from a map */
     suspend fun setAll(ctx: Context, data: Map<String, Boolean>) {
         ctx.dataStore.edit { prefs ->
-            data[SHOW_USER_VALIDATION_DELETE_NOTE.name]?.let { prefs[SHOW_USER_VALIDATION_DELETE_NOTE] = it }
-            data[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE.name]?.let { prefs[SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE] = it }
-            data[SHOW_ENABLE_DEBUG.name]?.let { prefs[SHOW_ENABLE_DEBUG] = it }
+            data.forEach { (name, value) ->
+                UserConfirmEntry.allEntries.find { it.name == name }?.let { prefs[it.prefKey] = value }
+            }
         }
     }
-
 }

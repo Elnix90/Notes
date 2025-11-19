@@ -51,6 +51,7 @@ import org.elnix.notes.data.settings.stores.ActionSettingsStore
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.ToolbarsSettingsStore
 import org.elnix.notes.data.settings.stores.UiSettingsStore
+import org.elnix.notes.data.settings.stores.UserConfirmEntry
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.AddNoteFab
@@ -76,8 +77,18 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     val enabledTagIds = allTags.filter { it.component4() }.map { it.id }.toSet()
 
     //Other settings got by settingsStores
-    val showNoteDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationDeleteNote(ctx).collectAsState(initial = true)
-    val showMultipleDeleteConfirmation by UserConfirmSettingsStore.getShowUserValidationMultipleDeleteNote(ctx).collectAsState(initial = true)
+    val showNoteDeleteConfirmation by UserConfirmSettingsStore.get(
+        ctx = ctx,
+        entry = UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_NOTE
+    ).collectAsState(initial = true)
+    val showMultipleDeleteConfirmation by UserConfirmSettingsStore.get(
+        ctx = ctx,
+        entry = UserConfirmEntry.SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE
+    ).collectAsState(initial = true)
+    val showDeleteTagConfirmation by UserConfirmSettingsStore.get(
+        ctx = ctx,
+        entry = UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_TAG
+    ).collectAsState(initial = true)
     val showBottomSettings by UiSettingsStore.getShowBottomDeleteButton(ctx).collectAsState(initial = false)
 
     var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
@@ -181,7 +192,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             message = "${stringResource(R.string.are_you_sure_to_delete)} ${selectedNotes.size} notes ? ${stringResource(R.string.this_cant_be_undone)}!",
             onCancel = { showMultipleDeleteDialog = false },
             doNotRemindMeAgain = {
-                scope.launch { UserConfirmSettingsStore.setShowUserValidationMultipleDeleteNote(ctx, false) }
+                scope.launch { UserConfirmSettingsStore.set(ctx, UserConfirmEntry.SHOW_USER_VALIDATION_MULTIPLE_DELETE_NOTE ,false) }
             },
             onAgree = {
                 showMultipleDeleteDialog = false
@@ -197,7 +208,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             message = "${stringResource(R.string.are_you_sure_to_delete)} ${noteToDelete!!.title} ? ${stringResource(R.string.this_cant_be_undone)}!",
             onCancel = { noteToDelete = null },
             doNotRemindMeAgain = {
-                scope.launch { UserConfirmSettingsStore.setShowUserValidationDeleteNote(ctx, false) }
+                scope.launch { UserConfirmSettingsStore.set(ctx, UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_NOTE, false) }
             },
             onAgree = {
                 scope.launch {
@@ -258,8 +269,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
                     }
 
                     ClickType.DOUBLE -> {
-                        editTag = tag
-                        showTagDeleteConfirm = true
+
+                        if (showDeleteTagConfirmation) {
+                            showTagDeleteConfirm = true
+                            editTag = tag
+                        } else scope.launch { TagsSettingsStore.deleteTag(ctx, tag) }
                     }
                 }
             }
@@ -579,6 +593,15 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         UserValidation(
             title = stringResource(R.string.delete_tag),
             message = "${stringResource(R.string.tag_deletion_confirm)} '${tagToDelete.name}'?",
+            doNotRemindMeAgain = {
+                scope.launch{
+                    UserConfirmSettingsStore.set(
+                        ctx = ctx,
+                        entry = UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_TAG,
+                        value = false
+                    )
+                }
+            },
             onCancel = { showTagDeleteConfirm = false },
             onAgree = {
                 showTagDeleteConfirm = false

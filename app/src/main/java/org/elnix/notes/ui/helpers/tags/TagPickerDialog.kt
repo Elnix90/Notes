@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,8 @@ import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.helpers.TagItem
 import org.elnix.notes.data.settings.stores.TagsSettingsStore
+import org.elnix.notes.data.settings.stores.UserConfirmEntry
+import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.helpers.UserValidation
 
 @Composable
@@ -47,6 +50,11 @@ fun TagPickerDialog(
     onPicked: (TagItem) -> Unit
 ) {
     val ctx = LocalContext.current
+
+    val showDeleteTagConfirmation by UserConfirmSettingsStore.get(
+        ctx = ctx,
+        entry = UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_TAG
+    ).collectAsState(initial = true)
 
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var showEditor by remember { mutableStateOf(false) }
@@ -94,9 +102,10 @@ fun TagPickerDialog(
                                     IconButton(
                                         enabled = deleteButtonEnabled,
                                         onClick = {
-                                            if (!deleteButtonEnabled) return@IconButton
-                                            editTag = tag
-                                            showDeleteConfirm = true
+                                            if (showDeleteTagConfirmation) {
+                                                editTag = tag
+                                                showDeleteConfirm = true
+                                            } else scope.launch { TagsSettingsStore.deleteTag(ctx, tag) }
                                         }
                                     ) {
                                         Icon(
@@ -152,6 +161,11 @@ fun TagPickerDialog(
         UserValidation(
             title = stringResource(R.string.delete_tag),
             message = "${stringResource(R.string.tag_deletion_confirm)} '${tagToDelete.name}'?",
+            doNotRemindMeAgain = {
+                scope.launch {
+                    UserConfirmSettingsStore.set(ctx, UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_TAG, false)
+                }
+            },
             onCancel = { showDeleteConfirm = false },
             onAgree = {
                 showDeleteConfirm = false

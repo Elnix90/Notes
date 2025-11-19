@@ -91,7 +91,7 @@ fun MainApp(
 
     val hasSeenWelcome by UiSettingsStore.getHasShownWelcome(ctx).collectAsState(true)
     val hasInitialized by UiSettingsStore.getHasInitialized(ctx).collectAsState(true)
-    val lastSeenVersion by UiSettingsStore.getLastSeenVersion(ctx).collectAsState(0)
+    val lastSeenVersion by UiSettingsStore.getLastSeenVersion(ctx).collectAsState(Int.MAX_VALUE)
     val currentVersion = BuildConfig.VERSION_CODE
 
 

@@ -94,8 +94,35 @@ fun MainApp(
     val lastSeenVersion by UiSettingsStore.getLastSeenVersion(ctx).collectAsState(Int.MAX_VALUE)
     val currentVersion = BuildConfig.VERSION_CODE
 
-
     val updates = listOf(
+        Update(
+            "1.2.0",
+            listOf(
+                "Added \"has initialized\" param for settings on quitting welcome screen",
+                "Fixed random ID init logic causing tag/reminder issues",
+                "Fixed overlap in setting title; buttons display correctly",
+                "Added toolbar name customization",
+                "Unified color selectors into a super selector handling multiple colors",
+                "Fix: Disabled reminders now show",
+                "Fixed wrong reminders deleted and disabled reminders not showing",
+                "Added max dialog height for better appearance",
+                "Refactored TimeBubble to accept forced future dates",
+                "Major reminders and offsets system refactor",
+                "Upgraded reminder system for precise duration and time setting",
+                "Added \"doNotRemindMeAgain\" options for deleting tags and offsets; refactored settings store"
+            )
+        ),
+        Update(
+            "1.1.0",
+            listOf(
+                "Improved settings",
+                "Improved notifications",
+                "Corrected number of bugs, still some",
+                "Enforced security, by forcing the user to authenticate on settings reset that manage dangerous things (lock or plugin auth)",
+                "Fix: app is locking on quit and resume",
+                "UI tweaks and improvements"
+            )
+        ),
         Update(
             "1.0.0",
             listOf("Added what's new screen", "Added welcome screen", "Changed app icon")

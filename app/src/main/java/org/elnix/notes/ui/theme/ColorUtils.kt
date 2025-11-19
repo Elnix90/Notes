@@ -18,6 +18,8 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TimePickerColors
+import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
@@ -62,15 +64,15 @@ object AppObjectsColors {
     fun buttonColors(): ButtonColors {
         val colors = MaterialTheme.colorScheme
         return ButtonDefaults.buttonColors(
-            containerColor = colors.primary,
+            containerColor = colors.primary ,
             contentColor =   colors.onPrimary
         )
     }
 
     @Composable
-    fun cancelButtonColors(containerColor: Color = MaterialTheme.colorScheme.background): ButtonColors {
+    fun cancelButtonColors(): ButtonColors {
         return ButtonDefaults.outlinedButtonColors(
-            containerColor = containerColor,
+            containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.error
         )
     }
@@ -82,32 +84,45 @@ object AppObjectsColors {
 
         return DatePickerDefaults.colors(
             containerColor = colors.surface,
-            titleContentColor = colors.primary,
-            headlineContentColor = colors.onPrimary,
-            weekdayContentColor = colors.primary,
-            subheadContentColor = colors.primary,
-            navigationContentColor = colors.primary,
-            yearContentColor = colors.onPrimary,
+
+            titleContentColor = colors.primary.copy(alpha = 0.8f),
+            headlineContentColor = colors.onSurface,
+
+            weekdayContentColor = colors.onSurface,
+            subheadContentColor = colors.onSurface,
+
+            navigationContentColor = colors.primary.copy(alpha = 0.8f),
+
+            yearContentColor = colors.onSurface,
             disabledYearContentColor = colors.onSurface.copy(alpha = 0.38f),
             currentYearContentColor = colors.secondary,
-            selectedYearContentColor = colors.primary,
+            selectedYearContentColor = colors.onSecondary,
             disabledSelectedYearContentColor = colors.onSurface.copy(alpha = 0.12f),
-            selectedYearContainerColor = colors.primaryContainer,
-            disabledSelectedYearContainerColor = colors.surfaceVariant,
+
+            selectedYearContainerColor = colors.secondary.copy(alpha = 0.5f),
+            disabledSelectedYearContainerColor = colors.surface.copy(alpha = 0.7f),
+
             dayContentColor = colors.onSurface,
             disabledDayContentColor = colors.onSurface.copy(alpha = 0.38f),
-            selectedDayContentColor = colors.onPrimary,
+
+            selectedDayContentColor = colors.onSecondary,
             disabledSelectedDayContentColor = colors.onSurface.copy(alpha = 0.12f),
-            selectedDayContainerColor = colors.primary,
-            disabledSelectedDayContainerColor = colors.surfaceVariant,
-            todayContentColor = colors.secondary,
-            todayDateBorderColor = colors.secondary,
-            dayInSelectionRangeContentColor = colors.primary,
-            dayInSelectionRangeContainerColor = colors.primary.copy(alpha = 0.24f),
+
+            selectedDayContainerColor = colors.secondary.copy(alpha = 0.5f),
+            disabledSelectedDayContainerColor = colors.surface.copy(alpha = 0.7f),
+
+            todayContentColor = colors.primary.copy(alpha = 0.8f),
+            todayDateBorderColor = colors.primary.copy(alpha = 0.8f),
+
+            dayInSelectionRangeContentColor = colors.onSecondary,
+            dayInSelectionRangeContainerColor = colors.secondary.copy(alpha = 0.3f),
+
             dividerColor = colors.outline,
+
             dateTextFieldColors = null
         )
     }
+
 
 
     @Composable
@@ -243,6 +258,28 @@ object AppObjectsColors {
             contentColor = contentColor ?: colors.outline,
             disabledContainerColor = backgroundColor ?: colors.primary.copy(0.5f),
             disabledContentColor = contentColor ?: colors.outline.copy(0.5f)
+        )
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun timePickerColors(): TimePickerColors {
+        val colors = MaterialTheme.colorScheme
+        return TimePickerDefaults.colors(
+            clockDialColor = colors.primary.copy(0.5f),
+            clockDialSelectedContentColor = colors.onPrimary,
+            clockDialUnselectedContentColor = colors.onSurface,
+            selectorColor = colors.secondary,
+            containerColor = colors.surface,
+            periodSelectorBorderColor = Color.Transparent,
+            periodSelectorSelectedContainerColor = colors.surface,
+            periodSelectorUnselectedContainerColor = colors.surface,
+            periodSelectorSelectedContentColor = colors.primary.copy(0.8f),
+            periodSelectorUnselectedContentColor = colors.onSurface,
+            timeSelectorSelectedContainerColor = colors.primary.copy(0.5f),
+            timeSelectorUnselectedContainerColor = colors.surface.copy(0.7f),
+            timeSelectorSelectedContentColor = colors.onPrimary,
+            timeSelectorUnselectedContentColor = colors.onSurface,
         )
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -48,18 +49,18 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
-import org.elnix.notes.data.helpers.OffsetItem
-import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
+import org.elnix.notes.data.settings.stores.ReminderSettingsStore
+import org.elnix.notes.ui.helpers.StyledReminderDialogs
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.security.AskNotificationButton
+import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
 import org.elnix.notes.utils.ReminderOffset
 
 @Composable
 fun OffsetPickerDialog(
-    offsets: List<OffsetItem>,
+    offsets: List<ReminderOffset>,
     activity: FragmentActivity,
-    showDatePicker: Boolean = true,
     onDismiss: () -> Unit,
     onPicked: (ReminderOffset) -> Unit
 ) {
@@ -68,7 +69,8 @@ fun OffsetPickerDialog(
 
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var showOffsetEditor by remember { mutableStateOf(false) }
-    var editOffest by remember { mutableStateOf<OffsetItem?>(null) }
+    var showReminderEditor by remember { mutableStateOf(false) }
+    var editOffest by remember { mutableStateOf<ReminderOffset?>(null) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     var hasPermission by remember { mutableStateOf(false) }
@@ -136,88 +138,96 @@ fun OffsetPickerDialog(
                 )
             },
             text = {
-                LazyColumn(
+                Column(
                     verticalArrangement = Arrangement.spacedBy(5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.heightIn(max = 300.dp)
                 ) {
-                    item {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(2.dp),
-                        ) {
-                            offsets.sortedBy { it.offset }.forEach { offset ->
-                                val reminderOffset = ReminderOffset(secondsFromNow = offset.offset.toLong())
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier.heightIn(max = 300.dp)
+                    ) {
+                        items(offsets.sortedBy { it.toCalendar().timeInMillis }) { offset ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(
+                                        MaterialTheme.colorScheme.surface.adjustBrightness(
+                                            0.7f
+                                        )
+                                    )
+                                    .clickable { onPicked(offset) }
+                                    .padding(vertical = 6.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                TimeBubble(reminderOffset = offset, showAbsoluteDate = offset.isAbsolute)
 
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(MaterialTheme.colorScheme.surface.adjustBrightness(0.7f))
-                                        .clickable { onPicked(reminderOffset) }
-                                        .padding(vertical = 6.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    TimeBubble(offsetObject = offset)
-
-                                    // Edit + Delete buttons
-                                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                        IconButton(
-                                            onClick = { editOffest = offset; showOffsetEditor = true }
-                                        ) {
-                                            Icon(Icons.Default.Edit, contentDescription = "Edit Tag")
+                                // Edit + Delete buttons
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(
+                                        onClick = {
+                                            editOffest = offset
+                                            if (offset.isAbsolute) showReminderEditor = true
+                                            else showOffsetEditor = true
                                         }
-                                        IconButton(
-                                            onClick = {
-                                                editOffest = offset
-                                                showDeleteConfirm = true
-                                            }
-                                        ) {
-                                            Icon(
-                                                Icons.Default.Delete,
-                                                contentDescription = "Delete Tag",
-                                                tint = MaterialTheme.colorScheme.outline
-                                            )
+                                    ) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit Tag")
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            editOffest = offset
+                                            showDeleteConfirm = true
                                         }
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Delete,
+                                            contentDescription = "Delete Tag",
+                                            tint = MaterialTheme.colorScheme.outline
+                                        )
                                     }
                                 }
                             }
                         }
                     }
 
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ){
-                            Button(
-                                onClick = { editOffest = null; showOffsetEditor = true },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(R.string.create_new_offset),
-                                    tint = MaterialTheme.colorScheme.onPrimary
-                                )
-                                Text(
-                                    text = stringResource(R.string.create_new_offset),
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                            if (showDatePicker){
-                                Spacer(Modifier.weight(1f))
-                                ReminderPicker(activity) { onPicked(it) }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(
+                            onClick = { editOffest = null; showOffsetEditor = true },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(R.string.create_new_offset),
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                            Text(
+                                text = stringResource(R.string.create_new_offset),
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+
+                        Spacer(Modifier.weight(1f))
+
+                        StyledReminderDialogs {
+                            scope.launch {
+                                ReminderSettingsStore.addReminder(ctx, it)
+                                showOffsetEditor = false
                             }
                         }
                     }
                 }
             },
             confirmButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(
-                        text = stringResource(R.string.close),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                TextButton(
+                    onClick = onDismiss,
+                    colors = AppObjectsColors.cancelButtonColors()
+                ) {
+                    Text(stringResource(R.string.close))
                 }
             }
         )
@@ -227,20 +237,36 @@ fun OffsetPickerDialog(
         OffsetEditorDialog(
             initialOffset = editOffest,
             scope = scope,
-            onDismiss = { showOffsetEditor = false }
+            onDismiss = {
+                showOffsetEditor = false
+                editOffest = null
+            }
         )
+    }
+
+    if (showReminderEditor) {
+        val offsetToEdit = editOffest
+        StyledReminderDialogs(
+            initialOffset = offsetToEdit
+        ) {
+            scope.launch {
+                if (offsetToEdit != null) ReminderSettingsStore.updateReminder(ctx, offsetToEdit, it)
+                else ReminderSettingsStore.addReminder(ctx, it)
+                showOffsetEditor = false
+            }
+        }
     }
 
     if (showDeleteConfirm && editOffest != null) {
         val offsetToDelete = editOffest!!
         UserValidation(
             title = stringResource(R.string.delete_offset),
-            message = "${stringResource(R.string.are_you_sure_to_delete_offset)} '${getTextOffset(offsetToDelete.offset)}'?",
+            message = "${stringResource(R.string.are_you_sure_to_delete_offset)} '${getTextOffset(offsetToDelete.toCalendar().timeInMillis.toInt())}'?",
             onCancel = { showDeleteConfirm = false },
             onAgree = {
                 showDeleteConfirm = false
                 scope.launch {
-                    OffsetsSettingsStore.deleteOffset(ctx, offsetToDelete)
+                    ReminderSettingsStore.deleteReminder(ctx, offsetToDelete)
                 }
             }
         )

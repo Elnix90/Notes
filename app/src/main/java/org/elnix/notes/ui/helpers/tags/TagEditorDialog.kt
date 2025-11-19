@@ -86,9 +86,7 @@ fun TagEditorDialog(
                     OutlinedButton(
                         onClick = { showConfirmDelete = true },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = AppObjectsColors.cancelButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
+                        colors = AppObjectsColors.cancelButtonColors()
                     ) {
                         Text(
                             text = stringResource(R.string.delete_tag),

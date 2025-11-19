@@ -1,6 +1,5 @@
 package org.elnix.notes.utils
 
-import org.elnix.notes.data.helpers.OffsetItem
 import java.util.Calendar
 
 /**
@@ -43,17 +42,21 @@ data class ReminderOffset(
         return cal
     }
 
-    fun toOffsetItem(): OffsetItem {
-        val cal = this.toCalendar()
-        val now = Calendar.getInstance()
-        val diffMillis = cal.timeInMillis - now.timeInMillis
-        val offsetSeconds = (diffMillis / 1000).toInt()
-
-        return OffsetItem(
-            id = System.currentTimeMillis(),
-            offset = offsetSeconds
-        )
-    }
+//    fun toOffsetItem(): OffsetItem {
+//        val cal = this.toCalendar()
+//        val now = Calendar.getInstance()
+//        val diffMillis = cal.timeInMillis - now.timeInMillis
+//        val offsetSeconds = (diffMillis / 1000).toInt()
+//
+//        return OffsetItem(
+//            id = System.currentTimeMillis(),
+//            offset = offsetSeconds
+//        )
+//    }
+//
+//
+    val isAbsolute = absoluteTimeMillis != null
+//    val isOffset = secondsFromNow != null
 
 //    /** Apply this reminder to an existing calendar instance. */
 //    fun applyTo(calendar: Calendar) {

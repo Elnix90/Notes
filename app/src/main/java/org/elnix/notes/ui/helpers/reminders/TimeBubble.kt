@@ -25,8 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.elnix.notes.R
-import org.elnix.notes.data.ReminderEntity
-import org.elnix.notes.data.helpers.OffsetItem
+import org.elnix.notes.utils.ReminderOffset
 import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
@@ -35,8 +34,7 @@ import kotlin.math.abs
 
 @Composable
 fun TimeBubble(
-    reminder: ReminderEntity? = null,
-    offsetObject: OffsetItem? = null,
+    reminderOffset: ReminderOffset,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     onDelete: (() -> Unit)? = null,
@@ -44,11 +42,8 @@ fun TimeBubble(
     showAbsoluteDate: Boolean = false,
     expandToLargerUnits: Boolean = true
 ) {
-    require(reminder != null || offsetObject != null) {
-        "Either reminder or offsetObject must be provided"
-    }
-
     val currentTime = remember { mutableLongStateOf(System.currentTimeMillis()) }
+
     LaunchedEffect(Unit) {
         while (true) {
             delay(1000)
@@ -56,43 +51,25 @@ fun TimeBubble(
         }
     }
 
-    val (displayText, color) =
-        if (reminder != null) {
-            val diffMillis = reminder.dueDateTime.timeInMillis - currentTime.longValue
-            val isPast = diffMillis < 0
-            val absSec = abs(diffMillis / 1000).toInt()
+    val cal = reminderOffset.toCalendar()
+    val diffMillis = cal.timeInMillis - currentTime.longValue
+    val isPast = diffMillis < 0
+    val absSeconds = abs(diffMillis / 1000).toInt()
 
-            val text: String
-            val ratio: Float
-
-            // If absolute date requested
-            if (showAbsoluteDate) {
-                val formatted = formatAbsolute(reminder.dueDateTime)
-                text = "at $formatted"
-                ratio = 1f
-            } else {
-                val (t, r) = getDisplayTextWithFutureHandling(
-                    absSec,
-                    futureTimeMillis = reminder.dueDateTime.timeInMillis,
-                    expand = expandToLargerUnits
-                )
-                text = if (isPast) "$t ago" else t
-                ratio = r
-            }
-
-            val c = if (isPast) Color(0xFF2196F3)
-            else Color.hsv(120f * ratio, 0.9f, 0.9f)
-
-            text to c
+    val (text, ratio) =
+        if (showAbsoluteDate) {
+            ("at " + formatAbsolute(cal)) to 1f
         } else {
-            val absSec = abs(offsetObject!!.offset)
             val (t, r) = getDisplayTextWithFutureHandling(
-                absSec,
-                futureTimeMillis = System.currentTimeMillis() + absSec * 1000L,
+                absSeconds,
                 expand = expandToLargerUnits
             )
-            t to Color.hsv(120f * r, 0.9f, 0.9f)
+            (if (isPast) "$t ago" else t) to r
         }
+
+    val bubbleColor =
+        if (isPast) Color(0xFF2196F3)
+        else Color.hsv(120f * ratio, 0.9f, 0.9f)
 
     Row(
         modifier = Modifier
@@ -107,20 +84,21 @@ fun TimeBubble(
             )
             .border(
                 width = 1.dp,
-                color = color.copy(alpha = if (enabled) 1f else 0.3f),
+                color = bubbleColor.copy(alpha = if (enabled) 1f else 0.3f),
                 shape = CircleShape
             )
             .background(
-                color = color.copy(alpha = if (enabled) 0.15f else 0.05f),
+                color = bubbleColor.copy(alpha = if (enabled) 0.15f else 0.05f),
                 shape = CircleShape
             )
             .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = displayText,
-            color = color.copy(alpha = if (enabled) 1f else 0.4f)
+            text = text,
+            color = bubbleColor.copy(alpha = if (enabled) 1f else 0.4f)
         )
+
         if (onDelete != null) {
             Spacer(Modifier.width(8.dp))
             IconButton(
@@ -130,12 +108,13 @@ fun TimeBubble(
                 Icon(
                     imageVector = Icons.Default.Cancel,
                     contentDescription = stringResource(R.string.delete),
-                    tint = color.copy(alpha = if (enabled) 1f else 0.4f)
+                    tint = bubbleColor.copy(alpha = if (enabled) 1f else 0.4f)
                 )
             }
         }
     }
 }
+
 
 /* ---------------------------------------------------------
    DATE FORMATTERS + EXTENDED FAR-FUTURE HANDLING
@@ -151,7 +130,7 @@ private fun formatAbsolute(cal: Calendar): String {
 
 private fun getDisplayTextWithFutureHandling(
     seconds: Int,
-    futureTimeMillis: Long,
+//    futureTimeMillis: Long,
     expand: Boolean
 ): Pair<String, Float> {
     val oneMonthSec = 30 * 24 * 3600

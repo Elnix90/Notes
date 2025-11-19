@@ -24,10 +24,8 @@ import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.helpers.SortMode
 import org.elnix.notes.data.helpers.SortType
 import org.elnix.notes.data.settings.stores.LockSettingsStore
-import org.elnix.notes.data.settings.stores.OffsetsSettingsStore
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.data.settings.stores.SortSettingsStore
-import org.elnix.notes.utils.ReminderOffset
 import kotlin.random.Random
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
@@ -71,15 +69,9 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         val id = noteRepo.upsert(note)
 
         val defaultsReminders = ReminderSettingsStore.getDefaultRemindersFlow(ctx).firstOrNull() ?: emptyList()
-        val defaultsOffsets = OffsetsSettingsStore.getDefaultOffsetsFlow(ctx).firstOrNull() ?: emptyList()
 
         defaultsReminders.forEach { offset ->
             val cal = offset.toCalendar()
-            reminderRepo.insert(ReminderEntity(noteId = id, dueDateTime = cal, enabled = true))
-        }
-
-        defaultsOffsets.forEach { offset ->
-            val cal = ReminderOffset(secondsFromNow = offset.offset.toLong()).toCalendar()
             reminderRepo.insert(ReminderEntity(noteId = id, dueDateTime = cal, enabled = true))
         }
 

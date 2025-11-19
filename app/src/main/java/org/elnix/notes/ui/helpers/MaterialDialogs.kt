@@ -45,20 +45,11 @@ fun StyledReminderDialogs(
     var showTime by remember { mutableStateOf(false) }
     var showAtIn by remember { mutableStateOf(false) }
 
-    // true → AT, false → IN
     var atSelected by remember { mutableStateOf(true) }
 
-
     val pickedCal = remember {
-        initialOffset?.toCalendar() ?:
-        Calendar.getInstance()/*.apply {
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            add(Calendar.HOUR_OF_DAY, 1)
-        }*/
+        initialOffset?.toCalendar() ?: Calendar.getInstance()
     }
-
 
     val today = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, 0)
@@ -66,7 +57,6 @@ fun StyledReminderDialogs(
         set(Calendar.SECOND, 0)
         set(Calendar.MILLISECOND, 0)
     }.timeInMillis
-
 
     IconButton(
         onClick = { showDate = true },
@@ -126,14 +116,12 @@ fun StyledReminderDialogs(
             pickedCal.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
                     pickedCal.get(Calendar.DAY_OF_YEAR) == now.get(Calendar.DAY_OF_YEAR)
 
-
         val minHour = now.get(Calendar.HOUR_OF_DAY)
         val minMinute = now.get(Calendar.MINUTE)
 
         val timeValid = !isToday ||
                 (timePickerState.hour > minHour ||
                         (timePickerState.hour == minHour && timePickerState.minute >= minMinute))
-
 
         AlertDialog(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -163,10 +151,12 @@ fun StyledReminderDialogs(
                 ) { Text(stringResource(R.string.previous)) }
             },
             title = { Text(stringResource(R.string.select_time)) },
-            text = { TimePicker(
-                state = timePickerState,
-                colors = AppObjectsColors.timePickerColors()
-            ) }
+            text = {
+                TimePicker(
+                    state = timePickerState,
+                    colors = AppObjectsColors.timePickerColors()
+                )
+            }
         )
     }
 
@@ -174,8 +164,7 @@ fun StyledReminderDialogs(
     if (showAtIn) {
 
         val now = System.currentTimeMillis()
-        val diffSec = ((pickedCal.timeInMillis - now) / 1000)
-            .coerceAtLeast(0)
+        val diffSec = ((pickedCal.timeInMillis - now) / 1000).coerceAtLeast(0)
 
         AlertDialog(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -183,15 +172,17 @@ fun StyledReminderDialogs(
             confirmButton = {
                 Button(
                     onClick = {
-                    val result: ReminderOffset =
-                        if (atSelected) {
+                        val result =
+                            if (atSelected) {
                                 ReminderOffset(
-                                    absoluteTimeMillis = pickedCal.timeInMillis
+                                    year = pickedCal.get(Calendar.YEAR),
+                                    month = pickedCal.get(Calendar.MONTH),
+                                    dayOfMonth = pickedCal.get(Calendar.DAY_OF_MONTH),
+                                    hourOfDay = pickedCal.get(Calendar.HOUR_OF_DAY),
+                                    minute = pickedCal.get(Calendar.MINUTE)
                                 )
                             } else {
-                                ReminderOffset(
-                                    secondsFromNow = diffSec
-                                )
+                                ReminderOffset(secondsFromNow = diffSec)
                             }
 
                         onPicked(result)
@@ -226,9 +217,14 @@ fun StyledReminderDialogs(
                         )
                         Text("At")
 
-                        // Show bubble representing the exact date
                         TimeBubble(
-                            reminderOffset = ReminderOffset(absoluteTimeMillis = pickedCal.timeInMillis),
+                            reminderOffset = ReminderOffset(
+                                year = pickedCal.get(Calendar.YEAR),
+                                month = pickedCal.get(Calendar.MONTH),
+                                dayOfMonth = pickedCal.get(Calendar.DAY_OF_MONTH),
+                                hourOfDay = pickedCal.get(Calendar.HOUR_OF_DAY),
+                                minute = pickedCal.get(Calendar.MINUTE)
+                            ),
                             enabled = true,
                             showAbsoluteDate = true,
                             expandToLargerUnits = true
@@ -247,7 +243,6 @@ fun StyledReminderDialogs(
                         )
                         Text("In")
 
-                        // Show bubble representing offset
                         TimeBubble(
                             reminderOffset = ReminderOffset(secondsFromNow = diffSec),
                             enabled = true,
@@ -259,7 +254,4 @@ fun StyledReminderDialogs(
             }
         )
     }
-
 }
-
-

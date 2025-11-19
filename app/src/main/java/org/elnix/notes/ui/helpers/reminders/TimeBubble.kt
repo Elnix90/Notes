@@ -58,7 +58,7 @@ fun TimeBubble(
 
     val (text, ratio) =
         if (showAbsoluteDate) {
-            ("at " + formatAbsolute(cal)) to 1f
+            formatAbsolute(cal) to 1f
         } else {
             val (t, r) = getDisplayTextWithFutureHandling(
                 absSeconds,
@@ -121,16 +121,44 @@ fun TimeBubble(
 --------------------------------------------------------- */
 
 private fun formatAbsolute(cal: Calendar): String {
-    return DateFormat.getDateTimeInstance(
-        DateFormat.MEDIUM,
-        DateFormat.SHORT,
-        Locale.getDefault()
-    ).format(cal.time)
+    val now = Calendar.getInstance()
+
+    val hour = cal.get(Calendar.HOUR_OF_DAY)
+    val minute = cal.get(Calendar.MINUTE)
+    val timeStr = if (minute == 0) "at ${hour}h" else "at ${hour}h ${minute}m"
+
+    val daysDiff = ((cal.timeInMillis - now.timeInMillis) / (1000 * 60 * 60 * 24)).toInt()
+
+    return when {
+        // Today
+        cal.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
+                cal.get(Calendar.DAY_OF_YEAR) == now.get(Calendar.DAY_OF_YEAR) -> {
+            timeStr
+        }
+        // Tomorrow
+        cal.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
+                cal.get(Calendar.DAY_OF_YEAR) == now.get(Calendar.DAY_OF_YEAR) + 1 -> {
+            "Tomorrow $timeStr"
+        }
+        // Within the next 7 days
+        daysDiff in 1..6 -> {
+            val dayOfWeek = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
+            "$dayOfWeek $timeStr"
+        }
+        // Beyond a week → full formatted date
+        else -> {
+            DateFormat.getDateTimeInstance(
+                DateFormat.MEDIUM,
+                DateFormat.SHORT,
+                Locale.getDefault()
+            ).format(cal.time)
+        }
+    }
 }
+
 
 private fun getDisplayTextWithFutureHandling(
     seconds: Int,
-//    futureTimeMillis: Long,
     expand: Boolean
 ): Pair<String, Float> {
     val oneMonthSec = 30 * 24 * 3600

@@ -29,6 +29,7 @@ import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderOffset
 import org.elnix.notes.utils.cancelReminderNotification
 import org.elnix.notes.utils.scheduleReminderNotification
+import java.util.Calendar
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -52,10 +53,16 @@ fun RemindersSection(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         itemVerticalAlignment = Alignment.CenterVertically
     ) {
-        reminders.sortedBy { it.dueDateTime }
-            .forEach { reminder ->
+        reminders.sortedBy { it.dueDateTime }.forEach { reminder ->
+            val offset = reminder.dueDateTime
             TimeBubble(
-                reminderOffset = ReminderOffset(absoluteTimeMillis = reminder.dueDateTime.timeInMillis),
+               reminderOffset = ReminderOffset(
+                    year = offset.get(Calendar.YEAR),
+                    month = offset.get(Calendar.MONTH),
+                    dayOfMonth = offset.get(Calendar.DAY_OF_MONTH),
+                    hourOfDay = offset.get(Calendar.HOUR_OF_DAY),
+                    minute = offset.get(Calendar.MINUTE)
+                ),
                 onClick = {
                     scope.launch {
                         val updatedReminder = reminder.copy(enabled = !reminder.enabled)

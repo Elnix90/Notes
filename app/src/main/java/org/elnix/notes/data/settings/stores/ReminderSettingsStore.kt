@@ -27,16 +27,12 @@ object ReminderSettingsStore {
 
     fun getReminders(ctx: Context): Flow<List<ReminderOffset>> =
         ctx.dataStore.data.map { prefs ->
-            prefs[REMINDERS_KEY]?.let { jsonStr ->
-                parseReminderList(jsonStr)
-            } ?: emptyList()
+            prefs[REMINDERS_KEY]?.let(::parseReminderList) ?: emptyList()
         }
 
     fun getDefaultRemindersFlow(ctx: Context): Flow<List<ReminderOffset>> =
         ctx.dataStore.data.map { prefs ->
-            prefs[DEFAULT_REMINDERS_KEY]?.let { jsonStr ->
-                parseReminderList(jsonStr)
-            } ?: emptyList()
+            prefs[DEFAULT_REMINDERS_KEY]?.let(::parseReminderList) ?: emptyList()
         }
 
 
@@ -46,39 +42,65 @@ object ReminderSettingsStore {
 
     private fun parseReminderList(jsonStr: String): List<ReminderOffset> {
         val arr = JSONArray(jsonStr)
-        return List(arr.length()) { i ->
-            val obj = arr.getJSONObject(i)
+
+        return List(arr.length()) { index ->
+            val obj = arr.getJSONObject(index)
+
+            // Offset reminders
+            val seconds =
+                if (obj.has("seconds")) obj.getLong("seconds") else null
+
+            // Absolute reminders
+            val year = obj.optInt("year").takeIf { obj.has("year") }
+            val month = obj.optInt("month").takeIf { obj.has("month") }
+            val dayOfMonth = obj.optInt("dayOfMonth").takeIf { obj.has("dayOfMonth") }
+            val dayOfWeek = obj.optInt("dayOfWeek").takeIf { obj.has("dayOfWeek") }
+            val hour = obj.optInt("hourOfDay").takeIf { obj.has("hourOfDay") }
+            val minute = obj.optInt("minute").takeIf { obj.has("minute") }
+
             ReminderOffset(
-                secondsFromNow = obj.optLong("seconds").takeIf { obj.has("seconds") },
-                absoluteTimeMillis = obj.optLong("absolute").takeIf { obj.has("absolute") }
+                secondsFromNow = seconds,
+                year = year,
+                month = month,
+                dayOfMonth = dayOfMonth,
+                dayOfWeek = dayOfWeek,
+                hourOfDay = hour,
+                minute = minute
             )
         }
     }
 
-    private suspend fun saveReminderList(ctx: Context, items: List<ReminderOffset>) {
-        val jsonStr = JSONArray().apply {
-            items.forEach { r ->
-                put(JSONObject().apply {
-                    r.secondsFromNow?.let { put("seconds", it) }
-                    r.absoluteTimeMillis?.let { put("absolute", it) }
-                })
-            }
-        }.toString()
+    private fun toJson(reminders: List<ReminderOffset>): String {
+        val arr = JSONArray()
 
-        ctx.dataStore.edit { it[REMINDERS_KEY] = jsonStr }
+        reminders.forEach { r ->
+            val obj = JSONObject()
+
+            r.secondsFromNow?.let { obj.put("seconds", it) }
+
+            r.year?.let { obj.put("year", it) }
+            r.month?.let { obj.put("month", it) }
+            r.dayOfMonth?.let { obj.put("dayOfMonth", it) }
+            r.dayOfWeek?.let { obj.put("dayOfWeek", it) }
+            r.hourOfDay?.let { obj.put("hourOfDay", it) }
+            r.minute?.let { obj.put("minute", it) }
+
+            arr.put(obj)
+        }
+
+        return arr.toString()
+    }
+
+    private suspend fun saveReminderList(ctx: Context, items: List<ReminderOffset>) {
+        ctx.dataStore.edit { prefs ->
+            prefs[REMINDERS_KEY] = toJson(items)
+        }
     }
 
     private suspend fun saveDefaultReminderList(ctx: Context, items: List<ReminderOffset>) {
-        val jsonStr = JSONArray().apply {
-            items.forEach { r ->
-                put(JSONObject().apply {
-                    r.secondsFromNow?.let { put("seconds", it) }
-                    r.absoluteTimeMillis?.let { put("absolute", it) }
-                })
-            }
-        }.toString()
-
-        ctx.dataStore.edit { it[DEFAULT_REMINDERS_KEY] = jsonStr }
+        ctx.dataStore.edit { prefs ->
+            prefs[DEFAULT_REMINDERS_KEY] = toJson(items)
+        }
     }
 
 

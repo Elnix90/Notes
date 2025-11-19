@@ -261,7 +261,7 @@ fun OffsetPickerDialog(
         val offsetToDelete = editOffest!!
         UserValidation(
             title = stringResource(R.string.delete_offset),
-            message = "${stringResource(R.string.are_you_sure_to_delete_offset)} '${getTextOffset(offsetToDelete.toCalendar().timeInMillis.toInt())}'?",
+            message = "${stringResource(R.string.are_you_sure_to_delete_offset)}?",
             onCancel = { showDeleteConfirm = false },
             onAgree = {
                 showDeleteConfirm = false

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -137,13 +138,14 @@ fun OffsetPickerDialog(
             text = {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.heightIn(max = 300.dp)
                 ) {
                     item {
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
                         ) {
-                            offsets.forEach { offset ->
+                            offsets.sortedBy { it.offset }.forEach { offset ->
                                 val reminderOffset = ReminderOffset(secondsFromNow = offset.offset.toLong())
 
                                 Row(

@@ -350,8 +350,8 @@ fun ToolbarItemsEditor(
                     ctx = ctx,
                     toolbar = toolbar,
                     action = actionToEdit.action,
-                    newIconColor = Color(iconColor),
-                    newBgColor = Color(bgColor)
+                    newIconColor = iconColor,
+                    newBgColor = bgColor
                 )
             }
             editAction = null

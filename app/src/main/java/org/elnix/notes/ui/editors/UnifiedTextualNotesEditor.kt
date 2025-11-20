@@ -45,7 +45,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -74,7 +73,6 @@ import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.ValidateCancelButtons
 import org.elnix.notes.ui.helpers.colors.NotesColorPickerSection
-import org.elnix.notes.ui.helpers.colors.setRandomColor
 import org.elnix.notes.ui.helpers.colors.toggleAutoColor
 import org.elnix.notes.ui.helpers.colors.updateNoteBgColor
 import org.elnix.notes.ui.helpers.colors.updateNoteTextColor
@@ -139,11 +137,6 @@ fun UnifiedTextualNotesEditor(
         ctx = ctx,
         entry = UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_NOTE
     ).collectAsState(initial = true)
-    val showDeleteOffsetConfirmation by UserConfirmSettingsStore.get(
-        ctx = ctx,
-        entry = UserConfirmEntry.SHOW_USER_VALIDATION_DELETE_OFFSET
-    ).collectAsState(initial = true)
-
 
     var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
 
@@ -332,10 +325,34 @@ fun UnifiedTextualNotesEditor(
                 ) {
                     NotesColorPickerSection(
                         currentNote,
-                        onBgColorPicked = { colorInt -> scope.launch { updateNoteBgColor(currentNote.id, vm, Color(colorInt))?.let { note = it } } },
-                        onTextColorPicked = { colorInt -> scope.launch { updateNoteTextColor(currentNote.id, vm, Color(colorInt))?.let { note = it } } },
-                        onAutoSwitchToggle = { checked -> scope.launch { toggleAutoColor(currentNote.id, vm, checked, surfaceColor)?.let { note = it } } },
-                        onRandomColorClick = { scope.launch { setRandomColor(currentNote.id, vm, currentNote.autoTextColor, surfaceColor)?.let { note = it } } }
+                        onBgColorPicked = { pickedColor ->
+                            scope.launch {
+                                updateNoteBgColor(
+                                    currentId = currentNote.id,
+                                    vm = vm,
+                                    pickedColor = pickedColor
+                                )?.let { note = it }
+                            }
+                        },
+                        onTextColorPicked = { pickedColor ->
+                            scope.launch {
+                                updateNoteTextColor(
+                                    currentId = currentNote.id,
+                                    vm = vm,
+                                    pickedColor = pickedColor
+                                )?.let { note = it }
+                            }
+                        },
+                        onAutoSwitchToggle = { checked ->
+                            scope.launch {
+                                toggleAutoColor(
+                                    currentNote.id,
+                                    vm,
+                                    checked,
+                                    surfaceColor
+                                )?.let { note = it }
+                            }
+                        },
                     )
                 }
             }

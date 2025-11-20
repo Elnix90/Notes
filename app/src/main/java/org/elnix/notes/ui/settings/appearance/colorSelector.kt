@@ -38,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
@@ -243,7 +242,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.primary_color),
                         defaultColor = AmoledDefault.Primary,
-                        currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb()
+                        currentColor = primary ?: MaterialTheme.colorScheme.primary
                     ) { scope.launch { ColorSettingsStore.setPrimary(ctx, it) } }
                 }
 
@@ -251,7 +250,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.on_primary_color),
                         defaultColor = AmoledDefault.OnPrimary,
-                        currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb()
+                        currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary
                     ) { scope.launch { ColorSettingsStore.setOnPrimary(ctx, it) } }
                 }
 
@@ -259,7 +258,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.secondary_color),
                         defaultColor = AmoledDefault.Secondary,
-                        currentColor = secondary ?: MaterialTheme.colorScheme.secondary.toArgb()
+                        currentColor = secondary ?: MaterialTheme.colorScheme.secondary
                     ) { scope.launch { ColorSettingsStore.setSecondary(ctx, it) } }
                 }
 
@@ -268,7 +267,7 @@ fun ColorSelectorTab(
                         label = stringResource(R.string.on_secondary_color),
                         defaultColor = AmoledDefault.OnSecondary,
                         currentColor = onSecondary
-                            ?: MaterialTheme.colorScheme.onSecondary.toArgb()
+                            ?: MaterialTheme.colorScheme.onSecondary
                     ) { scope.launch { ColorSettingsStore.setOnSecondary(ctx, it) } }
                 }
 
@@ -276,7 +275,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.tertiary_color),
                         defaultColor = AmoledDefault.Tertiary,
-                        currentColor = tertiary ?: MaterialTheme.colorScheme.tertiary.toArgb()
+                        currentColor = tertiary ?: MaterialTheme.colorScheme.tertiary
                     ) { scope.launch { ColorSettingsStore.setTertiary(ctx, it) } }
                 }
 
@@ -285,7 +284,7 @@ fun ColorSelectorTab(
                         label = stringResource(R.string.on_tertiary_color),
                         defaultColor = AmoledDefault.OnTertiary,
                         currentColor = onTertiary
-                            ?: MaterialTheme.colorScheme.onTertiary.toArgb()
+                            ?: MaterialTheme.colorScheme.onTertiary
                     ) { scope.launch { ColorSettingsStore.setOnTertiary(ctx, it) } }
                 }
 
@@ -294,7 +293,7 @@ fun ColorSelectorTab(
                         label = stringResource(R.string.background_color),
                         defaultColor = AmoledDefault.Background,
                         currentColor = background
-                            ?: MaterialTheme.colorScheme.background.toArgb()
+                            ?: MaterialTheme.colorScheme.background
                     ) { scope.launch { ColorSettingsStore.setBackground(ctx, it) } }
                 }
 
@@ -303,7 +302,7 @@ fun ColorSelectorTab(
                         label = stringResource(R.string.on_background_color),
                         defaultColor = AmoledDefault.OnBackground,
                         currentColor = onBackground
-                            ?: MaterialTheme.colorScheme.onBackground.toArgb()
+                            ?: MaterialTheme.colorScheme.onBackground
                     ) { scope.launch { ColorSettingsStore.setOnBackground(ctx, it) } }
                 }
 
@@ -311,7 +310,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.surface_color),
                         defaultColor = AmoledDefault.Surface,
-                        currentColor = surface ?: MaterialTheme.colorScheme.surface.toArgb()
+                        currentColor = surface ?: MaterialTheme.colorScheme.surface
                     ) { scope.launch { ColorSettingsStore.setSurface(ctx, it) } }
                 }
 
@@ -319,7 +318,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.on_surface_color),
                         defaultColor = AmoledDefault.OnSurface,
-                        currentColor = onSurface ?: MaterialTheme.colorScheme.onSurface.toArgb()
+                        currentColor = onSurface ?: MaterialTheme.colorScheme.onSurface
                     ) { scope.launch { ColorSettingsStore.setOnSurface(ctx, it) } }
                 }
 
@@ -327,7 +326,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.error_color),
                         defaultColor = AmoledDefault.Error,
-                        currentColor = error ?: MaterialTheme.colorScheme.error.toArgb()
+                        currentColor = error ?: MaterialTheme.colorScheme.error
                     ) { scope.launch { ColorSettingsStore.setError(ctx, it) } }
                 }
 
@@ -335,7 +334,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.on_error_color),
                         defaultColor = AmoledDefault.OnError,
-                        currentColor = onError ?: MaterialTheme.colorScheme.onError.toArgb()
+                        currentColor = onError ?: MaterialTheme.colorScheme.onError
                     ) { scope.launch { ColorSettingsStore.setOnError(ctx, it) } }
                 }
 
@@ -343,7 +342,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.outline_color),
                         defaultColor = AmoledDefault.Outline,
-                        currentColor = outline ?: MaterialTheme.colorScheme.outline.toArgb()
+                        currentColor = outline ?: MaterialTheme.colorScheme.outline
                     ) { scope.launch { ColorSettingsStore.setOutline(ctx, it) } }
                 }
 
@@ -352,7 +351,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.delete_color),
                         defaultColor = AmoledDefault.Delete,
-                        currentColor = delete ?: LocalExtraColors.current.delete.toArgb()
+                        currentColor = delete ?: LocalExtraColors.current.delete
                     ) { scope.launch { ColorSettingsStore.setDelete(ctx, it) } }
                 }
 
@@ -360,7 +359,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.edit_color),
                         defaultColor = AmoledDefault.Edit,
-                        currentColor = edit ?: LocalExtraColors.current.edit.toArgb()
+                        currentColor = edit ?: LocalExtraColors.current.edit
                     ) { scope.launch { ColorSettingsStore.setEdit(ctx, it) } }
                 }
 
@@ -368,7 +367,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.complete_color),
                         defaultColor = AmoledDefault.Complete,
-                        currentColor = complete ?: LocalExtraColors.current.complete.toArgb()
+                        currentColor = complete ?: LocalExtraColors.current.complete
                     ) { scope.launch { ColorSettingsStore.setComplete(ctx, it) } }
                 }
 
@@ -376,7 +375,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.select_color),
                         defaultColor = AmoledDefault.Select,
-                        currentColor = select ?: LocalExtraColors.current.select.toArgb()
+                        currentColor = select ?: LocalExtraColors.current.select
                     ) { scope.launch { ColorSettingsStore.setSelect(ctx, it) } }
                 }
 
@@ -385,7 +384,7 @@ fun ColorSelectorTab(
                         label = stringResource(R.string.note_type_text),
                         defaultColor = AmoledDefault.NoteTypeText,
                         currentColor = noteTypeText
-                            ?: LocalExtraColors.current.noteTypeText.toArgb()
+                            ?: LocalExtraColors.current.noteTypeText
                     ) { scope.launch { ColorSettingsStore.setNoteTypeText(ctx, it) } }
                 }
 
@@ -394,7 +393,7 @@ fun ColorSelectorTab(
                         label = stringResource(R.string.note_type_checklist),
                         defaultColor = AmoledDefault.NoteTypeChecklist,
                         currentColor = noteTypeChecklist
-                            ?: LocalExtraColors.current.noteTypeChecklist.toArgb()
+                            ?: LocalExtraColors.current.noteTypeChecklist
                     ) { scope.launch { ColorSettingsStore.setNoteTypeChecklist(ctx, it) } }
                 }
 
@@ -403,7 +402,7 @@ fun ColorSelectorTab(
                         label = stringResource(R.string.note_type_drawing),
                         defaultColor = AmoledDefault.NoteTypeDrawing,
                         currentColor = noteTypeDrawing
-                            ?: LocalExtraColors.current.noteTypeDrawing.toArgb()
+                            ?: LocalExtraColors.current.noteTypeDrawing
                     ) { scope.launch { ColorSettingsStore.setNoteTypeDrawing(ctx, it) } }
                 }
             }
@@ -414,23 +413,21 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.primary_color),
                         defaultColor = AmoledDefault.Primary,
-                        currentColor = primary ?: MaterialTheme.colorScheme.primary.toArgb()
-                    ) { newColorInt ->
+                        currentColor = primary ?: MaterialTheme.colorScheme.primary
+                    ) { newColor ->
+                        val currentColorObject = newColor
 
-
-                        val currentColorObject = Color(newColorInt)
-
-                        val backgroundColor = background?.let { Color(it) } ?: bgColorFromTheme
+                        val backgroundColor = background ?: bgColorFromTheme
 
                         val secondaryColor = currentColorObject.adjustBrightness(1.2f)
                         val tertiaryColor = secondaryColor.adjustBrightness(1.2f)
                         val surfaceColor = currentColorObject.blendWith(backgroundColor, 0.7f)
 
                         scope.launch {
-                            ColorSettingsStore.setPrimary(ctx, newColorInt)
-                            ColorSettingsStore.setSecondary(ctx, secondaryColor.toArgb())
-                            ColorSettingsStore.setTertiary(ctx, tertiaryColor.toArgb())
-                            ColorSettingsStore.setSurface(ctx, surfaceColor.toArgb())
+                            ColorSettingsStore.setPrimary(ctx, newColor)
+                            ColorSettingsStore.setSecondary(ctx, secondaryColor)
+                            ColorSettingsStore.setTertiary(ctx, tertiaryColor)
+                            ColorSettingsStore.setSurface(ctx, surfaceColor)
                         }
                     }
                 }
@@ -440,7 +437,7 @@ fun ColorSelectorTab(
                         label = stringResource(R.string.background_color),
                         defaultColor = AmoledDefault.Background,
                         currentColor = background
-                            ?: MaterialTheme.colorScheme.background.toArgb()
+                            ?: MaterialTheme.colorScheme.background
                     ) {
                         scope.launch {
                             ColorSettingsStore.setBackground(ctx, it)
@@ -452,7 +449,7 @@ fun ColorSelectorTab(
                     ColorPickerRow(
                         label = stringResource(R.string.text_color),
                         defaultColor = AmoledDefault.OnPrimary,
-                        currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary.toArgb()
+                        currentColor = onPrimary ?: MaterialTheme.colorScheme.onPrimary
                     ) {
                         scope.launch {
                             ColorSettingsStore.setOnPrimary(ctx, it)

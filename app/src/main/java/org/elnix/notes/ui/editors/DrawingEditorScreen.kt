@@ -65,10 +65,10 @@ fun DrawingEditorScreen(
                     label = "Brush",
                     showLabel = false,
                     defaultColor = Color.Black,
-                    currentColor = brushColor.value.toInt(),
+                    currentColor = brushColor,
                     backgroundColor = MaterialTheme.colorScheme.background
-                ) { pickedInt ->
-                    val picked = Color(pickedInt)
+                ) { pickedColor ->
+                    val picked = pickedColor
                     brushColor = picked
                     if (!favorites.contains(picked)) favorites.add(picked)
                 }

@@ -341,8 +341,8 @@ fun ToolbarCustomisationTab(
                 ToolbarsSettingsStore.updateToolbarColor(
                     ctx = ctx,
                     toolbar = toolbar,
-                    color = Color(color),
-                    borderColor = Color(borderColor)
+                    color = color,
+                    borderColor = borderColor
                 )
             }
             showColorPickerDialog = false

@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -25,17 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import org.elnix.notes.R
-import org.elnix.notes.ui.helpers.ValidateCancelButtons
 import org.elnix.notes.ui.theme.AmoledDefault
 
 @Composable
 fun DefaultColorPicker(
     initialColor: Color,
-    defaultColor: Color,
-    onColorSelected: (Color) -> Unit
+//    defaultColor: Color,
+//    onColorSelected: (Color) -> Unit
 ) {
     var selectedColor by remember { mutableStateOf(initialColor) }
 
@@ -111,14 +106,14 @@ fun DefaultColorPicker(
             }
         }
 
-        Spacer(Modifier.height(16.dp))
-
-
-        ValidateCancelButtons(
-            validateText = stringResource(R.string.apply),
-            cancelText = stringResource(R.string.reset),
-            onValidate = { onColorSelected(selectedColor) },
-            onCancel = { selectedColor = defaultColor }
-        )
+//        Spacer(Modifier.height(16.dp))
+//
+//
+//        ValidateCancelButtons(
+//            validateText = stringResource(R.string.apply),
+//            cancelText = stringResource(R.string.reset),
+//            onValidate = { onColorSelected(selectedColor) },
+//            onCancel = { selectedColor = defaultColor }
+//        )
     }
 }

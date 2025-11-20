@@ -12,13 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,8 +37,8 @@ fun TagEditorDialog(
 ) {
     val ctx = LocalContext.current
     var name by remember { mutableStateOf(initialTag?.name ?: "") }
-    var colorInt by remember {
-        mutableIntStateOf(initialTag?.color?.toArgb() ?: 0xFF2196F3.toInt())
+    var tagColor by remember {
+        mutableStateOf(initialTag?.color ?: Color(0xFF2196F3))
     }
     var showConfirmDelete by remember { mutableStateOf(false) }
     var emptyFieldNotStart by remember { mutableStateOf(false) }
@@ -76,11 +74,11 @@ fun TagEditorDialog(
 
                 ColorPickerRow(
                     label = stringResource(R.string.tag),
-                    defaultColor = Color(colorInt),
-                    currentColor = colorInt,
+                    defaultColor = tagColor,
+                    currentColor = tagColor,
                     backgroundColor = MaterialTheme.colorScheme.primary,
                     resetButton = false,
-                    onColorPicked = { colorInt = it }
+                    onColorPicked = { tagColor = it }
                 )
 
                 if (initialTag != null) {
@@ -101,8 +99,8 @@ fun TagEditorDialog(
             Button(onClick = {
                 if (name.isNotBlank()) {
                     scope.launch {
-                        val newTag = initialTag?.copy(name = name, color = Color(colorInt))
-                            ?: TagItem(id = System.currentTimeMillis(), name = name, color = Color(colorInt))
+                        val newTag = initialTag?.copy(name = name, color = tagColor)
+                            ?: TagItem(id = System.currentTimeMillis(), name = name, color = tagColor)
                         if (initialTag == null) TagsSettingsStore.addTag(ctx, newTag)
                         else TagsSettingsStore.updateTag(ctx, newTag)
                         onDismiss()

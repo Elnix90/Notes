@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
@@ -31,20 +30,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.SliderWithLabel
-import org.elnix.notes.ui.helpers.ValidateCancelButtons
 import org.elnix.notes.ui.helpers.randomColor
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
 fun SliderColorPicker(
-    initialColor: Color,
-    defaultColor: Color,
-    onColorSelected: (Color) -> Unit
+    actualColor: Color,
+//    defaultColor: Color,
+//    onColorSelected: (Color) -> Unit
 ) {
-    var red by remember { mutableFloatStateOf(initialColor.red) }
-    var green by remember { mutableFloatStateOf(initialColor.green) }
-    var blue by remember { mutableFloatStateOf(initialColor.blue) }
-    var alpha by remember { mutableFloatStateOf(initialColor.alpha) }
+    var red by remember { mutableFloatStateOf(actualColor.red) }
+    var green by remember { mutableFloatStateOf(actualColor.green) }
+    var blue by remember { mutableFloatStateOf(actualColor.blue) }
+    var alpha by remember { mutableFloatStateOf(actualColor.alpha) }
 
     val previousColors = remember { mutableStateListOf<Color>() }
     val color = Color(red, green, blue, alpha)
@@ -161,19 +159,19 @@ fun SliderColorPicker(
         }
 
 
-        Spacer(Modifier.height(12.dp))
+//        Spacer(Modifier.height(12.dp))
+//
 
-
-        ValidateCancelButtons(
-            validateText = stringResource(R.string.apply),
-            cancelText = stringResource(R.string.reset),
-            onValidate = { onColorSelected(color) },
-            onCancel = {
-                red = defaultColor.red
-                green = defaultColor.green
-                blue = defaultColor.blue
-                alpha = defaultColor.alpha
-            }
-        )
+//        ValidateCancelButtons(
+//            validateText = stringResource(R.string.apply),
+//            cancelText = stringResource(R.string.reset),
+//            onValidate = { onColorSelected(color) },
+//            onCancel = {
+//                red = defaultColor.red
+//                green = defaultColor.green
+//                blue = defaultColor.blue
+//                alpha = defaultColor.alpha
+//            }
+//        )
     }
 }

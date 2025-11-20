@@ -1,7 +1,6 @@
 package org.elnix.notes.data.settings
 
 import android.content.Context
-import androidx.compose.ui.graphics.toArgb
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
 import org.elnix.notes.ui.theme.AmoledDefault
 import org.elnix.notes.ui.theme.DarkDefault
@@ -28,20 +27,20 @@ fun getDefaultColorScheme(ctx: Context, theme: DefaultThemes) = when (theme) {
 
 
 private suspend fun setThemeColors(ctx: Context, colors: ThemeColors) {
-    ColorSettingsStore.setPrimary(ctx, colors.Primary.toArgb())
-    ColorSettingsStore.setOnPrimary(ctx, colors.OnPrimary.toArgb())
-    ColorSettingsStore.setSecondary(ctx, colors.Secondary.toArgb())
-    ColorSettingsStore.setOnSecondary(ctx, colors.OnSecondary.toArgb())
-    ColorSettingsStore.setTertiary(ctx, colors.Tertiary.toArgb())
-    ColorSettingsStore.setOnTertiary(ctx, colors.OnTertiary.toArgb())
-    ColorSettingsStore.setBackground(ctx, colors.Background.toArgb())
-    ColorSettingsStore.setOnBackground(ctx, colors.OnBackground.toArgb())
-    ColorSettingsStore.setSurface(ctx, colors.Surface.toArgb())
-    ColorSettingsStore.setOnSurface(ctx, colors.OnSurface.toArgb())
-    ColorSettingsStore.setError(ctx, colors.Error.toArgb())
-    ColorSettingsStore.setOnError(ctx, colors.OnError.toArgb())
-    ColorSettingsStore.setOutline(ctx, colors.Outline.toArgb())
-    ColorSettingsStore.setDelete(ctx, colors.Delete.toArgb())
-    ColorSettingsStore.setEdit(ctx, colors.Edit.toArgb())
-    ColorSettingsStore.setComplete(ctx, colors.Complete.toArgb())
+    ColorSettingsStore.setPrimary(ctx, colors.Primary)
+    ColorSettingsStore.setOnPrimary(ctx, colors.OnPrimary)
+    ColorSettingsStore.setSecondary(ctx, colors.Secondary)
+    ColorSettingsStore.setOnSecondary(ctx, colors.OnSecondary)
+    ColorSettingsStore.setTertiary(ctx, colors.Tertiary)
+    ColorSettingsStore.setOnTertiary(ctx, colors.OnTertiary)
+    ColorSettingsStore.setBackground(ctx, colors.Background)
+    ColorSettingsStore.setOnBackground(ctx, colors.OnBackground)
+    ColorSettingsStore.setSurface(ctx, colors.Surface)
+    ColorSettingsStore.setOnSurface(ctx, colors.OnSurface)
+    ColorSettingsStore.setError(ctx, colors.Error)
+    ColorSettingsStore.setOnError(ctx, colors.OnError)
+    ColorSettingsStore.setOutline(ctx, colors.Outline)
+    ColorSettingsStore.setDelete(ctx, colors.Delete)
+    ColorSettingsStore.setEdit(ctx, colors.Edit)
+    ColorSettingsStore.setComplete(ctx, colors.Complete)
 }

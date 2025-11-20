@@ -16,13 +16,14 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,6 +46,7 @@ import org.elnix.notes.data.helpers.colorPickerText
 import org.elnix.notes.data.settings.stores.ColorModesSettingsStore.getColorPickerMode
 import org.elnix.notes.data.settings.stores.ColorModesSettingsStore.setColorPickerMode
 import org.elnix.notes.ui.helpers.randomColor
+import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
 
 @Composable
@@ -53,20 +55,21 @@ fun ColorPickerRow(
     showLabel: Boolean = true,
     enabled: Boolean = true,
     defaultColor: Color,
-    currentColor: Int,
+    currentColor: Color,
     randomColorButton: Boolean = true,
     resetButton: Boolean = true,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
-    onColorPicked: (Int) -> Unit
+    onColorPicked: (Color) -> Unit
 ) {
     var showPicker by remember { mutableStateOf(false) }
+    var actualColor by remember { mutableStateOf(currentColor) }
 
     val modifier = if (showLabel) Modifier.fillMaxWidth() else Modifier.wrapContentWidth()
     Row(
        modifier = modifier
            .clickable(enabled) { showPicker = true }
            .background(
-               color = backgroundColor.adjustBrightness(if (enabled) 1f else 0.5f),
+               color = backgroundColor.copy(if (enabled) 1f else 0.5f),
                shape = RoundedCornerShape(12.dp)
            )
            .padding(horizontal = 16.dp, vertical = 14.dp),
@@ -77,7 +80,7 @@ fun ColorPickerRow(
         if(showLabel){
             Text(
                 text = label,
-                color = MaterialTheme.colorScheme.onSurface.adjustBrightness(if (enabled) 1f else 0.5f),
+                color = MaterialTheme.colorScheme.onSurface.copy(if (enabled) 1f else 0.5f),
                 modifier = Modifier.weight(1f),
                 maxLines = Int.MAX_VALUE,
                 softWrap = true
@@ -97,7 +100,7 @@ fun ColorPickerRow(
                         .clip(CircleShape)
                         .background(backgroundColor.adjustBrightness(0.8f))
                         .padding(5.dp)
-                        .clickable { onColorPicked(randomColor().toArgb()) }
+                        .clickable { onColorPicked(randomColor()) }
                 )
             }
 
@@ -112,7 +115,7 @@ fun ColorPickerRow(
                         .clip(CircleShape)
                         .background(backgroundColor.adjustBrightness(0.8f))
                         .padding(5.dp)
-                        .clickable { onColorPicked(defaultColor.toArgb()) }
+                        .clickable { onColorPicked(defaultColor) }
                 )
             }
 
@@ -121,7 +124,7 @@ fun ColorPickerRow(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(currentColor), shape = CircleShape)
+                    .background(currentColor, shape = CircleShape)
                     .border(
                         1.dp,
                         MaterialTheme.colorScheme.outline,
@@ -138,11 +141,15 @@ fun ColorPickerRow(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ){
+
                     Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.close),
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.clickable { showPicker = false }
+                        imageVector = Icons.Default.Restore,
+                        contentDescription = stringResource(R.string.reset),
+                        tint = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .padding(8.dp)
+                            .clickable { actualColor = defaultColor }
                     )
 
                     Spacer(Modifier.width(15.dp))
@@ -155,16 +162,33 @@ fun ColorPickerRow(
             },
             text = {
                 ColorPicker(
-                    initialColor = Color(currentColor),
-                    defaultColor = defaultColor,
-                    onColorSelected = {
-                        onColorPicked(it.toArgb())
-                        showPicker = false
-                    }
+                    initialColor = actualColor,
+//                    defaultColor = defaultColor,
+//                    onColorSelected = { actualColor = it }
                 )
             },
-            confirmButton = {},
-            dismissButton = {},
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onColorPicked(actualColor)
+                        showPicker = false
+                    },
+                    colors = AppObjectsColors.buttonColors()
+                ) {
+                    Text(
+                        text = stringResource(R.string.save),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showPicker = false },
+                    colors = AppObjectsColors.cancelButtonColors()
+                ) {
+                    Text(stringResource(R.string.close))
+                }
+            },
             containerColor = MaterialTheme.colorScheme.surface
         )
     }
@@ -175,8 +199,8 @@ fun ColorPickerRow(
 @Composable
 private fun ColorPicker(
     initialColor: Color,
-    defaultColor: Color,
-    onColorSelected: (Color) -> Unit
+//    defaultColor: Color,
+//    onColorSelected: (Color) -> Unit
 ) {
 
     val ctx = LocalContext.current
@@ -219,21 +243,21 @@ private fun ColorPicker(
 
         when (mode) {
             ColorPickerMode.SLIDERS -> SliderColorPicker(
-                initialColor = initialColor,
-                defaultColor = defaultColor,
-                onColorSelected = onColorSelected
+                actualColor = initialColor,
+//                defaultColor = defaultColor,
+//                onColorSelected = onColorSelected
             )
 
             ColorPickerMode.GRADIENT -> GradientColorPicker(
                 initialColor = initialColor,
-                defaultColor = defaultColor,
-                onColorSelected = onColorSelected
+//                defaultColor = defaultColor,
+//                onColorSelected = onColorSelected
             )
 
             ColorPickerMode.DEFAULTS -> DefaultColorPicker(
                 initialColor = initialColor,
-                defaultColor = defaultColor,
-                onColorSelected = onColorSelected
+//                defaultColor = defaultColor,
+//                onColorSelected = onColorSelected
             )
         }
     }

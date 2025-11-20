@@ -2,6 +2,7 @@ package org.elnix.notes.data.settings.stores
 
 
 import android.content.Context
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -63,106 +64,144 @@ object ColorSettingsStore {
 
 
 
-    fun getPrimary(ctx: Context) = ctx.dataStore.data.map { it[PRIMARY_COLOR] }
-    suspend fun setPrimary(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[PRIMARY_COLOR] = color }
+    fun getPrimary(ctx: Context) =
+        ctx.dataStore.data.map { it[PRIMARY_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setPrimary(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[PRIMARY_COLOR] = color.toArgb() }
     }
 
-    fun getOnPrimary(ctx: Context) = ctx.dataStore.data.map { it[ON_PRIMARY_COLOR] }
-    suspend fun setOnPrimary(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[ON_PRIMARY_COLOR] = color }
+    fun getOnPrimary(ctx: Context) =
+        ctx.dataStore.data.map { it[ON_PRIMARY_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setOnPrimary(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[ON_PRIMARY_COLOR] = color.toArgb() }
     }
 
-    fun getSecondary(ctx: Context) = ctx.dataStore.data.map { it[SECONDARY_COLOR] }
-    suspend fun setSecondary(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[SECONDARY_COLOR] = color }
+    fun getSecondary(ctx: Context) =
+        ctx.dataStore.data.map { it[SECONDARY_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setSecondary(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[SECONDARY_COLOR] = color.toArgb() }
     }
 
-    fun getOnSecondary(ctx: Context) = ctx.dataStore.data.map { it[ON_SECONDARY_COLOR] }
-    suspend fun setOnSecondary(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[ON_SECONDARY_COLOR] = color }
+    fun getOnSecondary(ctx: Context) =
+        ctx.dataStore.data.map { it[ON_SECONDARY_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setOnSecondary(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[ON_SECONDARY_COLOR] = color.toArgb() }
     }
 
-    fun getTertiary(ctx: Context) = ctx.dataStore.data.map { it[TERTIARY_COLOR] }
-    suspend fun setTertiary(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[TERTIARY_COLOR] = color }
+    fun getTertiary(ctx: Context) =
+        ctx.dataStore.data.map { it[TERTIARY_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setTertiary(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[TERTIARY_COLOR] = color.toArgb() }
     }
 
-    fun getOnTertiary(ctx: Context) = ctx.dataStore.data.map { it[ON_TERTIARY_COLOR] }
-    suspend fun setOnTertiary(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[ON_TERTIARY_COLOR] = color }
+    fun getOnTertiary(ctx: Context) =
+        ctx.dataStore.data.map { it[ON_TERTIARY_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setOnTertiary(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[ON_TERTIARY_COLOR] = color.toArgb() }
     }
 
+    fun getBackground(ctx: Context) =
+        ctx.dataStore.data.map { it[BACKGROUND_COLOR]?.let { color -> Color(color) } }
 
-    fun getBackground(ctx: Context) = ctx.dataStore.data.map { it[BACKGROUND_COLOR] }
-    suspend fun setBackground(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[BACKGROUND_COLOR] = color }
+    suspend fun setBackground(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[BACKGROUND_COLOR] = color.toArgb() }
     }
 
-    fun getOnBackground(ctx: Context) = ctx.dataStore.data.map { it[ON_BACKGROUND_COLOR] }
-    suspend fun setOnBackground(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[ON_BACKGROUND_COLOR] = color }
+    fun getOnBackground(ctx: Context) =
+        ctx.dataStore.data.map { it[ON_BACKGROUND_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setOnBackground(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[ON_BACKGROUND_COLOR] = color.toArgb() }
     }
 
+    fun getSurface(ctx: Context) =
+        ctx.dataStore.data.map { it[SURFACE_COLOR]?.let { color -> Color(color) } }
 
-    fun getSurface(ctx: Context) = ctx.dataStore.data.map { it[SURFACE_COLOR] }
-    suspend fun setSurface(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[SURFACE_COLOR] = color }
+    suspend fun setSurface(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[SURFACE_COLOR] = color.toArgb() }
     }
 
-    fun getOnSurface(ctx: Context) = ctx.dataStore.data.map { it[ON_SURFACE_COLOR] }
-    suspend fun setOnSurface(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[ON_SURFACE_COLOR] = color }
+    fun getOnSurface(ctx: Context) =
+        ctx.dataStore.data.map { it[ON_SURFACE_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setOnSurface(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[ON_SURFACE_COLOR] = color.toArgb() }
     }
 
-    fun getError(ctx: Context) = ctx.dataStore.data.map { it[ERROR_COLOR] }
-    suspend fun setError(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[ERROR_COLOR] = color }
+    fun getError(ctx: Context) =
+        ctx.dataStore.data.map { it[ERROR_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setError(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[ERROR_COLOR] = color.toArgb() }
     }
 
-    fun getOnError(ctx: Context) = ctx.dataStore.data.map { it[ON_ERROR_COLOR] }
-    suspend fun setOnError(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[ON_ERROR_COLOR] = color }
+    fun getOnError(ctx: Context) =
+        ctx.dataStore.data.map { it[ON_ERROR_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setOnError(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[ON_ERROR_COLOR] = color.toArgb() }
     }
 
-    fun getOutline(ctx: Context) = ctx.dataStore.data.map { it[OUTLINE_COLOR] }
-    suspend fun setOutline(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[OUTLINE_COLOR] = color }
+    fun getOutline(ctx: Context) =
+        ctx.dataStore.data.map { it[OUTLINE_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setOutline(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[OUTLINE_COLOR] = color.toArgb() }
     }
 
-    fun getDelete(ctx: Context) = ctx.dataStore.data.map { it[DELETE_COLOR] }
-    suspend fun setDelete(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[DELETE_COLOR] = color }
+    fun getDelete(ctx: Context) =
+        ctx.dataStore.data.map { it[DELETE_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setDelete(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[DELETE_COLOR] = color.toArgb() }
     }
 
-    fun getEdit(ctx: Context) = ctx.dataStore.data.map { it[EDIT_COLOR] }
-    suspend fun setEdit(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[EDIT_COLOR] = color }
+    fun getEdit(ctx: Context) =
+        ctx.dataStore.data.map { it[EDIT_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setEdit(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[EDIT_COLOR] = color.toArgb() }
     }
 
-    fun getComplete(ctx: Context) = ctx.dataStore.data.map { it[COMPLETE_COLOR] }
-    suspend fun setComplete(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[COMPLETE_COLOR] = color }
+    fun getComplete(ctx: Context) =
+        ctx.dataStore.data.map { it[COMPLETE_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setComplete(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[COMPLETE_COLOR] = color.toArgb() }
     }
 
-    fun getSelect(ctx: Context) = ctx.dataStore.data.map { it[SELECT_COLOR] }
-    suspend fun setSelect(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[SELECT_COLOR] = color }
+    fun getSelect(ctx: Context) =
+        ctx.dataStore.data.map { it[SELECT_COLOR]?.let { color -> Color(color) } }
+
+    suspend fun setSelect(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[SELECT_COLOR] = color.toArgb() }
     }
 
-    fun getNoteTypeText(ctx: Context) = ctx.dataStore.data.map { it[NOTE_TYPE_TEXT] }
-    suspend fun setNoteTypeText(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[NOTE_TYPE_TEXT] = color }
+    fun getNoteTypeText(ctx: Context) =
+        ctx.dataStore.data.map { it[NOTE_TYPE_TEXT]?.let { color -> Color(color) } }
+
+    suspend fun setNoteTypeText(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[NOTE_TYPE_TEXT] = color.toArgb() }
     }
 
-    fun getNoteTypeChecklist(ctx: Context) = ctx.dataStore.data.map { it[NOTE_TYPE_CHECKLIST] }
-    suspend fun setNoteTypeChecklist(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[NOTE_TYPE_CHECKLIST] = color }
+    fun getNoteTypeChecklist(ctx: Context) =
+        ctx.dataStore.data.map { it[NOTE_TYPE_CHECKLIST]?.let { color -> Color(color) } }
+
+    suspend fun setNoteTypeChecklist(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[NOTE_TYPE_CHECKLIST] = color.toArgb() }
     }
 
-    fun getNoteTypeDrawing(ctx: Context) = ctx.dataStore.data.map { it[NOTE_TYPE_DRAWING] }
-    suspend fun setNoteTypeDrawing(ctx: Context, color: Int) {
-        ctx.dataStore.edit { it[NOTE_TYPE_DRAWING] = color }
+    fun getNoteTypeDrawing(ctx: Context) =
+        ctx.dataStore.data.map { it[NOTE_TYPE_DRAWING]?.let { color -> Color(color) } }
+
+    suspend fun setNoteTypeDrawing(ctx: Context, color: Color) {
+        ctx.dataStore.edit { it[NOTE_TYPE_DRAWING] = color.toArgb() }
     }
 
 
@@ -185,25 +224,25 @@ object ColorSettingsStore {
     suspend fun setAllRandomColors(ctx: Context) {
         val random = { randomColor() }
 
-        setPrimary(ctx, random().toArgb())
-        setOnPrimary(ctx, random().toArgb())
-        setSecondary(ctx, random().toArgb())
-        setOnSecondary(ctx, random().toArgb())
-        setTertiary(ctx, random().toArgb())
-        setOnTertiary(ctx, random().toArgb())
-        setBackground(ctx, random().toArgb())
-        setOnBackground(ctx, random().toArgb())
-        setSurface(ctx, random().toArgb())
-        setOnSurface(ctx, random().toArgb())
-        setError(ctx, random().toArgb())
-        setOnError(ctx, random().toArgb())
-        setOutline(ctx, random().toArgb())
-        setDelete(ctx, random().toArgb())
-        setEdit(ctx, random().toArgb())
-        setComplete(ctx, random().toArgb())
-        setNoteTypeText(ctx, random().toArgb())
-        setNoteTypeChecklist(ctx, random().toArgb())
-        setNoteTypeDrawing(ctx, random().toArgb())
+        setPrimary(ctx, random())
+        setOnPrimary(ctx, random())
+        setSecondary(ctx, random())
+        setOnSecondary(ctx, random())
+        setTertiary(ctx, random())
+        setOnTertiary(ctx, random())
+        setBackground(ctx, random())
+        setOnBackground(ctx, random())
+        setSurface(ctx, random())
+        setOnSurface(ctx, random())
+        setError(ctx, random())
+        setOnError(ctx, random())
+        setOutline(ctx, random())
+        setDelete(ctx, random())
+        setEdit(ctx, random())
+        setComplete(ctx, random())
+        setNoteTypeText(ctx, random())
+        setNoteTypeChecklist(ctx, random())
+        setNoteTypeDrawing(ctx, random())
     }
     suspend fun resetAll(ctx: Context) {
         ctx.dataStore.edit { prefs ->
@@ -283,23 +322,23 @@ object ColorSettingsStore {
 
 
 private suspend fun applyThemeColors(ctx: Context, colors: ThemeColors) {
-    setPrimary(ctx, colors.Primary.toArgb())
-    setOnPrimary(ctx, colors.OnPrimary.toArgb())
-    setSecondary(ctx, colors.Secondary.toArgb())
-    setOnSecondary(ctx, colors.OnSecondary.toArgb())
-    setTertiary(ctx, colors.Tertiary.toArgb())
-    setOnTertiary(ctx, colors.OnTertiary.toArgb())
-    setBackground(ctx, colors.Background.toArgb())
-    setOnBackground(ctx, colors.OnBackground.toArgb())
-    setSurface(ctx, colors.Surface.toArgb())
-    setOnSurface(ctx, colors.OnSurface.toArgb())
-    setError(ctx, colors.Error.toArgb())
-    setOnError(ctx, colors.OnError.toArgb())
-    setOutline(ctx, colors.Outline.toArgb())
-    setDelete(ctx, colors.Delete.toArgb())
-    setEdit(ctx, colors.Edit.toArgb())
-    setComplete(ctx, colors.Complete.toArgb())
-    setNoteTypeText(ctx,colors.NoteTypeText.toArgb())
-    setNoteTypeChecklist(ctx,colors.NoteTypeChecklist.toArgb())
-    setNoteTypeDrawing(ctx,colors.NoteTypeDrawing.toArgb())
+    setPrimary(ctx, colors.Primary)
+    setOnPrimary(ctx, colors.OnPrimary)
+    setSecondary(ctx, colors.Secondary)
+    setOnSecondary(ctx, colors.OnSecondary)
+    setTertiary(ctx, colors.Tertiary)
+    setOnTertiary(ctx, colors.OnTertiary)
+    setBackground(ctx, colors.Background)
+    setOnBackground(ctx, colors.OnBackground)
+    setSurface(ctx, colors.Surface)
+    setOnSurface(ctx, colors.OnSurface)
+    setError(ctx, colors.Error)
+    setOnError(ctx, colors.OnError)
+    setOutline(ctx, colors.Outline)
+    setDelete(ctx, colors.Delete)
+    setEdit(ctx, colors.Edit)
+    setComplete(ctx, colors.Complete)
+    setNoteTypeText(ctx,colors.NoteTypeText)
+    setNoteTypeChecklist(ctx,colors.NoteTypeChecklist)
+    setNoteTypeDrawing(ctx,colors.NoteTypeDrawing)
 }

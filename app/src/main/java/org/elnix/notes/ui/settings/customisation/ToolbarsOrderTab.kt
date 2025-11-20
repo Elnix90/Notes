@@ -43,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -304,8 +303,8 @@ fun ToolbarsOrderTab(
                 ToolbarsSettingsStore.updateToolbarColor(
                     ctx = ctx,
                     toolbar = toolbarToEdit.toolbar,
-                    color = Color(color),
-                    borderColor = Color(borderColor)
+                    color = color,
+                    borderColor = borderColor
                 )
             }
             showColorPickerDialog = false

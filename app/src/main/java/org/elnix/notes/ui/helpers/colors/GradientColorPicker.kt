@@ -38,15 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.SliderWithLabel
-import org.elnix.notes.ui.helpers.ValidateCancelButtons
 import android.graphics.Color as AndroidColor
 
 
 @Composable
 fun GradientColorPicker(
     initialColor: Color,
-    defaultColor: Color,
-    onColorSelected: (Color) -> Unit
+//    defaultColor: Color,
+//    onColorSelected: (Color) -> Unit
 ) {
     val hsvArray = remember {
         FloatArray(3).apply {
@@ -202,19 +201,19 @@ fun GradientColorPicker(
             modifier = Modifier.fillMaxWidth()
         )
 
-        ValidateCancelButtons(
-            validateText = stringResource(R.string.apply),
-            cancelText = stringResource(R.string.reset),
-            onValidate = { onColorSelected(selectedColor.copy(alpha = alpha)) },
-            onCancel = {
-                selectedColor = defaultColor
-                alpha = defaultColor.alpha
-                hue = hsvArray[0]
-                sat = hsvArray[1]
-                value = hsvArray[2]
-                hexText = toHexWithAlpha(defaultColor)
-            }
-        )
+//        ValidateCancelButtons(
+//            validateText = stringResource(R.string.apply),
+//            cancelText = stringResource(R.string.reset),
+//            onValidate = { onColorSelected(selectedColor.copy(alpha = alpha)) },
+//            onCancel = {
+//                selectedColor = defaultColor
+//                alpha = defaultColor.alpha
+//                hue = hsvArray[0]
+//                sat = hsvArray[1]
+//                value = hsvArray[2]
+//                hexText = toHexWithAlpha(defaultColor)
+//            }
+//        )
     }
 }
 

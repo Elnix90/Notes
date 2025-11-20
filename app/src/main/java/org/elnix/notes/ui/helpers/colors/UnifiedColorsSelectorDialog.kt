@@ -10,11 +10,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
@@ -33,10 +32,10 @@ fun UnifiedColorsSelectorDialog(
     titleDialog: String,
     entries: List<ColorSelectorEntry>,
     onDismiss: () -> Unit,
-    onValidate: (List<Int>) -> Unit
+    onValidate: (List<Color>) -> Unit
 ) {
     // State for each color
-    val colorStates = remember { entries.map { mutableIntStateOf(it.initialColor.toArgb()) } }
+    val colorStates = remember { entries.map { mutableStateOf(it.initialColor) } }
 
     AlertDialog(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -51,14 +50,14 @@ fun UnifiedColorsSelectorDialog(
                     ColorPickerRow(
                         label = entry.label,
                         defaultColor = entry.defaultColor,
-                        currentColor = colorStates[index].intValue,
+                        currentColor = colorStates[index].value,
                         backgroundColor = MaterialTheme.colorScheme.surface.adjustBrightness(0.7f),
-                        onColorPicked = { colorStates[index].intValue = it }
+                        onColorPicked = { colorStates[index].value = it }
                     )
                 }
                 OutlinedButton(
                     onClick = {
-                        onValidate(entries.map { it.initialColor.toArgb() } )
+                        onValidate(entries.map { it.initialColor } )
                     },
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
                     colors = AppObjectsColors.cancelButtonColors()
@@ -70,7 +69,7 @@ fun UnifiedColorsSelectorDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onValidate(colorStates.map { it.intValue }) }) {
+            Button(onClick = { onValidate(colorStates.map { it.value }) }) {
                 Text(
                     text = "Save",
                     color = MaterialTheme.colorScheme.onSurface

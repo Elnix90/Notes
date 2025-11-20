@@ -79,6 +79,7 @@ fun TagEditorDialog(
                     defaultColor = Color(colorInt),
                     currentColor = colorInt,
                     backgroundColor = MaterialTheme.colorScheme.primary,
+                    resetButton = false,
                     onColorPicked = { colorInt = it }
                 )
 

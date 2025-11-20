@@ -1,5 +1,6 @@
 package org.elnix.notes.ui.helpers.tags
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -100,12 +101,21 @@ fun TagPickerDialog(
                                     }
                                     val deleteButtonEnabled = !noteTags.any { it.id == tag.id }
                                     IconButton(
-                                        enabled = deleteButtonEnabled,
                                         onClick = {
-                                            if (showDeleteTagConfirmation) {
-                                                editTag = tag
-                                                showDeleteConfirm = true
-                                            } else scope.launch { TagsSettingsStore.deleteTag(ctx, tag) }
+                                            if (deleteButtonEnabled) {
+                                                if (showDeleteTagConfirmation) {
+                                                    editTag = tag
+                                                    showDeleteConfirm = true
+                                                } else scope.launch {
+                                                    TagsSettingsStore.deleteTag(
+                                                        ctx,
+                                                        tag
+                                                    )
+                                                }
+                                            } else {
+                                                Toast.makeText(ctx, ctx.getString(R.string.this_tag_is_used_by_other_notes),
+                                                    Toast.LENGTH_SHORT).show()
+                                            }
                                         }
                                     ) {
                                         Icon(

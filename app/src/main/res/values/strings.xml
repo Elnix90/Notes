@@ -271,4 +271,5 @@
     <string name="authenticate">Authenticate</string>
     <string name="show_toolbar_name">Show Toolbar Name</string>
     <string name="toolbar_name">Toolbar Name</string>
+    <string name="this_tag_is_used_by_other_notes">This tag is used by other notes</string>
 </resources>

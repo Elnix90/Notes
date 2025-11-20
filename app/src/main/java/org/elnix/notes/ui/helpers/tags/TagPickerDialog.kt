@@ -77,7 +77,7 @@ fun TagPickerDialog(
             ) {
                 item {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                        verticalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
                         tags.forEach { tag ->
                             Row(

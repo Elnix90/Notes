@@ -141,15 +141,14 @@ fun MainApp(
 
                         // Initialization block - Where I put all the vars that need an init state
                         if (!hasInitialized) {
-                            ReminderSettingsStore.setDefaultReminders(
-                                ctx,
-                                listOf(
-                                    ReminderOffset(secondsFromNow = 600),
-                                    ReminderOffset(secondsFromNow = 1800),
-                                    ReminderOffset(secondsFromNow = 3600),
-                                    ReminderOffset(secondsFromNow = 86400)
-                                )
-                            )
+                            for (offset in listOf(
+                                ReminderOffset(secondsFromNow = 600),
+                                ReminderOffset(secondsFromNow = 1800),
+                                ReminderOffset(secondsFromNow = 3600),
+                                ReminderOffset(secondsFromNow = 86400)
+                            )) {
+                                ReminderSettingsStore.addReminder(ctx, offset)
+                            }
 
                             for (item in listOf(
                                 TagItem(id = Random.nextLong(), name = "Imp", color = Color.Yellow),

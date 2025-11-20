@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -41,6 +43,7 @@ import org.elnix.notes.data.settings.stores.TagsSettingsStore
 import org.elnix.notes.data.settings.stores.UserConfirmEntry
 import org.elnix.notes.data.settings.stores.UserConfirmSettingsStore
 import org.elnix.notes.ui.helpers.UserValidation
+import org.elnix.notes.ui.theme.AppObjectsColors
 
 @Composable
 fun TagPickerDialog(
@@ -71,89 +74,86 @@ fun TagPickerDialog(
             )
         },
         text = {
-            LazyColumn(
+            Column(
                 verticalArrangement = Arrangement.spacedBy(5.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                item {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(5.dp)
-                    ) {
-                        tags.forEach { tag ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onPicked(tag) }
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(tag.color.copy(0.2f))
-                                    .padding(vertical = 6.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                TagBubble(tag, onClick = { onPicked(tag) })
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(5.dp),
+                    modifier = Modifier.heightIn(max = 300.dp)
+                ) {
+                    items(tags) { tag ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onPicked(tag) }
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(tag.color.copy(0.2f))
+                                .padding(vertical = 6.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            TagBubble(tag, onClick = { onPicked(tag) })
 
-                                // Edit + Delete buttons
-                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(
-                                        onClick = { editTag = tag; showEditor = true }
-                                    ) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit Tag")
-                                    }
-                                    val deleteButtonEnabled = !noteTags.any { it.id == tag.id }
-                                    IconButton(
-                                        onClick = {
-                                            if (deleteButtonEnabled) {
-                                                if (showDeleteTagConfirmation) {
-                                                    editTag = tag
-                                                    showDeleteConfirm = true
-                                                } else scope.launch {
-                                                    TagsSettingsStore.deleteTag(
-                                                        ctx,
-                                                        tag
-                                                    )
-                                                }
-                                            } else {
-                                                Toast.makeText(ctx, ctx.getString(R.string.this_tag_is_used_by_other_notes),
-                                                    Toast.LENGTH_SHORT).show()
+                            // Edit + Delete buttons
+                            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                IconButton(
+                                    onClick = { editTag = tag; showEditor = true }
+                                ) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Edit Tag")
+                                }
+                                val deleteButtonEnabled = !noteTags.any { it.id == tag.id }
+                                IconButton(
+                                    onClick = {
+                                        if (deleteButtonEnabled) {
+                                            if (showDeleteTagConfirmation) {
+                                                editTag = tag
+                                                showDeleteConfirm = true
+                                            } else scope.launch {
+                                                TagsSettingsStore.deleteTag(
+                                                    ctx,
+                                                    tag
+                                                )
                                             }
+                                        } else {
+                                            Toast.makeText(
+                                                ctx,
+                                                ctx.getString(R.string.this_tag_is_used_by_other_notes),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
-                                    ) {
-                                        Icon(
-                                            Icons.Default.Delete,
-                                            contentDescription = "Delete Tag",
-                                            tint = MaterialTheme.colorScheme.outline.copy(if (deleteButtonEnabled) 1f else 0.5f)
-                                        )
                                     }
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Delete Tag",
+                                        tint = MaterialTheme.colorScheme.outline.copy(if (deleteButtonEnabled) 1f else 0.5f)
+                                    )
                                 }
                             }
                         }
                     }
                 }
 
-                item {
-                    Button(
-                        onClick = { editTag = null; showEditor = true },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(R.string.add_item),
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                        Text(
-                            text = stringResource(R.string.create_new_tag),
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
+                Button(
+                    onClick = { editTag = null; showEditor = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = AppObjectsColors.buttonColors()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.add_item),
+                    )
+                    Text(stringResource(R.string.create_new_tag))
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = stringResource(R.string.close),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+            TextButton(
+                onClick = onDismiss,
+                colors = AppObjectsColors.cancelButtonColors()
+            ) {
+                Text(stringResource(R.string.close),)
             }
         }
     )

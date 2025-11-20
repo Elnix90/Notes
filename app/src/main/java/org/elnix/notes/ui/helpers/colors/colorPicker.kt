@@ -100,7 +100,7 @@ fun ColorPickerRow(
                         .clip(CircleShape)
                         .background(backgroundColor.adjustBrightness(0.8f))
                         .padding(5.dp)
-                        .clickable { onColorPicked(randomColor()) }
+                        .clickable(enabled) { onColorPicked(randomColor()) }
                 )
             }
 
@@ -115,7 +115,7 @@ fun ColorPickerRow(
                         .clip(CircleShape)
                         .background(backgroundColor.adjustBrightness(0.8f))
                         .padding(5.dp)
-                        .clickable { onColorPicked(defaultColor) }
+                        .clickable(enabled) { onColorPicked(defaultColor) }
                 )
             }
 

@@ -59,6 +59,7 @@ fun ColorPickerRow(
     randomColorButton: Boolean = true,
     resetButton: Boolean = true,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
+    maxLuminance: Float = 1f,
     onColorPicked: (Color) -> Unit
 ) {
     var showPicker by remember { mutableStateOf(false) }
@@ -100,7 +101,8 @@ fun ColorPickerRow(
                         .clip(CircleShape)
                         .background(backgroundColor.adjustBrightness(0.8f))
                         .padding(5.dp)
-                        .clickable(enabled) { onColorPicked(randomColor()) }
+                        .clickable(enabled) { onColorPicked(randomColor(maxLuminance = maxLuminance)) }
+
                 )
             }
 

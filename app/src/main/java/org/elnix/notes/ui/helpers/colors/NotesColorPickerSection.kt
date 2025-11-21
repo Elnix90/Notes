@@ -80,7 +80,9 @@ fun NotesColorPickerSection(
                     value = luminance.floatValue,
                     onValueChange = { luminance.floatValue = it },
                     valueRange = 0f..1f,
-                    modifier = Modifier.width(150.dp)
+                    modifier = Modifier
+                        .height(20.dp)
+                        .width(150.dp)
                 )
             }
 

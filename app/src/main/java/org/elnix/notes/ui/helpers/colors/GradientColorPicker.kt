@@ -45,7 +45,7 @@ import android.graphics.Color as AndroidColor
 fun GradientColorPicker(
     initialColor: Color,
 //    defaultColor: Color,
-//    onColorSelected: (Color) -> Unit
+    onColorSelected: (Color) -> Unit
 ) {
     val hsvArray = remember {
         FloatArray(3).apply {
@@ -123,6 +123,7 @@ fun GradientColorPicker(
                                 value = 1f - (pos.y / pickerSize).coerceIn(0f, 1f)
                                 selectedColor = Color.hsv(hue, sat, value)
                                 hexText = toHexWithAlpha(selectedColor.copy(alpha = alpha))
+                                onColorSelected(selectedColor)
                             },
                             onDrag = { change, _ ->
                                 pickerSize = size.width.toFloat()
@@ -130,6 +131,7 @@ fun GradientColorPicker(
                                 value = 1f - (change.position.y / pickerSize).coerceIn(0f, 1f)
                                 selectedColor = Color.hsv(hue, sat, value)
                                 hexText = toHexWithAlpha(selectedColor.copy(alpha = alpha))
+                                onColorSelected(selectedColor)
                             }
                         )
                     }
@@ -162,11 +164,13 @@ fun GradientColorPicker(
                                 hue = (1 - pos.y / size.height).coerceIn(0f, 1f) * 360f
                                 selectedColor = Color.hsv(hue, sat, value)
                                 hexText = toHexWithAlpha(selectedColor.copy(alpha = alpha))
+                                onColorSelected(selectedColor)
                             },
                             onDrag = { change, _ ->
                                 hue = (1 - change.position.y / size.height).coerceIn(0f, 1f) * 360f
                                 selectedColor = Color.hsv(hue, sat, value)
                                 hexText = toHexWithAlpha(selectedColor.copy(alpha = alpha))
+                                onColorSelected(selectedColor)
                             }
                         )
                     }

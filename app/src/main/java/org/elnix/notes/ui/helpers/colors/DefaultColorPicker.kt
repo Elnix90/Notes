@@ -30,7 +30,7 @@ import org.elnix.notes.ui.theme.AmoledDefault
 fun DefaultColorPicker(
     initialColor: Color,
 //    defaultColor: Color,
-//    onColorSelected: (Color) -> Unit
+    onColorSelected: (Color) -> Unit
 ) {
     var selectedColor by remember { mutableStateOf(initialColor) }
 
@@ -90,7 +90,10 @@ fun DefaultColorPicker(
                                         MaterialTheme.colorScheme.outline,
                                     shape = CircleShape
                                 )
-                                .clickable { selectedColor = color },
+                                .clickable {
+                                    selectedColor = color
+                                    onColorSelected(color)
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             if (color == selectedColor) {
@@ -105,15 +108,5 @@ fun DefaultColorPicker(
                 }
             }
         }
-
-//        Spacer(Modifier.height(16.dp))
-//
-//
-//        ValidateCancelButtons(
-//            validateText = stringResource(R.string.apply),
-//            cancelText = stringResource(R.string.reset),
-//            onValidate = { onColorSelected(selectedColor) },
-//            onCancel = { selectedColor = defaultColor }
-//        )
     }
 }

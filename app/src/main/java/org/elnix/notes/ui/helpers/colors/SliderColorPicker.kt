@@ -36,8 +36,7 @@ import org.elnix.notes.ui.theme.adjustBrightness
 @Composable
 fun SliderColorPicker(
     actualColor: Color,
-//    defaultColor: Color,
-//    onColorSelected: (Color) -> Unit
+    onColorSelected: (Color) -> Unit
 ) {
     var red by remember { mutableFloatStateOf(actualColor.red) }
     var green by remember { mutableFloatStateOf(actualColor.green) }
@@ -64,6 +63,7 @@ fun SliderColorPicker(
             blue = last.blue
             alpha = last.alpha
             hexText = toHexWithAlpha(color)
+            onColorSelected(color)
         }
     }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -93,6 +93,7 @@ fun SliderColorPicker(
                     red = color.red
                     green = color.green
                     blue = color.blue
+                    onColorSelected(color)
                 },
                 modifier = Modifier.weight(1f)
             ) {
@@ -127,6 +128,7 @@ fun SliderColorPicker(
             red = it
             pushCurrentColor()
             hexText = toHexWithAlpha(color)
+            onColorSelected(color)
         }
         SliderWithLabel(
             label = "${stringResource(R.string.green)} :",
@@ -136,6 +138,7 @@ fun SliderColorPicker(
             green = it
             pushCurrentColor()
             hexText = toHexWithAlpha(color)
+            onColorSelected(color)
         }
         SliderWithLabel(
             label = "${stringResource(R.string.blue)} :",
@@ -145,6 +148,7 @@ fun SliderColorPicker(
             blue = it
             pushCurrentColor()
             hexText = toHexWithAlpha(color)
+            onColorSelected(color)
         }
 
         SliderWithLabel(
@@ -156,22 +160,8 @@ fun SliderColorPicker(
             alpha = it
             pushCurrentColor()
             hexText = toHexWithAlpha(color)
+            onColorSelected(color)
         }
 
-
-//        Spacer(Modifier.height(12.dp))
-//
-
-//        ValidateCancelButtons(
-//            validateText = stringResource(R.string.apply),
-//            cancelText = stringResource(R.string.reset),
-//            onValidate = { onColorSelected(color) },
-//            onCancel = {
-//                red = defaultColor.red
-//                green = defaultColor.green
-//                blue = defaultColor.blue
-//                alpha = defaultColor.alpha
-//            }
-//        )
     }
 }

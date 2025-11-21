@@ -165,8 +165,7 @@ fun ColorPickerRow(
             text = {
                 ColorPicker(
                     initialColor = actualColor,
-//                    defaultColor = defaultColor,
-//                    onColorSelected = { actualColor = it }
+                    onColorSelected = { actualColor = it }
                 )
             },
             confirmButton = {
@@ -201,8 +200,7 @@ fun ColorPickerRow(
 @Composable
 private fun ColorPicker(
     initialColor: Color,
-//    defaultColor: Color,
-//    onColorSelected: (Color) -> Unit
+    onColorSelected: (Color) -> Unit
 ) {
 
     val ctx = LocalContext.current
@@ -246,20 +244,17 @@ private fun ColorPicker(
         when (mode) {
             ColorPickerMode.SLIDERS -> SliderColorPicker(
                 actualColor = initialColor,
-//                defaultColor = defaultColor,
-//                onColorSelected = onColorSelected
+                onColorSelected = { onColorSelected(it) }
             )
 
             ColorPickerMode.GRADIENT -> GradientColorPicker(
                 initialColor = initialColor,
-//                defaultColor = defaultColor,
-//                onColorSelected = onColorSelected
+                onColorSelected = { onColorSelected(it) }
             )
 
             ColorPickerMode.DEFAULTS -> DefaultColorPicker(
                 initialColor = initialColor,
-//                defaultColor = defaultColor,
-//                onColorSelected = onColorSelected
+                onColorSelected = { onColorSelected(it) }
             )
         }
     }

@@ -128,7 +128,10 @@ fun OffsetPickerDialog(
                 }
             },
             confirmButton = {
-                TextButton(onClick = onDismiss) {
+                TextButton(
+                    onClick = onDismiss,
+                    colors = AppObjectsColors.cancelButtonColors()
+                ) {
                     Text(
                         text = stringResource(R.string.cancel),
                         color = MaterialTheme.colorScheme.onSurface

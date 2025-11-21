@@ -96,19 +96,22 @@ fun TagEditorDialog(
             }
         },
         confirmButton = {
-            Button(onClick = {
-                if (name.isNotBlank()) {
-                    scope.launch {
-                        val newTag = initialTag?.copy(name = name, color = tagColor)
-                            ?: TagItem(id = System.currentTimeMillis(), name = name, color = tagColor)
-                        if (initialTag == null) TagsSettingsStore.addTag(ctx, newTag)
-                        else TagsSettingsStore.updateTag(ctx, newTag)
-                        onDismiss()
+            Button(
+                onClick = {
+                    if (name.isNotBlank()) {
+                        scope.launch {
+                            val newTag = initialTag?.copy(name = name, color = tagColor)
+                                ?: TagItem(id = System.currentTimeMillis(), name = name, color = tagColor)
+                            if (initialTag == null) TagsSettingsStore.addTag(ctx, newTag)
+                            else TagsSettingsStore.updateTag(ctx, newTag)
+                            onDismiss()
+                        }
+                    } else {
+                        emptyFieldNotStart = true
                     }
-                } else {
-                    emptyFieldNotStart = true
-                }
-            }) {
+                },
+                colors = AppObjectsColors.buttonColors()
+            ) {
                 Text(
                     text = stringResource(R.string.save),
                     color = MaterialTheme.colorScheme.onSurface
@@ -116,7 +119,10 @@ fun TagEditorDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                colors = AppObjectsColors.cancelButtonColors()
+            ) {
                 Text(
                     text = stringResource(R.string.cancel),
                     color = MaterialTheme.colorScheme.primary

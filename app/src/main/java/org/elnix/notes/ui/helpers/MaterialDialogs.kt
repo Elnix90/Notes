@@ -79,18 +79,24 @@ fun StyledReminderDialogs(
         DatePickerDialog(
             onDismissRequest = { showDate = false },
             confirmButton = {
-                TextButton(onClick = {
-                    datePickerState.selectedDateMillis?.let {
-                        pickedCal.timeInMillis = it
-                        showDate = false
-                        showTime = true
-                    }
-                }) {
+                Button(
+                        onClick = {
+                        datePickerState.selectedDateMillis?.let {
+                            pickedCal.timeInMillis = it
+                            showDate = false
+                            showTime = true
+                        }
+                    },
+                    colors = AppObjectsColors.buttonColors()
+                ) {
                     Text(stringResource(R.string.next))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDate = false }) {
+                TextButton(
+                    onClick = { showDate = false },
+                    colors = AppObjectsColors.cancelButtonColors()
+                ) {
                     Text(stringResource(R.string.cancel))
                 }
             },

@@ -1,5 +1,6 @@
 package org.elnix.notes.ui.helpers.colors
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -146,7 +147,7 @@ private fun LuminanceSlider(
     val sliderWidth = 150.dp
 
     // Remember the current slider position on the gradient (in 0..sliderWidth)
-    val thumbRadius = 10.dp
+    val thumbRadius = 9.dp
     val displayWidthPx = sliderWidth.value * 3 // approximate px for offset calculation, adjust as needed
 
     Box(
@@ -169,15 +170,22 @@ private fun LuminanceSlider(
                 }
             }
     ) {
-        // Draw the circular thumb indicating current value
-        androidx.compose.foundation.Canvas(
+        Canvas(
             modifier = Modifier
                 .height(20.dp)
                 .width(sliderWidth)
         ) {
-            val x = value * size.width
+            // Ensure the thumb is fully inside the slider bounds
+            val min = thumbRadius.toPx() + 1
+            val max = size.width - thumbRadius.toPx() -1
+            val x = (min + (max - min) * value).coerceIn(min, max)
+
+            // Calculate color based on luminance value (slider progress)
+            val thumbColor = if (value < 0.5f) Color.White else Color.Black
+
+
             drawCircle(
-                color = Color.Gray,
+                color = thumbColor,
                 radius = thumbRadius.toPx(),
                 center = Offset(x, size.height / 2),
                 style = Stroke(width = 2.dp.toPx())

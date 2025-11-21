@@ -1,31 +1,25 @@
 package org.elnix.notes.ui.helpers.colors
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
@@ -48,9 +42,7 @@ fun SliderColorPicker(
     val canPopLastColor = previousColors.isNotEmpty()
 
 
-    var hexText by remember {
-        mutableStateOf(toHexWithAlpha(color))
-    }
+
     fun pushCurrentColor() {
         previousColors.add(color)
     }
@@ -62,11 +54,14 @@ fun SliderColorPicker(
             green = last.green
             blue = last.blue
             alpha = last.alpha
-            hexText = toHexWithAlpha(color)
             onColorSelected(color)
         }
     }
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.padding(5.dp)
+    ) {
+
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -104,21 +99,6 @@ fun SliderColorPicker(
                 )
             }
         }
-        // --- Preview box ---
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .background(color)
-                .border(1.dp, MaterialTheme.colorScheme.outline),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = hexText,
-                color = if (color.luminance() > 0.4) Color.Black else Color.White
-            )
-        }
-
 
         SliderWithLabel(
             label = "${stringResource(R.string.red)} :",
@@ -127,7 +107,6 @@ fun SliderColorPicker(
         ) {
             red = it
             pushCurrentColor()
-            hexText = toHexWithAlpha(color)
             onColorSelected(color)
         }
         SliderWithLabel(
@@ -137,7 +116,6 @@ fun SliderColorPicker(
         ) {
             green = it
             pushCurrentColor()
-            hexText = toHexWithAlpha(color)
             onColorSelected(color)
         }
         SliderWithLabel(
@@ -147,7 +125,6 @@ fun SliderColorPicker(
         ) {
             blue = it
             pushCurrentColor()
-            hexText = toHexWithAlpha(color)
             onColorSelected(color)
         }
 
@@ -159,7 +136,6 @@ fun SliderColorPicker(
         ) {
             alpha = it
             pushCurrentColor()
-            hexText = toHexWithAlpha(color)
             onColorSelected(color)
         }
 

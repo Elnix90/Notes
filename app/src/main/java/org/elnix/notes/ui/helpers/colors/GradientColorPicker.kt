@@ -1,7 +1,6 @@
 package org.elnix.notes.ui.helpers.colors
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -63,22 +63,10 @@ fun GradientColorPicker(
 
     val hueColor = remember(hue) { Color.hsv(hue, 1f, 1f) }
 
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-
-        // --- Preview box ---
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .background(selectedColor.copy(alpha = alpha))
-                .border(1.dp, MaterialTheme.colorScheme.outline),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = hexText,
-                color = if (selectedColor.luminance() > 0.4) Color.Black else Color.White
-            )
-        }
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.padding(5.dp)
+    ) {
 
         // --- Gradient + Hue selectors ---
         Row(

@@ -24,6 +24,7 @@ object NotesBackupManager {
 
     // ---------- EXPORT ----------
     suspend fun exportNotes(ctx: Context, outputStream: OutputStream) {
+        Log.d(TAG, "Started export")
         withContext(Dispatchers.IO) {
             try {
                 val db = AppDatabase.get(ctx)
@@ -72,6 +73,8 @@ object NotesBackupManager {
                         }
                     })
                 }
+
+                Log.d(TAG, "Generated JSON: $json")
 
                 outputStream.bufferedWriter().use { it.write(json.toString(2)) }
 

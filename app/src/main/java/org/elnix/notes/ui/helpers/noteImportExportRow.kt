@@ -1,5 +1,8 @@
 package org.elnix.notes.ui.helpers
 
+import android.app.Activity
+import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -22,25 +25,35 @@ fun NotesExportImportRow(
     onError: (Boolean, String) -> Unit,
     onSuccess: (Boolean) -> Unit
 ) {
-    val ctx = LocalContext.current
+    val activity = LocalActivity.current as Activity
     val scope = rememberCoroutineScope()
 
     val exportLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.CreateDocument("application/json")
+        ) { uri ->
+            Log.d("NotesBackupManager", "Started export 2")
             if (uri == null) {
-                onError(true, ctx.getString(R.string.export_cancelled))
+                onError(true, activity.getString(R.string.export_cancelled))
                 return@rememberLauncherForActivityResult
             }
 
             scope.launch {
+                Log.d("NotesBackupManager", "Started export 3")
+
                 try {
-                    ctx.contentResolver.openOutputStream(uri)?.use {
-                        NotesBackupManager.exportNotes(ctx, it)
+                    val stream = activity.contentResolver.openOutputStream(uri, "w")
+                    Log.d("NotesBackupManager", "Stream = $stream")
+
+                    stream?.use {
+                        NotesBackupManager.exportNotes(activity, it)
                     } ?: throw Exception("Unable to open output stream")
 
                     onSuccess(true)
+
                 } catch (e: Exception) {
-                    onError(true, e.message ?: ctx.getString(R.string.export_failed))
+                    Log.e("NotesBackupManager", "Export error", e)
+                    onError(true, e.message ?: activity.getString(R.string.export_failed))
                 }
             }
         }
@@ -48,19 +61,19 @@ fun NotesExportImportRow(
     val importLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             if (uri == null) {
-                onError(false, ctx.getString(R.string.import_cancelled))
+                onError(false, activity.getString(R.string.import_cancelled))
                 return@rememberLauncherForActivityResult
             }
 
             scope.launch {
                 try {
-                    ctx.contentResolver.openInputStream(uri)?.use {
-                        NotesBackupManager.importNotes(ctx, it)
+                    activity.contentResolver.openInputStream(uri)?.use {
+                        NotesBackupManager.importNotes(activity, it)
                     } ?: throw Exception("Unable to open input stream")
 
                     onSuccess(false)
                 } catch (e: Exception) {
-                    onError(false, e.message ?: ctx.getString(R.string.import_failed))
+                    onError(false, e.message ?: activity.getString(R.string.import_failed))
                 }
             }
         }
@@ -70,7 +83,10 @@ fun NotesExportImportRow(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
-            onClick = { exportLauncher.launch("notes_backup.json") },
+            onClick = {
+                Log.d("NotesBackupManager", "Started export")
+                exportLauncher.launch("notes_backup.json")
+            },
             colors = AppObjectsColors.buttonColors()
         ) {
             Text(stringResource(R.string.export_notes))

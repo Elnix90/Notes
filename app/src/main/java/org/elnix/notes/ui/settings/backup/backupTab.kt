@@ -20,7 +20,10 @@ import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
 
 @Composable
-fun BackupTab(activity: FragmentActivity, onBack: (() -> Unit)) {
+fun BackupTab(
+    activity: FragmentActivity,
+    onBack: (() -> Unit)
+) {
 
     // UI state for showing dialogs
     var showValidation by remember { mutableStateOf(false) }

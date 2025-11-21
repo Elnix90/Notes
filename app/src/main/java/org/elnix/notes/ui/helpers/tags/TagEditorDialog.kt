@@ -125,10 +125,7 @@ fun TagEditorDialog(
                 onClick = onDismiss,
                 colors = AppObjectsColors.cancelButtonColors()
             ) {
-                Text(
-                    text = stringResource(R.string.cancel),
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Text(stringResource(R.string.cancel),)
             }
         }
     )

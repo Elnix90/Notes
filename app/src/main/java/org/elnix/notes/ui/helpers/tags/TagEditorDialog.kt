@@ -3,6 +3,7 @@ package org.elnix.notes.ui.helpers.tags
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -110,7 +111,8 @@ fun TagEditorDialog(
                         emptyFieldNotStart = true
                     }
                 },
-                colors = AppObjectsColors.buttonColors()
+                colors = AppObjectsColors.buttonColors(),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
                     text = stringResource(R.string.save),

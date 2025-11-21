@@ -87,7 +87,8 @@ fun StyledReminderDialogs(
                             showTime = true
                         }
                     },
-                    colors = AppObjectsColors.buttonColors()
+                    colors = AppObjectsColors.buttonColors(),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(stringResource(R.string.next))
                 }

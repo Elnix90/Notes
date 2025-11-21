@@ -146,7 +146,7 @@ fun NoteCard(
                     )
                 }
 
-                VerticalDivider(color = MaterialTheme.colorScheme.outline)
+                VerticalDivider(color = noteTextColor)
 
             }
 

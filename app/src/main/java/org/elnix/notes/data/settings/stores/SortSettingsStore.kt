@@ -10,10 +10,6 @@ import org.elnix.notes.data.helpers.SortMode
 import org.elnix.notes.data.helpers.SortType
 import org.elnix.notes.data.settings.dataStore
 
-data class SortBackup(
-    val sortMode: SortMode,
-    val sortType: SortType
-)
 
 object SortSettingsStore {
 

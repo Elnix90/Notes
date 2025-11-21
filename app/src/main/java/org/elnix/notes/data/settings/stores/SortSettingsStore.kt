@@ -21,7 +21,7 @@ object SortSettingsStore {
     private val SORT_TYPE = stringPreferencesKey("sort_type")
 
     private val DEFAULT_SORT_MODE = SortMode.DESC
-    private val DEFAULT_SORT_TYPE = SortType.DATE
+    private val DEFAULT_SORT_TYPE = SortType.CUSTOM
 
 
     fun getSortMode(ctx: Context): Flow<SortMode> =

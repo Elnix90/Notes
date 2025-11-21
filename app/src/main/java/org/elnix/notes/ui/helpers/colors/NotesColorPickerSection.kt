@@ -1,7 +1,9 @@
 package org.elnix.notes.ui.helpers.colors
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,10 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
@@ -20,7 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
@@ -76,13 +82,10 @@ fun NotesColorPickerSection(
 
                 Spacer(Modifier.height(4.dp))
 
-                Slider(
+                LuminanceSlider(
                     value = luminance.floatValue,
                     onValueChange = { luminance.floatValue = it },
-                    valueRange = 0f..1f,
-                    modifier = Modifier
-                        .height(20.dp)
-                        .width(150.dp)
+                    modifier = Modifier.padding(8.dp)
                 )
             }
 
@@ -113,7 +116,7 @@ fun NotesColorPickerSection(
                 Spacer(Modifier.height(4.dp))
 
                 // AUTO TEXT COLOR CHECKBOX
-                Row(verticalAlignment = Alignment.CenterVertically,) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
                         checked = autoTextColorEnabled,
                         onCheckedChange = { onAutoSwitchToggle(it) },
@@ -127,6 +130,58 @@ fun NotesColorPickerSection(
                     )
                 }
             }
+        }
+    }
+}
+
+
+
+@Composable
+private fun LuminanceSlider(
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Container width in pixels (will be updated later)
+    val sliderWidth = 150.dp
+
+    // Remember the current slider position on the gradient (in 0..sliderWidth)
+    val thumbRadius = 10.dp
+    val displayWidthPx = sliderWidth.value * 3 // approximate px for offset calculation, adjust as needed
+
+    Box(
+        modifier = modifier
+            .height(20.dp)
+            .width(sliderWidth)
+            .clip(CircleShape)
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Black, Color.White),
+                    start = Offset.Zero,
+                    end = Offset(displayWidthPx, 0f)
+                )
+            )
+            .pointerInput(Unit) {
+                detectDragGestures { change, _ ->
+                    val newX = change.position.x.coerceIn(0f, size.width.toFloat())
+                    val newValue = newX / size.width
+                    onValueChange(newValue)
+                }
+            }
+    ) {
+        // Draw the circular thumb indicating current value
+        androidx.compose.foundation.Canvas(
+            modifier = Modifier
+                .height(20.dp)
+                .width(sliderWidth)
+        ) {
+            val x = value * size.width
+            drawCircle(
+                color = Color.Gray,
+                radius = thumbRadius.toPx(),
+                center = Offset(x, size.height / 2),
+                style = Stroke(width = 2.dp.toPx())
+            )
         }
     }
 }

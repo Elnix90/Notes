@@ -204,20 +204,6 @@ fun GradientColorPicker(
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
-
-//        ValidateCancelButtons(
-//            validateText = stringResource(R.string.apply),
-//            cancelText = stringResource(R.string.reset),
-//            onValidate = { onColorSelected(selectedColor.copy(alpha = alpha)) },
-//            onCancel = {
-//                selectedColor = defaultColor
-//                alpha = defaultColor.alpha
-//                hue = hsvArray[0]
-//                sat = hsvArray[1]
-//                value = hsvArray[2]
-//                hexText = toHexWithAlpha(defaultColor)
-//            }
-//        )
     }
 }
 

@@ -96,6 +96,14 @@ fun MainApp(
 
     val updates = listOf(
         Update(
+            "1.2.1",
+            listOf(
+                "Small UI changes",
+                "Implemented slider for max luminance in color note",
+                "Fluidified global theme with all buttons have the same theme"
+            )
+        ),
+        Update(
             "1.2.0",
             listOf(
                 "Added \"has initialized\" param for settings on quitting welcome screen",

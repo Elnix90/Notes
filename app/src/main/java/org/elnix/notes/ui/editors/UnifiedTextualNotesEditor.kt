@@ -307,6 +307,7 @@ fun UnifiedTextualNotesEditor(
                         onValueChange = { desc = it },
                         label = { Text(stringResource(R.string.description)) },
                         modifier = Modifier.fillMaxWidth(),
+                        minLines = 10,
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Sentences,
                             autoCorrectEnabled = true,

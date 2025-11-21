@@ -1,17 +1,22 @@
-package org.elnix.notes.ui.helpers
+package org.elnix.notes.utils
 
 
 import androidx.compose.ui.graphics.Color
+import kotlin.math.abs
 import kotlin.random.Random
 
-fun randomColor(maxLuminance: Float = 1f, alpha: Boolean = false): Color {
+fun randomColor(
+    minLuminance: Float = 0f,
+    maxLuminance: Float = 1f,
+    alpha: Boolean = false
+): Color {
     val hue = Random.nextFloat() * 360f
-    val saturation = Random.nextFloat()
-    val value = Random.nextFloat() * maxLuminance
+    val saturation = 1f
+    val value = Random.nextFloat() * (maxLuminance - minLuminance) + minLuminance
 
     // Convert HSV to RGB
     val c = value * saturation
-    val x = c * (1 - kotlin.math.abs((hue / 60f) % 2 - 1))
+    val x = c * (1 - abs((hue / 60f) % 2 - 1))
     val m = value - c
 
     val (r1, g1, b1) = when (hue) {

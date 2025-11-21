@@ -45,9 +45,9 @@ import org.elnix.notes.data.helpers.ColorPickerMode
 import org.elnix.notes.data.helpers.colorPickerText
 import org.elnix.notes.data.settings.stores.ColorModesSettingsStore.getColorPickerMode
 import org.elnix.notes.data.settings.stores.ColorModesSettingsStore.setColorPickerMode
-import org.elnix.notes.ui.helpers.randomColor
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.ui.theme.adjustBrightness
+import org.elnix.notes.utils.randomColor
 
 @Composable
 fun ColorPickerRow(
@@ -101,8 +101,7 @@ fun ColorPickerRow(
                         .clip(CircleShape)
                         .background(backgroundColor.adjustBrightness(0.8f))
                         .padding(5.dp)
-                        .clickable(enabled) { onColorPicked(randomColor(maxLuminance = maxLuminance)) }
-
+                        .clickable(enabled) { onColorPicked(randomColor(minLuminance = 0.2f, maxLuminance = maxLuminance)) }
                 )
             }
 

@@ -30,8 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.SliderWithLabel
-import org.elnix.notes.ui.helpers.randomColor
 import org.elnix.notes.ui.theme.adjustBrightness
+import org.elnix.notes.utils.randomColor
 
 @Composable
 fun SliderColorPicker(

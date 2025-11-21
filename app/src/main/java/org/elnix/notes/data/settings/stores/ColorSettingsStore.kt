@@ -31,7 +31,7 @@ import org.elnix.notes.data.settings.stores.ColorSettingsStore.setPrimary
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setSecondary
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setSurface
 import org.elnix.notes.data.settings.stores.ColorSettingsStore.setTertiary
-import org.elnix.notes.ui.helpers.randomColor
+import org.elnix.notes.utils.randomColor
 import org.elnix.notes.ui.theme.AmoledDefault
 import org.elnix.notes.ui.theme.ThemeColors
 

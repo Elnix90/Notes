@@ -203,6 +203,9 @@ fun BackupTab(
                 }
             )
         }
+        item { Button(
+            onClick = { showResult(true, true, "test") }
+        ) { Text("test")} }
     }
 
     // RESULT DIALOG

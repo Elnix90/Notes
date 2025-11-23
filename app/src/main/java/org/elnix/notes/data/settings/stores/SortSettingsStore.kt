@@ -31,7 +31,7 @@ object SortSettingsStore {
         ctx.dataStore.data.map { prefs ->
             prefs[SORT_TYPE]
                 ?.let { runCatching { enumValueOf<SortType>(it) }.getOrNull() }
-                ?: SortType.DATE
+                ?: SortType.CUSTOM
         }
 
 

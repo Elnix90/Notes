@@ -3,6 +3,7 @@ package org.elnix.notes.ui
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
@@ -192,32 +193,44 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         noteRepo.upsert(note.copy(isCompleted = false))
     }
 
+
+    // Lock Screen
     private val _locked = MutableStateFlow(true)
+    private val _ignoreBackgroundLock = MutableStateFlow(false)
+
     val locked = _locked.asStateFlow()
 
     fun onAppBackground() {
-        _locked.value = true
+        Log.d("LifeCycle","App went background")
+        if (!_ignoreBackgroundLock.value) {
+            _locked.value = true
+        }
     }
 
     fun onAppForeground() {
         viewModelScope.launch {
+            Log.d("LifeCycle","App went foreground")
+
             val settings = LockSettingsStore.getLockSettings(ctx).first()
             val lastUnlock = settings.lastUnlockTimestamp
             val timeout = settings.lockTimeoutSeconds
 
-            // If timeout = 0 → lock immediately
+            // If timeout = 0 → lock if not in file picker mode (ignore background lock)
             if (timeout == 0) {
-                _locked.value = true
+                _locked.value = !_ignoreBackgroundLock.value
                 return@launch
             }
 
             val now = System.currentTimeMillis()
             val elapsed = (now - lastUnlock) / 1000
 
-            _locked.value = elapsed >= timeout
+            _locked.value = if (!_ignoreBackgroundLock.value) elapsed >= timeout else false
+            _ignoreBackgroundLock.value = false
         }
     }
 
 
     fun unlock() { _locked.value = false }
+
+    fun enableIgnoreBackgroundLock() { _ignoreBackgroundLock.value = true }
 }

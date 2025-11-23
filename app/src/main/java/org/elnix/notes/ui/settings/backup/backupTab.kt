@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
+import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.helpers.TextDivider
 import org.elnix.notes.ui.helpers.UserValidation
 import org.elnix.notes.ui.helpers.settings.SettingsLazyHeader
@@ -33,6 +34,7 @@ import org.elnix.notes.utils.SettingsBackupManager
 
 @Composable
 fun BackupTab(
+    vm: NoteViewModel,
     activity: FragmentActivity,
     onBack: () -> Unit
 ) {
@@ -176,12 +178,11 @@ fun BackupTab(
                 exportLabel = stringResource(R.string.export_notes),
                 importLabel = stringResource(R.string.import_notes),
                 onExport = {
-                    Log.d("NotesBackupManager", "Started notes export 1")
-                    Log.d("NotesBackupManager", notesImportLauncher.toString())
+                    vm.enableIgnoreBackgroundLock()
                     notesExportLauncher.launch("notes_backup.json")
                 },
                 onImport = {
-                    Log.d("NotesBackupManager", "Started notes import 1")
+                    vm.enableIgnoreBackgroundLock()
                     notesImportLauncher.launch(arrayOf("application/json"))
                 }
             )
@@ -194,18 +195,15 @@ fun BackupTab(
                 exportLabel = stringResource(R.string.export_settings),
                 importLabel = stringResource(R.string.import_settings),
                 onExport = {
-                    Log.d("NotesBackupManager", "Started settings export 1")
+                    vm.enableIgnoreBackgroundLock()
                     settingsExportLauncher.launch("notes_settings_backup.json")
                 },
                 onImport = {
-                    Log.d("NotesBackupManager", "Started settings import 1")
+                    vm.enableIgnoreBackgroundLock()
                     settingsImportLauncher.launch(arrayOf("application/json"))
                 }
             )
         }
-        item { Button(
-            onClick = { showResult(true, true, "test") }
-        ) { Text("test")} }
     }
 
     // RESULT DIALOG

@@ -1,30 +1,24 @@
 package org.elnix.notes
 
-import android.view.WindowManager
+import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import org.elnix.notes.data.settings.stores.PrivacySettingsStore
 import org.elnix.notes.ui.NoteViewModel
 
 class AppLifecycleObserver(val vm: NoteViewModel) : DefaultLifecycleObserver {
 
     override fun onStart(owner: LifecycleOwner) {
+        Log.d("LifeCycle","App went onStart")
         vm.onAppForeground()
+    }
 
-        lifecycleScope.launch {
-            val block = PrivacySettingsStore.getBlockScreenshots(this@MainActivity).first()
-            if (!block) {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            } else {
-                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            }
-        }
+    override fun onResume(owner: LifecycleOwner) {
+        Log.d("LifeCycle","App went onResume")
+        vm.onAppForeground()
     }
 
     override fun onStop(owner: LifecycleOwner) {
+        Log.d("LifeCycle","App went onStop")
         vm.onAppBackground()
     }
 }

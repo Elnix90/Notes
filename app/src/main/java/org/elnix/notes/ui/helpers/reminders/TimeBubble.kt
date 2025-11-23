@@ -56,14 +56,15 @@ fun TimeBubble(
     val isPast = diffMillis < 0
     val absSeconds = abs(diffMillis / 1000).toInt()
 
+
+    val (t, r) = getDisplayTextWithFutureHandling(
+        absSeconds,
+        expand = expandToLargerUnits
+    )
     val (text, ratio) =
         if (showAbsoluteDate) {
-            formatAbsolute(cal) to 1f
+            formatAbsolute(cal) to r
         } else {
-            val (t, r) = getDisplayTextWithFutureHandling(
-                absSeconds,
-                expand = expandToLargerUnits
-            )
             (if (isPast) "$t ago" else t) to r
         }
 

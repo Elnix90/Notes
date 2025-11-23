@@ -314,7 +314,7 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController, vm: NoteV
         composable(Routes.Settings.RemindersSub.NOTIFICATIONS) { NotificationsSettingsScreen(navController) }
 
         composable(Routes.Settings.SECURITY) { SecuritySettingsScreen(navController) }
-        composable(Routes.Settings.BACKUP) { BackupSettingsScreen(navController, activity) }
+        composable(Routes.Settings.BACKUP) { BackupSettingsScreen(navController, vm, activity) }
         composable(Routes.Settings.LANGUAGE) { LanguageSettingsScreen(navController) }
         composable(Routes.Settings.PLUGINS) { PluginsSettingsScreen(navController) }
 

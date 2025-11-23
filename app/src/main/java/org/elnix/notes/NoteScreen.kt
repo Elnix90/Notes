@@ -1,6 +1,5 @@
 package org.elnix.notes
 
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -355,15 +354,11 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
             }
             ToolBars.SEPARATOR -> null
         }
-        Log.e("toolbars",toolbarComposable.toString())
         if (toolbarComposable != null) {
             if (reachedSeparator) bottomBars.add(toolbarComposable)
             else topBars.add(toolbarComposable)
         }
     }
-
-    Log.e("toolbars",topBars.size.toString())
-    Log.e("toolbars",bottomBars.size.toString())
 
     val topBarHeight = ((85 * topBars.size) + toolbarsSpacing * maxOf(0, topBars.size - 1)).dp
     val bottomBarHeight = ((85 * bottomBars.size) + toolbarsSpacing * maxOf(0, bottomBars.size - 1)).dp

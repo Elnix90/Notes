@@ -411,8 +411,8 @@ fun SecuritySettingsScreen(navController: NavController) {
 }
 
 @Composable
-fun BackupSettingsScreen(navController: NavController, activity: FragmentActivity) {
-    BackupTab(activity) {
+fun BackupSettingsScreen(navController: NavController, vm: NoteViewModel, activity: FragmentActivity) {
+    BackupTab(vm, activity) {
         navController.navigate(Routes.Settings.ROOT)
     }
 }

@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.process)
     ksp(libs.androidx.room.compiler)
 
     // DataStore

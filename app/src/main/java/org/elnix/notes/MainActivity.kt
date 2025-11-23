@@ -12,9 +12,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.elnix.notes.data.helpers.NoteType
 import org.elnix.notes.data.settings.stores.ColorSettingsStore
@@ -29,6 +29,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        ProcessLifecycleOwner.get().lifecycle.addObserver(
+            AppLifecycleObserver(vm)
+        )
+        
         // Ensure system windows layout control
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -136,22 +140,28 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    override fun onPause() {
-        vm.onAppBackground()
-        super.onPause()
-    }
+//    override fun onPause() {
+//        vm.onAppBackground()
+//        super.onPause()
+//    }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onAppForeground()
+//    override fun onStop() {
+//        super.onStop()
+//        vm.onAppBackground()
+//    }
 
-        lifecycleScope.launch {
-            val block = PrivacySettingsStore.getBlockScreenshots(this@MainActivity).first()
-            if (!block) {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            } else {
-                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            }
-        }
-    }
+
+//    override fun onResume() {
+//        super.onResume()
+//        vm.onAppForeground()
+//
+//        lifecycleScope.launch {
+//            val block = PrivacySettingsStore.getBlockScreenshots(this@MainActivity).first()
+//            if (!block) {
+//                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+//            } else {
+//                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+//            }
+//        }
+//    }
 }

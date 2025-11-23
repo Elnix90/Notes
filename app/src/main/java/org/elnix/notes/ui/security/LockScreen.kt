@@ -1,16 +1,22 @@
 package org.elnix.notes.ui.security
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,14 +27,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.data.LockSettings
 import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.security.BiometricManagerHelper
+import org.elnix.notes.ui.theme.AppObjectsColors
 import java.time.Instant
 
 @Composable
@@ -39,10 +49,7 @@ fun LockScreen(activity: FragmentActivity, onUnlock: () -> Unit) {
     val settingsFlow = LockSettingsStore.getLockSettings(ctx)
     val settings by settingsFlow.collectAsState(initial = null)
 
-    var isAuthenticating by remember { mutableStateOf(false) }
-    var authFailed by remember { mutableStateOf(false) }
     var authenticationStarted by remember { mutableStateOf(false) }
-
 
     LaunchedEffect(settings) {
         if (settings != null && !authenticationStarted) {
@@ -53,67 +60,90 @@ fun LockScreen(activity: FragmentActivity, onUnlock: () -> Unit) {
                 settings!!,
                 scope,
                 onSuccess = onUnlock,
-                onFailure = {
-                    authFailed = true
-                    isAuthenticating = false
-                }
+                onFailure = { authenticationStarted = false }
             )
         }
     }
 
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            when {
-                authFailed -> {
-                    Text(
-                        stringResource(R.string.authentication_cancelled),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-                isAuthenticating -> {
-                    Text(
-                        stringResource(R.string.authenticating),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-                else ->
-                    Text(
-                        stringResource(R.string.authenticate),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-            }
-            Spacer(Modifier.height(16.dp))
-            Button(onClick = {
-                authFailed = false
-                settings?.let {
-                    isAuthenticating = true
+    // Trigger authentication when the app resumes from background
+    DisposableEffect(activity) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                if (settings != null && !authenticationStarted) {
+                    authenticationStarted = true
                     startAuthentication(
                         activity,
                         ctx,
-                        it,
+                        settings!!,
                         scope,
                         onSuccess = onUnlock,
-                        onFailure = {
-                            authFailed = true
-                            isAuthenticating = false
-                        }
+                        onFailure = { authenticationStarted = false }
                     )
                 }
-            }) {
-                Text(stringResource(R.string.retry))
             }
+        }
+        activity.lifecycle.addObserver(observer)
+        onDispose {
+            activity.lifecycle.removeObserver(observer)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+                enabled = settings != null,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                startAuthentication(
+                    activity,
+                    ctx,
+                    settings!!,
+                    scope,
+                    onSuccess = onUnlock,
+                    onFailure = { }
+                )
+            }
+            .background(MaterialTheme.colorScheme.background)
+            .padding(15.dp)
+            .imePadding()
+            .padding(WindowInsets.systemBars.asPaddingValues()),
+        contentAlignment = Alignment.Center
+    ) {
+
+
+        Box(
+            modifier = Modifier
+                .size(300.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = "App icon",
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+
+        Button(
+            onClick = {
+                if ( settings != null ) {
+                    startAuthentication(
+                        activity,
+                        ctx,
+                        settings!!,
+                        scope,
+                        onSuccess = onUnlock,
+                        onFailure = { }
+                    )
+                }
+            },
+            colors = AppObjectsColors.buttonColors(),
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            Text(stringResource(R.string.authenticate))
         }
     }
 }

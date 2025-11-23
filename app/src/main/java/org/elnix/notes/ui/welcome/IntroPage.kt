@@ -33,7 +33,7 @@ fun IntroPage() {
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_launcher_foreground),
-                contentDescription = null,
+                contentDescription = "App icon",
                 modifier = Modifier.fillMaxSize()
             )
         }

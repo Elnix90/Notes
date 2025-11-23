@@ -102,6 +102,7 @@ fun UnifiedTextualNotesEditor(
     var createdNoteId by remember { mutableStateOf<Long?>(null) }
     var tagIds by remember { mutableStateOf<List<Long>>(emptyList()) }
     var hasExited by remember { mutableStateOf(false) }
+    var completed by remember { mutableStateOf(false) }
 
     val checklist = remember { mutableStateListOf<ChecklistItem>() }
     var pseudoText by remember { mutableStateOf("") }
@@ -122,6 +123,7 @@ fun UnifiedTextualNotesEditor(
         checklist.addAll(n.checklist)
         tagIds = n.tagIds
         createdNoteId = n.id
+        completed = n.isCompleted
     }
 
     val currentNote = note ?: return
@@ -159,7 +161,7 @@ fun UnifiedTextualNotesEditor(
                 withContext(Dispatchers.IO) { vm.delete(n) }
             } else {
                 withContext(Dispatchers.IO) {
-                    vm.update(n.copy(title = title.trim(), desc = desc.trim(), checklist = cleanedChecklist))
+                    vm.update(n.copy(title = title.trim(), desc = desc.trim(), checklist = cleanedChecklist, isCompleted = completed))
                 }
             }
 
@@ -413,7 +415,7 @@ fun UnifiedTextualNotesEditor(
                 ) {
                     QuickActionSection(
                         note = currentNote,
-                        onComplete = { state -> note = note?.copy(isCompleted = state) },
+                        onComplete = { completed = it },
                         onDuplicate = {
                             scope.launch { navController.navigate("edit/${vm.duplicateNote(currentNote.id)}?type=${currentNote.type.name}") }
                         },

@@ -1,0 +1,27 @@
+Categories:
+  - Note
+  - Text Editor
+  - Writing
+License: MIT
+SourceCode: https://github.com/Elnix90/Notes
+IssueTracker: https://github.com/Elnix90/Notes/issues
+Changelog: https://github.com/Elnix90/Notes/
+
+Name: Notes
+Description: A simple, clean and customizable note-taking app
+
+RepoType: git
+Repo: https://github.com/Elnix90/Notes
+
+Builds:
+  - versionName: 1.2.2
+    versionCode: 19
+    commit: 7cb6ac3bd0ed96c7131f986ec4a4025ba5f94a57
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.2.2
+CurrentVersionCode: 19

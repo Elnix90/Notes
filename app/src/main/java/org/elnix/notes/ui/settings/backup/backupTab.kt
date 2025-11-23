@@ -3,6 +3,7 @@ package org.elnix.notes.ui.settings.backup
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,15 +14,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import org.elnix.notes.R
 import org.elnix.notes.ui.NoteViewModel
@@ -38,21 +37,10 @@ fun BackupTab(
     activity: FragmentActivity,
     onBack: () -> Unit
 ) {
-//    val activity = LocalContext.current
-    val scope = rememberCoroutineScope()
+    val scope = activity.lifecycleScope
 
-    // UI feedback state
-    var showValidation by remember { mutableStateOf(false) }
-    var isExport by remember { mutableStateOf(false) }
-    var isError by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
-
-    fun showResult(export: Boolean, error: Boolean, message: String = "") {
-        isExport = export
-        isError = error
-        errorMessage = message
-        showValidation = true
-    }
+    val backupVm by activity.viewModels<BackupViewModel>()
+    val result by backupVm.result.collectAsState()
 
     // ------------------------------------------------------------
     // NOTES BACKUP
@@ -61,11 +49,14 @@ fun BackupTab(
     val notesExportLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
             Log.d("NotesBackupManager", "Started notes export 2")
+
             if (uri == null) {
-                showResult(
-                    export = true,
-                    error = true,
-                    message = activity.getString(R.string.export_cancelled)
+                backupVm.setResult(
+                    BackupResult(
+                        export = true,
+                        error = true,
+                        message = activity.getString(R.string.export_cancelled)
+                    )
                 )
                 return@rememberLauncherForActivityResult
             }
@@ -76,10 +67,16 @@ fun BackupTab(
                         NotesBackupManager.exportNotes(activity, it)
                     } ?: throw Exception("Unable to open output stream")
 
-                    showResult(export = true, error = false)
+                    backupVm.setResult(BackupResult(export = true, error = false))
 
                 } catch (e: Exception) {
-                    showResult(export = true, error = true, message = e.message ?: "")
+                    backupVm.setResult(
+                        BackupResult(
+                            export = true,
+                            error = true,
+                            message = e.message ?: ""
+                        )
+                    )
                 }
             }
         }
@@ -87,11 +84,14 @@ fun BackupTab(
     val notesImportLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             Log.d("NotesBackupManager", "Started notes import 2")
+
             if (uri == null) {
-                showResult(
-                    export = false,
-                    error = true,
-                    message = activity.getString(R.string.import_cancelled)
+                backupVm.setResult(
+                    BackupResult(
+                        export = false,
+                        error = true,
+                        message = activity.getString(R.string.import_cancelled)
+                    )
                 )
                 return@rememberLauncherForActivityResult
             }
@@ -102,10 +102,16 @@ fun BackupTab(
                         NotesBackupManager.importNotes(activity, it)
                     } ?: throw Exception("Unable to open input stream")
 
-                    showResult(export = false, error = false)
+                    backupVm.setResult(BackupResult(export = false, error = false))
 
                 } catch (e: Exception) {
-                    showResult(export = false, error = true, message = e.message ?: "")
+                    backupVm.setResult(
+                        BackupResult(
+                            export = false,
+                            error = true,
+                            message = e.message ?: ""
+                        )
+                    )
                 }
             }
         }
@@ -117,11 +123,14 @@ fun BackupTab(
     val settingsExportLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
             Log.d("NotesBackupManager", "Started settings export 2")
+
             if (uri == null) {
-                showResult(
-                    export = true,
-                    error = true,
-                    message = activity.getString(R.string.export_cancelled)
+                backupVm.setResult(
+                    BackupResult(
+                        export = true,
+                        error = true,
+                        message = activity.getString(R.string.export_cancelled)
+                    )
                 )
                 return@rememberLauncherForActivityResult
             }
@@ -129,9 +138,16 @@ fun BackupTab(
             scope.launch {
                 try {
                     SettingsBackupManager.exportSettings(activity, uri)
-                    showResult(export = true, error = false)
+                    backupVm.setResult(BackupResult(export = true, error = false))
+
                 } catch (e: Exception) {
-                    showResult(export = true, error = true, message = e.message ?: "")
+                    backupVm.setResult(
+                        BackupResult(
+                            export = true,
+                            error = true,
+                            message = e.message ?: ""
+                        )
+                    )
                 }
             }
         }
@@ -139,11 +155,14 @@ fun BackupTab(
     val settingsImportLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             Log.d("NotesBackupManager", "Started settings import 2")
+
             if (uri == null) {
-                showResult(
-                    export = false,
-                    error = true,
-                    message = activity.getString(R.string.import_cancelled)
+                backupVm.setResult(
+                    BackupResult(
+                        export = false,
+                        error = true,
+                        message = activity.getString(R.string.import_cancelled)
+                    )
                 )
                 return@rememberLauncherForActivityResult
             }
@@ -151,9 +170,16 @@ fun BackupTab(
             scope.launch {
                 try {
                     SettingsBackupManager.importSettings(activity, uri, activity)
-                    showResult(export = false, error = false)
+                    backupVm.setResult(BackupResult(export = false, error = false))
+
                 } catch (e: Exception) {
-                    showResult(export = false, error = true, message = e.message ?: "")
+                    backupVm.setResult(
+                        BackupResult(
+                            export = false,
+                            error = true,
+                            message = e.message ?: ""
+                        )
+                    )
                 }
             }
         }
@@ -206,8 +232,15 @@ fun BackupTab(
         }
     }
 
+    // ------------------------------------------------------------
     // RESULT DIALOG
-    if (showValidation) {
+    // ------------------------------------------------------------
+
+    if (result != null) {
+        val isError = result!!.error
+        val isExport = result!!.export
+        val errorMessage = result!!.message
+
         UserValidation(
             title = when {
                 isError && isExport -> stringResource(R.string.export_failed)
@@ -224,11 +257,12 @@ fun BackupTab(
             titleColor = if (isError) MaterialTheme.colorScheme.error else Color.Green,
             cancelText = null,
             copy = isError,
-            onCancel = { showValidation = false },
-            onAgree = { showValidation = false }
+            onCancel = {},
+            onAgree = { backupVm.setResult(null) }
         )
     }
 }
+
 
 // ------------------------------------------------------------
 // Shared Buttons (internal)

@@ -136,22 +136,28 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    override fun onPause() {
-        vm.onAppBackground()
-        super.onPause()
-    }
+//    override fun onPause() {
+//        vm.onAppBackground()
+//        super.onPause()
+//    }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onAppForeground()
+//    override fun onStop() {
+//        super.onStop()
+//        vm.onAppBackground()
+//    }
 
-        lifecycleScope.launch {
-            val block = PrivacySettingsStore.getBlockScreenshots(this@MainActivity).first()
-            if (!block) {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            } else {
-                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-            }
-        }
-    }
+
+//    override fun onResume() {
+//        super.onResume()
+//        vm.onAppForeground()
+//
+//        lifecycleScope.launch {
+//            val block = PrivacySettingsStore.getBlockScreenshots(this@MainActivity).first()
+//            if (!block) {
+//                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+//            } else {
+//                window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+//            }
+//        }
+//    }
 }

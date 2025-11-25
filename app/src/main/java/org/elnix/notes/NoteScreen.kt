@@ -309,7 +309,7 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     val bottomBars = mutableListOf<@Composable () -> Unit>()
     var reachedSeparator = false
 
-    toolbars.filter { it.enabled || true }.forEach { bar ->
+    toolbars.filter { true }.forEach { bar ->
         if (bar.toolbar == ToolBars.SEPARATOR) {
             reachedSeparator = true
         }

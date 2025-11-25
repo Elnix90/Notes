@@ -90,8 +90,6 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
     ).collectAsState(initial = true)
     val showBottomSettings by UiSettingsStore.getShowBottomDeleteButton(ctx).collectAsState(initial = false)
 
-    var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
-    var showMultipleDeleteDialog by remember { mutableStateOf(false) }
 
     val toolbarsSpacing by ToolbarsSettingsStore.getToolbarsSpacing(ctx).collectAsState(initial = 8)
 
@@ -133,11 +131,13 @@ fun NotesScreen(vm: NoteViewModel, navController: NavHostController) {
         }
     }
 
-    // Tags things
+    // Dialogs
     var showTagDeleteConfirm by remember { mutableStateOf(false) }
     var editTag by remember { mutableStateOf<TagItem?>(null) }
     var showEditor by remember { mutableStateOf(false) }
     var showCreator by remember { mutableStateOf(false) }
+    var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
+    var showMultipleDeleteDialog by remember { mutableStateOf(false) }
 
 
     // User actions

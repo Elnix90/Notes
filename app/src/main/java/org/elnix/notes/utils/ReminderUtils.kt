@@ -56,6 +56,7 @@ data class ReminderOffset(
                 // Add offsets relative to today midnight
                 if (yearsFromToday != null) cal.add(Calendar.YEAR, yearsFromToday)
                 if (monthsFromToday != null) cal.add(Calendar.MONTH, monthsFromToday)
+                if (daysFromToday != null) cal.add(Calendar.DAY_OF_MONTH, daysFromToday)
                 if (hoursFromToday != null) cal.add(Calendar.HOUR_OF_DAY, hoursFromToday)
                 if (minutesFromToday != null) cal.add(Calendar.MINUTE, minutesFromToday)
                 if (secondsFromToday != null) cal.add(Calendar.SECOND, secondsFromToday)
@@ -102,3 +103,12 @@ fun Calendar.toReminderOffset(): ReminderOffset {
         secondsFromToday = secondsFromToday
     )
 }
+
+
+fun Calendar.cloneCalendarDateOnly(): Calendar =
+    (this.clone() as Calendar).apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }

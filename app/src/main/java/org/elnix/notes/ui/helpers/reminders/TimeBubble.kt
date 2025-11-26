@@ -58,7 +58,7 @@ fun TimeBubble(
     val absSeconds = abs(diffMillis / 1000).toInt()
 
 
-    val (t, r) = getDisplayTextWithFutureHandling(
+    val (t, r) = getTextAndRatioFromOffset(
         absSeconds,
         expand = expandToLargerUnits
     )
@@ -172,43 +172,43 @@ private fun formatAbsolute(cal: Calendar): String {
 }
 
 
-private fun getDisplayTextWithFutureHandling(
-    seconds: Int,
-    expand: Boolean
-): Pair<String, Float> {
-    val oneMonthSec = 30 * 24 * 3600
-
-    return if (expand && seconds >= oneMonthSec) {
-        getLargeFutureUnit(seconds)
-    } else {
-        getTextAndRatioFromOffset(seconds)
-    }
-}
+//private fun getDisplayTextWithFutureHandling(
+//    seconds: Int,
+//    expand: Boolean
+//): Pair<String, Float> {
+//    val eightWeeksSec = 7 * 8 * 24 * 3600
+//
+//    return if (expand && seconds >= eightWeeksSec) {
+//        getLargeFutureUnit(seconds)
+//    } else {
+//        getTextAndRatioFromOffset(seconds)
+//    }
+//}
 
 /**
  * Convert to weeks, months, or years.
  */
-private fun getLargeFutureUnit(seconds: Int): Pair<String, Float> {
-    val days = seconds / 86400
-    val weeks = days / 7
-    val months = days / 30
-    val years = days / 365
+//private fun getLargeFutureUnit(seconds: Int): Pair<String, Float> {
+//    val days = seconds / 86400
+//    val weeks = days / 7
+//    val months = days / 30
+//    val years = days / 365
+//
+//    return when {
+//        days < 56 -> { // < 8 weeks
+//            "$weeks wk" to 0.8f
+//        }
+//        days < 730 -> { // < 24 months
+//            "$months mo" to 0.9f
+//        }
+//        else -> {
+//            "$years yr" to 1f
+//        }
+//    }
+//}
 
-    return when {
-        days < 56 -> { // < 8 weeks
-            "$weeks wk" to 0.8f
-        }
-        days < 730 -> { // < 24 months
-            "$months mo" to 0.9f
-        }
-        else -> {
-            "$years yr" to 1f
-        }
-    }
-}
 
-
-fun getTextAndRatioFromOffset(offsetSeconds: Int): Pair<String, Float> {
+fun getTextAndRatioFromOffset(offsetSeconds: Int, expand: Boolean): Pair<String, Float> {
     return when {
         offsetSeconds < 60 -> {
             "$offsetSeconds s" to 0f
@@ -232,13 +232,32 @@ fun getTextAndRatioFromOffset(offsetSeconds: Int): Pair<String, Float> {
             else "$days d ${hours}h" to 0.6f
         }
         else -> {
-            val future = System.currentTimeMillis() + offsetSeconds * 1000L
-            val formattedDate = DateFormat.getDateTimeInstance(
-                DateFormat.MEDIUM,
-                DateFormat.SHORT,
-                Locale.getDefault()
-            ).format(Date(future))
-            formattedDate to 1f
+            if (!expand) {
+                val future = System.currentTimeMillis() + offsetSeconds * 1000L
+                val formattedDate = DateFormat.getDateTimeInstance(
+                    DateFormat.MEDIUM,
+                    DateFormat.SHORT,
+                    Locale.getDefault()
+                ).format(Date(future))
+                formattedDate to 1f
+            } else {
+                val days = offsetSeconds / 86400
+                val weeks = days / 7
+                val months = days / 30
+                val years = days / 365
+
+                when {
+                    days < 56 -> { // < 8 weeks
+                        "$weeks wk" to 0.8f
+                    }
+                    days < 730 -> { // < 24 months
+                        "$months mo" to 0.9f
+                    }
+                    else -> {
+                        "$years yr" to 1f
+                    }
+                }
+            }
         }
     }
 }

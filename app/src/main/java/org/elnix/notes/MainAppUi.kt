@@ -96,6 +96,13 @@ fun MainApp(
 
     val updates = listOf(
         Update(
+            "1.2.3",
+            listOf(
+                "Corrected some reminders issues",
+                "Improved the reminders system"
+            )
+        ),
+        Update(
             "1.2.2",
             listOf(
                 "Corrected import export that wasn't working since lock screen update (v1.1.0), it just opened a file picker and created an empty file.",

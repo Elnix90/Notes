@@ -29,6 +29,7 @@ import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.reminders.TimeBubble
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderOffset
+import org.elnix.notes.utils.cloneCalendarDateOnly
 import org.elnix.notes.utils.toReminderOffset
 import java.util.Calendar
 
@@ -45,8 +46,17 @@ fun StyledReminderDialogs(
     var atSelected by remember { mutableStateOf(true) }
 
     val pickedCal = remember {
-        initialOffset?.toCalendar() ?: Calendar.getInstance()
+        initialOffset?.toCalendar()
+            ?: Calendar.getInstance().apply {
+                val currentMinute = get(Calendar.MINUTE)
+                val nextHour = if (currentMinute == 0) get(Calendar.HOUR_OF_DAY) else get(Calendar.HOUR_OF_DAY) + 1
+                set(Calendar.HOUR_OF_DAY, nextHour)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
     }
+
 
     val today = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, 0)
@@ -58,8 +68,8 @@ fun StyledReminderDialogs(
 
     /* DATE PICKER */
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = pickedCal.timeInMillis,
-        selectableDates = object : SelectableDates {
+        initialSelectedDateMillis = pickedCal.cloneCalendarDateOnly().timeInMillis,
+                selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                 return utcTimeMillis >= today
             }
@@ -70,12 +80,19 @@ fun StyledReminderDialogs(
         onDismissRequest = { onDismiss() },
         confirmButton = {
             Button(
-                    onClick = {
-                    datePickerState.selectedDateMillis?.let {
-                        pickedCal.timeInMillis = it
+                onClick = {
+                    datePickerState.selectedDateMillis?.let { date ->
+                        val calDate = Calendar.getInstance().apply {
+                            timeInMillis = date
+                        }
+                        pickedCal.set(Calendar.YEAR, calDate.get(Calendar.YEAR))
+                        pickedCal.set(Calendar.MONTH, calDate.get(Calendar.MONTH))
+                        pickedCal.set(Calendar.DAY_OF_MONTH, calDate.get(Calendar.DAY_OF_MONTH))
+
                         showTime = true
                     }
                 },
+                enabled = (datePickerState.selectedDateMillis ?: -1L) > today,
                 colors = AppObjectsColors.buttonColors(),
                 shape = RoundedCornerShape(12.dp)
             ) {

@@ -79,7 +79,7 @@ object ReminderSettingsStore {
             r.yearsFromToday?.let { obj.put("year", it) }
             r.monthsFromToday?.let { obj.put("month", it) }
             r.daysFromToday?.let { obj.put("day", it) }
-            r.hoursFromToday?.let { obj.put("hourOfDay", it) }
+            r.hoursFromToday?.let { obj.put("hour", it) }
             r.minutesFromToday?.let { obj.put("minute", it) }
 
             arr.put(obj)

@@ -103,12 +103,3 @@ fun Calendar.toReminderOffset(): ReminderOffset {
         secondsFromToday = secondsFromToday
     )
 }
-
-
-fun Calendar.cloneCalendarDateOnly(): Calendar =
-    (this.clone() as Calendar).apply {
-        set(Calendar.HOUR_OF_DAY, 0)
-        set(Calendar.MINUTE, 0)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }

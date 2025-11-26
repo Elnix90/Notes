@@ -3,6 +3,7 @@ package org.elnix.notes.ui.helpers
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -23,13 +24,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.reminders.TimeBubble
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderOffset
-import org.elnix.notes.utils.cloneCalendarDateOnly
 import org.elnix.notes.utils.toReminderOffset
 import java.util.Calendar
 
@@ -68,7 +69,7 @@ fun StyledReminderDialogs(
 
     /* DATE PICKER */
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = pickedCal.cloneCalendarDateOnly().timeInMillis,
+        initialSelectedDateMillis = pickedCal.timeInMillis,
                 selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                 return utcTimeMillis >= today
@@ -94,7 +95,8 @@ fun StyledReminderDialogs(
                 },
                 enabled = (datePickerState.selectedDateMillis ?: -1L) > today,
                 colors = AppObjectsColors.buttonColors(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.padding(end = 15.dp, bottom = 15.dp)
             ) {
                 Text(stringResource(R.string.next))
             }
@@ -102,7 +104,8 @@ fun StyledReminderDialogs(
         dismissButton = {
             TextButton(
                 onClick = { onDismiss() },
-                colors = AppObjectsColors.cancelButtonColors()
+                colors = AppObjectsColors.cancelButtonColors(),
+                modifier = Modifier.padding(end = 5.dp, bottom = 15.dp)
             ) {
                 Text(stringResource(R.string.cancel))
             }
@@ -134,7 +137,7 @@ fun StyledReminderDialogs(
 
         val timeValid = !isToday ||
                 (timePickerState.hour > minHour ||
-                        (timePickerState.hour == minHour && timePickerState.minute >= minMinute))
+                        (timePickerState.hour == minHour && timePickerState.minute > minMinute))
 
         AlertDialog(
             containerColor = MaterialTheme.colorScheme.surface,

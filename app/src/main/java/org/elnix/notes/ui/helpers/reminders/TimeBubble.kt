@@ -39,7 +39,7 @@ fun TimeBubble(
     onLongClick: (() -> Unit)? = null,
     onDelete: (() -> Unit)? = null,
     enabled: Boolean = true,
-    showAbsoluteDate: Boolean = false,
+    showAbsoluteDate: Boolean? = null,
     expandToLargerUnits: Boolean = true
 ) {
     val currentTime = remember { mutableLongStateOf(System.currentTimeMillis()) }
@@ -62,7 +62,7 @@ fun TimeBubble(
         expand = expandToLargerUnits
     )
     val (text, ratio) =
-        if (showAbsoluteDate) {
+        if ((showAbsoluteDate == null && reminderOffset.isAbsolute) || showAbsoluteDate == true) {
             formatAbsolute(cal) to r
         } else {
             (if (isPast) "$t ago" else t) to r

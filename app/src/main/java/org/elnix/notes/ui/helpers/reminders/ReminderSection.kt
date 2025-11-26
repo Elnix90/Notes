@@ -1,5 +1,6 @@
 package org.elnix.notes.ui.helpers.reminders
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -27,6 +28,7 @@ import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderOffset
+import org.elnix.notes.utils.calendarToReminderOffset
 import org.elnix.notes.utils.cancelReminderNotification
 import org.elnix.notes.utils.scheduleReminderNotification
 import java.util.Calendar
@@ -56,13 +58,7 @@ fun RemindersSection(
         reminders.sortedBy { it.dueDateTime }.forEach { reminder ->
             val offset = reminder.dueDateTime
             TimeBubble(
-               reminderOffset = ReminderOffset(
-                    year = offset.get(Calendar.YEAR),
-                    month = offset.get(Calendar.MONTH),
-                    dayOfMonth = offset.get(Calendar.DAY_OF_MONTH),
-                    hourOfDay = offset.get(Calendar.HOUR_OF_DAY),
-                    minute = offset.get(Calendar.MINUTE)
-                ),
+               reminderOffset = calendarToReminderOffset(offset),
                 onClick = {
                     scope.launch {
                         val updatedReminder = reminder.copy(enabled = !reminder.enabled)
@@ -85,7 +81,8 @@ fun RemindersSection(
                         cancelReminderNotification(ctx, reminder.id)
                     }
                 },
-                enabled = reminder.enabled
+                enabled = reminder.enabled,
+                showAbsoluteDate = false
             )
         }
         IconButton(
@@ -105,6 +102,8 @@ fun RemindersSection(
             activity = activity,
             onDismiss = { showOffsetPicker = false }
         ) { picked ->
+            Log.e("reminder",picked.toString())
+            Log.e("reminder",picked.toCalendar().toString())
             currentId?.let { noteId ->
                 val reminderEntity = ReminderEntity(
                     noteId = noteId,

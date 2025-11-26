@@ -12,20 +12,18 @@ import java.util.Calendar
 data class ReminderOffset(
     val secondsFromNow: Long? = null,
 
-    val year: Int? = null,
-    val month: Int? = null,          // Calendar.JANUARY = 0
-    val dayOfMonth: Int? = null,
-
-    val dayOfWeek: Int? = null,      // Calendar.MONDAY...SUNDAY (optional)
-    val hourOfDay: Int? = null,      // 0..23
-    val minute: Int? = null          // 0..59
+    val yearsFromToday: Int? = null,
+    val monthsFromToday: Int? = null,     // Calendar.JANUARY = 0
+    val daysFromToday: Int? = null,
+    val hoursFromToday: Int? = null,      // 0..23
+    val minutesFromToday: Int? = null,    // 0..59
 ) {
 
     init {
         // Rule 1: offset OR absolute, not both
         val hasAbsolute =
-            year != null || month != null || dayOfMonth != null ||
-                    hourOfDay != null || minute != null || dayOfWeek != null
+            yearsFromToday != null || monthsFromToday != null || daysFromToday != null ||
+                    hoursFromToday != null || minutesFromToday != null /*|| dayOfWeek != null*/
 
         require(!(secondsFromNow != null && hasAbsolute)) {
             "ReminderOffset cannot contain both offset and absolute date fields."
@@ -46,27 +44,20 @@ data class ReminderOffset(
                 cal.timeInMillis = System.currentTimeMillis() + secondsFromNow * 1000
             }
 
-            // ABSOLUTE DATE/TIME MODE
+            // ABSOLUTE DATE/TIME MODE (changed to relative from today midnight)
             else -> {
-                // Start with now
-                val y = year ?: cal.get(Calendar.YEAR)
-                val m = month ?: cal.get(Calendar.MONTH)
-                val d = dayOfMonth ?: cal.get(Calendar.DAY_OF_MONTH)
-                val h = hourOfDay ?: 0
-                val min = minute ?: 0
-
-                cal.set(Calendar.YEAR, y)
-                cal.set(Calendar.MONTH, m)
-                cal.set(Calendar.DAY_OF_MONTH, d)
-                cal.set(Calendar.HOUR_OF_DAY, h)
-                cal.set(Calendar.MINUTE, min)
+                // Initialize to today midnight
+                cal.set(Calendar.HOUR_OF_DAY, 0)
+                cal.set(Calendar.MINUTE, 0)
                 cal.set(Calendar.SECOND, 0)
                 cal.set(Calendar.MILLISECOND, 0)
 
-                // Optional: force day of week override
-                if (dayOfWeek != null) {
-                    cal.set(Calendar.DAY_OF_WEEK, dayOfWeek)
-                }
+                // Add offsets relative to today midnight
+                if (yearsFromToday != null) cal.add(Calendar.YEAR, yearsFromToday)
+                if (monthsFromToday != null) cal.add(Calendar.MONTH, monthsFromToday)
+                if (hoursFromToday != null) cal.add(Calendar.HOUR_OF_DAY, hoursFromToday)
+                if (minutesFromToday != null) cal.add(Calendar.MINUTE, minutesFromToday)
+
             }
         }
 
@@ -75,4 +66,28 @@ data class ReminderOffset(
 
     val isOffset = secondsFromNow != null
     val isAbsolute = !isOffset
+}
+
+
+fun calendarToReminderOffset(dueDateTime: Calendar): ReminderOffset {
+    val now = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+
+    val yearsFromToday = dueDateTime.get(Calendar.YEAR) - now.get(Calendar.YEAR)
+    val monthsFromToday = dueDateTime.get(Calendar.MONTH) - now.get(Calendar.MONTH)
+    val daysFromToday = dueDateTime.get(Calendar.DAY_OF_MONTH) - now.get(Calendar.DAY_OF_MONTH)
+    val hoursFromToday = dueDateTime.get(Calendar.HOUR_OF_DAY) - now.get(Calendar.HOUR_OF_DAY)
+    val minutesFromToday = dueDateTime.get(Calendar.MINUTE) - now.get(Calendar.MINUTE)
+
+    return ReminderOffset(
+        yearsFromToday = yearsFromToday,
+        monthsFromToday = monthsFromToday,
+        daysFromToday = daysFromToday,
+        hoursFromToday = hoursFromToday,
+        minutesFromToday = minutesFromToday
+    )
 }

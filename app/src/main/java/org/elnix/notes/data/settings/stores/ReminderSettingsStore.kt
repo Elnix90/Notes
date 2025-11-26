@@ -53,19 +53,19 @@ object ReminderSettingsStore {
             // Absolute reminders
             val year = obj.optInt("year").takeIf { obj.has("year") }
             val month = obj.optInt("month").takeIf { obj.has("month") }
-            val dayOfMonth = obj.optInt("dayOfMonth").takeIf { obj.has("dayOfMonth") }
-            val dayOfWeek = obj.optInt("dayOfWeek").takeIf { obj.has("dayOfWeek") }
+//            val dayOfMonth = obj.optInt("dayOfMonth").takeIf { obj.has("dayOfMonth") }
+//            val dayOfWeek = obj.optInt("dayOfWeek").takeIf { obj.has("dayOfWeek") }
             val hour = obj.optInt("hourOfDay").takeIf { obj.has("hourOfDay") }
             val minute = obj.optInt("minute").takeIf { obj.has("minute") }
 
             ReminderOffset(
                 secondsFromNow = seconds,
-                year = year,
-                month = month,
-                dayOfMonth = dayOfMonth,
-                dayOfWeek = dayOfWeek,
-                hourOfDay = hour,
-                minute = minute
+                yearsFromToday = year,
+                monthsFromToday = month,
+//                dayOfMonth = dayOfMonth,
+//                dayOfWeek = dayOfWeek,
+                hoursFromToday = hour,
+                minutesFromToday = minute
             )
         }
     }
@@ -78,12 +78,12 @@ object ReminderSettingsStore {
 
             r.secondsFromNow?.let { obj.put("seconds", it) }
 
-            r.year?.let { obj.put("year", it) }
-            r.month?.let { obj.put("month", it) }
-            r.dayOfMonth?.let { obj.put("dayOfMonth", it) }
-            r.dayOfWeek?.let { obj.put("dayOfWeek", it) }
-            r.hourOfDay?.let { obj.put("hourOfDay", it) }
-            r.minute?.let { obj.put("minute", it) }
+            r.yearsFromToday?.let { obj.put("year", it) }
+            r.monthsFromToday?.let { obj.put("month", it) }
+//            r.dayOfMonth?.let { obj.put("dayOfMonth", it) }
+//            r.dayOfWeek?.let { obj.put("dayOfWeek", it) }
+            r.hoursFromToday?.let { obj.put("hourOfDay", it) }
+            r.minutesFromToday?.let { obj.put("minute", it) }
 
             arr.put(obj)
         }

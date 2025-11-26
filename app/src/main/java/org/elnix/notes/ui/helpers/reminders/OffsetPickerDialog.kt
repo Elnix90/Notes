@@ -173,7 +173,7 @@ fun OffsetPickerDialog(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                TimeBubble(reminderOffset = offset, showAbsoluteDate = offset.isAbsolute)
+                                TimeBubble(reminderOffset = offset)
 
                                 // Edit + Delete buttons
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -267,7 +267,7 @@ fun OffsetPickerDialog(
             scope.launch {
                 if (offsetToEdit != null) ReminderSettingsStore.updateReminder(ctx, offsetToEdit, it)
                 else ReminderSettingsStore.addReminder(ctx, it)
-                showOffsetEditor = false
+                showReminderEditor = false
             }
         }
     }

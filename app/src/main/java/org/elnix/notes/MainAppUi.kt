@@ -157,10 +157,10 @@ fun MainApp(
                         // Initialization block - Where I put all the vars that need an init state
                         if (!hasInitialized) {
                             for (offset in listOf(
-                                ReminderOffset(secondsFromNow = 600),
-                                ReminderOffset(secondsFromNow = 1800),
-                                ReminderOffset(secondsFromNow = 3600),
-                                ReminderOffset(secondsFromNow = 86400)
+                                ReminderOffset(secondsFromNow = 6000),
+                                ReminderOffset(secondsFromNow = 18000),
+                                ReminderOffset(secondsFromNow = 36000),
+                                ReminderOffset(secondsFromNow = 864000)
                             )) {
                                 ReminderSettingsStore.addReminder(ctx, offset)
                             }

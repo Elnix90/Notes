@@ -27,6 +27,7 @@ import org.elnix.notes.data.helpers.SortType
 import org.elnix.notes.data.settings.stores.LockSettingsStore
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.data.settings.stores.SortSettingsStore
+import org.elnix.notes.utils.cancelReminderNotification
 import kotlin.random.Random
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
@@ -109,7 +110,13 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun update(note: NoteEntity) = viewModelScope.launch { noteRepo.upsert(note) }
-    fun delete(note: NoteEntity) = viewModelScope.launch { noteRepo.delete(note) }
+    fun delete(note: NoteEntity) = viewModelScope.launch {
+        val reminders = remindersFor(note.id).firstOrNull() ?: emptyList()
+        for (entity in reminders) {
+            cancelReminderNotification(ctx,entity.id)
+        }
+        noteRepo.delete(note)
+    }
     suspend fun getById(id: Long): NoteEntity? = noteRepo.getById(id)
 
 

@@ -33,6 +33,7 @@ import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.reminders.TimeBubble
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderOffset
+import org.elnix.notes.utils.calendarToReminderOffset
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -181,13 +182,7 @@ fun StyledReminderDialogs(
                     onClick = {
                         val result =
                             if (atSelected) {
-                                ReminderOffset(
-                                    year = pickedCal.get(Calendar.YEAR),
-                                    month = pickedCal.get(Calendar.MONTH),
-                                    dayOfMonth = pickedCal.get(Calendar.DAY_OF_MONTH),
-                                    hourOfDay = pickedCal.get(Calendar.HOUR_OF_DAY),
-                                    minute = pickedCal.get(Calendar.MINUTE)
-                                )
+                                calendarToReminderOffset(pickedCal)
                             } else {
                                 ReminderOffset(secondsFromNow = diffSec)
                             }
@@ -226,11 +221,11 @@ fun StyledReminderDialogs(
 
                         TimeBubble(
                             reminderOffset = ReminderOffset(
-                                year = pickedCal.get(Calendar.YEAR),
-                                month = pickedCal.get(Calendar.MONTH),
-                                dayOfMonth = pickedCal.get(Calendar.DAY_OF_MONTH),
-                                hourOfDay = pickedCal.get(Calendar.HOUR_OF_DAY),
-                                minute = pickedCal.get(Calendar.MINUTE)
+                                yearsFromToday = pickedCal.get(Calendar.YEAR),
+                                monthsFromToday = pickedCal.get(Calendar.MONTH),
+//                                dayOfMonth = pickedCal.get(Calendar.DAY_OF_MONTH),
+                                hoursFromToday = pickedCal.get(Calendar.HOUR_OF_DAY),
+                                minutesFromToday = pickedCal.get(Calendar.MINUTE)
                             ),
                             enabled = true,
                             showAbsoluteDate = true,

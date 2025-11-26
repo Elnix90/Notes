@@ -86,6 +86,7 @@ fun TagEditorDialog(
                     OutlinedButton(
                         onClick = { showConfirmDelete = true },
                         modifier = Modifier.fillMaxWidth(),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
                         colors = AppObjectsColors.cancelButtonColors()
                     ) {
                         Text(

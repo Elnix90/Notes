@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
@@ -228,11 +229,15 @@ fun OffsetPickerDialog(
 
                         Spacer(Modifier.width(5.dp))
 
-                        StyledReminderDialogs {
-                            scope.launch {
-                                ReminderSettingsStore.addReminder(ctx, it)
-                                showOffsetEditor = false
-                            }
+
+                        IconButton(
+                            onClick = {
+                                editOffest = null
+                                showReminderEditor = true
+                            },
+                            colors = AppObjectsColors.iconButtonColors()
+                        ) {
+                            Icon(Icons.Default.CalendarMonth, contentDescription = null)
                         }
                     }
                 }
@@ -262,7 +267,8 @@ fun OffsetPickerDialog(
     if (showReminderEditor) {
         val offsetToEdit = editOffest
         StyledReminderDialogs(
-            initialOffset = offsetToEdit
+            initialOffset = offsetToEdit,
+            onDismiss = { showReminderEditor = false }
         ) {
             scope.launch {
                 if (offsetToEdit != null) ReminderSettingsStore.updateReminder(ctx, offsetToEdit, it)

@@ -2,12 +2,14 @@ package org.elnix.notes.ui.helpers.reminders
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -27,11 +30,9 @@ import org.elnix.notes.data.ReminderEntity
 import org.elnix.notes.data.settings.stores.ReminderSettingsStore
 import org.elnix.notes.ui.NoteViewModel
 import org.elnix.notes.ui.theme.AppObjectsColors
-import org.elnix.notes.utils.ReminderOffset
-import org.elnix.notes.utils.calendarToReminderOffset
 import org.elnix.notes.utils.cancelReminderNotification
 import org.elnix.notes.utils.scheduleReminderNotification
-import java.util.Calendar
+import org.elnix.notes.utils.toReminderOffset
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -56,9 +57,9 @@ fun RemindersSection(
         itemVerticalAlignment = Alignment.CenterVertically
     ) {
         reminders.sortedBy { it.dueDateTime }.forEach { reminder ->
-            val offset = reminder.dueDateTime
+            val cal = reminder.dueDateTime
             TimeBubble(
-               reminderOffset = calendarToReminderOffset(offset),
+               reminderOffset = cal.toReminderOffset(),
                 onClick = {
                     scope.launch {
                         val updatedReminder = reminder.copy(enabled = !reminder.enabled)
@@ -82,6 +83,7 @@ fun RemindersSection(
                     }
                 },
                 enabled = reminder.enabled,
+                acceptPast = true,
                 showAbsoluteDate = false
             )
         }
@@ -96,6 +98,14 @@ fun RemindersSection(
         }
     }
 
+    Column(
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        reminders.forEach {
+            Text(it.dueDateTime.toReminderOffset().toString(), color = Color.White)
+        }
+    }
+
     if (showOffsetPicker) {
         OffsetPickerDialog(
             offsets = allOffsets,
@@ -103,12 +113,11 @@ fun RemindersSection(
             onDismiss = { showOffsetPicker = false }
         ) { picked ->
             Log.e("reminder",picked.toString())
-            Log.e("reminder",picked.toCalendar().toString())
+            Log.e("reminder",(picked.toCalendar().timeInMillis - System.currentTimeMillis()).toString())
             currentId?.let { noteId ->
                 val reminderEntity = ReminderEntity(
                     noteId = noteId,
-                    dueDateTime = picked.toCalendar(),
-                    enabled = true
+                    dueDateTime = picked.toCalendar()
                 )
                 scope.launch {
                     val id = vm.addReminder(reminderEntity)

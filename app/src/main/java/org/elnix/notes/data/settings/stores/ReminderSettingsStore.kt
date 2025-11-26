@@ -53,17 +53,15 @@ object ReminderSettingsStore {
             // Absolute reminders
             val year = obj.optInt("year").takeIf { obj.has("year") }
             val month = obj.optInt("month").takeIf { obj.has("month") }
-//            val dayOfMonth = obj.optInt("dayOfMonth").takeIf { obj.has("dayOfMonth") }
-//            val dayOfWeek = obj.optInt("dayOfWeek").takeIf { obj.has("dayOfWeek") }
-            val hour = obj.optInt("hourOfDay").takeIf { obj.has("hourOfDay") }
+            val day = obj.optInt("day").takeIf { obj.has("day") }
+            val hour = obj.optInt("hour").takeIf { obj.has("hour") }
             val minute = obj.optInt("minute").takeIf { obj.has("minute") }
 
             ReminderOffset(
                 secondsFromNow = seconds,
                 yearsFromToday = year,
                 monthsFromToday = month,
-//                dayOfMonth = dayOfMonth,
-//                dayOfWeek = dayOfWeek,
+                daysFromToday = day,
                 hoursFromToday = hour,
                 minutesFromToday = minute
             )
@@ -80,8 +78,7 @@ object ReminderSettingsStore {
 
             r.yearsFromToday?.let { obj.put("year", it) }
             r.monthsFromToday?.let { obj.put("month", it) }
-//            r.dayOfMonth?.let { obj.put("dayOfMonth", it) }
-//            r.dayOfWeek?.let { obj.put("dayOfWeek", it) }
+            r.daysFromToday?.let { obj.put("day", it) }
             r.hoursFromToday?.let { obj.put("hourOfDay", it) }
             r.minutesFromToday?.let { obj.put("minute", it) }
 

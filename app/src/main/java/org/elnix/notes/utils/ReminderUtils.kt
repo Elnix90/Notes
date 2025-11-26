@@ -17,13 +17,14 @@ data class ReminderOffset(
     val daysFromToday: Int? = null,
     val hoursFromToday: Int? = null,      // 0..23
     val minutesFromToday: Int? = null,    // 0..59
+    val secondsFromToday: Int? = null     // 0..59
 ) {
 
     init {
         // Rule 1: offset OR absolute, not both
         val hasAbsolute =
             yearsFromToday != null || monthsFromToday != null || daysFromToday != null ||
-                    hoursFromToday != null || minutesFromToday != null /*|| dayOfWeek != null*/
+                    hoursFromToday != null || minutesFromToday != null || secondsFromToday != null
 
         require(!(secondsFromNow != null && hasAbsolute)) {
             "ReminderOffset cannot contain both offset and absolute date fields."
@@ -35,7 +36,7 @@ data class ReminderOffset(
     }
 
     /** Build a Calendar from supplied fields or offset */
-    fun toCalendar(): Calendar {
+    fun toCalendar(acceptPast: Boolean = false): Calendar {
         val cal = Calendar.getInstance()
 
         when {
@@ -57,7 +58,15 @@ data class ReminderOffset(
                 if (monthsFromToday != null) cal.add(Calendar.MONTH, monthsFromToday)
                 if (hoursFromToday != null) cal.add(Calendar.HOUR_OF_DAY, hoursFromToday)
                 if (minutesFromToday != null) cal.add(Calendar.MINUTE, minutesFromToday)
+                if (secondsFromToday != null) cal.add(Calendar.SECOND, secondsFromToday)
 
+
+                if (!acceptPast) {
+                    val now = Calendar.getInstance()
+                    if (cal.before(now)) {
+                        cal.add(Calendar.DAY_OF_MONTH, 1)
+                    }
+                }
             }
         }
 
@@ -69,7 +78,7 @@ data class ReminderOffset(
 }
 
 
-fun calendarToReminderOffset(dueDateTime: Calendar): ReminderOffset {
+fun Calendar.toReminderOffset(): ReminderOffset {
     val now = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.MINUTE, 0)
@@ -77,17 +86,19 @@ fun calendarToReminderOffset(dueDateTime: Calendar): ReminderOffset {
         set(Calendar.MILLISECOND, 0)
     }
 
-    val yearsFromToday = dueDateTime.get(Calendar.YEAR) - now.get(Calendar.YEAR)
-    val monthsFromToday = dueDateTime.get(Calendar.MONTH) - now.get(Calendar.MONTH)
-    val daysFromToday = dueDateTime.get(Calendar.DAY_OF_MONTH) - now.get(Calendar.DAY_OF_MONTH)
-    val hoursFromToday = dueDateTime.get(Calendar.HOUR_OF_DAY) - now.get(Calendar.HOUR_OF_DAY)
-    val minutesFromToday = dueDateTime.get(Calendar.MINUTE) - now.get(Calendar.MINUTE)
+    val yearsFromToday = get(Calendar.YEAR) - now.get(Calendar.YEAR)
+    val monthsFromToday = get(Calendar.MONTH) - now.get(Calendar.MONTH)
+    val daysFromToday = get(Calendar.DAY_OF_MONTH) - now.get(Calendar.DAY_OF_MONTH)
+    val hoursFromToday = get(Calendar.HOUR_OF_DAY) - now.get(Calendar.HOUR_OF_DAY)
+    val minutesFromToday = get(Calendar.MINUTE) - now.get(Calendar.MINUTE)
+    val secondsFromToday = get(Calendar.SECOND) - now.get(Calendar.SECOND)
 
     return ReminderOffset(
         yearsFromToday = yearsFromToday,
         monthsFromToday = monthsFromToday,
         daysFromToday = daysFromToday,
         hoursFromToday = hoursFromToday,
-        minutesFromToday = minutesFromToday
+        minutesFromToday = minutesFromToday,
+        secondsFromToday = secondsFromToday
     )
 }

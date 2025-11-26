@@ -4,15 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SelectableDates
@@ -33,16 +29,16 @@ import org.elnix.notes.R
 import org.elnix.notes.ui.helpers.reminders.TimeBubble
 import org.elnix.notes.ui.theme.AppObjectsColors
 import org.elnix.notes.utils.ReminderOffset
-import org.elnix.notes.utils.calendarToReminderOffset
+import org.elnix.notes.utils.toReminderOffset
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StyledReminderDialogs(
     initialOffset: ReminderOffset? = null,
+    onDismiss: () -> Unit,
     onPicked: (ReminderOffset) -> Unit
 ) {
-    var showDate by remember { mutableStateOf(false) }
     var showTime by remember { mutableStateOf(false) }
     var showAtIn by remember { mutableStateOf(false) }
 
@@ -59,57 +55,49 @@ fun StyledReminderDialogs(
         set(Calendar.MILLISECOND, 0)
     }.timeInMillis
 
-    IconButton(
-        onClick = { showDate = true },
-        colors = AppObjectsColors.iconButtonColors()
-    ) {
-        Icon(Icons.Default.CalendarMonth, contentDescription = null)
-    }
 
     /* DATE PICKER */
-    if (showDate) {
-        val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = pickedCal.timeInMillis,
-            selectableDates = object : SelectableDates {
-                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                    return utcTimeMillis >= today
-                }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = pickedCal.timeInMillis,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis >= today
             }
-        )
-
-        DatePickerDialog(
-            onDismissRequest = { showDate = false },
-            confirmButton = {
-                Button(
-                        onClick = {
-                        datePickerState.selectedDateMillis?.let {
-                            pickedCal.timeInMillis = it
-                            showDate = false
-                            showTime = true
-                        }
-                    },
-                    colors = AppObjectsColors.buttonColors(),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(stringResource(R.string.next))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDate = false },
-                    colors = AppObjectsColors.cancelButtonColors()
-                ) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            colors = AppObjectsColors.datePickerColors()
-        ) {
-            DatePicker(
-                colors = AppObjectsColors.datePickerColors(),
-                state = datePickerState
-            )
         }
+    )
+
+    DatePickerDialog(
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            Button(
+                    onClick = {
+                    datePickerState.selectedDateMillis?.let {
+                        pickedCal.timeInMillis = it
+                        showTime = true
+                    }
+                },
+                colors = AppObjectsColors.buttonColors(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(stringResource(R.string.next))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = { onDismiss() },
+                colors = AppObjectsColors.cancelButtonColors()
+            ) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        colors = AppObjectsColors.datePickerColors()
+    ) {
+        DatePicker(
+            colors = AppObjectsColors.datePickerColors(),
+            state = datePickerState
+        )
     }
+
 
     /* TIME PICKER */
     if (showTime) {
@@ -154,7 +142,6 @@ fun StyledReminderDialogs(
                 TextButton(
                     onClick = {
                         showTime = false
-                        showDate = true
                     }
                 ) { Text(stringResource(R.string.previous)) }
             },
@@ -182,7 +169,7 @@ fun StyledReminderDialogs(
                     onClick = {
                         val result =
                             if (atSelected) {
-                                calendarToReminderOffset(pickedCal)
+                                pickedCal.toReminderOffset()
                             } else {
                                 ReminderOffset(secondsFromNow = diffSec)
                             }
@@ -220,15 +207,8 @@ fun StyledReminderDialogs(
                         Text("At")
 
                         TimeBubble(
-                            reminderOffset = ReminderOffset(
-                                yearsFromToday = pickedCal.get(Calendar.YEAR),
-                                monthsFromToday = pickedCal.get(Calendar.MONTH),
-//                                dayOfMonth = pickedCal.get(Calendar.DAY_OF_MONTH),
-                                hoursFromToday = pickedCal.get(Calendar.HOUR_OF_DAY),
-                                minutesFromToday = pickedCal.get(Calendar.MINUTE)
-                            ),
+                            reminderOffset = pickedCal.toReminderOffset(),
                             enabled = true,
-                            showAbsoluteDate = true,
                             expandToLargerUnits = true
                         )
                     }

@@ -39,6 +39,7 @@ fun TimeBubble(
     onLongClick: (() -> Unit)? = null,
     onDelete: (() -> Unit)? = null,
     enabled: Boolean = true,
+    acceptPast: Boolean = false,
     showAbsoluteDate: Boolean? = null,
     expandToLargerUnits: Boolean = true
 ) {
@@ -51,7 +52,7 @@ fun TimeBubble(
         }
     }
 
-    val cal = reminderOffset.toCalendar()
+    val cal = reminderOffset.toCalendar(acceptPast)
     val diffMillis = cal.timeInMillis - currentTime.longValue
     val isPast = diffMillis < 0
     val absSeconds = abs(diffMillis / 1000).toInt()
@@ -69,8 +70,21 @@ fun TimeBubble(
         }
 
     val bubbleColor =
-        if (isPast) Color(0xFF2196F3)
+        if (isPast) Color(0x7E2196F3)
         else Color.hsv(120f * ratio, 0.9f, 0.9f)
+
+
+    val textBorderColor = bubbleColor.copy(when {
+        isPast -> 0.7f
+        !enabled -> 0.5f
+        else -> 1f
+    })
+
+    val backgroundColor = bubbleColor.copy(when {
+        isPast -> 0f
+        !enabled -> .05f
+        else -> .15f
+    })
 
     Row(
         modifier = Modifier
@@ -85,11 +99,11 @@ fun TimeBubble(
             )
             .border(
                 width = 1.dp,
-                color = bubbleColor.copy(alpha = if (enabled) 1f else 0.3f),
+                color = textBorderColor,
                 shape = CircleShape
             )
             .background(
-                color = bubbleColor.copy(alpha = if (enabled) 0.15f else 0.05f),
+                color = backgroundColor,
                 shape = CircleShape
             )
             .padding(horizontal = 12.dp, vertical = 6.dp),
@@ -97,7 +111,7 @@ fun TimeBubble(
     ) {
         Text(
             text = text,
-            color = bubbleColor.copy(alpha = if (enabled) 1f else 0.4f)
+            color = textBorderColor
         )
 
         if (onDelete != null) {
@@ -109,7 +123,7 @@ fun TimeBubble(
                 Icon(
                     imageVector = Icons.Default.Cancel,
                     contentDescription = stringResource(R.string.delete),
-                    tint = bubbleColor.copy(alpha = if (enabled) 1f else 0.4f)
+                    tint = textBorderColor
                 )
             }
         }
@@ -229,6 +243,6 @@ fun getTextAndRatioFromOffset(offsetSeconds: Int): Pair<String, Float> {
     }
 }
 
-fun getTextOffset(offset: Int): String {
-    return getTextAndRatioFromOffset(offset).first
-}
+//fun getTextOffset(offset: Int): String {
+//    return getTextAndRatioFromOffset(offset).first
+//}

@@ -59,17 +59,21 @@ fun RemindersSection(
                reminderOffset = cal.toReminderOffset(),
                 onClick = {
                     scope.launch {
-                        val updatedReminder = reminder.copy(enabled = !reminder.enabled)
-                        vm.updateReminder(updatedReminder)
-                        if (reminder.enabled) {
-                            scheduleReminderNotification(
-                                context = ctx,
-                                reminder = updatedReminder,
-                                note = note,
-                                title = title.ifBlank { reminderText }
-                            )
+                        if (cal.timeInMillis > System.currentTimeMillis()){
+                            val updatedReminder = reminder.copy(enabled = !reminder.enabled)
+                            vm.updateReminder(updatedReminder)
+                            if (updatedReminder.enabled) {
+                                scheduleReminderNotification(
+                                    context = ctx,
+                                    reminder = updatedReminder,
+                                    note = note,
+                                    title = title.ifBlank { reminderText }
+                                )
+                            } else {
+                                cancelReminderNotification(ctx, reminder.id)
+                            }
                         } else {
-                            cancelReminderNotification(ctx, reminder.id)
+                            vm.deleteReminder(reminder)
                         }
                     }
                 },

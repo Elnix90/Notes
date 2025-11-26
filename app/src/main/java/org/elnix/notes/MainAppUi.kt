@@ -265,9 +265,7 @@ fun MainApp(
                 ) { backStackEntry ->
                     val noteId = backStackEntry.arguments?.getLong("noteId") ?: return@composable
                     val typeArg = backStackEntry.arguments?.getString("type") ?: NoteType.TEXT.name
-                    val noteType = NoteType.valueOf(typeArg)
-
-                    when (noteType) {
+                    when (val noteType = NoteType.valueOf(typeArg)) {
                         NoteType.TEXT, NoteType.CHECKLIST -> UnifiedTextualNotesEditor(
                             vm = vm,
                             activity = activity,

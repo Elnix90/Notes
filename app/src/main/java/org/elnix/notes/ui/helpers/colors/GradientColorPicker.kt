@@ -173,7 +173,9 @@ fun GradientColorPicker(
             color = MaterialTheme.colorScheme.primary
         ) {
             alpha = it
-            hexText = toHexWithAlpha(selectedColor.copy(alpha = alpha))
+            selectedColor = selectedColor.copy(alpha = alpha)
+            hexText = toHexWithAlpha(selectedColor)
+            onColorSelected(selectedColor)
         }
 
         // --- HEX entry ---

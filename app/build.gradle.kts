@@ -19,12 +19,30 @@ android {
         versionName = "1.2.4"
     }
 
+    signingConfigs {
+        create("release") {
+            val keystore = System.getenv("KEYSTORE_FILE")
+            val storePass = System.getenv("KEYSTORE_PASSWORD")
+            val alias = System.getenv("KEY_ALIAS")
+            val keyPass = System.getenv("KEY_PASSWORD")
+
+            if (keystore != null && storePass != null && alias != null && keyPass != null) {
+                storeFile = File(keystore)
+                storePassword = storePass
+                keyAlias = alias
+                keyPassword = keyPass
+            } else {
+                println("WARNING: Release signingConfig not fully configured, using debug signing.")
+            }
+        }
+    }
 
 
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -49,6 +67,13 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    tasks.register("printVersionName") {
+        doLast {
+            val versionName = android.defaultConfig.versionName
+            println("VERSION_NAME=$versionName")
         }
     }
 }

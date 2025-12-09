@@ -15,8 +15,8 @@ android {
         applicationId = "org.elnix.notes"
         minSdk = 26
         targetSdk = 36
-        versionCode = 20
-        versionName = "1.2.3"
+        versionCode = 21
+        versionName = "1.2.4"
     }
 
 
@@ -117,4 +117,3 @@ dependencies {
     // Biometric API
     implementation(libs.androidx.biometric)
 }
-

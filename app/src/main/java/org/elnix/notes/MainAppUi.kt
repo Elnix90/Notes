@@ -96,6 +96,14 @@ fun MainApp(
 
     val updates = listOf(
         Update(
+            "1.2.4",
+            listOf(
+                "Fixed Transparency bar that wasn't working on gradients color picker",
+                "Added the github workflows files, to build automatically when pushed and release",
+                "Fixed some external project issues"
+            )
+        ),
+        Update(
             "1.2.3",
             listOf(
                 "Corrected some reminders issues",

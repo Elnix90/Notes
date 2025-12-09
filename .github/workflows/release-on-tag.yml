@@ -1,0 +1,57 @@
+name: Build Release From Tag
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          echo "VERSION=$TAG" >> $GITHUB_ENV
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_FILE_B64 }}" | base64 -d > my-release-key.jks
+
+      - name: Export signing env
+        run: |
+          echo "KEYSTORE_FILE=$PWD/my-release-key.jks" >> $GITHUB_ENV
+          echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
+          echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Rename APK
+        run: |
+          NAME="Notes-${{ env.VERSION }}.apk"
+          mv app/build/outputs/apk/release/app-release.apk "$NAME"
+          echo "APK=$NAME" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: ${{ env.VERSION }}
+          files: ${{ env.APK }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
